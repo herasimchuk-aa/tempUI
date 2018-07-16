@@ -1,0 +1,165 @@
+.headerRow{
+	padding: 0px 0px;
+	background-color: white;
+	border-radius: 0px !important;
+	border: 1px solid #0e151d40;
+	margin-top:0px !important; 
+}
+.headerRow1{
+	text-align: left;
+	background-color: #ffffff;
+	border-left:1px solid #0e151d40;
+	border-right:1px solid #0e151d40;
+}
+
+.headerRow2{
+	text-align: left;
+	background-color: #e4e5e640;
+	border-left:1px solid #0e151d40;
+	border-right:1px solid #0e151d40;
+}
+
+.headerRow3{
+    text-align: left;
+	background-color: #e4e5e640;
+	border-bottom:1px solid #0e151d40;
+}
+
+.head-name{
+	font-weight: 600;
+	font-size: 15px;
+	padding: 10px 0px;
+	text-align: left;
+}
+.list-group-item {
+	background-color: transparent !important;
+	border: none !important;
+}
+
+
+
+.custBtn{
+	background-color: white  !important;
+	border-radius: 6px  !important;
+	border: 1px solid #a4b7c1  !important;
+	padding: 10px  !important;
+	margin-bottom: 10px !important;
+	margin-right: 10px  !important;
+	color: #20a8d8 !important;
+	
+}
+
+.custBtn:hover{
+	border: 1px solid black !important;
+	background-color: white  !important;
+	color: black;
+}
+
+.borRad{
+	border-bottom-left-radius: 8px !important;
+    border-top-left-radius: 8px !important;
+}
+
+.borRadLeft{
+	border-bottom-left-radius: 8px !important;
+    border-top-left-radius: 8px !important;
+}
+
+.borRadRight{
+	border-bottom-right-radius: 8px !important;
+	border-top-right-radius: 8px !important;
+	content: "\f002";
+}
+
+.boxBorder{
+	border:1px solid #a4b7c1;
+	border-radius: 6px;
+	padding: 10px 0px;
+}
+
+.overflow {
+    position: absolute;
+    z-index: 1000;
+}
+
+.srNo{
+    font-weight: 400;
+	
+    color:#191a1b9c ; 
+}
+#show{
+    display: none ;
+}
+.edit{
+    font-size: 25px;
+    font-weight: 600;
+}
+
+.dispIn{
+    display: inline;
+}
+.wid{
+    width: 250px !important;
+}
+.fa-arrow-left{
+    font-size: 15px;
+    color: #191a1b9c;
+}
+
+.main .container-fluid {
+    padding: 0 50px !important;
+}
+
+
+.posRight{
+    position: relative;
+    left:30px;
+
+}
+
+
+/* margin classes start*/
+
+.marginLeft13N{
+	margin-left: -13px !important;
+}
+
+.marLeft10{
+    margin-left:10px;
+}
+marRight10{
+	margin-right: 10px; 
+}
+
+.marLeft40 {
+    margin-left: 40px !important;
+}
+
+.marLeft40 {
+    margin-left: 40px !important;
+}
+
+
+/* margin classes end*/
+
+/* Padding classes start */
+
+.pad{
+	padding: 10px 15px;
+}
+
+.padTop30{
+    padding-top: 30px;
+}
+.padTop20{
+    padding-top: 50px;
+}
+
+/* Padding classes end */
+
+
+
+
+
+
+

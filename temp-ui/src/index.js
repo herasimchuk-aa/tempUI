@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {HashRouter, Route, Switch} from 'react-router-dom';
+import createBrowserHistory from 'history/createBrowserHistory'
 
 // Styles
 // Import Flag Icons Set
@@ -16,6 +17,8 @@ import '../scss/core/_dropdown-menu-right.scss'
 
 // Containers
 import Full from './containers/Full/'
+
+export const customHistory = createBrowserHistory()
 
 ReactDOM.render((
   <HashRouter>

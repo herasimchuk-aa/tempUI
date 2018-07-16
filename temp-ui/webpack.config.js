@@ -25,7 +25,7 @@ module.exports = (env = {}) => {
     // watch: true,
     devtool: env.prod ? 'source-map' : 'cheap-module-eval-source-map',
     devServer: {
-      contentBase: BUILD_DIR,
+      contentBase: BUILD_DIR,	
       //   port: 9001,
       compress: true,
       hot: true,
@@ -40,7 +40,7 @@ module.exports = (env = {}) => {
             loader: 'babel-loader',
             options: {
               cacheDirectory: true,
-              presets: ['react', 'env']
+              presets: ['react', 'env', 'stage-1']
             }
           }
         },

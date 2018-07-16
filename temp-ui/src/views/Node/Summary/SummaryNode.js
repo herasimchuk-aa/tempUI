@@ -128,6 +128,7 @@ class SummaryNode extends React.Component {
     }
 
     renderNode() {
+        if(this.state.node.name != ""){
         let keyId = "NodeId_"+this.state.node.name;
         let selectId_1 = "SelectionNodeId_" + this.state.node.name + "_1";
         let selectId_2 = "SelectionNodeId_" + this.state.node.name + "_2";
@@ -158,7 +159,7 @@ class SummaryNode extends React.Component {
                 <div className="Col-Sep Col-Sep8"></div>
                 <div className={this.columnClassName(9, false)}>{this.state.node.bmcInterface.IPAddress}</div>
                 </div>
-        );
+        );}
     }
 
     render() {

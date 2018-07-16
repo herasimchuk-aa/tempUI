@@ -1,87 +1,86 @@
+import {invaderServerAddress} from './config';
+ 
 export class StatsEginx {
-    constructor(activeConnection, totalConnection, totalHandledConnection, totalRequests, requestsPerConnection, reading, writing, waiting) {
-        this.activeConnection = activeConnection;
-        this.totalConnection = totalConnection;
-        this.totalHandledConnection = totalHandledConnection;
-        this.totalRequests = totalRequests;
-        this.requestsPerConnection = requestsPerConnection;
-        this.reading = reading;
-        this.writing = writing;
-        this.waiting = waiting;
-    }
-    
-    addStats(addStats) {
-        this.activeConnection += addStats.activeConnection;
-        this.totalConnection += addStats.totalConnection;
-        this.totalHandledConnection += addStats.totalHandledConnection;
-        this.totalRequests += addStats.totalRequests;
-        this.requestsPerConnection += addStats.requestsPerConnection;
-        this.reading += addStats.reading;
-        this.writing += addStats.writing;
-        this.waiting += addStats.waiting;
-    }
+  constructor (activeConnection, totalConnection, totalHandledConnection, totalRequests, requestsPerConnection, reading, writing, waiting) {
+    this.activeConnection = activeConnection
+    this.totalConnection = totalConnection
+    this.totalHandledConnection = totalHandledConnection
+    this.totalRequests = totalRequests
+    this.requestsPerConnection = requestsPerConnection
+    this.reading = reading
+    this.writing = writing
+    this.waiting = waiting
+  }
+  addStats (addStats) {
+    this.activeConnection += addStats.activeConnection
+    this.totalConnection += addStats.totalConnection
+    this.totalHandledConnection += addStats.totalHandledConnection
+    this.totalRequests += addStats.totalRequests
+    this.requestsPerConnection += addStats.requestsPerConnection
+    this.reading += addStats.reading
+    this.writing += addStats.writing
+    this.waiting += addStats.waiting
+  }
 
-    static EginxStatsFromJson(jsonArray) {
-        let retStat = StatsEginx.EmptyObj();
-        for (let jsonId in jsonArray) {
-            let jsonObj = jsonArray[jsonId];
-            retStat.activeConnection += jsonObj['ActiveConnections'];
-            retStat.totalConnection += jsonObj['TotalConnections'];
-            retStat.totalHandledConnection += jsonObj['TotalHandledConnections'];
-            retStat.totalRequests += jsonObj['TotalRequests'];
-            retStat.requestsPerConnection += jsonObj['RequestsPerConnection'];
-            retStat.reading += jsonObj['Reading'];
-            retStat.writing += jsonObj['Writing'];
-            retStat.waiting += jsonObj['Waiting'];
-        }
-        return retStat;
+  static EginxStatsFromJson (jsonArray) {
+    let retStat = StatsEginx.EmptyObj();
+    for (let jsonId in jsonArray) {
+      let jsonObj = jsonArray[jsonId];
+      retStat.activeConnection += jsonObj['ActiveConnections'];
+      retStat.totalConnection += jsonObj['TotalConnections'];
+      retStat.totalHandledConnection += jsonObj['TotalHandledConnections'];
+      retStat.totalRequests += jsonObj['TotalRequests'];
+      retStat.requestsPerConnection += jsonObj['RequestsPerConnection'];
+      retStat.reading += jsonObj['Reading'];
+      retStat.writing += jsonObj['Writing'];
+      retStat.waiting += jsonObj['Waiting'];
     }
+    return retStat
+  }
 
-    static SimulateObj() {
-        let activeConnection = Math.floor((Math.random() * 100) + 1);
-        let totalConnection = Math.floor((Math.random() * 100000) + 1);
-        let totalHandledConnection = Math.floor((Math.random() * 100000) + 1);
-        let totalRequests = totalConnection + totalHandledConnection;
-        return new StatsEginx(activeConnection, totalConnection, totalHandledConnection, totalRequests, 0, 0, 0, 0);
-    }
-    
-    static EmptyObj() {
-        return new StatsEginx(0, 0, 0, 0, 0, 0, 0, 0);
-    }
+  static SimulateObj () {
+    let activeConnection = Math.floor((Math.random() * 100) + 1)
+    let totalConnection = Math.floor((Math.random() * 100000) + 1)
+    let totalHandledConnection = Math.floor((Math.random() * 100000) + 1)
+    let totalRequests = totalConnection + totalHandledConnection
+    return new StatsEginx(activeConnection, totalConnection, totalHandledConnection, totalRequests, 0, 0, 0, 0)
+  }
+  static EmptyObj () {
+    return new StatsEginx(0, 0, 0, 0, 0, 0, 0, 0);
+  }
 }
 
-
 class StatsVarnish {
-    constructor(clientRequests, cacheHits, cacheMisses) {
-        this.clientRequests = clientRequests;
-        this.cacheHits = cacheHits;
-        this.cacheMisses = cacheMisses;
-    }
+  constructor (clientRequests, cacheHits, cacheMisses) {
+    this.clientRequests = clientRequests
+    this.cacheHits = cacheHits
+    this.cacheMisses = cacheMisses
+  }
 
-    addStats(addStats) {
-        this.clientRequests += addStats.clientRequests;
-        this.cacheHits += addStats.cacheHits;
-        this.cacheMisses += addStats.cacheMisses;
-    }
+  addStats (addStats) {
+    this.clientRequests += addStats.clientRequests
+    this.cacheHits += addStats.cacheHits
+    this.cacheMisses += addStats.cacheMisses
+  }
 
-    static VarnishStatsFromJson(jsonArray) {
-        let retStat = StatsVarnish.EmptyObj();
-        for (let jsonId in jsonArray) {
-            let jsonObj = jsonArray[jsonId];
-            let statArr = jsonObj['stats'];
-            for (let stat in statArr) {
-                let statObj = statArr[stat];
-                if (statObj['id'] === 'clientRequests') {
-                    retStat.clientRequests += statObj['value'];
-                } else if (statObj['id'] === 'cacheHits') {
-                    retStat.cacheHits += statObj['value'];
-                } else if (statObj['id'] === 'cacheMisses') {
-                    retStat.cacheMisses += statObj['value'];
-                }
-            }
+  static VarnishStatsFromJson (jsonArray) {
+    let retStat = StatsVarnish.EmptyObj()
+    for (let jsonId in jsonArray) {
+      let jsonObj = jsonArray[jsonId]
+      let statArr = jsonObj['stats']
+      for (let stat in statArr) {
+        let statObj = statArr[stat]
+        if (statObj['id'] === 'clientRequests') {
+          retStat.clientRequests += statObj['value']
+        } else if (statObj['id'] === 'cacheHits') {
+          retStat.cacheHits += statObj['value']
+        } else if (statObj['id'] === 'cacheMisses') {
+          retStat.cacheMisses += statObj['value']
         }
-        return retStat;
+      }
     }
+    return retStat
+  }
     
     static SimulateObj() {
         let cacheHits = Math.floor((Math.random() * 100000) + 1);
@@ -569,8 +568,10 @@ export class ServerAPI {
         this.allSystemTypes = [];
         
         //this.invaderServerAddress = "http://192.168.101.122:8080";
-        //this.invaderServerAddress = "http://192.168.53.130:8080";
-        this.invaderServerAddress = "http://172.17.2.37:8080"
+       // client api address
+       // this.invaderServerAddress = "http://192.168.53.130:8080";
+    //    this.invaderServerAddress = "http://172.17.2.37:8080";
+       this.invaderServerAddress = invaderServerAddress;
         this.fetchAllNodeSetupInfo();
     }
     
@@ -588,7 +589,7 @@ export class ServerAPI {
         return defaultAPIServer;
     }
     
-    fetchAllNodeSetupInfo() {
+    fetchAllNodeSetupInfo(callback, instance) {
         let serverInstance = this;
         let xhr = new XMLHttpRequest();
         let sourceURL = this.DefaultInvader() + "/node/setup_info";
@@ -644,6 +645,7 @@ export class ServerAPI {
                             mainCtr++
                         }
                     }
+                    callback(instance, serverInstance);
                 } catch (err) {
                     console.log("POST :: ERROR :: " + err);
                 }
@@ -719,6 +721,278 @@ export class ServerAPI {
         }
         xhr.send();
     }
+
+    fetchAllRoles(callback, instance) {
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/role/";
+        xhr.open("GET", sourceURL, true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    let jsonRoles = jsonObj.roles;
+                    let retRoles = [];
+                    let roleCtr = 0;
+                    for (roleCtr in jsonRoles) {
+                        let jRole = jsonRoles[roleCtr];
+                        let role = new ServerLabels(jRole);
+                        retRoles[roleCtr] = role;
+                    }
+                    callback(instance, retRoles);
+                    
+                } catch (err) {
+                    console.log("POST :: ERROR :: " + err);
+                }
+            }
+        };
+        xhr.onerror = function () {
+            console.log("POST :: Error :: ");
+            callback(instance, null);
+        }
+        xhr.send();
+    }
+
+    fetchAllIso(callback, instance) {
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/iso/";
+        xhr.open("GET", sourceURL, true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    let jsonIsoTypes = jsonObj.isoTypes;
+                    let retIsoTypes = [];
+                    let isoCtr = 0;
+                    for (isoCtr in jsonIsoTypes) {
+                        let jIsoType = jsonIsoTypes[isoCtr];
+                        let isoType = new ServerISO(jIsoType);
+                        retIsoTypes[isoCtr] = isoType;
+                    }
+                    callback(instance, retIsoTypes);
+                    
+                } catch (err) {
+                    console.log("POST :: ERROR :: " + err);
+                }
+            }
+        };
+        xhr.onerror = function () {
+            console.log("POST :: Error :: ");
+            callback(instance, null);
+        }
+        xhr.send();
+    }
+
+    fetchAllKernels(callback, instance) {
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/kernel/";
+        xhr.open("GET", sourceURL, true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    let jsonKernelTypes = jsonObj.kernelTypes;
+                    let retKernelTypes = [];
+                    let kernelCtr = 0;
+                    for (kernelCtr in jsonKernelTypes) {
+                        let jKernelTypes = jsonKernelTypes[kernelCtr];
+                        let kernelType = new ServerKernelTypes(jKernelTypes);
+                        retKernelTypes[kernelCtr] = kernelType;
+                    }
+                    callback(instance, retKernelTypes);
+                    
+                } catch (err) {
+                    console.log("POST :: ERROR :: " + err);
+                }
+            }
+        };
+        xhr.onerror = function () {
+            console.log("POST :: Error :: ");
+            callback(instance, null);
+        }
+        xhr.send();
+    }
+
+    fetchAllSystemTypes(callback, instance) {
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/systemtype/";
+        xhr.open("GET", sourceURL, true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    let jsonSystemTypes = jsonObj.systemTypes;
+                    let retSystemTypes = [];
+                    let typeCtr = 0;
+                    for (typeCtr in jsonSystemTypes) {
+                        let jSystemTypes = jsonSystemTypes[typeCtr];
+                        let systemType = new ServerSystemType(jSystemTypes);
+                        retSystemTypes[typeCtr] = systemType;
+                    }
+                    callback(instance, retSystemTypes);
+                    
+                } catch (err) {
+                    console.log("POST :: ERROR :: " + err);
+                }
+            }
+        };
+        xhr.onerror = function () {
+            console.log("POST :: Error :: ");
+            callback(instance, null);
+        }
+        xhr.send();
+    }
+
+    addRole(callback,instance,data) {
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/role/add";
+        xhr.open("POST", sourceURL, {data});
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.send(JSON.stringify(data));
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    if(jsonObj.success) {
+                        let a = {
+                            'label' : jsonObj.role.Name,
+                            'description': jsonObj.role.Description
+                        }
+                        callback(instance, a);
+                    }
+                    else {
+                        alert("Faliure");
+                    }
+                } catch (err) {
+                    console.log("Error" + err);
+                }
+            }
+        };
+
+    }
+
+    addRole(callback,instance,data) {
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/role/add";
+        xhr.open("POST", sourceURL, {data});
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.send(JSON.stringify(data));
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    if(jsonObj.success) {
+                        let a = {
+                            'label' : jsonObj.role.Name,
+                            'description': jsonObj.role.Description
+                        }
+                        callback(instance, a);
+                    }
+                    else {
+                        alert("Faliure");
+                    }
+                } catch (err) {
+                    console.log("Error" + err);
+                }
+            }
+        };
+
+    }
+
+    addIso(callback,instance,data) {
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/iso/add";
+        xhr.open("POST", sourceURL, {data});
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.send(JSON.stringify(data));
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    if(jsonObj.success) {
+                        let a = {
+                            'label' : jsonObj.isoTypes.Name,
+                            'description': jsonObj.isoTypes.Description
+                        }
+                        callback(instance, a);
+                    }
+                    else {
+                        alert("Faliure");
+                    }
+                } catch (err) {
+                    console.log("Error" + err);
+                }
+            }
+        };
+
+    }
+
+    addKernel(callback,instance,data) {
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/kernel/add";
+        xhr.open("POST", sourceURL, {data});
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.send(JSON.stringify(data));
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    if(jsonObj.success) {
+                        let a = {
+                            'label' : jsonObj.kernelTypes.Name,
+                            'description': jsonObj.kernelTypes.Description
+                        }
+                        callback(instance, a);
+                    }
+                    else {
+                        alert("Faliure");
+                    }
+                } catch (err) {
+                    console.log("Error" + err);
+                }
+            }
+        };
+
+    }
+
+    addSystemTypes(callback,instance,data) {
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/systemtype/add";
+        xhr.open("POST", sourceURL, {data});
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.send(JSON.stringify(data));
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    if(jsonObj.success) {
+                        let a = {
+                            'label' : jsonObj.systemTypes.Id,
+                            'vendor' : jsonObj.systemTypes.Vendor,
+                            'rackUnit' : jsonObj.systemTypes.RackUnit,
+                            'airflow' : jsonObj.systemTypes.Airflow,
+                            'numFrontPanelInterface' : jsonObj.systemTypes.NumFrontPanelInterface,
+                            'speedFrontPanelInterface' : jsonObj.systemTypes.SpeedFrontPanelInterface,
+                            'numMgmtInterface' : jsonObj.systemTypes.NumMgmtInterface,
+                            'speedMgmtInterafce': jsonObj.systemTypes.SpeedMgmtInterafce
+                        }
+                        callback(instance, a);
+                    }
+                    else {
+                        alert("Faliure");
+                    }
+                } catch (err) {
+                    console.log("Error" + err);
+                }
+            }
+        };
+
+    }
+
+    
     
     fetchHosts() {
         return '{"hosts":["127.0.0.1","inv7","sr3","sr2"]}';

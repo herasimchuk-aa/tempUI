@@ -33,14 +33,15 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "babel-preset-stage-0": "^6.24.1",
     "bootstrap": "4.0.0",
     "chart.js": "2.7.1",
     "flag-icon-css": "2.9.0",
     "font-awesome": "4.7.0",
     "history": "4.7.2",
-    "react": "16.2.0",
+    "react": "16.3.1",
     "react-chartjs-2": "2.7.0",
-    "react-dom": "16.2.0",
+    "react-dom": "16.3.1",
     "react-dropdown-multiselect": "^1.0.0",
     "react-router-dom": "4.2.2",
     "react-select": "^1.2.1",
@@ -50,8 +51,8 @@
     "simple-line-icons": "2.4.1"
   },
   "scripts": {
-    "dev": "webpack -d --progress --watch --profile --json > compilation-stats.json --env.dev",
-    "start": "webpack-dev-server --progress --color --inline --env.dev",
+    "dev": "webpack -d --progress --watch --profile --json > compilation-stats.json --env.dev ",
+    "start": "webpack-dev-server --progress --color --inline --env.dev --host 0.0.0.0",
     "build": "webpack -p --progress --env.prod",
     "clean": "rimraf ./build"
   },
