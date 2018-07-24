@@ -45,6 +45,11 @@ export default {
           icon: 'icon-map',
         },
         {
+          name: 'Site',
+          url: '/node/Site',
+          icon: 'icon-map',
+        },
+        {
           name: 'Base Linux ISO',
           url: '/node/BaseLinuxIso',
           icon: 'icon-bell',
@@ -88,29 +93,29 @@ export default {
       url: '/kubernetes',
       icon: 'icon-vector',
     },
-    {
-      title: true,
-      name: 'Operations',
-      wrapper: {            
-        element: '',        
-        attributes: {}      
-      },
-      class: ''             
-    },
-    {
-      name: 'Inventory',
-      url: '/operation/inventory',
-      icon: 'icon-layers',
-    },
-    {
-      name: 'Actions',
-      url: '/operation/playbook',
-      icon: 'icon-control-play',
-    },
-    {
-      name: 'Monitor',
-      url: '/operation/monitor',
-      icon: 'icon-graph',
-    },
+    // {
+    //   title: true,
+    //   name: 'Operations',
+    //   wrapper: {            
+    //     element: '',        
+    //     attributes: {}      
+    //   },
+    //   class: ''             
+    // },
+    // {
+    //   name: 'Inventory',
+    //   url: '/operation/inventory',
+    //   icon: 'icon-layers',
+    // },
+    // {
+    //   name: 'Actions',
+    //   url: '/operation/playbook',
+    //   icon: 'icon-control-play',
+    // },
+    // {
+    //   name: 'Monitor',
+    //   url: '/operation/monitor',
+    //   icon: 'icon-graph',
+    // },
   ]
 };

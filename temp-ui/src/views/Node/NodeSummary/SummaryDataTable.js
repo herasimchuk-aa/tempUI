@@ -1,79 +1,215 @@
 import React from 'react';
-import { Col, Row, Input } from 'reactstrap';
-import { Button } from 'reactstrap';
+import { Col, Row, Input, Button, Popover, PopoverBody, ListGroupItem, ListGroup } from 'reactstrap';
 
+const POPOVER_PLACEMENT = "auto"
 export default class SummaryDataTable extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            nodes: [],
-            selectedRowIndexes: []
+            data: [],
+            heading: [],
+            selectedRowIndexes: [],
+            selectEntireRow: false,
+            popoverOpen: false
         };
+        this.counter = 0;
+        this.constHeading = Object.assign([], props.heading)
+    }
+
+    static defaultProps = {
+        showCheckBox: true
     }
 
     static getDerivedStateFromProps(props, state) {
         return {
-            nodes: props.nodes,
-            selectedRowIndexes : props.selectedRowIndexes
+            data: props.data,
+            heading: props.heading,
+            selectedRowIndexes: props.selectedRowIndexes,
+            selectEntireRow: props.selectEntireRow
         }
     }
 
-    drawHeader() {
+    drawHeader(props = this.props) {
+        let headNames = [];
+        this.state.heading.map((item) => (headNames.push(<Col sm={item.colSize} className="head-name">{item.displayName}</Col>)));
+        let tableSize = 12
+
+        if (props.showCheckBox) {
+            tableSize = 11
+        }
         return (
-            <Row className="headerRow">
+            <Row className="headerRow cursor-pointer" id={'Popover-' + POPOVER_PLACEMENT} onClick={this.handleClick} onContextMenu={this.contextMenu}>
                 <Col sm="1" className="head-name"></Col>
-                <Col sm="10" className="head-name" >
+                <Col sm={tableSize} className="head-name" >
                     <Row>
-                        <Col sm="2" className="head-name">Name</Col>
-                        <Col sm="1" className="head-name">Site</Col>
-                        <Col sm="1" className="head-name">Status</Col>
-                        <Col sm="1" className="head-name">Roles</Col>
-                        <Col sm="1" className="head-name">Type</Col>
-                        <Col sm="2" className="head-name">Serial Number</Col>
-                        <Col sm="2" className="head-name">Linux Kernel</Col>
-                        <Col sm="2" className="head-name">Base Linux ISO</Col>
+                        {headNames}
                     </Row>
                 </Col>
-                <Col sm="1" className="head-name"><Button color="link"><i className="fa fa-plus fa-lg" aria-hidden="true"></i></Button></Col>
+
             </Row>
         )
     }
 
-    drawtable() {
-        let { nodes,selectedRowIndexes } = this.state
+    handleClick = (event) => {
+        const { popoverOpen } = this.state;
+        if (popoverOpen) this.setState({ popoverOpen: false, });
+
+    }
+
+    contextMenu = (e) => {
+        if (!e) {
+            return
+        }
+        e.preventDefault();
+        this.setState({
+            popoverOpen: !this.state.popoverOpen
+        })
+    }
+
+    drawColumnSelection = () => {
+        let { constHeading } = this
+        let { heading } = this.state
+        if (!constHeading || !constHeading.length)
+            return null
+        let self = this
+
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column' }}>
+                {
+                    constHeading.map(function (item) {
+                        let showTick = false
+                        for (let i in heading) {
+                            if (heading[i] && heading[i].id === item.id) {
+                                showTick = true
+                                break
+                            }
+                        }
+                        return (<div style={{ display: 'flex', cursor: 'pointer' }} onClick={(e) => self.columnSelectionClick(e, item)}>
+                            <div style={{ padding: '5px', width: '20px' }}>{showTick && <i style={{ color: '#a4b7c1' }} className="fa fa-check" aria-hidden="true"></i>}</div>
+                            <div style={{ padding: '5px', color: 'black' }}>{item.displayName}</div></div>)
+                    })
+                }
+            </div>
+        )
+
+    }
+
+    columnSelectionClick = (e, col) => {
+        let { heading } = this.state
+        let selectedIndex = -1
+        if (!heading) {
+            heading = []
+        }
+        for (let i in heading) {
+            if (heading[i] && heading[i].id === col.id) {
+                selectedIndex = i
+                break
+            }
+        }
+        if (selectedIndex > -1) {
+            heading.splice(selectedIndex, 1)
+        } else {
+            let { constHeading } = this
+            for (let j in constHeading) {
+                if (constHeading[j] && constHeading[j].id === col.id) {
+                    heading.splice(j, 0, col)
+                    break
+                }
+            }
+        }
+        this.setState({
+            heading: heading
+        })
+    }
+
+
+    drawPopOver = () => {
+        return (
+            <div ref={this.wrapperRef}>
+                <Popover placement={POPOVER_PLACEMENT} isOpen={this.state.popoverOpen} target={'Popover-' + POPOVER_PLACEMENT} toggle={this.contextMenu}>
+                    <PopoverBody>
+                        {this.drawColumnSelection()}
+                    </PopoverBody>
+                </Popover></div>)
+    }
+
+
+
+
+    drawtable(props = this.props) {
+        let { data, selectedRowIndexes } = this.state
         let rows = []
+        let checkBoxColumn = null
         let header = this.drawHeader()
         rows.push(header)
-        if (nodes && nodes.length) {
-            let roles = nodes;
-            roles.map((role, i) => {
-                let row1 = 'headerRow1'
+        let self = this
+        if (data && data.length) {
+            let colHeader = this.state.heading
+            data.map(function (datum, rowIndex) {
+                if (datum && Object.keys(datum).length) {
+                    let rowClassName = 'headerRow1'
 
-                if (i % 2 === 0) {
-                    row1 = 'headerRow2'
+                    if (rowIndex % 2 === 0) {
+                        rowClassName = 'headerRow2'
+                    }
+                    if (rowIndex == data.length - 1) {
+                        rowClassName += ' headerRow3 '
+                    }
+
+                    let columns = []
+                    colHeader.map(function (header) {
+                        let key = header.id
+                        let value = '-'
+                        if (datum.hasOwnProperty(key)) {
+                            value = datum[key]
+                            if (value && value.length && header.type == 'array') {
+                                let str = ''
+                                value.map((val) => {
+                                    if (val) {
+                                        str += val + ','
+                                    }
+
+                                })
+                                value = str
+                            }
+                            if (value == "---Select an Option---") {
+                                value = '-'
+                            }
+                        }
+
+
+                        if (props.showCheckBox) {
+                            checkBoxColumn = (
+                                <Col sm="1" className="pad" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                    <Input key={self.counter++} style={{ cursor: 'pointer' }}
+                                        type="checkbox" onChange={() => (self.checkBoxClick(rowIndex))} defaultChecked={selectedRowIndexes && selectedRowIndexes.length && selectedRowIndexes.indexOf(rowIndex) > -1 ? true : false} />
+                                </Col>)
+                        }
+                        columns.push(<Col sm={header.colSize ? header.colSize : 1} className="pad"> {value}</Col>)
+                    })
+                    var row;
+                    if (props.selectEntireRow) {
+                        row = (<Row className={rowClassName} >
+                            {checkBoxColumn}
+                            <Col sm="11" className="pad" style={{ cursor: 'pointer' }} onClick={() => self.checkBoxClick(rowIndex, true)} >
+                                <Row>
+                                    {columns}
+                                </Row>
+                            </Col>
+                        </Row>)
+                    }
+                    else {
+                        row = (<Row className={rowClassName} >
+                            {checkBoxColumn}
+                            <Col sm="11" className="pad">
+                                <Row>
+                                    {columns}
+                                </Row>
+                            </Col>
+                        </Row>)
+                    }
+                    rows.push(row)
                 }
-                if (i == roles.length - 1) {
-                    row1 =  row1 +' headerRow3 '
-                }
-                let row = (<Row className={row1 } >
-                    <Col sm="1" className="pad" style={{display:'flex',justifyContent:'center',alignItems:'center'}}>
-                        <Input  id={role.serialNumber} style={{ cursor: 'pointer' }} value={role.serialNumber} 
-                        type="checkbox" className="" onChange={() => (this.checkBoxClick(i))} defaultChecked={selectedRowIndexes && selectedRowIndexes.length &&selectedRowIndexes.indexOf(i) > -1 ? true : false}/>
-                    </Col>
-                    <Col sm="10" className="pad" style={{ cursor: 'pointer' }} onClick={() => this.checkBoxClick(i, true)} >
-                        <Row>
-                            <Col sm="2" className="pad">{role.name}</Col>
-                            <Col sm="1" className="pad">{role.site ? role.site : '-'}</Col>
-                            <Col sm="1" className="pad">-</Col>
-                            <Col sm="1" className="pad">-</Col>
-                            <Col sm="1" className="pad">{role.nodeType}</Col>
-                            <Col sm="2" className="pad">{role.serialNumber}</Col>
-                            <Col sm="2" className="pad">{role.kernel}</Col>
-                            <Col sm="2" className="pad">{role.linuxISO}</Col>
-                        </Row>
-                    </Col>
-                </Row>)
-                rows.push(row)
             })
         }
         return rows
@@ -87,6 +223,7 @@ export default class SummaryDataTable extends React.Component {
         return (
             <div >
                 {this.drawtable()}
+                {this.drawPopOver()}
             </div>
         );
     }

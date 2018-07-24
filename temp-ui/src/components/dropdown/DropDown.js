@@ -3,24 +3,45 @@ import React, { Component } from 'react';
 export default class DropDown extends React.Component {
     constructor(props) {
       super(props);
-      this.state = {value: 'select'};
-      this.handleChange = this.handleChange.bind(this);
+      this.state = {
+        value: '',
+        identity:'',
+        default:''
+      };
+      // this.handleChange = this.handleChange.bind(this);
     }
+
+    static getDerivedStateFromProps(props, state) {
+      return {
+        identity: props.identity,
+        value: props.default
+      }
+  }
+
+  /* componentDidMount() {
+    this.setState({value: this.props.default});
+  } */
   
-    handleChange(event) {
+    /* handleChange(event) {
       this.setState({value: event.target.value});
+      this.props.getSelectedData(event.target.value);
+    } */
+    
+    getSelectedData = (event,value) => { 
+      //this.setState({value: event.target.value});
+      this.props.getSelectedData(event.target.value,this.props.identity);
     }
 
     getOptions(options){
         let rolesHtml = [];
-        rolesHtml.push(<option selected value='select'> -- select an option -- </option>)
+        rolesHtml.push(<option value=''> -- select an option -- </option>)
         options.map((item) => (rolesHtml.push(<option value={item.value} >{item.value}</option>)));
         return rolesHtml;
     }
   
     render() {
       return (        
-        <select className="form-control" value={this.state.value} onChange={this.handleChange}>
+        <select className="form-control" id={this.props.identity} value={this.state.value} onChange={(e) => this.getSelectedData(e,this.state.value)}>
             {this.getOptions(this.props.options)}
         </select>         
       );

@@ -7,6 +7,7 @@ const routes = {
   '/operation/monitor': 'Monitor',
   '/node': 'Node',
   '/node/Summary': 'Summary',
+  '/node/Site': 'Site',
   '/node/NodeConfigSummary': 'Node Config',
   '/node/config':'Configure',
   '/node/Roles' : 'Roles',

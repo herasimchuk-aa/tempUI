@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
+import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 import '../../views.css';
 import { ServerAPI } from '../../../ServerAPI';
+import SummaryDataTable from '../NodeSummary/SummaryDataTable';
+import {kernelHead} from '../../../consts';
+import { NotificationContainer, NotificationManager } from 'react-notifications';
+import 'react-notifications/lib/notifications.css';
 
 class LinuxKernel extends Component {
 
@@ -10,9 +14,11 @@ class LinuxKernel extends Component {
         super(props)
         this.state = {
             data: [],
+            kernelHead: kernelHead,
             showDelete : false,
-            selectedRowIndex: [],
-            displayModel: false
+            selectedRowIndexes: [],
+            displayModel: false,
+            visible: false
         }
     }
 
@@ -21,8 +27,11 @@ class LinuxKernel extends Component {
     }
 
     retrieveData(instance, data) {
-        if (Object.keys(data).length) {
-            instance.setState({ data: data });
+        if(!data) {
+            alert("No data received");
+        }
+        else {
+            instance.setState({data: data,selectedRowIndexes:[]});
         }
     }
 
@@ -37,14 +46,14 @@ class LinuxKernel extends Component {
     }
 
     checkBoxClick = (rowIndex) =>{
-        let { selectedRowIndex } = this.state
-        let arrayIndex = selectedRowIndex.indexOf(rowIndex)
+        let { selectedRowIndexes } = this.state
+        let arrayIndex = selectedRowIndexes.indexOf(rowIndex)
         if (arrayIndex > -1) {
-            selectedRowIndex.splice(arrayIndex, 1)
+            selectedRowIndexes.splice(arrayIndex, 1)
         } else {
-            selectedRowIndex.push(rowIndex)
+            selectedRowIndexes.push(rowIndex)
         }
-        if(this.state.selectedRowIndex.length > 0) {
+        if(this.state.selectedRowIndexes.length > 0) {
             this.setState({showDelete : true});
         }
         else {
@@ -63,8 +72,18 @@ class LinuxKernel extends Component {
             return null;
     }
 
-    deleteKernel = () => {
-        
+    deleteKernel() {
+        for( let i = 0; i < this.state.selectedRowIndexes.length; i++) {
+            ServerAPI.DefaultServer().deleteKernel(this.callbackDelete,this,this.state.data[this.state.selectedRowIndexes[i]].label);
+        }
+        this.setState({showDelete: !this.state.showDelete, selectedRowIndexes:[]});
+    }
+
+    callbackDelete(instance) {
+        if(instance.ErrorMessage) {
+            NotificationManager.error(instance.ErrorMessage, 'Linux Kernel');
+        }
+        ServerAPI.DefaultServer().fetchAllKernels(instance.retrieveData,instance);
     }
 
 
@@ -96,18 +115,24 @@ class LinuxKernel extends Component {
         return rows
     }
 
+    onDismiss() {
+        this.setState({visible : false});
+    }
+
     renderUpgradeModelDialog() {
         if (this.state.displayModel) {
             return (
-                <Modal isOpen={this.state.displayModel} size="sm" centered="true" >
-                    <ModalHeader>Add Linux Kernel</ModalHeader>
+                <Modal isOpen={this.state.displayModel} toggle={() => this.cancel()} size="sm" centered="true" >
+                    <ModalHeader  toggle={() => this.cancel()}>Add Linux Kernel</ModalHeader>
                     <ModalBody>
-                        Name: <Input id='kernelName' /><br />
-                        Description: <Input id='kernelDesc' /><br />
+                    <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Name cannot be empty</Alert>
+                        Name: <Input autoFocus className="marTop10" id='kernelName' /><br />
+                        Location: <Input className="marTop10" id='kernelLoc' /><br />
+                        Description: <Input className="marTop10" id='kernelDesc' /><br />
                     </ModalBody>
                     <ModalFooter>
                         <Button outline color="primary" onClick={() => (this.addKernel())}>Add</Button>{'  '}
-                        <Button outline color="secondary" onClick={() => (this.cancel())}>Cancel</Button>
+                        <Button outline color="primary" onClick={() => (this.cancel())}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
             );
@@ -119,8 +144,13 @@ class LinuxKernel extends Component {
     }
 
     addKernel() {
+        if(!document.getElementById('kernelName').value) {
+            this.setState({visible:true})
+            return;
+        } 
         let a = {
             'Name': document.getElementById('kernelName').value,
+            'Location': document.getElementById('kernelLoc').value,
             'Description': document.getElementById('kernelDesc').value
         }
         ServerAPI.DefaultServer().addKernel(this.callback, this, a);
@@ -132,22 +162,20 @@ class LinuxKernel extends Component {
             a = []
         }
         a.push(data)
-        instance.setState({ data: a })
-        instance.cancel();
+        instance.setState({ data: a, displayModel: !instance.state.displayModel })
     }
 
 
     render() {
-        let table = this.drawtable()
-        return (
-            <div>
-                <Row>
-                <Button onClick={() => (this.cancel())} className="custBtn animated fadeIn marginLeft13N" outline color="secondary">New</Button>
-                {this.showDeleteButton()}
-                </Row>
-                {table}
+        return (<div>
+            <NotificationContainer />
+                <div className='marginLeft10'>
+                    <Button onClick={() => (this.cancel())} className="custBtn animated fadeIn marginLeft13N" outline color="secondary">New</Button>
+                    {this.showDeleteButton()}
+                </div>
+                <SummaryDataTable heading={this.state.kernelHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes}/>
                 {this.renderUpgradeModelDialog()}
-            </div>
+            </div> 
         );
     }
 
