@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Label, Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, ListGroup, ListGroupItem, Media,Card ,CardHeader,CardBody,InputGroup,InputGroupAddon } from 'reactstrap';
+import { Label, Row, Col, Button, Input, Media,Card ,CardHeader,CardBody,InputGroup,InputGroupAddon } from 'reactstrap';
 import '../views.css';
 import { data } from './KubernetesData.js';
+import {ServerAPI} from '../../ServerAPI';
 
 class Kubernetes extends Component {
 
@@ -10,6 +11,19 @@ class Kubernetes extends Component {
         this.state = {
             data: data,
             selectedRowIndex: []
+        }
+    }
+
+    componentDidMount(){
+        ServerAPI.DefaultServer().fetchAllKubernetes(this.retrieveData,this);
+    }
+
+    retrieveData(instance, data) {
+        if(data === undefined) {
+            alert("No data received");
+        }
+        else {
+                instance.setState({data: data,selectedRowIndex:[]});
         }
     }
 
@@ -51,9 +65,9 @@ class Kubernetes extends Component {
                 table.push(
                     <Row className={row1}>
                         <Col sm="1" className="pad"><Input className="marLeft40" id={key} type="checkbox" onClick={() => (this.checkBoxClick(key))} /></Col>
-                        <Col sm="2" className="pad">{data.name}</Col>
-                        <Col sm="2" className="pad">{data.k8Status}</Col>
-                        <Col sm="3" className="pad">{data.roles}</Col>
+                        <Col sm="2" className="pad">{data.Name}</Col>
+                        <Col sm="2" className="pad">{data.K8Status}</Col>
+                        <Col sm="3" className="pad">{data.roles+' '}</Col>
                         <Col sm="2" className="pad">{data.type}</Col>
                     </Row>
                 )

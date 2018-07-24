@@ -21,8 +21,8 @@
 
 .headerRow3{
     text-align: left;
-	background-color: #e4e5e640;
 	border-bottom:1px solid #0e151d40;
+	margin-bottom: 50px;
 }
 
 .head-name{
@@ -41,7 +41,7 @@
 .custBtn{
 	background-color: white  !important;
 	border-radius: 6px  !important;
-	border: 1px solid #a4b7c1  !important;
+	border: 1px solid #20a8d8  !important;
 	padding: 10px  !important;
 	margin-bottom: 10px !important;
 	margin-right: 10px  !important;
@@ -49,10 +49,24 @@
 	
 }
 
-.custBtn:hover{
-	border: 1px solid black !important;
+.disabledBtn{
 	background-color: white  !important;
-	color: black;
+	border-radius: 6px  !important;
+	border: 1px solid #a4b7c1  !important;
+	padding: 10px  !important;
+	margin-bottom: 10px !important;
+	margin-right: 10px  !important;
+	color: #a4b7c1 !important;
+	cursor: not-allowed !important;
+	
+}
+
+
+
+:disabled{
+	cursor: not-allowed !important;
+	border: 1px solid #a4b7c1  !important;
+	color: #a4b7c1 !important;
 }
 
 .borRad{
@@ -84,12 +98,10 @@
 
 .srNo{
     font-weight: 400;
-	
+	font-size: 15px;
     color:#191a1b9c ; 
 }
-#show{
-    display: none ;
-}
+
 .edit{
     font-size: 25px;
     font-weight: 600;
@@ -117,6 +129,19 @@
 
 }
 
+.linuxBox{
+	display:inline-block;
+	width:49%;
+	margin-right:10px;
+	padding:10px;
+	border:1px solid #a4b7c1;
+	border-radius: 6px;
+}
+
+.cursor-pointer{
+	cursor: pointer;
+}
+
 
 /* margin classes start*/
 
@@ -135,17 +160,23 @@ marRight10{
     margin-left: 40px !important;
 }
 
-.marLeft40 {
-    margin-left: 40px !important;
+.marRight40 {
+    margin-right: 40px !important;
+}
+.marTop10{
+	margin-top:10px !important;
 }
 
+.marTop20{
+	margin-top:20px;
+}
 
 /* margin classes end*/
 
 /* Padding classes start */
 
 .pad{
-	padding: 10px 15px;
+	padding: 5px 15px;
 }
 
 .padTop30{
@@ -158,8 +189,29 @@ marRight10{
 /* Padding classes end */
 
 
+.form-control:disabled{
+    background-color: white !important;
+	cursor: not-allowed !important;
+}	
 
+.disappear{
+	-webkit-animation: mymove 1; /* Safari 4.0 - 8.0 */
+	-webkit-animation-duration: 3s; /* Safari 4.0 - 8.0 */
+	animation: mymove 1;
+	animation-duration: 3s;
+	animation-fill-mode: forwards
+}
 
+/* Safari 4.0 - 8.0 */
+@-webkit-keyframes mymove {
+from {opacity: 1;}
+to {opacity: 0;}
+}
+
+@keyframes mymove {
+from {opacity: 1;}
+to {opacity: 0;}
+}
 
 
 

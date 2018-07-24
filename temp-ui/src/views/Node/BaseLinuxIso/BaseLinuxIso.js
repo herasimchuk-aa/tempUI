@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
+import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 import '../../views.css';
 import { ServerAPI } from '../../../ServerAPI';
+import SummaryDataTable from '../NodeSummary/SummaryDataTable';
+import {isoHead} from '../../../consts';
 
 class BaseLinuxIso extends Component {
 
@@ -10,9 +12,11 @@ class BaseLinuxIso extends Component {
         super(props)
         this.state = {
             data: [],
+            isoHead: isoHead,
             showDelete : false,
-            selectedRowIndex: [],
+            selectedRowIndexes: [],
             displayModel: false,
+            visible: false
         }
     }
 
@@ -21,20 +25,23 @@ class BaseLinuxIso extends Component {
     }
 
     retrieveData(instance, data) {
-        if (Object.keys(data).length) {
-            instance.setState({ data: data });
+        if(!data) {
+            alert("No data received");
+        }
+        else {
+            instance.setState({data: data,selectedRowIndexes:[]});
         }
     }
 
     checkBoxClick = (rowIndex) =>{
-        let { selectedRowIndex } = this.state
-        let arrayIndex = selectedRowIndex.indexOf(rowIndex)
+        let { selectedRowIndexes } = this.state
+        let arrayIndex = selectedRowIndexes.indexOf(rowIndex)
         if (arrayIndex > -1) {
-            selectedRowIndex.splice(arrayIndex, 1)
+            selectedRowIndexes.splice(arrayIndex, 1)
         } else {
-            selectedRowIndex.push(rowIndex)
+            selectedRowIndexes.push(rowIndex)
         }
-        if(this.state.selectedRowIndex.length > 0) {
+        if(this.state.selectedRowIndexes.length > 0) {
             this.setState({showDelete : true});
         }
         else {
@@ -53,58 +60,36 @@ class BaseLinuxIso extends Component {
             return null;
     }
 
-    deleteISO = () => {
-        
-    }
 
-
-    drawHeader() {
-        return (<Row className="headerRow">
-          <Col sm="1" className="head-name">  </Col>
-            <Col sm="3" className="head-name">Name</Col>
-            <Col sm="8" className="head-name">Description</Col>
-        </Row>)
-    }
-
-    drawtable() {
-        let { data } = this.state
-        let rows = []
-        let header = this.drawHeader()
-        rows.push(header)
-        if (data && data.length) {
-            let iso = data;
-            iso.map((baseLinuxIso, i) => {
-                let row1 = 'headerRow2'
-
-                if (i % 2 === 0) {
-                    row1 = 'headerRow1'
-                }
-                if (i == iso.length - 1) {
-                    row1 = row1 + ' headerRow3 '
-                }
-                let row = (<Row className={row1}>
-                <Col sm="1" className="pad"><Input className="marLeft40" type="checkbox" onChange={() => (this.checkBoxClick(i))}></Input></Col>
-                    <Col sm="3" className="pad">{baseLinuxIso.label}</Col>
-                    <Col sm="8" className="pad">{baseLinuxIso.description}</Col>
-                </Row>)
-                rows.push(row)
-            })
+    deleteISO() {
+        for( let i = 0; i < this.state.selectedRowIndexes.length; i++) {
+            ServerAPI.DefaultServer().deleteIso(this.callbackDelete,this,this.state.data[this.state.selectedRowIndexes[i]].label);
         }
-        return rows
+        this.setState({showDelete: !this.state.showDelete, selectedRowIndexes:[]});
+    }
+
+    callbackDelete(instance, data) {
+        ServerAPI.DefaultServer().fetchAllIso(instance.retrieveData,instance);
+    }
+
+    onDismiss() {
+        this.setState({visible : false});
     }
 
     renderUpgradeModelDialog() {
         if (this.state.displayModel) {
             return (
-                <Modal isOpen={this.state.displayModel} size="sm" centered="true" >
-                    <ModalHeader>Add Base Linux ISO</ModalHeader>
+                <Modal isOpen={this.state.displayModel} toggle= {() => this.cancel()} size="sm" centered="true" >
+                    <ModalHeader toggle= {() => this.cancel()}>Add Base Linux ISO</ModalHeader>
                     <ModalBody>
-                        Name: <Input id='isoName' /><br />
-                        Description: <Input id='isoDesc' /><br />
+                    <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Name cannot be empty</Alert>
+                        Name: <Input autoFocus className="marTop10" id='isoName' /><br />
+                        Location: <Input className="marTop10" id='isoLoc' /><br />
+                        Description: <Input className="marTop10" id='isoDesc' /><br />
                     </ModalBody>
                     <ModalFooter>
-                        <Button outline color="primary" onClick={() => (this.addRole())}>Add</Button>{'  '}
-                        <Button outline color="secondary" onClick={() => (this.cancel())}>Cancel</Button>
+                        <Button outline color="primary" onClick={() => (this.addIso())}>Add</Button>{'  '}
+                        <Button outline color="primary" onClick={() => (this.cancel())}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
             );
@@ -115,9 +100,14 @@ class BaseLinuxIso extends Component {
         this.setState({ displayModel: !this.state.displayModel })
     }
 
-    addRole() {
+    addIso() {
+        if(!document.getElementById('isoName').value) {
+            this.setState({visible : true});
+            return;
+        }  
         let a = {
             'Name': document.getElementById('isoName').value,
+            'Location': document.getElementById('isoLoc').value,
             'Description': document.getElementById('isoDesc').value
         }
         ServerAPI.DefaultServer().addIso(this.callback, this, a);
@@ -129,19 +119,18 @@ class BaseLinuxIso extends Component {
             a = []
         }
         a.push(data)
-        instance.setState({ data: a })
-        instance.cancel();
+        instance.setState({ data: a, displayModel: !instance.state.displayModel })
     }
 
 
     render() {
-        let table = this.drawtable()
         return (
             <div>
-                <Button onClick={() => (this.cancel())} className="custBtn animated fadeIn marginLeft13N">New</Button>
-                {this.showDeleteButton()}
-                {table}
-
+                <div className='marginLeft10'>
+                    <Button onClick={() => (this.cancel())} className="custBtn animated fadeIn marginLeft13N">New</Button>
+                    {this.showDeleteButton()}
+                </div>
+                <SummaryDataTable heading={this.state.isoHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes}/>
                 {this.renderUpgradeModelDialog()}
             </div>
         );

@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
-import { Container, Row, Col, Button,  Modal, ModalHeader, ModalBody, ModalFooter, Input, ListGroup, ListGroupItem } from 'reactstrap';
+import {  Row, Col, Button,  Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert} from 'reactstrap';
 import '../../views.css';
 import {ServerAPI} from '../../../ServerAPI';
+import SummaryDataTable from '../NodeSummary/SummaryDataTable';
+import {roleHead} from '../../../consts'
+import DropDown from '../../../components/dropdown/DropDown';
+// import $ from 'jquery';
 
 class Roles extends Component {
 
@@ -9,10 +13,12 @@ class Roles extends Component {
         super(props)
         this.state = {
             data:[],
+            roleHead: roleHead,
             displayModel: false,
-            selectedRowIndex: [],
-            selectedRows: [],
-            showDelete: false
+            selectedRowIndexes: [],
+            showDelete: false,
+            alertVisible: false,
+            selectedRole: ''
         }
     }
 
@@ -21,63 +27,23 @@ class Roles extends Component {
     }
 
     retrieveData(instance, data) {
-        if(!data) {
+        if(data === undefined) {
             alert("No data received");
         }
         else {
-            if(Object.keys(data).length) {
-                instance.setState({data: data});
-            }
+                instance.setState({data: data,selectedRowIndexes:[]});
         }
-        
-    }
-
-    drawHeader(){
-        return(
-        <Row className="headerRow">
-            <Col sm="1" className="head-name">  </Col>
-            <Col sm="3" className="head-name">Name</Col>
-            <Col sm="8" className="head-name">Description</Col>
-        </Row>
-        )
-    }
-
-    drawtable(){
-        let {data} = this.state
-        let rows = []
-        let header = this.drawHeader()
-        rows.push(header)
-        if(data && data.length){
-             let roles = data;
-             roles.map( (role,i) => {
-                let row1 = 'headerRow1'
-
-                if(i%2 === 0){
-                    row1 = 'headerRow2'
-                }
-                if (i == roles.length - 1) {
-                    row1 =  row1 +' headerRow3 '
-                }
-                let row  =  ( <Row className={row1}>
-                     <Col sm="1" className="pad"><Input className="marLeft40" type="checkbox" onChange={() => (this.checkBoxClick(i))}></Input></Col>
-                     <Col sm="3" className="pad">{role.label}</Col>
-                     <Col sm="8" className="pad">{role.description}</Col>
-                    </Row>)
-                rows.push(row)
-            } )  
-        }
-        return rows 
     }
 
     checkBoxClick = (rowIndex) =>{
-        let { selectedRowIndex } = this.state
-        let arrayIndex = selectedRowIndex.indexOf(rowIndex)
+        let { selectedRowIndexes } = this.state
+        let arrayIndex = selectedRowIndexes.indexOf(rowIndex)
         if (arrayIndex > -1) {
-            selectedRowIndex.splice(arrayIndex, 1)
+            selectedRowIndexes.splice(arrayIndex, 1)
         } else {
-            selectedRowIndex.push(rowIndex)
+            selectedRowIndexes.push(rowIndex)
         }
-        if(this.state.selectedRowIndex.length > 0) {
+        if(this.state.selectedRowIndexes.length > 0) {
             this.setState({showDelete : true});
         }
         else {
@@ -96,34 +62,47 @@ class Roles extends Component {
             return null;
     }
 
+    getSelectedData= (data,identity) => {
+        if(identity == 'Role') {
+          this.setState({ selectedRole : data })
+        }
+      }
+
     renderUpgradeModelDialog() {
         if (this.state.displayModel) {
             return (
-                <Modal isOpen={this.state.displayModel} size="sm" centered="true" >
-                    <ModalHeader>Add Role</ModalHeader>
+                <Modal isOpen={this.state.displayModel} toggle={() => this.cancel()} size="sm" centered="true" >
+                    <ModalHeader toggle={() => this.cancel()}>Add Role</ModalHeader>
                     <ModalBody>
-                        Name: <Input id='roleName'/><br />
-                        Description: <Input id='roleDesc' /><br />
+                    <Alert color="danger" isOpen={this.state.alertVisible} toggle={() => this.onDismiss()} >Role Name cannot be empty</Alert>
+                        Parent Role: <DropDown className="marTop10" options={this.state.data} getSelectedData={this.getSelectedData} identity={"Role"} /><br />
+                        Name: <Input autoFocus className="marTop10" id='roleName'/><br />
+                        Description: <Input className="marTop10" id='roleDesc' /><br />
                     </ModalBody>
                     <ModalFooter>
                         <Button outline color="primary" onClick={()=>(this.addRole())}>Add</Button>{'  '}
-                        <Button outline color="secondary" onClick={()=>(this.click())}>Cancel</Button>
+                        <Button outline color="primary" onClick={()=>(this.cancel())}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
             );
         }
     }
 
-    click() {
+    cancel() {
         this.setState({displayModel : !this.state.displayModel})
     }
+    onDismiss() {
+        this.setState({alertVisible : false});
+    }
+    
 
     addRole() {
         if(!document.getElementById('roleName').value) {
-            alert("Role Name cannot be empty");
-            return;
+            this.setState({alertVisible : true});
+                return;
         }            
         let a = {
+            'Parent' : this.state.selectedRole,
             'Name' : document.getElementById('roleName').value,
             'Description': document.getElementById('roleDesc').value
     }
@@ -136,24 +115,28 @@ class Roles extends Component {
            a = []
         }
         a.push(data)
-        instance.setState({data: a})
-        instance.click();
+        instance.setState({data: a, displayModel: !instance.state.displayModel, selectedRole: ''})
     }
 
     deleteRole() {
-        console.log(this.state.selectedRowIndex);
+        for( let i = 0; i < this.state.selectedRowIndexes.length; i++) {
+            ServerAPI.DefaultServer().deleteRole(this.callbackDelete,this,this.state.data[this.state.selectedRowIndexes[i]].label);
+        }
+        this.setState({showDelete: !this.state.showDelete, selectedRowIndexes: []});
+    }
+
+    callbackDelete = (instance) => {
+        ServerAPI.DefaultServer().fetchAllRoles(this.retrieveData,this);
     }
 
     render() { 
-        let table = this.drawtable()
         return (
            <div>
                <Row >
-                    <Button className="custBtn animated fadeIn" id="add" outline color="secondary" onClick={() => (this.click())}>New</Button>
-                    
+                    <Button className="custBtn animated fadeIn" id="add" outline color="secondary" onClick={() => (this.cancel())}>New</Button>
                     {this.showDeleteButton()}
                </Row>
-                {table}
+               <SummaryDataTable heading={this.state.roleHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes}/>
                 {this.renderUpgradeModelDialog()}
             </div> 
         );
