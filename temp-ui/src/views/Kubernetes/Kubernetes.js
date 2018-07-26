@@ -88,12 +88,13 @@ class Kubernetes extends Component {
     }
 
     deploy() {
-        if (this.state.selectedRowIndex.length) {
-            alert(this.state.selectedRowIndex + ' deployed')
-        }
-        else {
-            alert("Please make a selection in order to deploy")
-        }
+        ServerAPI.DefaultServer().kubernetesDeployment();
+        //if (this.state.selectedRowIndex.length) {
+        //    alert(this.state.selectedRowIndex + ' deployed')
+        //}
+        //else {
+        //    alert("Please make a selection in order to deploy")
+        //}
     }
 
     renderFilterComponent = () => {

@@ -601,6 +601,18 @@ export class ServerAPI {
     static DefaultServer() {
         return defaultAPIServer;
     }
+    
+    kubernetesDeployment() {
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/kubernetes/deploy";
+        xhr.open("GET", sourceURL, true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.onreadystatechange = function () {
+        }
+        xhr.onerror = function () {
+        }
+        xhr.send();
+    }
 
     fetchAllNodeSetupInfo(callback, instance) {
         let serverInstance = this;
