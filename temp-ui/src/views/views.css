@@ -194,6 +194,10 @@ marRight10{
 	cursor: not-allowed !important;
 }	
 
+.break-word{
+	word-wrap: break-word;
+}
+
 .disappear{
 	-webkit-animation: mymove 1; /* Safari 4.0 - 8.0 */
 	-webkit-animation-duration: 3s; /* Safari 4.0 - 8.0 */

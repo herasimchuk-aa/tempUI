@@ -17,7 +17,8 @@ export default class SummaryDataTable extends React.Component {
     }
 
     static defaultProps = {
-        showCheckBox: true
+        showCheckBox: true,
+        showEditButton: false
     }
 
     static getDerivedStateFromProps(props, state) {
@@ -164,23 +165,33 @@ export default class SummaryDataTable extends React.Component {
                             value = datum[key]
                             if (value && value.length && header.type == 'array') {
                                 let str = ''
-                                value.map((val) => {
-                                    if (val) {
+                                value.map((val,index) => {
+                                    if(index == value.length-1){
+                                        str += val
+                                    }
+                                    else{
                                         str += val + ','
                                     }
-
                                 })
                                 value = str
                             }
-                            if (value == "---Select an Option---") {
+                            if (value == "") {
                                 value = '-'
                             }
                         }
 
+                        if(props.showEditButton) {
+                            editButtonColumn = (
+                                <Col sm="1">
+
+                                <i className="fa fa-pencil" aria-hidden="true" onClick={() => (this.toggleModel(rowIndex))}></i>
+                                </Col>
+                            )
+                        }
 
                         if (props.showCheckBox) {
                             checkBoxColumn = (
-                                <Col sm="1" className="pad" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                <Col sm="1" className="pad break-word" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                     <Input key={self.counter++} style={{ cursor: 'pointer' }}
                                         type="checkbox" onChange={() => (self.checkBoxClick(rowIndex))} defaultChecked={selectedRowIndexes && selectedRowIndexes.length && selectedRowIndexes.indexOf(rowIndex) > -1 ? true : false} />
                                 </Col>)
@@ -191,7 +202,7 @@ export default class SummaryDataTable extends React.Component {
                     if (props.selectEntireRow) {
                         row = (<Row className={rowClassName} >
                             {checkBoxColumn}
-                            <Col sm="11" className="pad" style={{ cursor: 'pointer' }} onClick={() => self.checkBoxClick(rowIndex, true)} >
+                            <Col sm="11" className="pad break-word" style={{ cursor: 'pointer' }} onClick={() => self.checkBoxClick(rowIndex, true)} >
                                 <Row>
                                     {columns}
                                 </Row>
@@ -201,7 +212,7 @@ export default class SummaryDataTable extends React.Component {
                     else {
                         row = (<Row className={rowClassName} >
                             {checkBoxColumn}
-                            <Col sm="11" className="pad">
+                            <Col sm="11" className="pad break-word">
                                 <Row>
                                     {columns}
                                 </Row>

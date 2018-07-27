@@ -8,6 +8,10 @@ import { nodeHead } from '../../consts';
 import DropDown from '../../components/dropdown/DropDown';
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
+import MultiselectDropDown from '../../components/MultiselectDropdown/MultiselectDropDown';
+import Select from 'react-select';
+import 'react-select/dist/react-select.css';
+
 
 class NodeConfig extends Component {
   constructor(props) {
@@ -27,9 +31,11 @@ class NodeConfig extends Component {
       selectedLinux: props.location.state.length == 1 ? props.location.state[0].kernel : '',
       selectedIso: props.location.state.length == 1 ? props.location.state[0].linuxISO : '',
       selectedRoles: props.location.state.length == 1 ? props.location.state[0].roles : '',
+      displayProvisionModel: false,
       visible: false,
+      visibleIp: false,
       showAlert: '',
-      wipeBtn : true,
+      wipeBtn: true,
       rebootBtn: true
 
     }
@@ -136,7 +142,7 @@ class NodeConfig extends Component {
             <Col sm="3" className="pad">{item.IPAddress ? item.IPAddress : '-'}</Col>
             <Col sm="2" className="pad">{item.connectedTo.serverName ? item.connectedTo.serverName : '-'}</Col>
             <Col sm="2" className="pad">{item.connectedTo.serverPort ? item.connectedTo.serverPort : '-'}</Col>
-            <Col sm="1" className="pad" style={{cursor:'pointer'}}><i className="fa fa-pencil" aria-hidden="true" onClick={() => (self.toggleModel(rowIndex))}></i></Col>
+            <Col sm="1" className="pad" style={{ cursor: 'pointer' }}><i className="fa fa-pencil" aria-hidden="true" onClick={() => (self.toggleModel(rowIndex))}></i></Col>
 
           </Row>)
           rows.push(row)
@@ -210,10 +216,7 @@ class NodeConfig extends Component {
     }
 
     this.setState({ displayModel: !this.state.displayModel })
-
     ServerAPI.DefaultServer().updateNode(this.callback, this, a);
-    
-    
   }
 
   callback(instance, data) {
@@ -238,7 +241,9 @@ class NodeConfig extends Component {
           <Alert color="info" isOpen={this.state.visible} toggle={this.onDismiss}>
             Name field is mandatory
           </Alert>
-
+          <Alert color="danger" isOpen={this.state.visibleIp} toggle={this.onDismissIp}>
+            Ip Address entered is wrong
+          </Alert>
           <ModalBody>
             <div className="marTop10">Name: <Input autoFocus type="text" id="interName" /></div>
             <div className="marTop10">IP Address:<Input type="text" id="interIp" /></div>
@@ -254,8 +259,40 @@ class NodeConfig extends Component {
     }
   }
 
+  toggleProvisionModel() {
+    this.setState({ displayProvisionModel: !this.state.displayProvisionModel })
+  }
+
+  provisionModal() {
+    if (this.state.displayProvisionModel) {
+      return (
+        <Modal isOpen={this.state.displayProvisionModel} toggle={() => this.toggleProvisionModel()} size="sm" centered="true" >
+          <ModalHeader>Provision </ModalHeader>
+          <ModalBody>
+            <div className="marTop10">Do you want to save all these changes?</div>
+          </ModalBody>
+          <ModalFooter>
+            <Button outline color="primary" onClick={() => (this.toggleProvisionModel())}>Yes</Button>
+            <Button outline color="primary" onClick={() => (this.toggleProvisionModel())}>No</Button>
+          </ModalFooter>
+        </Modal>
+      );
+    }
+  }
+
   onDismiss = () => {
     this.setState({ visible: false });
+  }
+
+  onDismissIp = () => {
+    this.setState({ visibleIp: false });
+  }
+
+  ValidateIPaddress = (ipaddress) => {
+    if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ipaddress)) {
+      return (true)
+    }
+    return (false)
   }
 
   updateNewInterfaceCall = () => {
@@ -263,6 +300,14 @@ class NodeConfig extends Component {
       this.setState({ visible: true });
       return;
     }
+
+    let ipaddress = document.getElementById('interIp').value
+
+    if (!this.ValidateIPaddress(ipaddress)) {
+      this.setState({ visibleIp: true });
+      return;
+    }
+
     let newInterface = {
       'connectedTo': {
         'serverName': document.getElementById('interRemoteName').value,
@@ -286,7 +331,7 @@ class NodeConfig extends Component {
       nodes: data
     }
     ServerAPI.DefaultServer().updateNode(this.updateNewInterfaceCallback, this, a);
-    
+
   }
 
   updateNewInterfaceCallback(instance, data) {
@@ -301,7 +346,7 @@ class NodeConfig extends Component {
 
   updateSaveNode = () => {
 
-    let roles = this.getSelectRoleValues(document.getElementById('multiRole'))
+    let roles = this.state.selectedRoles;
 
     let data = this.state.nodes
     data.map((datum) => {
@@ -316,9 +361,11 @@ class NodeConfig extends Component {
     })
 
 
-    
+
     // this.setState({visible: true })
   }
+
+
 
   updateSaveNodeCallback(instance, data) {
     let a = instance.state.data
@@ -330,11 +377,11 @@ class NodeConfig extends Component {
     NotificationManager.success('Saved Successfully', 'Node Configuration');
   }
 
-  wipeISO = () =>{
+  wipeISO = () => {
     let data = this.state.nodes[0]
-    ServerAPI.DefaultServer().upgradeOrWipeServerNode(data,this.wipeCallback, this);
+    ServerAPI.DefaultServer().upgradeOrWipeServerNode(data, this.wipeCallback, this);
     NotificationManager.success('Wiped Successfully', 'Linux ISO');
-    this.setState({ wipeBtn : true})
+    this.setState({ wipeBtn: true })
   }
 
   wipeCallback(wipeInfo) {
@@ -361,7 +408,8 @@ class NodeConfig extends Component {
     return result;
   }
 
-  
+
+
 
   getSelectedData = (data, identity) => {
     if (identity == 'Type') {
@@ -369,14 +417,15 @@ class NodeConfig extends Component {
 
     }
     if (identity == 'Linux') {
-      this.state.selectedIso != data && data != '' ? this.setState({ rebootBtn : false}) : ''
+      this.state.selectedIso != data && data != '' ? this.setState({ rebootBtn: false }) : ''
       this.setState({ selectedLinux: data })
     }
     if (identity == 'ISO') {
-      
-      this.state.selectedIso != data && data != '' ? this.setState({ wipeBtn : false}) : ''
+
+      this.state.selectedIso != data && data != '' ? this.setState({ wipeBtn: false }) : ''
       this.setState({ selectedIso: data })
     }
+
   }
 
   handleChange = (event) => {
@@ -391,6 +440,11 @@ class NodeConfig extends Component {
       selectedRoles.push(val)
     }
     this.setState({ selectedRoles: selectedRoles })
+  }
+
+
+  handleChanges = (selectedOption) => {
+    this.setState({ selectedRoles: selectedOption });
   }
 
 
@@ -463,7 +517,7 @@ class NodeConfig extends Component {
                 <DropDown options={this.state.isoData} getSelectedData={this.getSelectedData} identity={"ISO"} default={this.state.selectedIso} />
               </Media>
               <Media right>
-                <Button className="custBtn marTop20 marLeft10" disabled={this.state.wipeBtn}  outline color="secondary" onClick={() => { this.wipeISO() }}> Wipe </Button>
+                <Button className="custBtn marTop20 marLeft10" disabled={this.state.wipeBtn} outline color="secondary" onClick={() => { this.wipeISO() }}> Wipe </Button>
               </Media>
             </Media>
           </div>
@@ -473,12 +527,13 @@ class NodeConfig extends Component {
             <Media body>
             </Media>
             <Media right>
-              <Button className="custBtn" outline color="secondary" > Provision </Button>
+              <Button className="custBtn" outline color="secondary" onClick={() => { this.toggleProvisionModel() }}> Provision </Button>
             </Media>
           </Media>
           <Row className="pad">
             <Col xs='6' ><Label>Roles</Label><br />
-              <select key={this.couter++} multiple className="form-control" id="multiRole" value={this.state.selectedRoles} onChange={(e) => { this.handleChange(e) }}>{this.getRoles()}</select>
+              {/* <select key={this.couter++} multiple className="form-control" id="multiRole" value={this.state.selectedRoles} onChange={(e) => { this.handleChange(e) }}>{this.getRoles()}</select> */}
+              <MultiselectDropDown value={this.state.selectedRoles} getSelectedData={this.handleChanges} options={this.state.roleData} />
             </Col>
             <Col xs='6' ><Label>Type</Label><br />
               <DropDown options={this.state.typedata} getSelectedData={this.getSelectedData} identity={"Type"} default={this.state.selectedType} />
@@ -497,6 +552,7 @@ class NodeConfig extends Component {
         </div>
         {this.renderUpgradeModelDialog()}
         {this.renderUpgradeNewModelDialog()}
+        {this.provisionModal()}
 
       </div>
 

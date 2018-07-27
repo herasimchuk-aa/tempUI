@@ -44,11 +44,11 @@ export default {
           url: '/node/Linuxkernel',
           icon: 'icon-map',
         },
-        {
-          name: 'Site',
-          url: '/node/Site',
-          icon: 'icon-map',
-        },
+        // {
+        //   name: 'Site',
+        //   url: '/node/Site',
+        //   icon: 'icon-map',
+        // },
         {
           name: 'Base Linux ISO',
           url: '/node/BaseLinuxIso',

@@ -25,21 +25,20 @@ class NodeOpSummary extends React.Component {
 
     drawHeader() {
         return (<Row className="headerRow">
-            <Col sm="2" className="head-name">Name/Serial Number</Col>
-            <Col sm="1" className="head-name">Labels</Col>
+            <Col sm="2" className="head-name">Name</Col>
+            <Col sm="1" className="head-name">Site</Col>
+            <Col sm="1" className="head-name">Status</Col>
+            <Col sm="1" className="head-name">Roles</Col>
             <Col sm="1" className="head-name">Type</Col>
+            <Col sm="2" className="head-name">Serial Number</Col>
             <Col sm="1" className="head-name">Linux Kernel</Col>
-            <Col sm="1" className="head-name">Base Linux ISO</Col>
-            <Col sm="2" className="head-name">CPU-Memory-Storage</Col>
-            <Col sm="1" className="head-name">DNS name</Col>
-            <Col sm="2" className="head-name">GOES/CoreBoot Version</Col>
+            <Col sm="2" className="head-name">Base linux ISO</Col>
             <Col sm="1" className="head-name">BMC IP Address</Col>
         </Row>)
     }
 
     drawtable() {
         let data = this.state.nodes
-        console.log(data)
         let rows = []
         let header = this.drawHeader()
         rows.push(header)
@@ -55,15 +54,25 @@ class NodeOpSummary extends React.Component {
                     row1 = row1 + ' headerRow3 '
                 }
                 let row = (<Row className={row1}>
-                    <Col sm="2" className="pad">{node.name ? node.name : '-'} / {node.serialNumber ? node.serialNumber : '-'}</Col> 
-                    <Col sm="1" className="pad">{node.labels ? node.labels : '-'}</Col>
-                    <Col sm="1" className="pad">{node.nodeType ? node.nodeType : '-'}</Col>
-                    <Col sm="1" className="pad">{node.kernel == '---Select an Option---' || null ? '-' : node.kernel}</Col>
-                    <Col sm="1" className="pad">{node.linuxISO == '---Select an Option---' || null ? '-'  : node.linuxISO}</Col>
-                    <Col sm="2" className="pad">{node.cpuInGHz} - {node.memoryInGB} - {node.storageInGB}</Col>
-                    <Col sm="1" className="pad">{node.dnsName ? node.dnsName : '-' }</Col>
-                    <Col sm="2" className="pad">{node.goesVersion ? node.goesVersion : '-'} / {node.coreBootVersion ? node.coreBootVersion : '-'}</Col>
-                    <Col sm="1" className="pad">{node.bmcInterface.IPAddress ? node.bmcInterface.IPAddress : '-'}</Col>
+                    <Col sm="2" className="pad break-word">{node.name ? node.name : '-'} </Col> 
+                    <Col sm="1" className="pad break-word">{node.site ? node.site : '-'}</Col>
+                    <Col sm="1" className="pad break-word">{node.status ? node.status : '-'}</Col>
+                    <Col sm="1" className="pad break-word" >
+                        {node.roles ? node.roles.map((role,index) => { 
+                             if(index == node.roles.length-1){
+                                return role
+                            }
+                            else{
+                                return role + ','
+                            }
+                        })
+                        : '-'}    
+                    </Col>
+                    <Col sm="1" className="pad break-word">{node.nodeType == '' ? '-'  : node.nodeType}</Col>
+                    <Col sm="2" className="pad break-word">{node.serialNumber ? node.serialNumber : '-'}</Col>
+                    <Col sm="1" className="pad break-word">{node.kernel == '' || null ? '-'  : node.kernel}</Col>
+                    <Col sm="2" className="pad break-word">{node.linuxISO == '' || null ? '-'  : node.linuxISO}</Col>
+                    <Col sm="1" className="pad break-word">{node.bmcInterface.IPAddress ? node.bmcInterface.IPAddress : '-'}</Col>
                 </Row>)
                 rows.push(row)
 
