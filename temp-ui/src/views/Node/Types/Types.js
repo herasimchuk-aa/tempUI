@@ -1,19 +1,19 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert} from 'reactstrap';
+import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 import '../../views.css';
-import {ServerAPI} from '../../../ServerAPI';
+import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
-import {typeHead} from '../../../consts';
+import { typeHead } from '../../../consts';
 
 class Types extends Component {
 
-	
-	constructor(props){
+
+    constructor(props) {
         super(props)
         this.state = {
-            data:[],
+            data: [],
             typeHead: typeHead,
-            showDelete : false,
+            showDelete: false,
             selectedRowIndexes: [],
             displayModel: false,
             visible: false,
@@ -21,20 +21,20 @@ class Types extends Component {
         }
     }
 
-    componentDidMount(){
-        ServerAPI.DefaultServer().fetchAllSystemTypes(this.retrieveData,this);
+    componentDidMount() {
+        ServerAPI.DefaultServer().fetchAllSystemTypes(this.retrieveData, this);
     }
 
     retrieveData(instance, data) {
-        if(!data) {
+        if (!data) {
             alert("No data received");
         }
         else {
-            instance.setState({data: data,selectedRowIndexes:[]});
+            instance.setState({ data: data, selectedRowIndexes: [] });
         }
     }
 
-    checkBoxClick = (rowIndex) =>{
+    checkBoxClick = (rowIndex) => {
         let { selectedRowIndexes } = this.state
         let arrayIndex = selectedRowIndexes.indexOf(rowIndex)
         if (arrayIndex > -1) {
@@ -42,16 +42,16 @@ class Types extends Component {
         } else {
             selectedRowIndexes.push(rowIndex)
         }
-        if(this.state.selectedRowIndexes.length > 0) {
-            this.setState({showDelete : true});
+        if (this.state.selectedRowIndexes.length > 0) {
+            this.setState({ showDelete: true });
         }
         else {
-            this.setState({showDelete : false});
+            this.setState({ showDelete: false });
         }
     }
 
     onDismiss() {
-        this.setState({visible: false})
+        this.setState({ visible: false })
     }
 
     renderUpgradeModelDialog() {
@@ -60,7 +60,7 @@ class Types extends Component {
                 <Modal isOpen={this.state.displayModel} toggle={() => this.click()} size="lg" centered="true" >
                     <ModalHeader toggle={() => this.click()}>Add System Type</ModalHeader>
                     <ModalBody>
-                    <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()}>{this.state.errorMsg}</Alert>
+                        <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()}>{this.state.errorMsg}</Alert>
                         <Row>
                             <Col>Name <Input autoFocus className="marTop10" id='label' required={true} /><br />
                                 Vendor <Input className="marTop10" id='vendor' /><br />
@@ -73,8 +73,8 @@ class Types extends Component {
                         </Row>
                     </ModalBody>
                     <ModalFooter>
-                        <Button className="custBtn" outline color="primary" onClick={()=>(this.addType())}>Add</Button>
-                        <Button className="custBtn" outline color="primary" onClick={()=>(this.click())}>Cancel</Button>
+                        <Button className="custBtn" outline color="primary" onClick={() => (this.addType())}>Add</Button>
+                        <Button className="custBtn" outline color="primary" onClick={() => (this.click())}>Cancel</Button>
 
 
                     </ModalFooter>
@@ -84,88 +84,84 @@ class Types extends Component {
     }
 
     click() {
-        this.setState({displayModel : !this.state.displayModel})
+        this.setState({ displayModel: !this.state.displayModel })
     }
 
     addType() {
         let a = {
-            'Id' : document.getElementById('label').value,
-            'Vendor' : document.getElementById('vendor').value,
-            'RackUnit' : document.getElementById('rackUnit').value,
-            'Airflow' : document.getElementById('airFlow').value,
-            'NumFrontPanelInterface' : parseInt(document.getElementById('noFPI').value),
-            'SpeedFrontPanelInterface' : document.getElementById('SpeedFPI').value,
+            'Id': document.getElementById('label').value,
+            'Vendor': document.getElementById('vendor').value,
+            'RackUnit': document.getElementById('rackUnit').value,
+            'Airflow': document.getElementById('airFlow').value,
+            'NumFrontPanelInterface': parseInt(document.getElementById('noFPI').value),
+            'SpeedFrontPanelInterface': document.getElementById('SpeedFPI').value,
             'NumMgmtInterface': parseInt(document.getElementById('noMI').value),
             'SpeedMgmtInterafce': document.getElementById('speedType').value
-    }
-    if(!a.Id) {
-        this.setState({visible: true, errorMsg: 'Please enter the System Name'});
-        return;
-    }
+        }
+        if (!a.Id) {
+            this.setState({ visible: true, errorMsg: 'Please enter the System Name' });
+            return;
+        }
 
-    if(a.NumFrontPanelInterface > 32 || a.NumFrontPanelInterface < 1 || isNaN(a.NumFrontPanelInterface)) {
-        this.setState({visible: true, errorMsg: 'Please enter a valid Front Panel Interface (between 1 and 32)'});
-        return;
-    }
-    if(a.NumMgmtInterface > 32 || a.NumMgmtInterface < 1 || isNaN(a.NumMgmtInterface)) {
-        this.setState({visible: true, errorMsg: 'Please enter a valid Management Interface'});
-        return;
-    }
-        this.setState({visible: false})
-        ServerAPI.DefaultServer().addSystemTypes(this.callback,this,a);
+        if (a.NumFrontPanelInterface > 32 || a.NumFrontPanelInterface < 1 || isNaN(a.NumFrontPanelInterface)) {
+            this.setState({ visible: true, errorMsg: 'Please enter a valid Front Panel Interface (between 1 and 32)' });
+            return;
+        }
+        if (a.NumMgmtInterface > 32 || a.NumMgmtInterface < 1 || isNaN(a.NumMgmtInterface)) {
+            this.setState({ visible: true, errorMsg: 'Please enter a valid Management Interface' });
+            return;
+        }
+        this.setState({ visible: false })
+        ServerAPI.DefaultServer().addSystemTypes(this.callback, this, a);
     }
 
     callback(instance, data) {
         let a = instance.state.data
-        if(!a) {
-           a = []
+        if (!a) {
+            a = []
         }
         a.push(data)
-        instance.setState({data: a, displayModel : !instance.state.displayModel})
+        instance.setState({ data: a, displayModel: !instance.state.displayModel })
     }
 
     showDeleteButton() {
         let a = [];
-        if(this.state.showDelete == true) {
+        if (this.state.showDelete == true) {
             a.push(<Button className="custBtn animated fadeIn" outline color="secondary" onClick={() => (this.deleteTypes())}>Delete</Button>);
             return a;
         }
-        else   
+        else
             return null;
     }
 
     deleteTypes() {
-        for( let i = 0; i < this.state.selectedRowIndexes.length; i++) {
-            ServerAPI.DefaultServer().deleteSystemType(this.callbackDelete,this,this.state.data[this.state.selectedRowIndexes[i]].label);
+        for (let i = 0; i < this.state.selectedRowIndexes.length; i++) {
+            ServerAPI.DefaultServer().deleteSystemType(this.callbackDelete, this, this.state.data[this.state.selectedRowIndexes[i]].label);
         }
-        this.setState({showDelete: !this.state.showDelete, selectedRowIndexes:[]});
+        this.setState({ showDelete: !this.state.showDelete, selectedRowIndexes: [] });
     }
 
-    callbackDelete= (instance) => {
-        ServerAPI.DefaultServer().fetchAllSystemTypes(this.retrieveData,this);
+    callbackDelete = (instance) => {
+        ServerAPI.DefaultServer().fetchAllSystemTypes(this.retrieveData, this);
     }
-    
+
 
     render() {
-      
+
         return (
-           <div>
+            <div>
                 <div className='marginLeft10'>
                     <Button onClick={() => (this.click())} className="custBtn marginLeft13N" outline color="secondary">New</Button>
                     {this.showDeleteButton()}
                 </div>
                 <Row className="tableTitle">System Types</Row>
-<<<<<<< Updated upstream
-                <SummaryDataTable heading={this.state.typeHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes}/>
-=======
                 <SummaryDataTable heading={this.state.typeHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
->>>>>>> Stashed changes
                 {this.renderUpgradeModelDialog()}
-            </div> 
+            </div>
         );
     }
 
-    
+
 
 }
 
