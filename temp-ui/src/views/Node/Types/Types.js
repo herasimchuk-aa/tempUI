@@ -62,19 +62,21 @@ class Types extends Component {
                     <ModalBody>
                     <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()}>{this.state.errorMsg}</Alert>
                         <Row>
-                        <Col>Name: <Input autoFocus className="marTop10" id='label' required={true}/><br />
-                        Vendor: <Input className="marTop10" id='vendor'/><br />
-                        Rack Unit: <Input className="marTop10" id='rackUnit'/><br />
-                        AirFlow: <Input className="marTop10" id='airFlow'/><br /></Col><Col>
-                        Front Panel Interface: <Input className="marTop10" type="number" min={1} max={32} id='noFPI'/><br />
-                        Speed Front Panel Interface: <Input className="marTop10" id='SpeedFPI'/><br />
-                        Management Interfaces: <Input className="marTop10" type="number" id='noMI'/><br />
-                        Speed/Type: <Input className="marTop10" id='speedType' /><br /></Col>
+                            <Col>Name <Input autoFocus className="marTop10" id='label' required={true} /><br />
+                                Vendor <Input className="marTop10" id='vendor' /><br />
+                                Rack Unit <Input className="marTop10" id='rackUnit' /><br />
+                                AirFlow <Input className="marTop10" id='airFlow' /><br /></Col><Col>
+                                Front Panel Interface <Input className="marTop10" type="number" min={1} max={32} id='noFPI' /><br />
+                                Speed Front Panel Interface <Input className="marTop10" id='SpeedFPI' /><br />
+                                Management Interfaces <Input className="marTop10" type="number" id='noMI' /><br />
+                                Speed/Type <Input className="marTop10" id='speedType' /><br /></Col>
                         </Row>
                     </ModalBody>
                     <ModalFooter>
                         <Button className="custBtn" outline color="primary" onClick={()=>(this.addType())}>Add</Button>
                         <Button className="custBtn" outline color="primary" onClick={()=>(this.click())}>Cancel</Button>
+
+
                     </ModalFooter>
                 </Modal>
             );
@@ -152,7 +154,12 @@ class Types extends Component {
                     <Button onClick={() => (this.click())} className="custBtn marginLeft13N" outline color="secondary">New</Button>
                     {this.showDeleteButton()}
                 </div>
+                <Row className="tableTitle">System Types</Row>
+<<<<<<< Updated upstream
                 <SummaryDataTable heading={this.state.typeHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes}/>
+=======
+                <SummaryDataTable heading={this.state.typeHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
+>>>>>>> Stashed changes
                 {this.renderUpgradeModelDialog()}
             </div> 
         );

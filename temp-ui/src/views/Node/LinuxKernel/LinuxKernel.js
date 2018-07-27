@@ -4,8 +4,6 @@ import '../../views.css';
 import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import {kernelHead} from '../../../consts';
-import { NotificationContainer, NotificationManager } from 'react-notifications';
-import 'react-notifications/lib/notifications.css';
 
 class LinuxKernel extends Component {
 
@@ -80,9 +78,6 @@ class LinuxKernel extends Component {
     }
 
     callbackDelete(instance) {
-        if(instance.ErrorMessage) {
-            NotificationManager.error(instance.ErrorMessage, 'Linux Kernel');
-        }
         ServerAPI.DefaultServer().fetchAllKernels(instance.retrieveData,instance);
     }
 
@@ -126,9 +121,9 @@ class LinuxKernel extends Component {
                     <ModalHeader  toggle={() => this.cancel()}>Add Linux Kernel</ModalHeader>
                     <ModalBody>
                     <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Name cannot be empty</Alert>
-                        Name: <Input autoFocus className="marTop10" id='kernelName' /><br />
-                        Location: <Input className="marTop10" id='kernelLoc' /><br />
-                        Description: <Input className="marTop10" id='kernelDesc' /><br />
+                        Name <Input autoFocus className="marTop10" id='kernelName' /><br />
+                        Location <Input className="marTop10" id='kernelLoc' /><br />
+                        Description <Input className="marTop10" id='kernelDesc' /><br />
                     </ModalBody>
                     <ModalFooter>
                         <Button className="custBtn" outline color="primary" onClick={() => (this.addKernel())}>Add</Button>{'  '}
@@ -168,11 +163,11 @@ class LinuxKernel extends Component {
 
     render() {
         return (<div>
-            <NotificationContainer />
                 <div className='marginLeft10'>
                     <Button onClick={() => (this.cancel())} className="custBtn animated fadeIn marginLeft13N" outline color="secondary">New</Button>
                     {this.showDeleteButton()}
                 </div>
+                <Row className="tableTitle">Linux Kernel</Row>
                 <SummaryDataTable heading={this.state.kernelHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes}/>
                 {this.renderUpgradeModelDialog()}
             </div> 

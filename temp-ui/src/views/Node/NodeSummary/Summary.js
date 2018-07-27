@@ -9,6 +9,7 @@ import { nodeHead } from '../../../consts';
 import '../../views.css';
 import { NotificationManager } from 'react-notifications';
 import SearchComponent from '../../../components/SearchComponent/SearchComponent';
+import MultiselectDropDown from '../../../components/MultiselectDropdown/MultiselectDropDown';
 
 class NodeSummary extends React.Component {
     constructor(props) {
@@ -29,7 +30,8 @@ class NodeSummary extends React.Component {
             redirect: false,
             selectedType: '',
             selectedLinux: '',
-            selectedIso: ''
+            selectedIso: '',
+            selectedRoles: []
         }
     }
 
@@ -295,6 +297,9 @@ class NodeSummary extends React.Component {
         )
     }
 
+    handleChanges = (selectedOption) => {
+        this.setState({ selectedRoles: selectedOption });
+    }
 
     onDismiss() {
         this.setState({ visible: false });
@@ -310,22 +315,23 @@ class NodeSummary extends React.Component {
                     </Alert>
                     <ModalBody>
                         <Row>
-                            <Col sm="6" className="marTop10">Name: <Input id='name' autoFocus className="marTop10" /></Col>
-                            <Col sm="6" className="marTop10">Site: <Input id='site' className="marTop10" /></Col>
+                            <Col sm="6" className="marTop10">Name <Input id='name' autoFocus className="marTop10" /></Col>
+                            <Col sm="6" className="marTop10">Site <Input id='site' className="marTop10" /></Col>
                         </Row>
                         <Row>
-                            <Col sm="6" className="marTop10">Roles: <select multiple className="form-control marTop10" id="roles">{this.getRoles()}</select></Col>
+                            <Col sm="6" className="marTop10">Roles {/* <select multiple className="form-control marTop10" id="roles">{this.getRoles()}</select> */}
+                                <MultiselectDropDown value={this.state.selectedRoles} getSelectedData={this.handleChanges} options={this.state.roleData} /></Col>
                             <Col sm="6" className="marTop10">
-                                Serial Number: <Input id='serialNumber' className="marTop10" />
-                                <br />Type:
+                                Serial Number <Input id='serialNumber' className="marTop10" />
+                                <br />Type
                                 <DropDown options={this.state.typedata} getSelectedData={this.getSelectedData} identity={"Type"} default={this.state.selectedType} />
                             </Col>
                         </Row>
                         <Row>
-                            <Col sm="6" className="marTop10">Linux Kernel:
+                            <Col sm="6" className="marTop10">Linux Kernel
                                 <DropDown options={this.state.kernelData} getSelectedData={this.getSelectedData} identity={"Linux"} default={this.state.selectedLinux} />
                             </Col>
-                            <Col sm="6" className="marTop10">Base Linux ISO:
+                            <Col sm="6" className="marTop10">Base Linux ISO
                                 <DropDown options={this.state.isoData} getSelectedData={this.getSelectedData} identity={"ISO"} default={this.state.selectedIso} />
                             </Col>
                         </Row>
@@ -344,7 +350,7 @@ class NodeSummary extends React.Component {
             this.setState({ visible: true });
             return;
         }
-        let roles = this.getSelectRoleValues(document.getElementById('roles'))
+        let roles = this.state.selectedRoles;
         let a = {
             'Name': document.getElementById('name').value,
             'site': document.getElementById('site').value,
@@ -408,8 +414,10 @@ class NodeSummary extends React.Component {
 
                             <Button className="custBtn" outline color="secondary" onClick={() => (this.click())}>New</Button>
                             {this.showDeleteButton()}
+                            <Row className="tableTitle">Node Config Summary</Row>
                             <SummaryDataTable heading={this.state.nodeHead} data={this.state.nodes} checkBoxClick={this.checkBoxClick} selectEntireRow={true} selectedRowIndexes={this.state.selectedRowIndex} />
                         </div>
+
                     </Col>
                     <Col sm="3">
                         <SearchComponent data={this.state.constNodes} getFilteredData={this.getFilteredData} />

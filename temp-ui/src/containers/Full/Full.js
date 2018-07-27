@@ -1,6 +1,6 @@
-import React, {Component} from 'react';
-import {Link, Switch, Route, Redirect} from 'react-router-dom';
-import {Container} from 'reactstrap';
+import React, { Component } from 'react';
+import { Link, Switch, Route, Redirect } from 'react-router-dom';
+import { Container } from 'reactstrap';
 import Header from '../../components/Header/Header';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import Breadcrumb from '../../components/Breadcrumb/Breadcrumb';
@@ -32,28 +32,29 @@ class Full extends Component {
             <div className="app">
                 <Header />
                 <div className="app-body">
-                    <Sidebar {...this.props}/>
+                    <Sidebar {...this.props} />
                     <main className="main">
                         <Breadcrumb />
                         <NotificationContainer />
                         <Container fluid>
                             <Switch>
-                                <Route path="/dashboard" name="Dashboard" component={Dashboard}/>
-                                <Route path="/node/NodeConfigSummary" name="Node-Config" component={NodeSummary}/>
-                                <Route path="/node/Summary" name="Summary" component={NodeOpSummary}/>
-                                <Route path="/node/Roles" name="Roles" component={Roles}/>
-                                <Route path="/node/Types" name="Types" component={Types}/>
+                                <Route path="/dashboard" name="Dashboard" component={Dashboard} />
+                                <Route path="/node/NodeConfigSummary" name="Node-Config" component={NodeSummary} />
+                                <Route path="/node/Summary" name="Summary" component={NodeOpSummary} />
+                                <Route path="/node/Roles" name="Roles" component={Roles} />
+                                <Route path="/node/Types" name="Types" component={Types} />
                                 {/* <Route path="/node/Site" name="Site" component={Site}/> */}
-                                <Route path="/node/Linuxkernel" name="Linux Kernel" component={LinuxKernel}/>
-                                <Route path="/node/BaseLinuxIso" name="Base Linux ISO" component={BaseLinuxIso}/>
-                                <Route path="/monitoring/BmcMonitor" name="Summary" component={BmcMonitor}/>
-                                <Route path="/connectivity/Summary" name="Summary" component={ConnectivitySummary}/>
-                                <Route path="/monitoring/TilesApp" name="Tiles-App" component={TileApp}/>
-                                <Route path="/operation/inventory" name="Inventory" component={Inventory}/>
-                                <Route path="/operation/playbook" name="Playbook" component={Playbook}/>
-                                <Route path="/node/config" name="Monitor" component={NodeConfig}/>
-                                <Route path="/kubernetes" name="Kubernetes" component={Kubernetes}/>
-                                <Redirect from="/" to="/dashboard"/>
+                                <Route path="/node/Linuxkernel" name="Linux Kernel" component={LinuxKernel} />
+                                <Route path="/node/BaseLinuxIso" name="Base Linux ISO" component={BaseLinuxIso} />
+                                <Route path="/monitoring/BmcMonitor" name="Summary" component={BmcMonitor} />
+                                <Route path="/connectivity/Summary" name="Summary" component={ConnectivitySummary} />
+                                <Route path="/monitoring/TilesApp" name="Tiles-App" component={TileApp} />
+                                <Route path="/operation/inventory" name="Inventory" component={Inventory} />
+                                <Route path="/operation/playbook" name="Playbook" component={Playbook} />
+                                <Route path="/node/config" name="Monitor" component={NodeConfig} />
+                                <Route path="/kubernetes" name="Kubernetes" component={Kubernetes} />
+                                <Route path="/node" name="Node" component={NodeSummary} />
+                                <Redirect from="/" to="/dashboard" />
                             </Switch>
                         </Container>
                     </main>

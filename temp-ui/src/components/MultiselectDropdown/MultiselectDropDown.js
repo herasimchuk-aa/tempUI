@@ -11,7 +11,7 @@ export default class MultiselectDropDown extends Component {
             isSearchable: props.isSearchable,
             placeholder: props.placeholder,
             value: props.value,
-            options: props.options
+            options: props.options,
         }
     }
 
@@ -32,7 +32,7 @@ export default class MultiselectDropDown extends Component {
 
     render() {
         return (
-            <Select value={this.state.value} onChange={(e) => this.handleChange(e)} options={this.state.options} multi />
+            <Select className="marTop10" value={this.state.value} onChange={(e) => this.handleChange(e)} options={this.state.options} multi />
         );
     }
 }

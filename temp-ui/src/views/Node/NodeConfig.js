@@ -9,8 +9,6 @@ import DropDown from '../../components/dropdown/DropDown';
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
 import MultiselectDropDown from '../../components/MultiselectDropdown/MultiselectDropDown';
-import Select from 'react-select';
-import 'react-select/dist/react-select.css';
 
 
 class NodeConfig extends Component {
@@ -244,11 +242,11 @@ class NodeConfig extends Component {
         <Modal isOpen={this.state.displayModel} toggle={() => this.toggleModel0()} size="sm" centered="true" >
           <ModalHeader toggle={() => this.toggleModel0()}>Edit Interface {data.port}</ModalHeader>
           <ModalBody>
-            <div className="marTop10">Name: <Input type="text" autoFocus defaultValue={data.port} id="interfacePort" /></div>
-            <div className="marTop10">Admin state:<Input type="text" defaultValue={data.adminState} disabled id="interfaceAdminState" /></div>
-            <div className="marTop10">IP Address:<Input type="text" defaultValue={data.IPAddress} id="interfaceIpAddress" /></div>
-            <div className="marTop10">Remote Node Name:<Input type="text" defaultValue={data.connectedTo.serverName ? data.connectedTo.serverName : '-'} id="interfaceRemoteNodename" /></div>
-            <div className="marTop10">Remote Node Interface:<Input type="text" defaultValue={data.connectedTo.serverPort ? data.connectedTo.serverPort : '-'} id="interfaceRemoteNodeInterface" /></div>
+            <div className="marTop10">Name <Input type="text" autoFocus defaultValue={data.port} id="interfacePort" /></div>
+            <div className="marTop10">Admin state<Input type="text" defaultValue={data.adminState} disabled id="interfaceAdminState" /></div>
+            <div className="marTop10">IP Address<Input type="text" defaultValue={data.IPAddress} id="interfaceIpAddress" /></div>
+            <div className="marTop10">Remote Node Name<Input type="text" defaultValue={data.connectedTo.serverName ? data.connectedTo.serverName : '-'} id="interfaceRemoteNodename" /></div>
+            <div className="marTop10">Remote Node Interface<Input type="text" defaultValue={data.connectedTo.serverPort ? data.connectedTo.serverPort : '-'} id="interfaceRemoteNodeInterface" /></div>
           </ModalBody>
           <ModalFooter>
             <Button outline className="custBtn" color="primary" onClick={() => (this.updateNodeCall(index))}>Update</Button>
@@ -296,10 +294,10 @@ class NodeConfig extends Component {
             Ip Address entered is wrong
           </Alert>
           <ModalBody>
-            <div className="marTop10">Name: <Input autoFocus type="text" id="interName" /></div>
-            <div className="marTop10">IP Address:<Input type="text" id="interIp" /></div>
-            <div className="marTop10">Remote Node Name:<Input type="text" id="interRemoteName" /></div>
-            <div className="marTop10">Remote Node Interface:<Input type="text" id="interRemoteInterface" /></div>
+            <div className="marTop10">Name <Input autoFocus type="text" id="interName" /></div>
+            <div className="marTop10">IP Address<Input type="text" id="interIp" /></div>
+            <div className="marTop10">Remote Node Name<Input type="text" id="interRemoteName" /></div>
+            <div className="marTop10">Remote Node Interface<Input type="text" id="interRemoteInterface" /></div>
           </ModalBody>
           <ModalFooter>
             <Button outline className="custBtn" color="primary" onClick={() => (this.updateNewInterfaceCall())}>Add</Button>

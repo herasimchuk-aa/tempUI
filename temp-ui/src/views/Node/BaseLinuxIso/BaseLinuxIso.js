@@ -3,7 +3,7 @@ import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Al
 import '../../views.css';
 import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
-import {isoHead} from '../../../consts';
+import { isoHead } from '../../../consts';
 
 class BaseLinuxIso extends Component {
 
@@ -13,7 +13,7 @@ class BaseLinuxIso extends Component {
         this.state = {
             data: [],
             isoHead: isoHead,
-            showDelete : false,
+            showDelete: false,
             selectedRowIndexes: [],
             displayModel: false,
             visible: false
@@ -25,15 +25,15 @@ class BaseLinuxIso extends Component {
     }
 
     retrieveData(instance, data) {
-        if(!data) {
+        if (!data) {
             alert("No data received");
         }
         else {
-            instance.setState({data: data,selectedRowIndexes:[]});
+            instance.setState({ data: data, selectedRowIndexes: [] });
         }
     }
 
-    checkBoxClick = (rowIndex) =>{
+    checkBoxClick = (rowIndex) => {
         let { selectedRowIndexes } = this.state
         let arrayIndex = selectedRowIndexes.indexOf(rowIndex)
         if (arrayIndex > -1) {
@@ -41,51 +41,51 @@ class BaseLinuxIso extends Component {
         } else {
             selectedRowIndexes.push(rowIndex)
         }
-        if(this.state.selectedRowIndexes.length > 0) {
-            this.setState({showDelete : true});
+        if (this.state.selectedRowIndexes.length > 0) {
+            this.setState({ showDelete: true });
         }
         else {
-            this.setState({showDelete : false});
+            this.setState({ showDelete: false });
         }
     }
 
-    
+
     showDeleteButton() {
         let a = [];
-        if(this.state.showDelete == true) {
+        if (this.state.showDelete == true) {
             a.push(<Button className="custBtn animated fadeIn" outline color="secondary" onClick={() => (this.deleteISO())}>Delete</Button>);
             return a;
         }
-        else   
+        else
             return null;
     }
 
 
     deleteISO() {
-        for( let i = 0; i < this.state.selectedRowIndexes.length; i++) {
-            ServerAPI.DefaultServer().deleteIso(this.callbackDelete,this,this.state.data[this.state.selectedRowIndexes[i]].label);
+        for (let i = 0; i < this.state.selectedRowIndexes.length; i++) {
+            ServerAPI.DefaultServer().deleteIso(this.callbackDelete, this, this.state.data[this.state.selectedRowIndexes[i]].label);
         }
-        this.setState({showDelete: !this.state.showDelete, selectedRowIndexes:[]});
+        this.setState({ showDelete: !this.state.showDelete, selectedRowIndexes: [] });
     }
 
     callbackDelete(instance, data) {
-        ServerAPI.DefaultServer().fetchAllIso(instance.retrieveData,instance);
+        ServerAPI.DefaultServer().fetchAllIso(instance.retrieveData, instance);
     }
 
     onDismiss() {
-        this.setState({visible : false});
+        this.setState({ visible: false });
     }
 
     renderUpgradeModelDialog() {
         if (this.state.displayModel) {
             return (
-                <Modal isOpen={this.state.displayModel} toggle= {() => this.cancel()} size="sm" centered="true" >
-                    <ModalHeader toggle= {() => this.cancel()}>Add Base Linux ISO</ModalHeader>
+                <Modal isOpen={this.state.displayModel} toggle={() => this.cancel()} size="sm" centered="true" >
+                    <ModalHeader toggle={() => this.cancel()}>Add Base Linux ISO</ModalHeader>
                     <ModalBody>
-                    <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Name cannot be empty</Alert>
-                        Name: <Input autoFocus className="marTop10" id='isoName' /><br />
-                        Location: <Input className="marTop10" id='isoLoc' /><br />
-                        Description: <Input className="marTop10" id='isoDesc' /><br />
+                        <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Name cannot be empty</Alert>
+                        Name <Input autoFocus className="marTop10" id='isoName' /><br />
+                        Location <Input className="marTop10" id='isoLoc' /><br />
+                        Description <Input className="marTop10" id='isoDesc' /><br />
                     </ModalBody>
                     <ModalFooter>
                         <Button className="custBtn" outline color="primary" onClick={() => (this.addIso())}>Add</Button>{'  '}
@@ -101,10 +101,10 @@ class BaseLinuxIso extends Component {
     }
 
     addIso() {
-        if(!document.getElementById('isoName').value) {
-            this.setState({visible : true});
+        if (!document.getElementById('isoName').value) {
+            this.setState({ visible: true });
             return;
-        }  
+        }
         let a = {
             'Name': document.getElementById('isoName').value,
             'Location': document.getElementById('isoLoc').value,
@@ -130,7 +130,8 @@ class BaseLinuxIso extends Component {
                     <Button onClick={() => (this.cancel())} className="custBtn animated fadeIn marginLeft13N">New</Button>
                     {this.showDeleteButton()}
                 </div>
-                <SummaryDataTable heading={this.state.isoHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes}/>
+                <Row className="tableTitle">Base Linux ISO</Row>
+                <SummaryDataTable heading={this.state.isoHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
                 {this.renderUpgradeModelDialog()}
             </div>
         );

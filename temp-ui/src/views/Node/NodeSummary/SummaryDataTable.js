@@ -1,5 +1,5 @@
 import React from 'react';
-import { Col, Row, Input, Button, Popover, PopoverBody, ListGroupItem, ListGroup } from 'reactstrap';
+import { Col, Row, Input, Popover, PopoverBody } from 'reactstrap';
 
 const POPOVER_PLACEMENT = "auto"
 export default class SummaryDataTable extends React.Component {
@@ -18,7 +18,7 @@ export default class SummaryDataTable extends React.Component {
 
     static defaultProps = {
         showCheckBox: true,
-        showEditButton: false
+        // showEditButton: false
     }
 
     static getDerivedStateFromProps(props, state) {
@@ -38,6 +38,9 @@ export default class SummaryDataTable extends React.Component {
         if (props.showCheckBox) {
             tableSize = 11
         }
+        // if (props.showEditButton) {
+        //     tableSize = 10
+        // }
         return (
             <Row className="headerRow cursor-pointer" id={'Popover-' + POPOVER_PLACEMENT} onClick={this.handleClick} onContextMenu={this.contextMenu}>
                 <Col sm="1" className="head-name"></Col>
@@ -141,6 +144,7 @@ export default class SummaryDataTable extends React.Component {
         let { data, selectedRowIndexes } = this.state
         let rows = []
         let checkBoxColumn = null
+        let editButtonColumn = null
         let header = this.drawHeader()
         rows.push(header)
         let self = this
@@ -180,14 +184,13 @@ export default class SummaryDataTable extends React.Component {
                             }
                         }
 
-                        if(props.showEditButton) {
-                            editButtonColumn = (
-                                <Col sm="1">
-
-                                <i className="fa fa-pencil" aria-hidden="true" onClick={() => (this.toggleModel(rowIndex))}></i>
-                                </Col>
-                            )
-                        }
+                        // if(props.showEditButton) {
+                        //     editButtonColumn = (
+                        //         <Col sm="1">
+                        //             <i className="fa fa-pencil" aria-hidden="true" onClick={() => (self.toggleModel(rowIndex))}></i>
+                        //         </Col>
+                        //     )
+                        // }
 
                         if (props.showCheckBox) {
                             checkBoxColumn = (
@@ -207,6 +210,7 @@ export default class SummaryDataTable extends React.Component {
                                     {columns}
                                 </Row>
                             </Col>
+                            {/* {editButtonColumn} */}
                         </Row>)
                     }
                     else {
@@ -217,6 +221,7 @@ export default class SummaryDataTable extends React.Component {
                                     {columns}
                                 </Row>
                             </Col>
+                            {/* {editButtonColumn} */}
                         </Row>)
                     }
                     rows.push(row)
@@ -229,6 +234,10 @@ export default class SummaryDataTable extends React.Component {
     checkBoxClick = (rowIndex, singleRowClick) => {
         this.props.checkBoxClick(rowIndex, singleRowClick)
     }
+
+    // toggleModel = (rowIndex) => {
+    //     this.props.toggleModel(rowIndex)
+    // }
 
     render() {
         return (

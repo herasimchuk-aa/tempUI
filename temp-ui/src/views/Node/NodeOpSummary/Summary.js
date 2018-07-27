@@ -54,24 +54,24 @@ class NodeOpSummary extends React.Component {
                     row1 = row1 + ' headerRow3 '
                 }
                 let row = (<Row className={row1}>
-                    <Col sm="2" className="pad break-word">{node.name ? node.name : '-'} </Col> 
+                    <Col sm="2" className="pad break-word">{node.name ? node.name : '-'} </Col>
                     <Col sm="1" className="pad break-word">{node.site ? node.site : '-'}</Col>
                     <Col sm="1" className="pad break-word">{node.status ? node.status : '-'}</Col>
                     <Col sm="1" className="pad break-word" >
-                        {node.roles ? node.roles.map((role,index) => { 
-                             if(index == node.roles.length-1){
+                        {node.roles ? node.roles.map((role, index) => {
+                            if (index == node.roles.length - 1) {
                                 return role
                             }
-                            else{
+                            else {
                                 return role + ','
                             }
                         })
-                        : '-'}    
+                            : '-'}
                     </Col>
-                    <Col sm="1" className="pad break-word">{node.nodeType == '' ? '-'  : node.nodeType}</Col>
+                    <Col sm="1" className="pad break-word">{node.nodeType == '' ? '-' : node.nodeType}</Col>
                     <Col sm="2" className="pad break-word">{node.serialNumber ? node.serialNumber : '-'}</Col>
-                    <Col sm="1" className="pad break-word">{node.kernel == '' || null ? '-'  : node.kernel}</Col>
-                    <Col sm="2" className="pad break-word">{node.linuxISO == '' || null ? '-'  : node.linuxISO}</Col>
+                    <Col sm="1" className="pad break-word">{node.kernel == '' || null ? '-' : node.kernel}</Col>
+                    <Col sm="2" className="pad break-word">{node.linuxISO == '' || null ? '-' : node.linuxISO}</Col>
                     <Col sm="1" className="pad break-word">{node.bmcInterface.IPAddress ? node.bmcInterface.IPAddress : '-'}</Col>
                 </Row>)
                 rows.push(row)
@@ -85,6 +85,7 @@ class NodeOpSummary extends React.Component {
         let table = this.drawtable()
         return (
             <div>
+                <Row className="tableTitle">Node Summary</Row>
                 {table}
             </div>
         );
