@@ -73,8 +73,8 @@ class Types extends Component {
                         </Row>
                     </ModalBody>
                     <ModalFooter>
-                        <Button outline color="primary" onClick={()=>(this.addType())}>Add</Button>{'  '}
-                        <Button outline color="primary" onClick={()=>(this.click())}>Cancel</Button>
+                        <Button className="custBtn" outline color="primary" onClick={()=>(this.addType())}>Add</Button>
+                        <Button className="custBtn" outline color="primary" onClick={()=>(this.click())}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
             );

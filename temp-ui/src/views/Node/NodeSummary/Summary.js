@@ -331,8 +331,8 @@ class NodeSummary extends React.Component {
                         </Row>
                     </ModalBody>
                     <ModalFooter>
-                        <Button outline color="primary" onClick={() => (this.addNode())}>Add</Button>{'  '}
-                        <Button outline color="primary" onClick={() => (this.click())}>Cancel</Button>
+                        <Button outline color="primary" className="custBtn" onClick={() => (this.addNode())}>Add</Button>{'  '}
+                        <Button outline color="primary" className="custBtn" onClick={() => (this.click())}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
             );

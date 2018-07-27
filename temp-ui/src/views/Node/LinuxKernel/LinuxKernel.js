@@ -131,8 +131,8 @@ class LinuxKernel extends Component {
                         Description: <Input className="marTop10" id='kernelDesc' /><br />
                     </ModalBody>
                     <ModalFooter>
-                        <Button outline color="primary" onClick={() => (this.addKernel())}>Add</Button>{'  '}
-                        <Button outline color="primary" onClick={() => (this.cancel())}>Cancel</Button>
+                        <Button className="custBtn" outline color="primary" onClick={() => (this.addKernel())}>Add</Button>{'  '}
+                        <Button className="custBtn" outline color="primary" onClick={() => (this.cancel())}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
             );

@@ -41,32 +41,54 @@
 .custBtn{
 	background-color: white  !important;
 	border-radius: 6px  !important;
-	border: 1px solid #20a8d8  !important;
-	padding: 10px  !important;
+	border: 1px solid #4f908e  !important;
 	margin-bottom: 10px !important;
 	margin-right: 10px  !important;
-	color: #20a8d8 !important;
+	color: #4f908e !important;
 	
+}
+
+.custBtn:hover{
+	background-color: #4f908e  !important;
+	color: white !important;
+}
+
+.modal-content{
+	top:10rem !important;
 }
 
 .disabledBtn{
 	background-color: white  !important;
 	border-radius: 6px  !important;
-	border: 1px solid #a4b7c1  !important;
+	border: 1px solid #4f908e  !important;
 	padding: 10px  !important;
 	margin-bottom: 10px !important;
 	margin-right: 10px  !important;
-	color: #a4b7c1 !important;
+	color: #4f908e !important;
+	
 	cursor: not-allowed !important;
 	
 }
 
+.nav a:hover{
+	background-color: #4f908e !important;
+	color: white;
+}
 
+.breadcrumb a{
+	color: #4f908e !important;
+}
+
+
+.sidebar .nav-link.active i {
+	color: #536c79 !important;
+}
 
 :disabled{
 	cursor: not-allowed !important;
-	border: 1px solid #a4b7c1  !important;
-	color: #a4b7c1 !important;
+	border: 1px solid #4f908e  !important;
+	color: #4f908e !important;
+	opacity: 0.5 !important;
 }
 
 .borRad{
@@ -169,6 +191,10 @@ marRight10{
 
 .marTop20{
 	margin-top:20px;
+}
+
+.marTop30{
+	margin-top:30px;
 }
 
 /* margin classes end*/

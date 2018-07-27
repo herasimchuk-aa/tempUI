@@ -80,8 +80,8 @@ class Roles extends Component {
                         Description: <Input className="marTop10" id='roleDesc' /><br />
                     </ModalBody>
                     <ModalFooter>
-                        <Button outline color="primary" onClick={()=>(this.addRole())}>Add</Button>{'  '}
-                        <Button outline color="primary" onClick={()=>(this.cancel())}>Cancel</Button>
+                        <Button className="custBtn" outline color="primary" onClick={()=>(this.addRole())}>Add</Button>
+                        <Button className="custBtn" outline color="primary" onClick={()=>(this.cancel())}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
             );

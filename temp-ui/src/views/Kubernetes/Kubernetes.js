@@ -65,7 +65,7 @@ class Kubernetes extends Component {
                 //<Col sm="1" className="pad"><Input className="marLeft40" id={key} type="checkbox" onClick={() => (this.checkBoxClick(key))} /></Col>
                 table.push(
                     <Row className={row1}>
-                        <Col sm="1" className="pad"></Col>
+                        <Col sm="1" className="pad"><Input className="marLeft40" id={key} type="checkbox" onClick={() => (this.checkBoxClick(key))} /></Col>
                         <Col sm="2" className="pad">{data.Name}</Col>
                         <Col sm="2" className="pad">{data.K8Status}</Col>
                         <Col sm="3" className="pad">{data.roles+' '}</Col>

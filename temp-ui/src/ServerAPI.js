@@ -473,6 +473,7 @@ export class ServerNode {
         this.serialNumber = jsonObj.serialNumber;
         this.name = jsonObj.name;
         this.site = jsonObj.site;
+        this.status = jsonObj.status;
         if (jsonObj.labels == null)
             this.labels = [];
         else
@@ -1091,7 +1092,44 @@ export class ServerAPI {
         };
     }
 
-    updateNode(callback, instance, data, flag) {
+
+    updateRole(callback, instance, data) {
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/role/modify/";
+        xhr.open("POST", sourceURL, { data });
+        xhr.setRequestHeader("Content-type", "application/json");
+        
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    console.log(jsonObj)
+                    if (jsonObj.success) {
+                        let a = {
+                            'parent': jsonObj.role.Parent,
+                            'label': jsonObj.role.Name,
+                            'value': jsonObj.role.Name,
+                            'description': jsonObj.role.Description,
+                        }
+                        callback(instance, a);
+                    }
+                    else {
+                        alert("Faliure");
+                    }
+                } catch (err) {
+                    console.log("Error" + err);
+                }
+            }
+        };
+        xhr.onerror = function () {
+            let tran = new ServerTransaction("Errr", 0);
+            callback(instance, tran);
+        };
+
+        xhr.send(JSON.stringify(data));
+    }
+
+    updateNode(callback, instance, data) {
         let xhr = new XMLHttpRequest();
         let sourceURL = this.DefaultInvader() + "/node/modify/";
         xhr.open("POST", sourceURL, { data });

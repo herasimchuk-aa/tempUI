@@ -27,6 +27,7 @@ class NodeConfig extends Component {
       interfaceData: {},
       interfaceIndex: null,
       nodes: props.location.state,
+      selectedRowIndexes: [], 
       selectedType: props.location.state.length == 1 ? props.location.state[0].nodeType : '',
       selectedLinux: props.location.state.length == 1 ? props.location.state[0].kernel : '',
       selectedIso: props.location.state.length == 1 ? props.location.state[0].linuxISO : '',
@@ -36,10 +37,11 @@ class NodeConfig extends Component {
       visibleIp: false,
       showAlert: '',
       wipeBtn: true,
-      rebootBtn: true
+      rebootBtn: true,
+      interfaces:props.location.state.allInterfaces
 
     }
-    this.couter = 0
+    this.counter = 0
   }
 
   componentDidMount() {
@@ -101,14 +103,25 @@ class NodeConfig extends Component {
   interfaceTableHeader() {
     return (
       <div className="padTop30">
-        <h5>Interfaces  <Button className="custBtn" outline color="secondary" onClick={() => (this.toggleNewModel())}> New </Button></h5>
+        <Media>
+          <Media left>
+            <h5>Interfaces</h5>
+          </Media>
+          <Media body>
+          </Media>
+          <Media right>
+            <Button className="custBtn" outline color="secondary" onClick={() => (this.toggleNewModel())}> New </Button>
+            <Button className="custBtn" outline color="secondary" onClick={() => (this.deleteInterface())}> Delete </Button>
+          </Media>
+        </Media>  
         <Row className="headerRow" style={{ marginLeft: '0px', marginRight: '0px' }}>
+          <Col sm="1" className="head-name"></Col>
           <Col sm="2" className="head-name">Interface Name</Col>
           <Col sm="2" className="head-name">Admin state</Col>
-          <Col sm="3" className="head-name">IP Address</Col>
+          <Col sm="2" className="head-name">IP Address</Col>
           <Col sm="2" className="head-name">Remote Node Name</Col>
           <Col sm="2" className="head-name">Remote Interface</Col>
-          <Col sm="1" className="head-name"></Col>
+          <Col sm="1" className="head-name">edit</Col>
         </Row>
       </div>
     )
@@ -116,7 +129,7 @@ class NodeConfig extends Component {
 
   interfaceTableContent() {
     let rows = []
-    let self = this;
+    let self = this
     if (this.state.nodes && this.state.nodes.length) {
       this.state.nodes.map((node) => {
         let interfaces = node.allInterfaces
@@ -135,11 +148,13 @@ class NodeConfig extends Component {
           if (rowIndex == interfaces.length - 1) {
             row1 = row1 + ' headerRow3 '
           }
+          
           let row = (<Row className={row1} style={{ marginLeft: '0px', marginRight: '0px' }}>
-
+            <Col sm="1" className="pad" ><Input  key={self.counter++} style={{ cursor: 'pointer',marginLeft:'0px' }}
+                                        type="checkbox" onChange={() => (self.checkBoxClickInterface(rowIndex))} defaultChecked={false}/></Col>
             <Col sm="2" className="pad">{item.port ? item.port : '-'}</Col>
             <Col sm="2" className="pad">{item.adminState ? item.adminState : '-'}</Col>
-            <Col sm="3" className="pad">{item.IPAddress ? item.IPAddress : '-'}</Col>
+            <Col sm="2" className="pad">{item.IPAddress ? item.IPAddress : '-'}</Col>
             <Col sm="2" className="pad">{item.connectedTo.serverName ? item.connectedTo.serverName : '-'}</Col>
             <Col sm="2" className="pad">{item.connectedTo.serverPort ? item.connectedTo.serverPort : '-'}</Col>
             <Col sm="1" className="pad" style={{ cursor: 'pointer' }}><i className="fa fa-pencil" aria-hidden="true" onClick={() => (self.toggleModel(rowIndex))}></i></Col>
@@ -151,6 +166,56 @@ class NodeConfig extends Component {
       })
     }
     return rows
+  }
+
+  checkBoxClickInterface = (rowIndex) => {
+    let { selectedRowIndexes } = this.state
+    let arrayIndex = selectedRowIndexes.indexOf(rowIndex)
+    if (arrayIndex > -1) {
+        selectedRowIndexes.splice(arrayIndex, 1)
+    } else {
+        selectedRowIndexes.push(rowIndex)
+    }
+    //this.setState({selectedRowIndexes:selectedRowIndexes})
+   
+  }
+
+  deleteInterface = () =>{
+    let arr = []
+    let interfaces = this.state.nodes[0].allInterfaces
+    interfaces.map((interfaceItem,index) =>{
+      for(let i = 0; i < this.state.selectedRowIndexes.length; i++ ){
+          if(index == this.state.selectedRowIndexes[i]){
+            arr.push(interfaceItem.port)
+          }
+      }
+
+      for(let j = 0 ; j < arr.length ; j++ ) {
+        if(arr[j] == interfaceItem.port){
+          delete interfaces[index]
+        }
+      }
+
+    })
+
+    interfaces = interfaces.filter(function(n){ return n != undefined })
+    this.state.nodes[0].allInterfaces = interfaces
+    let a = {
+      nodes: this.state.nodes
+    }
+    ServerAPI.DefaultServer().updateNode(this.deleteInterfaceCallback, this, a);
+    
+  }
+
+  deleteInterfaceCallback(instance, data) {
+    let a = instance.state.data
+    if (!a) {
+      a = []
+    }
+    a.push(data)
+    instance.setState({ data: a ,selectedRowIndexes:[]})
+    
+    NotificationManager.success('deleted Successfully', 'Interface');
   }
 
   checkBoxClick = (e) => {
@@ -186,8 +251,8 @@ class NodeConfig extends Component {
             <div className="marTop10">Remote Node Interface:<Input type="text" defaultValue={data.connectedTo.serverPort ? data.connectedTo.serverPort : '-'} id="interfaceRemoteNodeInterface" /></div>
           </ModalBody>
           <ModalFooter>
-            <Button outline color="primary" onClick={() => (this.updateNodeCall(index))}>Update</Button>
-            <Button outline color="primary" onClick={() => (this.toggleModel0())}>Cancel</Button>
+            <Button outline className="custBtn" color="primary" onClick={() => (this.updateNodeCall(index))}>Update</Button>
+            <Button outline className="custBtn" color="primary" onClick={() => (this.toggleModel0())}>Cancel</Button>
           </ModalFooter>
         </Modal>
       );
@@ -209,23 +274,9 @@ class NodeConfig extends Component {
             interfaceItem.connectedTo.serverPort = document.getElementById('interfaceRemoteNodeInterface').value
         }
       })
+      this.setState({interfaces:datum.allInterfaces})
     })
-
-    let a = {
-      nodes: data
-    }
-
     this.setState({ displayModel: !this.state.displayModel })
-    ServerAPI.DefaultServer().updateNode(this.callback, this, a);
-  }
-
-  callback(instance, data) {
-    let a = instance.state.data
-    if (!a) {
-      a = []
-    }
-    a.push(data)
-    instance.setState({ data: a })
     NotificationManager.success('Updated Successfully', 'Interface');
   }
 
@@ -251,8 +302,8 @@ class NodeConfig extends Component {
             <div className="marTop10">Remote Node Interface:<Input type="text" id="interRemoteInterface" /></div>
           </ModalBody>
           <ModalFooter>
-            <Button outline color="primary" onClick={() => (this.updateNewInterfaceCall())}>Add</Button>
-            <Button outline color="primary" onClick={() => (this.toggleNewModel())}>Cancel</Button>
+            <Button outline className="custBtn" color="primary" onClick={() => (this.updateNewInterfaceCall())}>Add</Button>
+            <Button outline className="custBtn" color="primary" onClick={() => (this.toggleNewModel())}>Cancel</Button>
           </ModalFooter>
         </Modal>
       );
@@ -272,8 +323,8 @@ class NodeConfig extends Component {
             <div className="marTop10">Do you want to save all these changes?</div>
           </ModalBody>
           <ModalFooter>
-            <Button outline color="primary" onClick={() => (this.toggleProvisionModel())}>Yes</Button>
-            <Button outline color="primary" onClick={() => (this.toggleProvisionModel())}>No</Button>
+            <Button className="custBtn" outline color="primary" onClick={() => (this.toggleProvisionModel())}>Yes</Button>
+            <Button className="custBtn" outline color="primary" onClick={() => (this.toggleProvisionModel())}>No</Button>
           </ModalFooter>
         </Modal>
       );
@@ -323,49 +374,28 @@ class NodeConfig extends Component {
         datum.allInterfaces = []
       }
       datum.allInterfaces.push(newInterface)
+      this.setState({ interfaces:datum.allInterfaces})
     })
-
-    this.setState({ displayNewInterfaceModel: !this.state.displayNewInterfaceModel })
-
-    let a = {
-      nodes: data
-    }
-    ServerAPI.DefaultServer().updateNode(this.updateNewInterfaceCallback, this, a);
-
-  }
-
-  updateNewInterfaceCallback(instance, data) {
-    let a = instance.state.data
-    if (!a) {
-      a = []
-    }
-    a.push(data)
-    instance.setState({ data: a })
+    
+    this.setState({ displayNewInterfaceModel: !this.state.displayNewInterfaceModel,nodes:data })
     NotificationManager.success('Saved Successfully', 'Interface');
   }
 
   updateSaveNode = () => {
-
     let roles = this.state.selectedRoles;
-
     let data = this.state.nodes
     data.map((datum) => {
       datum.roles = roles,
         datum.nodeType = this.state.selectedType,
         datum.linuxIso = this.state.selectedIso,
-        datum.kernel = this.state.selectedLinux
+        datum.kernel = this.state.selectedLinux,
+        datum.interfaces = this.state.interfaces
       let a = {
         nodes: [datum]
       }
       ServerAPI.DefaultServer().updateNode(this.updateSaveNodeCallback, this, a);
     })
-
-
-
-    // this.setState({visible: true })
   }
-
-
 
   updateSaveNodeCallback(instance, data) {
     let a = instance.state.data
@@ -461,8 +491,9 @@ class NodeConfig extends Component {
     let interfaceTableContent = null
     let summaryDataTable = null
     let siteField = null
-
+    let selectedRowIndexes = []
     if (isSingleNode) {
+      
       nodeNameDiv =
         <div>
           <Media className="edit" id="edit">
@@ -478,7 +509,7 @@ class NodeConfig extends Component {
       siteField = <Input id='site' className="marTop10" />
 
     } else {
-      let selectedRowIndexes = []
+      
       this.state.nodes.map(function (node, i) {
         selectedRowIndexes.push(i)
       })
@@ -506,7 +537,7 @@ class NodeConfig extends Component {
                 <DropDown options={this.state.kernelData} getSelectedData={this.getSelectedData} identity={"Linux"} default={this.state.selectedLinux} />
               </Media>
               <Media right>
-                <Button className="custBtn marTop20 marLeft10" disabled={this.state.rebootBtn} outline color="secondary" > Reboot </Button>
+                <Button className="custBtn marTop30 marLeft10" disabled={this.state.rebootBtn} outline color="secondary" > Reboot </Button>
               </Media>
             </Media>
           </div>
@@ -517,7 +548,7 @@ class NodeConfig extends Component {
                 <DropDown options={this.state.isoData} getSelectedData={this.getSelectedData} identity={"ISO"} default={this.state.selectedIso} />
               </Media>
               <Media right>
-                <Button className="custBtn marTop20 marLeft10" disabled={this.state.wipeBtn} outline color="secondary" onClick={() => { this.wipeISO() }}> Wipe </Button>
+                <Button className="custBtn marTop30 marLeft10" disabled={this.state.wipeBtn} outline color="secondary" onClick={() => { this.wipeISO() }}> Wipe </Button>
               </Media>
             </Media>
           </div>
