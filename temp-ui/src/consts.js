@@ -1,4 +1,4 @@
-export let nodeHead = [
+export let nodeSummaryHead = [
     {
         id: 'name',
         displayName: 'Name',
@@ -17,8 +17,8 @@ export let nodeHead = [
     {
         id: 'roles',
         displayName: 'Roles',
-        type: 'array',
-        colSize: 2
+        operation: 'array',
+        colSize: 1
     },
     {
         id: 'nodeType',
@@ -28,16 +28,70 @@ export let nodeHead = [
     {
         id: 'serialNumber',
         displayName: 'Serial Number',
+        colSize: 2
+    },
+    {
+        id: 'kernel',
+        displayName: 'Linux Kernel',
+        colSize: 1
+    },
+    {
+        id: 'linuxISO',
+        displayName: 'Base Linux ISO',
+        colSize: 2
+    },
+    {
+        id: 'bmcInterface',
+        displayName: 'BMC IP Address',
+        colSize: 1
+    }
+];
+
+export let nodeHead = [
+    {
+        id: 'name',
+        displayName: 'Name',
+        colSize: 2
+    },
+    {
+        id: 'site',
+        displayName: 'site',
+        colSize: 1
+    },
+    {
+        id: 'status',
+        displayName: 'Status',
+        operation: 'badge',
+        colSize: 1
+    },
+    {
+        id: 'roles',
+        displayName: 'Roles',
+        operation: 'array',
+        colSize: 2
+    },
+    {
+        id: 'nodeType',
+        displayName: 'Type',
+        operation: 'validateType',
+        colSize: 1
+    },
+    {
+        id: 'serialNumber',
+        displayName: 'Serial Number',
+        operation: 'validateSN',
         colSize: 1
     },
     {
         id: 'kernel',
         displayName: 'Linux Kernel',
+        operation: 'validateKernel',
         colSize: 2
     },
     {
         id: 'linuxISO',
         displayName: 'Base Linux ISO',
+        operation: 'validateISO',
         colSize: 2
     },
 ];

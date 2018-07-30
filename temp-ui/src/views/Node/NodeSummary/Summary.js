@@ -350,7 +350,8 @@ class NodeSummary extends React.Component {
             this.setState({ visible: true });
             return;
         }
-        let roles = this.state.selectedRoles;
+        let roles = [];
+        this.state.selectedRoles.map((data) => roles.push(data.value));
         let a = {
             'Name': document.getElementById('name').value,
             'site': document.getElementById('site').value,

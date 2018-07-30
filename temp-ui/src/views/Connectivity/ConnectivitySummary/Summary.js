@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col, ListGroup, ListGroupItem } from 'reactstrap';
+import { Row, Col, ListGroup, ListGroupItem, Badge } from 'reactstrap';
 import { ServerAPI } from '../../../ServerAPI';
 import '../../views.css';
 
@@ -69,9 +69,27 @@ class ConnectivitySummary extends React.Component {
                             <ListGroup><ListGroupItem>{interfaceItem.port ? interfaceItem.port : '-'}</ListGroupItem></ListGroup>
                         )
                     })
-                    allIntIPDiv = allInterfaces.map((interfaceItem) => {
+                    allIntIPDiv = allInterfaces.map((interfaceItem, index) => {
+                        let ipFont = "-";
+                        let color = "black"
+                        if (interfaceItem.IPAddress) {
+                            if (node.validationStatus && node.validationStatus.interfacesStatus && node.validationStatus.interfacesStatus.length) {
+                                node.validationStatus.interfacesStatus.map((intData, intIndex) => {
+                                    if (intIndex == interfaceItem.port) {
+                                        color = "black"
+                                    }
+                                })
+                            } else {
+                                color = "red"
+                            }
+                            ipFont = (<font color={color}>{interfaceItem.IPAddress}</font>)
+                        }
                         return (
-                            <ListGroup><ListGroupItem>{interfaceItem.IPAddress ? interfaceItem.IPAddress : '-'}</ListGroupItem></ListGroup>
+                            <ListGroup>
+                                <ListGroupItem>
+                                    {ipFont}
+                                </ListGroupItem>
+                            </ListGroup>
                         )
                     })
                     allAdminDiv = allInterfaces.map((interfaceItem) => {
@@ -96,16 +114,50 @@ class ConnectivitySummary extends React.Component {
                         )
                     })
                     allLldpMatchDiv = allInterfaces.map((interfaceItem) => {
+                        let lldpFont = "-"
+                        let color = "black"
+
+                        if (interfaceItem.connectedTo.lldpMatched) {
+                            if (node.validationStatus && node.validationStatus.interfacesStatus && node.validationStatus.interfacesStatus.length) {
+                                node.validationStatus.interfacesStatus.map((intData, intIndex) => {
+                                    if (intIndex == interfaceItem.port) {
+                                        color = "black"
+                                    }
+                                })
+                                color = "black"
+                            } else {
+                                color = "red"
+                            }
+                            lldpFont = (<font color={color}>{interfaceItem.connectedTo.lldpMatched}</font>)
+                        }
                         return (
-                            <ListGroup><ListGroupItem>{interfaceItem.connectedTo.lldpMatched ? interfaceItem.connectedTo.lldpMatched : '-'}</ListGroupItem></ListGroup>
+                            <ListGroup>
+                                <ListGroupItem>
+                                    {lldpFont}
+                                </ListGroupItem>
+                            </ListGroup>
                         )
                     })
                 }
+                let nodeTypeData = "-";
+                let color = ""
+                if (node.nodeType) {
+                    if (node.validationStatus && node.validationStatus.isTypeMatched) {
+                        color = "black"
+                    } else {
+                        color = "red"
+                    }
+                    nodeTypeData = (<font color={color}>{node.nodeType}</font>)
+                }
+                let nodeStatusData = "-";
+                if (node.status == "Mismatch") {
+                    nodeStatusData = (<Badge color="danger">{node.status}</Badge>)
+                }
                 let row = (<Row className={row1}>
                     <Col sm="1" className="pad">{node.name ? node.name : '-'}</Col>
-                    <Col sm="1" className="pad">{node.status ? node.status : '-'}</Col>
+                    <Col sm="1" className="pad">{nodeStatusData}</Col>
                     <Col sm="1" className="pad">{node.role ? node.role : '-'}</Col>
-                    <Col sm="1" className="pad">{node.nodeType ? node.nodeType : '-'}</Col>
+                    <Col sm="1" className="pad">{nodeTypeData}</Col>
                     <Col sm="1" className="pad" style={{ textAlign: "center" }}>
                         {allIntfDiv}
                     </Col>

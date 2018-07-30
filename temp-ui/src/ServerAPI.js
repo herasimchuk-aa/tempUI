@@ -496,6 +496,7 @@ export class ServerNode {
         this.mainInterface = new ServerInterface(jsonObj.mainInterface);
         this.bmcInterface = new ServerInterface(jsonObj.bmcInterface);
         this.allInterfaces = ServerNode.SetupInterface(jsonObj.interfaces);
+        this.validationStatus = jsonObj.validationStatus;
     }
 
     static SetupInterface(allInterfaces) {
@@ -602,7 +603,7 @@ export class ServerAPI {
     static DefaultServer() {
         return defaultAPIServer;
     }
-    
+
     kubernetesDeployment() {
         let xhr = new XMLHttpRequest();
         let sourceURL = this.DefaultInvader() + "/kubernetes/deploy";
@@ -1098,7 +1099,7 @@ export class ServerAPI {
         let sourceURL = this.DefaultInvader() + "/role/modify/";
         xhr.open("POST", sourceURL, { data });
         xhr.setRequestHeader("Content-type", "application/json");
-        
+
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 try {

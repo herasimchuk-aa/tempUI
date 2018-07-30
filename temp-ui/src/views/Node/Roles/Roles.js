@@ -56,8 +56,8 @@ class Roles extends Component {
 
 
     toggleModel = (rowIndex) => {
-        this.setState({ updateRowIndex: rowIndex })
-        this.setState({ displayRoleUpdateModel: !this.state.displayRoleUpdateModel })
+        // this.setState({ updateRowIndex: rowIndex })
+        this.setState({ updateRowIndex: rowIndex, displayRoleUpdateModel: !this.state.displayRoleUpdateModel })
     }
 
 

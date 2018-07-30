@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Row, Col, ListGroup, ListGroupItem } from 'reactstrap';
 import { ServerAPI } from '../../../ServerAPI';
+import { nodeHead } from '../../../consts';
+import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import '../../views.css';
 
 class NodeOpSummary extends React.Component {
@@ -9,7 +11,8 @@ class NodeOpSummary extends React.Component {
         super(props)
         this.state = {
             data: {},
-            nodes: []
+            nodes: [],
+            nodeSummaryHead: nodeHead
         }
     }
 
@@ -86,7 +89,8 @@ class NodeOpSummary extends React.Component {
         return (
             <div>
                 <Row className="tableTitle">Node Summary</Row>
-                {table}
+                <SummaryDataTable heading={this.state.nodeSummaryHead} data={this.state.nodes} />
+                {/* {table} */}
             </div>
         );
     }

@@ -25,7 +25,7 @@ class NodeConfig extends Component {
       interfaceData: {},
       interfaceIndex: null,
       nodes: props.location.state,
-      selectedRowIndexes: [], 
+      selectedRowIndexes: [],
       selectedType: props.location.state.length == 1 ? props.location.state[0].nodeType : '',
       selectedLinux: props.location.state.length == 1 ? props.location.state[0].kernel : '',
       selectedIso: props.location.state.length == 1 ? props.location.state[0].linuxISO : '',
@@ -36,7 +36,7 @@ class NodeConfig extends Component {
       showAlert: '',
       wipeBtn: true,
       rebootBtn: true,
-      interfaces:props.location.state.allInterfaces
+      interfaces: props.location.state.allInterfaces
 
     }
     this.counter = 0
@@ -111,7 +111,7 @@ class NodeConfig extends Component {
             <Button className="custBtn" outline color="secondary" onClick={() => (this.toggleNewModel())}> New </Button>
             <Button className="custBtn" outline color="secondary" onClick={() => (this.deleteInterface())}> Delete </Button>
           </Media>
-        </Media>  
+        </Media>
         <Row className="headerRow" style={{ marginLeft: '0px', marginRight: '0px' }}>
           <Col sm="1" className="head-name"></Col>
           <Col sm="2" className="head-name">Interface Name</Col>
@@ -146,10 +146,10 @@ class NodeConfig extends Component {
           if (rowIndex == interfaces.length - 1) {
             row1 = row1 + ' headerRow3 '
           }
-          
+
           let row = (<Row className={row1} style={{ marginLeft: '0px', marginRight: '0px' }}>
-            <Col sm="1" className="pad" ><Input  key={self.counter++} style={{ cursor: 'pointer',marginLeft:'0px' }}
-                                        type="checkbox" onChange={() => (self.checkBoxClickInterface(rowIndex))} defaultChecked={false}/></Col>
+            <Col sm="1" className="pad" ><Input key={self.counter++} style={{ cursor: 'pointer', marginLeft: '0px' }}
+              type="checkbox" onChange={() => (self.checkBoxClickInterface(rowIndex))} defaultChecked={false} /></Col>
             <Col sm="2" className="pad">{item.port ? item.port : '-'}</Col>
             <Col sm="2" className="pad">{item.adminState ? item.adminState : '-'}</Col>
             <Col sm="2" className="pad">{item.IPAddress ? item.IPAddress : '-'}</Col>
@@ -170,39 +170,39 @@ class NodeConfig extends Component {
     let { selectedRowIndexes } = this.state
     let arrayIndex = selectedRowIndexes.indexOf(rowIndex)
     if (arrayIndex > -1) {
-        selectedRowIndexes.splice(arrayIndex, 1)
+      selectedRowIndexes.splice(arrayIndex, 1)
     } else {
-        selectedRowIndexes.push(rowIndex)
+      selectedRowIndexes.push(rowIndex)
     }
     //this.setState({selectedRowIndexes:selectedRowIndexes})
-   
+
   }
 
-  deleteInterface = () =>{
+  deleteInterface = () => {
     let arr = []
     let interfaces = this.state.nodes[0].allInterfaces
-    interfaces.map((interfaceItem,index) =>{
-      for(let i = 0; i < this.state.selectedRowIndexes.length; i++ ){
-          if(index == this.state.selectedRowIndexes[i]){
-            arr.push(interfaceItem.port)
-          }
+    interfaces.map((interfaceItem, index) => {
+      for (let i = 0; i < this.state.selectedRowIndexes.length; i++) {
+        if (index == this.state.selectedRowIndexes[i]) {
+          arr.push(interfaceItem.port)
+        }
       }
 
-      for(let j = 0 ; j < arr.length ; j++ ) {
-        if(arr[j] == interfaceItem.port){
+      for (let j = 0; j < arr.length; j++) {
+        if (arr[j] == interfaceItem.port) {
           delete interfaces[index]
         }
       }
 
     })
 
-    interfaces = interfaces.filter(function(n){ return n != undefined })
+    interfaces = interfaces.filter(function (n) { return n != undefined })
     this.state.nodes[0].allInterfaces = interfaces
     let a = {
       nodes: this.state.nodes
     }
     ServerAPI.DefaultServer().updateNode(this.deleteInterfaceCallback, this, a);
-    
+
   }
 
   deleteInterfaceCallback(instance, data) {
@@ -211,8 +211,8 @@ class NodeConfig extends Component {
       a = []
     }
     a.push(data)
-    instance.setState({ data: a ,selectedRowIndexes:[]})
-    
+    instance.setState({ data: a, selectedRowIndexes: [] })
+
     NotificationManager.success('deleted Successfully', 'Interface');
   }
 
@@ -272,7 +272,7 @@ class NodeConfig extends Component {
             interfaceItem.connectedTo.serverPort = document.getElementById('interfaceRemoteNodeInterface').value
         }
       })
-      this.setState({interfaces:datum.allInterfaces})
+      this.setState({ interfaces: datum.allInterfaces })
     })
     this.setState({ displayModel: !this.state.displayModel })
     NotificationManager.success('Updated Successfully', 'Interface');
@@ -372,15 +372,16 @@ class NodeConfig extends Component {
         datum.allInterfaces = []
       }
       datum.allInterfaces.push(newInterface)
-      this.setState({ interfaces:datum.allInterfaces})
+      this.setState({ interfaces: datum.allInterfaces })
     })
-    
-    this.setState({ displayNewInterfaceModel: !this.state.displayNewInterfaceModel,nodes:data })
+
+    this.setState({ displayNewInterfaceModel: !this.state.displayNewInterfaceModel, nodes: data })
     NotificationManager.success('Saved Successfully', 'Interface');
   }
 
   updateSaveNode = () => {
-    let roles = this.state.selectedRoles;
+    let roles = [];
+    this.state.selectedRoles.map((data) => (roles.push(data.label)))
     let data = this.state.nodes
     data.map((datum) => {
       datum.roles = roles,
@@ -491,7 +492,7 @@ class NodeConfig extends Component {
     let siteField = null
     let selectedRowIndexes = []
     if (isSingleNode) {
-      
+
       nodeNameDiv =
         <div>
           <Media className="edit" id="edit">
@@ -507,7 +508,7 @@ class NodeConfig extends Component {
       siteField = <Input id='site' className="marTop10" />
 
     } else {
-      
+
       this.state.nodes.map(function (node, i) {
         selectedRowIndexes.push(i)
       })

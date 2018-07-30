@@ -1,5 +1,5 @@
 import React from 'react';
-import { Col, Row, Input, Popover, PopoverBody } from 'reactstrap';
+import { Col, Row, Input, Popover, PopoverBody, Badge, UncontrolledTooltip } from 'reactstrap';
 
 const POPOVER_PLACEMENT = "auto"
 export default class SummaryDataTable extends React.Component {
@@ -137,7 +137,102 @@ export default class SummaryDataTable extends React.Component {
                 </Popover></div>)
     }
 
+    getValue = (key, data, operation) => {
+        let value
+        switch (operation) {
+            case "array":
+                if (data.hasOwnProperty(key)) {
+                    let arr = data[key]
+                    if (arr && arr.length) {
+                        let str = ''
+                        arr.map((val, index) => {
+                            if (index == arr.length - 1) {
+                                str += val
+                            }
+                            else {
+                                str += val + ','
+                            }
+                        })
+                        value = str
+                    }
+                    if (value == "") {
+                        value = '-'
+                    }
+                }
+                break
+            case 'validateKernel': {
+                let color;
+                if (data[key]) {
+                    if (data.validationStatus && data.validationStatus.isKernelMatched) {
+                        color = 'black';
+                    }
+                    else {
+                        color = 'red';
 
+                    }
+                }
+                value = (<div><font id={data[key]} color={color}>{data[key]}</font>
+                </div>)
+            }
+
+                break
+            case 'validateISO': {
+                let color;
+                if (data[key]) {
+                    if (data.validationStatus && data.validationStatus.isBaseISOMatched) {
+                        color = 'black';
+                    }
+                    else {
+                        color = 'red';
+                    }
+                }
+                value = (<font color={color}>{data[key]}</font>)
+            }
+
+                break
+            case 'validateType': {
+                let color;
+                if (data[key]) {
+                    if (data.validationStatus && data.validationStatus.isTypeMatched) {
+                        color = 'black';
+                    }
+                    else {
+                        color = 'red';
+                    }
+                }
+                value = (<font color={color}>{data[key]}</font>)
+            }
+
+                break
+            case 'validateSN': {
+                let color;
+                if (data[key]) {
+                    if (data.validationStatus && data.validationStatus.isSNMatched) {
+                        color = 'black';
+                    }
+                    else {
+                        color = 'red';
+                    }
+                }
+                value = (<font color={color}>{data[key]}</font>)
+            }
+
+                break
+            case 'badge': {
+                if (data[key] == "Mismatch") {
+                    value = (<Badge color="danger">{data[key]}</Badge>)
+                }
+                break
+            }
+            default:
+                value = data[key]
+                break
+        }
+        if (!value) {
+            value = "-"
+        }
+        return value
+    }
 
 
     drawtable(props = this.props) {
@@ -161,28 +256,22 @@ export default class SummaryDataTable extends React.Component {
                         rowClassName += ' headerRow3 '
                     }
 
+                    if (props.showCheckBox) {
+                        checkBoxColumn = (
+                            <Col sm="1" className="pad break-word" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                <Input key={datum.name ? datum.name + '_' + rowIndex : datum.label + '_' + rowIndex} style={{ cursor: 'pointer' }}
+                                    type="checkbox" onChange={() => (self.checkBoxClick(rowIndex))} defaultChecked={selectedRowIndexes && selectedRowIndexes.length && selectedRowIndexes.indexOf(rowIndex) > -1 ? true : false} />
+                            </Col>)
+                    }
+
                     let columns = []
                     colHeader.map(function (header) {
                         let key = header.id
-                        let value = '-'
-                        if (datum.hasOwnProperty(key)) {
-                            value = datum[key]
-                            if (value && value.length && header.type == 'array') {
-                                let str = ''
-                                value.map((val,index) => {
-                                    if(index == value.length-1){
-                                        str += val
-                                    }
-                                    else{
-                                        str += val + ','
-                                    }
-                                })
-                                value = str
-                            }
-                            if (value == "") {
-                                value = '-'
-                            }
+                        let operation;
+                        if (header.operation) {
+                            operation = header.operation;
                         }
+                        let value = self.getValue(key, datum, operation)
 
                         // if(props.showEditButton) {
                         //     editButtonColumn = (
@@ -191,14 +280,6 @@ export default class SummaryDataTable extends React.Component {
                         //         </Col>
                         //     )
                         // }
-
-                        if (props.showCheckBox) {
-                            checkBoxColumn = (
-                                <Col sm="1" className="pad break-word" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                    <Input key={self.counter++} style={{ cursor: 'pointer' }}
-                                        type="checkbox" onChange={() => (self.checkBoxClick(rowIndex))} defaultChecked={selectedRowIndexes && selectedRowIndexes.length && selectedRowIndexes.indexOf(rowIndex) > -1 ? true : false} />
-                                </Col>)
-                        }
                         columns.push(<Col sm={header.colSize ? header.colSize : 1} className="pad"> {value}</Col>)
                     })
                     var row;
