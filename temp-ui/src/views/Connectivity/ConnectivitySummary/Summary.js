@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col, ListGroup, ListGroupItem, Badge } from 'reactstrap';
+import { Row, Col, ListGroup, ListGroupItem, Badge, UncontrolledTooltip } from 'reactstrap';
 import { ServerAPI } from '../../../ServerAPI';
 import '../../views.css';
 
@@ -139,15 +139,21 @@ class ConnectivitySummary extends React.Component {
                         )
                     })
                 }
-                let nodeTypeData = "-";
+                let nodeTypeData = [];
                 let color = ""
                 if (node.nodeType) {
+                    let tooltipId = 'type' + i;
                     if (node.validationStatus && node.validationStatus.isTypeMatched) {
                         color = "black"
                     } else {
                         color = "red"
+                        if (node.validationStatus.type)
+                            nodeTypeData.push(<UncontrolledTooltip placement="top" target={tooltipId}>{node.validationStatus.type}</UncontrolledTooltip>)
                     }
-                    nodeTypeData = (<font color={color}>{node.nodeType}</font>)
+                    nodeTypeData.push(<font id={tooltipId} color={color}>{node.nodeType}</font>)
+                }
+                else {
+                    nodeTypeData = '-'
                 }
                 let nodeStatusData = "-";
                 if (node.status == "Mismatch") {
