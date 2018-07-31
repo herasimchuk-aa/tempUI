@@ -69,18 +69,19 @@ class ConnectivitySummary extends React.Component {
                             <ListGroup><ListGroupItem>{interfaceItem.port ? interfaceItem.port : '-'}</ListGroupItem></ListGroup>
                         )
                     })
+
                     allIntIPDiv = allInterfaces.map((interfaceItem, index) => {
                         let ipFont = "-";
                         let color = "black"
                         if (interfaceItem.IPAddress) {
-                            if (node.validationStatus && node.validationStatus.interfacesStatus && node.validationStatus.interfacesStatus.length) {
-                                node.validationStatus.interfacesStatus.map((intData, intIndex) => {
-                                    if (intIndex == interfaceItem.port) {
-                                        color = "black"
-                                    }
-                                })
-                            } else {
-                                color = "red"
+                            if (node.validationStatus && node.validationStatus.interfacesStatus && Object.keys(node.validationStatus.interfacesStatus).length) {
+                                let portName = interfaceItem.port
+                                if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].isValidIP) {
+                                    color = "black"
+                                }
+                                else {
+                                    color = "red"
+                                }
                             }
                             ipFont = (<font color={color}>{interfaceItem.IPAddress}</font>)
                         }
@@ -114,19 +115,17 @@ class ConnectivitySummary extends React.Component {
                         )
                     })
                     allLldpMatchDiv = allInterfaces.map((interfaceItem) => {
-                        let lldpFont = "-"
+                        let lldpFont = "-";
                         let color = "black"
-
                         if (interfaceItem.connectedTo.lldpMatched) {
-                            if (node.validationStatus && node.validationStatus.interfacesStatus && node.validationStatus.interfacesStatus.length) {
-                                node.validationStatus.interfacesStatus.map((intData, intIndex) => {
-                                    if (intIndex == interfaceItem.port) {
-                                        color = "black"
-                                    }
-                                })
-                                color = "black"
-                            } else {
-                                color = "red"
+                            if (node.validationStatus && node.validationStatus.interfacesStatus && Object.keys(node.validationStatus.interfacesStatus).length) {
+                                let portName = interfaceItem.port
+                                if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].isLLDPMatched) {
+                                    color = "black"
+                                }
+                                else {
+                                    color = "red"
+                                }
                             }
                             lldpFont = (<font color={color}>{interfaceItem.connectedTo.lldpMatched}</font>)
                         }

@@ -162,15 +162,81 @@ class NodeConfig extends Component {
           if (rowIndex == interfaces.length - 1) {
             row1 = row1 + ' headerRow3 '
           }
+          let ipData = []
+          let remoteInvaderData = []
+          let remoteInterfaceData = []
+          let color = ''
+
+
+          if (item.IPAddress) {
+            if (node.validationStatus && node.validationStatus.interfacesStatus && Object.keys(node.validationStatus.interfacesStatus).length) {
+              let portName = item.port
+              if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].isValidIP) {
+                color = "black"
+              }
+              else {
+                color = "red"
+              }
+            }
+            ipData = (<font color={color}>{item.IPAddress}</font>)
+          }
+          else {
+            ipData = "-"
+          }
+
+          /* **************** */
+
+
+          if (item.connectedTo.serverName) {
+            let remoteInvaderKey = 'remoteInvader' + rowIndex
+            if (node.validationStatus && node.validationStatus.interfacesStatus && Object.keys(node.validationStatus.interfacesStatus).length) {
+              let portName = item.port
+              if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].isRemoteInvaderMatched) {
+                color = "black"
+              }
+              else {
+                color = "red"
+                if (node.validationStatus.interfacesStatus[portName].remoteInvader)
+                  remoteInterfaceData.push(<UncontrolledTooltip placement="top" target={remoteInvaderKey}>{node.validationStatus.interfacesStatus[portName].remoteInvader}</UncontrolledTooltip>)
+              }
+            }
+            remoteInvaderData = (<font id={remoteInvaderKey} color={color}>{item.connectedTo.serverName}</font>)
+          }
+          else {
+            remoteInvaderData = "-"
+          }
+
+          /* **************** */
+
+
+          if (item.connectedTo.serverPort) {
+            let remoteInterfaceKey = 'remoteInterface' + rowIndex
+            if (node.validationStatus && node.validationStatus.interfacesStatus && Object.keys(node.validationStatus.interfacesStatus).length) {
+              let portName = item.port
+              if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].isLLDPMatched) {
+                color = "black"
+              }
+              else {
+                color = "red"
+                if (node.validationStatus.interfacesStatus[portName].remoteInterface)
+                  remoteInterfaceData.push(<UncontrolledTooltip placement="top" target={remoteInterfaceKey}>{node.validationStatus.interfacesStatus[portName].remoteInterface}</UncontrolledTooltip>)
+              }
+            }
+            remoteInterfaceData.push(<font id={remoteInterfaceKey} color={color}>{item.connectedTo.serverPort}</font>)
+          }
+          else {
+            remoteInterfaceData = "-"
+          }
+
 
           let row = (<Row className={row1} style={{ marginLeft: '0px', marginRight: '0px' }}>
             <Col sm="1" className="pad" ><Input key={self.counter++} style={{ cursor: 'pointer', marginLeft: '0px' }}
               type="checkbox" onChange={() => (self.checkBoxClickInterface(rowIndex))} defaultChecked={false} /></Col>
             <Col sm="2" className="pad">{item.port ? item.port : '-'}</Col>
             <Col sm="2" className="pad">{item.adminState ? item.adminState : '-'}</Col>
-            <Col sm="2" className="pad">{item.IPAddress ? item.IPAddress : '-'}</Col>
-            <Col sm="2" className="pad">{item.connectedTo.serverName ? item.connectedTo.serverName : '-'}</Col>
-            <Col sm="2" className="pad">{item.connectedTo.serverPort ? item.connectedTo.serverPort : '-'}</Col>
+            <Col sm="2" className="pad">{ipData}</Col>
+            <Col sm="2" className="pad">{remoteInvaderData}</Col>
+            <Col sm="2" className="pad">{remoteInterfaceData}</Col>
             <Col sm="1" className="pad" style={{ cursor: 'pointer' }}><i className="fa fa-pencil" aria-hidden="true" onClick={() => (self.toggleModel(rowIndex))}></i></Col>
 
           </Row>)
@@ -390,7 +456,7 @@ class NodeConfig extends Component {
       allInterfaces = []
     }
     allInterfaces.push(newInterface)
-
+    data[0].allInterfaces = allInterfaces
     this.setState({ displayNewInterfaceModel: !this.state.displayNewInterfaceModel, nodes: data, interfaces: allInterfaces })
     NotificationManager.success('Saved Successfully', 'Interface');
   }
