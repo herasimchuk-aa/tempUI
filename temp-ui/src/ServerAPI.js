@@ -547,6 +547,14 @@ export class ServerKernelTypes {
     }
 }
 
+export class ServerSite {
+    constructor(jsonObj) {
+        this.value = jsonObj.Name;
+        this.label = jsonObj.Name;
+        this.description = jsonObj.Description;
+    }
+}
+
 export class ServerLabels {
     constructor(jsonObj) {
         this.label = jsonObj.Name;
@@ -1057,7 +1065,6 @@ export class ServerAPI {
     }
 
     addNode(callback, instance, data) {
-        console.log(data)
         let xhr = new XMLHttpRequest();
         let sourceURL = this.DefaultInvader() + "/node/add";
         xhr.open("POST", sourceURL, { data });
@@ -1099,14 +1106,13 @@ export class ServerAPI {
         let sourceURL = this.DefaultInvader() + "/role/modify/";
         xhr.open("POST", sourceURL, { data });
         xhr.setRequestHeader("Content-type", "application/json");
-
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 try {
                     let jsonObj = JSON.parse(xhr.responseText);
-                    console.log(jsonObj)
                     if (jsonObj.success) {
                         let a = {
+                            'id': data.id,
                             'parent': jsonObj.role.Parent,
                             'label': jsonObj.role.Name,
                             'value': jsonObj.role.Name,
@@ -1168,6 +1174,98 @@ export class ServerAPI {
         };
 
         xhr.send(JSON.stringify(data.nodes[0]));
+    }
+
+    addSite(callback, instance, data) {
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/site/add";
+        xhr.open("POST", sourceURL, { data });
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.send(JSON.stringify(data));
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    if (jsonObj.success) {
+                        let a = {
+                            'label': jsonObj.site.Name,
+                            'description': jsonObj.site.Description
+                        }
+                        callback(instance, a);
+                        NotificationManager.success(jsonObj.site.Name + " added successfully", "Site");
+                    }
+                    else {
+                        NotificationManager.error(jsonObj.site.Name + " was not added", "Site");
+                    }
+                } catch (err) {
+                    console.log("Error" + err);
+                }
+            }
+        };
+
+    }
+
+    deleteSite(callback, instance, name) {
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/site/id/" + name;
+        xhr.open("DELETE", sourceURL, true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    if (jsonObj.success) {
+                        callback(instance);
+                        NotificationManager.success(name + " deleted successfully", "Site");
+                    }
+                    else if (jsonObj.ErrorMessage) {
+                        NotificationManager.error(jsonObj.ErrorMessage, "Site");
+                    }
+                    else {
+                        NotificationManager.error("Something went wrong", 'Site');
+                    }
+                } catch (err) {
+                    console.log("POST :: ERROR :: " + err);
+                }
+            }
+        };
+        xhr.onerror = function () {
+            console.log("POST :: Error :: ");
+            callback(instance, null);
+        }
+        xhr.send();
+    }
+
+    fetchAllSite(callback, instance) {
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/site/";
+        xhr.open("GET", sourceURL, true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    let jsonSite = jsonObj.sites;
+                    let retSite = [];
+                    let siteCtr = 0;
+                    for (siteCtr in jsonSite) {
+                        let jSite = jsonSite[siteCtr];
+                        let site = new ServerSite(jSite);
+                        retSite[siteCtr] = site;
+                    }
+                    callback(instance, retSite);
+
+                } catch (err) {
+                    console.log("POST :: ERROR :: " + err);
+                }
+            }
+        };
+        xhr.onerror = function () {
+            console.log("POST :: Error :: ");
+            callback(instance, null);
+        }
+        xhr.send();
     }
 
 

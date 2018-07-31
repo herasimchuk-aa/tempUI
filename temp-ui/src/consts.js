@@ -197,3 +197,16 @@ export let isoHead = [
         colSize: 4
     }
 ];
+
+export let siteHead = [
+    {
+        id: 'label',
+        displayName: 'Name',
+        colSize: 6
+    },
+    {
+        id: 'description',
+        displayName: 'Description',
+        colSize: 6
+    }
+];

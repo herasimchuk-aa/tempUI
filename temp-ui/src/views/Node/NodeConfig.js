@@ -19,6 +19,7 @@ class NodeConfig extends Component {
       isoData: [],
       kernelData: [],
       typedata: [],
+      siteData: [],
       nodeHead: nodeHead,
       displayModel: false,
       displayNewInterfaceModel: false,
@@ -30,6 +31,8 @@ class NodeConfig extends Component {
       selectedLinux: props.location.state.length == 1 ? props.location.state[0].kernel : '',
       selectedIso: props.location.state.length == 1 ? props.location.state[0].linuxISO : '',
       selectedRoles: props.location.state.length == 1 ? props.location.state[0].roles : '',
+      selectedSerialNo: props.location.state.length == 1 ? props.location.state[0].serialNumber : '',
+      selectedSite: props.location.state.length == 1 ? props.location.state[0].site : '',
       displayProvisionModel: false,
       visible: false,
       visibleIp: false,
@@ -47,6 +50,7 @@ class NodeConfig extends Component {
     ServerAPI.DefaultServer().fetchAllIso(this.retrieveIsoData, this);
     ServerAPI.DefaultServer().fetchAllKernels(this.retrieveKernelsData, this);
     ServerAPI.DefaultServer().fetchAllSystemTypes(this.retrieveTypesData, this);
+    ServerAPI.DefaultServer().fetchAllSite(this.retrieveSiteData, this);
   }
 
   retrieveRoleData(instance, data) {
@@ -92,6 +96,18 @@ class NodeConfig extends Component {
       }
     }
   }
+
+  retrieveSiteData(instance, data) {
+    if (!data) {
+      alert("No data received");
+    }
+    else {
+      if (Object.keys(data).length) {
+        instance.setState({ siteData: data });
+      }
+    }
+  }
+
   getRoles() {
     let rolesHtml = [];
     this.state.roleData.map((item) => (rolesHtml.push(<option>{item.label}</option>)));
@@ -388,7 +404,9 @@ class NodeConfig extends Component {
         datum.nodeType = this.state.selectedType,
         datum.linuxIso = this.state.selectedIso,
         datum.kernel = this.state.selectedLinux,
-        datum.interfaces = this.state.interfaces
+        datum.site = this.state.selectedSite,
+        datum.interfaces = this.state.interfaces,
+        datum.serialNumber = this.state.selectedSerialNo
       let a = {
         nodes: [datum]
       }
@@ -443,16 +461,17 @@ class NodeConfig extends Component {
   getSelectedData = (data, identity) => {
     if (identity == 'Type') {
       this.setState({ selectedType: data })
-
     }
     if (identity == 'Linux') {
       this.state.selectedIso != data && data != '' ? this.setState({ rebootBtn: false }) : ''
       this.setState({ selectedLinux: data })
     }
     if (identity == 'ISO') {
-
       this.state.selectedIso != data && data != '' ? this.setState({ wipeBtn: false }) : ''
       this.setState({ selectedIso: data })
+    }
+    if (identity == 'Site') {
+      this.setState({ selectedSite: data })
     }
 
   }
@@ -476,8 +495,9 @@ class NodeConfig extends Component {
     this.setState({ selectedRoles: selectedOption });
   }
 
-
-
+  serialNo = (e) => {
+    this.setState({selectedSerialNo : e.target.value});
+  }
 
   render() {
     let { nodes } = this.state
@@ -489,7 +509,6 @@ class NodeConfig extends Component {
     let interfaceTableHeader = null
     let interfaceTableContent = null
     let summaryDataTable = null
-    let siteField = null
     let selectedRowIndexes = []
     if (isSingleNode) {
 
@@ -500,13 +519,10 @@ class NodeConfig extends Component {
               {this.state.nodes.map((nodeItem) => nodeItem.name)}
             </Media>
           </Media>
-          <h6 className="srNo"><b>Sr. No. </b> {this.state.nodes.map((nodeItem) => nodeItem.serialNumber)}  / <b> Site </b>  {this.state.nodes.map((nodeItem) => nodeItem.site)}</h6>
         </div>
       interfaceTableHeader = this.interfaceTableHeader()
       interfaceTableContent = this.interfaceTableContent()
-
-      siteField = <Input id='site' className="marTop10" />
-
+    
     } else {
 
       this.state.nodes.map(function (node, i) {
@@ -532,24 +548,24 @@ class NodeConfig extends Component {
           <div className="linuxBox" style={{ marginRight: '20px' }}>
             <Media>
               <Media body>
-                <Label>Linux Kernel</Label>
-                <DropDown options={this.state.kernelData} getSelectedData={this.getSelectedData} identity={"Linux"} default={this.state.selectedLinux} />
+                <Label>Base Linux ISO</Label>
+                <DropDown options={this.state.isoData} getSelectedData={this.getSelectedData} identity={"ISO"} default={this.state.selectedIso} />
               </Media>
               <Media right>
-                <Button className="custBtn marTop30 marLeft10" disabled={this.state.rebootBtn} outline color="secondary" > Reboot </Button>
+                <Button className="custBtn marTop40 marLeft10 " disabled={this.state.wipeBtn} outline color="secondary" onClick={() => { this.wipeISO() }}> Wipe </Button>
               </Media>
             </Media>
           </div>
           <div className="linuxBox">
             <Media>
-              <Media body>
-                <Label>Base Linux ISO</Label>
-                <DropDown options={this.state.isoData} getSelectedData={this.getSelectedData} identity={"ISO"} default={this.state.selectedIso} />
+                <Media body>
+                  <Label>Linux Kernel</Label>
+                  <DropDown options={this.state.kernelData} getSelectedData={this.getSelectedData} identity={"Linux"} default={this.state.selectedLinux} />
+                </Media>
+                <Media right>
+                  <Button className="custBtn marTop40 marLeft10 " disabled={this.state.rebootBtn} outline color="secondary" > Reboot </Button>
+                </Media>
               </Media>
-              <Media right>
-                <Button className="custBtn marTop30 marLeft10" disabled={this.state.wipeBtn} outline color="secondary" onClick={() => { this.wipeISO() }}> Wipe </Button>
-              </Media>
-            </Media>
           </div>
         </div>
         <div className="boxBorder marTop20">
@@ -561,12 +577,17 @@ class NodeConfig extends Component {
             </Media>
           </Media>
           <Row className="pad">
-            <Col xs='6' ><Label>Roles</Label><br />
-              {/* <select key={this.couter++} multiple className="form-control" id="multiRole" value={this.state.selectedRoles} onChange={(e) => { this.handleChange(e) }}>{this.getRoles()}</select> */}
+            <Col xs='3' ><Label>Roles</Label><br />
               <MultiselectDropDown value={this.state.selectedRoles} getSelectedData={this.handleChanges} options={this.state.roleData} />
             </Col>
-            <Col xs='6' ><Label>Type</Label><br />
+            <Col xs='3' ><Label>Type</Label><br />
               <DropDown options={this.state.typedata} getSelectedData={this.getSelectedData} identity={"Type"} default={this.state.selectedType} />
+            </Col>
+            <Col xs='3' ><Label>Serial Number</Label><br />
+              <Input className="marTop10" type="text" value={this.state.selectedSerialNo} onChange={ (e) => { this.serialNo(e) }}/>
+            </Col>
+            <Col xs='3' ><Label>Site</Label><br />
+              <DropDown options={this.state.siteData} getSelectedData={this.getSelectedData} identity={"Site"} default={this.state.selectedSite} />
             </Col>
           </Row>
           {/* {this.confDropdown()} */}

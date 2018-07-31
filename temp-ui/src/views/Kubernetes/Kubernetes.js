@@ -1,29 +1,29 @@
 import React, { Component } from 'react';
-import { Label, Row, Col, Button, Input, Media,Card ,CardHeader,CardBody,InputGroup,InputGroupAddon } from 'reactstrap';
+import { Label, Row, Col, Button, Input, Media, Card, CardHeader, CardBody, InputGroup, InputGroupAddon } from 'reactstrap';
 import '../views.css';
 import { data } from './KubernetesData.js';
-import {ServerAPI} from '../../ServerAPI';
+import { ServerAPI } from '../../ServerAPI';
 
 class Kubernetes extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            data: data,
+            data: [],
             selectedRowIndex: []
         }
     }
 
-    componentDidMount(){
-        ServerAPI.DefaultServer().fetchAllKubernetes(this.retrieveData,this);
+    componentDidMount() {
+        ServerAPI.DefaultServer().fetchAllKubernetes(this.retrieveData, this);
     }
 
     retrieveData(instance, data) {
-        if(data === undefined) {
+        if (data === undefined) {
             alert("No data received");
         }
         else {
-                instance.setState({data: data,selectedRowIndex:[]});
+            instance.setState({ data: data, selectedRowIndex: [] });
         }
     }
 
@@ -59,8 +59,8 @@ class Kubernetes extends Component {
                     row1 = 'headerRow2'
                 }
                 if (i == kubernetesData[item].length - 1) {
-                    row1 =  row1 +' headerRow3 '
-                  }
+                    row1 = row1 + ' headerRow3 '
+                }
                 let key = data.name + '_' + index;
                 //<Col sm="1" className="pad"><Input className="marLeft40" id={key} type="checkbox" onClick={() => (this.checkBoxClick(key))} /></Col>
                 table.push(
@@ -68,7 +68,7 @@ class Kubernetes extends Component {
                         <Col sm="1" className="pad"><Input className="marLeft40" id={key} type="checkbox" onClick={() => (this.checkBoxClick(key))} /></Col>
                         <Col sm="2" className="pad">{data.Name}</Col>
                         <Col sm="2" className="pad">{data.K8Status}</Col>
-                        <Col sm="3" className="pad">{data.roles+' '}</Col>
+                        <Col sm="3" className="pad">{data.roles + ' '}</Col>
                         <Col sm="2" className="pad">{data.type}</Col>
                     </Row>
                 )
@@ -210,16 +210,16 @@ class Kubernetes extends Component {
         return (
             <Container-fluid>
                 <Row>
-                    <Col sm="9">
+                    <Col sm="12">
 
                         {this.getData()}
                     </Col>
-                    <Col sm="3">
+                    {/* <Col sm="3">
 
                         {this.renderSearchComponent()}
                         {this.renderFilterComponent()}
 
-                    </Col>
+                    </Col> */}
                 </Row>
             </Container-fluid>
         );

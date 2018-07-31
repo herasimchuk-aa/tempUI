@@ -21,7 +21,7 @@ import BaseLinuxIso from '../../views/Node/BaseLinuxIso/BaseLinuxIso';
 import BmcMonitor from '../../views/Node/BmcMonitor/BmcMonitor';
 import ConnectivitySummary from '../../views/Connectivity/ConnectivitySummary/Summary';
 import TileApp from '../../views/Connectivity/TilesApp/TilesApp';
-// import Site from '../../views/Node/Site/site';
+import Site from '../../views/Node/Site/site';
 import NodeConfig from '../../views/Node/NodeConfig';
 import Kubernetes from '../../views/Kubernetes/Kubernetes'
 
@@ -43,7 +43,7 @@ class Full extends Component {
                                 <Route path="/node/Summary" name="Summary" component={NodeOpSummary} />
                                 <Route path="/node/Roles" name="Roles" component={Roles} />
                                 <Route path="/node/Types" name="Types" component={Types} />
-                                {/* <Route path="/node/Site" name="Site" component={Site}/> */}
+                                <Route path="/node/Site" name="Site" component={Site}/>
                                 <Route path="/node/Linuxkernel" name="Linux Kernel" component={LinuxKernel} />
                                 <Route path="/node/BaseLinuxIso" name="Base Linux ISO" component={BaseLinuxIso} />
                                 <Route path="/monitoring/BmcMonitor" name="Summary" component={BmcMonitor} />

@@ -18,7 +18,7 @@ export default class SummaryDataTable extends React.Component {
 
     static defaultProps = {
         showCheckBox: true,
-        // showEditButton: false
+        
     }
 
     static getDerivedStateFromProps(props, state) {
@@ -26,7 +26,8 @@ export default class SummaryDataTable extends React.Component {
             data: props.data,
             heading: props.heading,
             selectedRowIndexes: props.selectedRowIndexes,
-            selectEntireRow: props.selectEntireRow
+            selectEntireRow: props.selectEntireRow,
+            // showEditButton: props.showEditButton
         }
     }
 
@@ -264,6 +265,14 @@ export default class SummaryDataTable extends React.Component {
                             </Col>)
                     }
 
+                    // if(props.showEditButton) {
+                    //         editButtonColumn = (
+                    //             <Col sm="1">
+                    //                 <i className="fa fa-pencil" aria-hidden="true" onClick={() => (self.toggleModel(rowIndex))}></i>
+                    //             </Col>
+                    //         )
+                    // }
+
                     let columns = []
                     colHeader.map(function (header) {
                         let key = header.id
@@ -273,13 +282,7 @@ export default class SummaryDataTable extends React.Component {
                         }
                         let value = self.getValue(key, datum, operation)
 
-                        // if(props.showEditButton) {
-                        //     editButtonColumn = (
-                        //         <Col sm="1">
-                        //             <i className="fa fa-pencil" aria-hidden="true" onClick={() => (self.toggleModel(rowIndex))}></i>
-                        //         </Col>
-                        //     )
-                        // }
+                        
                         columns.push(<Col sm={header.colSize ? header.colSize : 1} className="pad"> {value}</Col>)
                     })
                     var row;

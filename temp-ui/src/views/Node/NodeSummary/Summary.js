@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Col, Row, Input, Card, CardHeader, CardBody, InputGroup, InputGroupAddon, Modal, ModalHeader, ModalBody, ModalFooter, Alert } from 'reactstrap';
+import { Col, Row, Input, Card, CardHeader, CardBody, InputGroup, InputGroupAddon, Modal, ModalHeader, ModalBody, ModalFooter, Alert,Media } from 'reactstrap';
 import { ServerAPI } from '../../../ServerAPI';
 import { Redirect } from 'react-router-dom'
 import { Button } from 'reactstrap';
@@ -19,6 +19,7 @@ class NodeSummary extends React.Component {
             constNodes: [],
             roleData: [],
             isoData: [],
+            siteData: [],
             kernelData: [],
             typedata: [],
             nodeHead: nodeHead,
@@ -31,6 +32,7 @@ class NodeSummary extends React.Component {
             selectedType: '',
             selectedLinux: '',
             selectedIso: '',
+            selectedSite: '',
             selectedRoles: []
         }
     }
@@ -41,6 +43,7 @@ class NodeSummary extends React.Component {
         ServerAPI.DefaultServer().fetchAllIso(this.retrieveIsoData, this);
         ServerAPI.DefaultServer().fetchAllKernels(this.retrieveKernelsData, this);
         ServerAPI.DefaultServer().fetchAllSystemTypes(this.retrieveTypesData, this);
+        ServerAPI.DefaultServer().fetchAllSite(this.retrieveSiteData, this);
     }
 
     updateNodeSummary = (instance, nodes) => {
@@ -82,6 +85,17 @@ class NodeSummary extends React.Component {
         }
     }
 
+    retrieveSiteData(instance, data) {
+        if (!data) {
+            alert("No data received");
+        }
+        else {
+            if (Object.keys(data).length) {
+                instance.setState({ siteData: data });
+            }
+        }
+    }
+
     retrieveKernelsData(instance, data) {
         if (!data) {
             alert("No data received");
@@ -107,16 +121,15 @@ class NodeSummary extends React.Component {
     getSelectedData = (data, identity) => {
         if (identity == 'Type') {
             this.setState({ selectedType: data })
-
         }
         if (identity == 'Linux') {
-
             this.setState({ selectedLinux: data })
         }
         if (identity == 'ISO') {
-
-
             this.setState({ selectedIso: data })
+        }
+        if (identity == 'Site') {
+            this.setState({ selectedSite: data })
         }
     }
 
@@ -142,6 +155,12 @@ class NodeSummary extends React.Component {
         let isoHtml = [];
         this.state.isoData.map((item) => (isoHtml.push(<option>{item.label}</option>)));
         return isoHtml;
+    }
+
+    getSite() {
+        let siteHtml = [];
+        this.state.siteData.map((item) => (siteHtml.push(<option>{item.label}</option>)));
+        return siteHtml;
     }
 
     checkBoxClick = (rowIndex, singleRowClick) => {
@@ -306,6 +325,7 @@ class NodeSummary extends React.Component {
     }
 
     renderUpgradeModelDialog() {
+        
         if (this.state.displayModel) {
             return (
                 <Modal isOpen={this.state.displayModel} toggle={() => this.click()} size="lg" centered="true" >
@@ -315,11 +335,16 @@ class NodeSummary extends React.Component {
                     </Alert>
                     <ModalBody>
                         <Row>
-                            <Col sm="6" className="marTop10">Name <Input id='name' autoFocus className="marTop10" /></Col>
-                            <Col sm="6" className="marTop10">Site <Input id='site' className="marTop10" /></Col>
+                            <Col sm="6" className="marTop10">Name 
+                                <Input id='name' autoFocus className="marTop10" />
+                            </Col>
+                            <Col sm="6" className="marTop10">Site
+                                <DropDown options={this.state.siteData} getSelectedData={this.getSelectedData} identity={"Site"} default={this.state.selectedSite} />
+                            </Col>
+                            {/* <Input id='site' className="marTop10" /> */}
                         </Row>
                         <Row>
-                            <Col sm="6" className="marTop10">Roles {/* <select multiple className="form-control marTop10" id="roles">{this.getRoles()}</select> */}
+                            <Col sm="6" className="marTop10">Roles 
                                 <MultiselectDropDown value={this.state.selectedRoles} getSelectedData={this.handleChanges} options={this.state.roleData} /></Col>
                             <Col sm="6" className="marTop10">
                                 Serial Number <Input id='serialNumber' className="marTop10" />
@@ -354,7 +379,7 @@ class NodeSummary extends React.Component {
         this.state.selectedRoles.map((data) => roles.push(data.value));
         let a = {
             'Name': document.getElementById('name').value,
-            'site': document.getElementById('site').value,
+            'site': this.state.selectedSite,
             'roles': roles,
             'type': this.state.selectedType,
             'serialNumber': document.getElementById('serialNumber').value,
@@ -409,20 +434,29 @@ class NodeSummary extends React.Component {
             <Container-fluid >
                 <Row>
 
-                    <Col sm="9">
+                    <Col sm="12">
                         <div className='marginLeft10 '>
-                            <Button onClick={() => (this.onConfigureClick())} className="custBtn marginLeft13N" outline color="secondary">Configure</Button>
+                            <Media>
+                                <Media left>
+                                <Button onClick={() => (this.onConfigureClick())} className="custBtn marginLeft13N" outline color="secondary">Configure</Button>
 
                             <Button className="custBtn" outline color="secondary" onClick={() => (this.click())}>New</Button>
                             {this.showDeleteButton()}
+                                </Media>
+                                <Media body >
+                                </Media>
+                                <Media right>
+                                    <SearchComponent data={this.state.constNodes} getFilteredData={this.getFilteredData} />
+                                </Media>
+                            </Media>
                             <Row className="tableTitle">Node Config Summary</Row>
                             <SummaryDataTable heading={this.state.nodeHead} data={this.state.nodes} checkBoxClick={this.checkBoxClick} selectEntireRow={true} selectedRowIndexes={this.state.selectedRowIndex} />
                         </div>
 
                     </Col>
                     <Col sm="3">
-                        <SearchComponent data={this.state.constNodes} getFilteredData={this.getFilteredData} />
-                        {this.renderFilterComponent()}
+                        
+                        {/* {this.renderFilterComponent()} */}
                     </Col>
                 </Row>
                 {this.renderUpgradeModelDialog()}

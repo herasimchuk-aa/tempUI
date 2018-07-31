@@ -44,11 +44,11 @@ export default {
           url: '/node/Linuxkernel',
           icon: 'icon-map',
         },
-        // {
-        //   name: 'Site',
-        //   url: '/node/Site',
-        //   icon: 'icon-map',
-        // },
+        {
+          name: 'Site',
+          url: '/node/Site',
+          icon: 'icon-map',
+        },
         {
           name: 'Base Linux ISO',
           url: '/node/BaseLinuxIso',
@@ -82,11 +82,12 @@ export default {
          url: '/monitoring/TilesApp',
          icon: 'icon-layers',
        },
-      {
-        name: 'IPVS',
-        url: '/monitoring/ipvs',
-        icon: 'icon-graph',
-      },]
+      // {
+      //   name: 'IPVS',
+      //   url: '/monitoring/ipvs',
+      //   icon: 'icon-graph',
+      // },
+    ]
     },
     {
       name: 'Kubernetes',

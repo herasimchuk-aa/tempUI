@@ -5,15 +5,17 @@ class SearchComponent extends Component {
 
     render() {
         return (
-            <Card className="borRad">
-                <CardHeader>Search</CardHeader>
-                <CardBody>
-                    <InputGroup >
-                        <Input placeholder="search" className="borRadLeft" onChange={(e) => this.onInputChange(e)} />
-                        <InputGroupAddon addonType="append" className="borRadRight"></InputGroupAddon>
-                    </InputGroup>
-                </CardBody>
-            </Card>
+            // <Card className="borRad">
+            //      <CardHeader>Search</CardHeader>
+            //      <CardBody>
+            //         <InputGroup >
+                        
+            //             <InputGroupAddon addonType="append" className="borRadRight"></InputGroupAddon>
+            //         </InputGroup>
+            //  </CardBody>
+            // </Card> 
+
+            <Input placeholder="search node.." onChange={(e) => this.onInputChange(e)} style={{width:'400px',marginRight:'-15px',borderRadius:'6px'}}/>
         );
     }
 
