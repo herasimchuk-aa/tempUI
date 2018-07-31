@@ -314,6 +314,7 @@ class NodeConfig extends Component {
             <div className="marTop10">IP Address<Input type="text" id="interIp" /></div>
             <div className="marTop10">Remote Node Name<Input type="text" id="interRemoteName" /></div>
             <div className="marTop10">Remote Node Interface<Input type="text" id="interRemoteInterface" /></div>
+            <div className="marTop10"><input type="checkbox" id="mngmntIntf" /> Management Interface</div>
           </ModalBody>
           <ModalFooter>
             <Button outline className="custBtn" color="primary" onClick={() => (this.updateNewInterfaceCall())}>Add</Button>
@@ -379,21 +380,21 @@ class NodeConfig extends Component {
         'serverPort': document.getElementById('interRemoteInterface').value
       },
       'IPAddress': document.getElementById('interIp').value,
-      'port': document.getElementById('interName').value
+      'port': document.getElementById('interName').value,
+      'isMngmntIntf': document.getElementById('mngmntIntf').checked,
     }
     let data = this.state.nodes
-    data.map((datum) => {
-      let allInterfaces = datum.allInterfaces
-      if (!datum.allInterfaces || !datum.allInterfaces.length) {
-        datum.allInterfaces = []
-      }
-      datum.allInterfaces.push(newInterface)
-      this.setState({ interfaces: datum.allInterfaces })
-    })
+    let datum = data[0]
+    let allInterfaces = datum.allInterfaces
+    if (!allInterfaces || !allInterfaces.length) {
+      allInterfaces = []
+    }
+    allInterfaces.push(newInterface)
 
-    this.setState({ displayNewInterfaceModel: !this.state.displayNewInterfaceModel, nodes: data })
+    this.setState({ displayNewInterfaceModel: !this.state.displayNewInterfaceModel, nodes: data, interfaces: allInterfaces })
     NotificationManager.success('Saved Successfully', 'Interface');
   }
+
 
   updateSaveNode = () => {
     let roles = [];
@@ -496,7 +497,7 @@ class NodeConfig extends Component {
   }
 
   serialNo = (e) => {
-    this.setState({selectedSerialNo : e.target.value});
+    this.setState({ selectedSerialNo: e.target.value });
   }
 
   render() {
@@ -522,7 +523,7 @@ class NodeConfig extends Component {
         </div>
       interfaceTableHeader = this.interfaceTableHeader()
       interfaceTableContent = this.interfaceTableContent()
-    
+
     } else {
 
       this.state.nodes.map(function (node, i) {
@@ -558,14 +559,14 @@ class NodeConfig extends Component {
           </div>
           <div className="linuxBox">
             <Media>
-                <Media body>
-                  <Label>Linux Kernel</Label>
-                  <DropDown options={this.state.kernelData} getSelectedData={this.getSelectedData} identity={"Linux"} default={this.state.selectedLinux} />
-                </Media>
-                <Media right>
-                  <Button className="custBtn marTop40 marLeft10 " disabled={this.state.rebootBtn} outline color="secondary" > Reboot </Button>
-                </Media>
+              <Media body>
+                <Label>Linux Kernel</Label>
+                <DropDown options={this.state.kernelData} getSelectedData={this.getSelectedData} identity={"Linux"} default={this.state.selectedLinux} />
               </Media>
+              <Media right>
+                <Button className="custBtn marTop40 marLeft10 " disabled={this.state.rebootBtn} outline color="secondary" > Reboot </Button>
+              </Media>
+            </Media>
           </div>
         </div>
         <div className="boxBorder marTop20">
@@ -584,7 +585,7 @@ class NodeConfig extends Component {
               <DropDown options={this.state.typedata} getSelectedData={this.getSelectedData} identity={"Type"} default={this.state.selectedType} />
             </Col>
             <Col xs='3' ><Label>Serial Number</Label><br />
-              <Input className="marTop10" type="text" value={this.state.selectedSerialNo} onChange={ (e) => { this.serialNo(e) }}/>
+              <Input className="marTop10" type="text" value={this.state.selectedSerialNo} onChange={(e) => { this.serialNo(e) }} />
             </Col>
             <Col xs='3' ><Label>Site</Label><br />
               <DropDown options={this.state.siteData} getSelectedData={this.getSelectedData} identity={"Site"} default={this.state.selectedSite} />
