@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Label, Row, Col, Button, Input, Media, Card, CardHeader, CardBody, InputGroup, InputGroupAddon } from 'reactstrap';
 import '../views.css';
-import { data } from './KubernetesData.js';
 import { ServerAPI } from '../../ServerAPI';
 
 class Kubernetes extends Component {

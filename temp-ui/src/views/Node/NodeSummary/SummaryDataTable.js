@@ -138,8 +138,8 @@ export default class SummaryDataTable extends React.Component {
                 </Popover></div>)
     }
 
-    getValue = (key, data, operation) => {
-        let value
+    getValue = (key, data, operation, rowIndex) => {
+        let value = []
         switch (operation) {
             case "array":
                 if (data.hasOwnProperty(key)) {
@@ -169,11 +169,11 @@ export default class SummaryDataTable extends React.Component {
                     }
                     else {
                         color = 'red';
-
+                        if (data.validationStatus.kernel)
+                            value.push(<UncontrolledTooltip placement="top" target={key + rowIndex}>{data.validationStatus.kernel}</UncontrolledTooltip>)
                     }
                 }
-                value = (<div><font id={data[key]} color={color}>{data[key]}</font>
-                </div>)
+                value.push(<font id={key + rowIndex} color={color}>{data[key]}</font>)
             }
 
                 break
@@ -185,9 +185,11 @@ export default class SummaryDataTable extends React.Component {
                     }
                     else {
                         color = 'red';
+                        if (data.validationStatus.baseISO)
+                            value.push(<UncontrolledTooltip placement="top" target={key + rowIndex}>{data.validationStatus.baseISO}</UncontrolledTooltip>)
                     }
                 }
-                value = (<font color={color}>{data[key]}</font>)
+                value.push(<font id={key + rowIndex} color={color}>{data[key]}</font>)
             }
 
                 break
@@ -199,9 +201,11 @@ export default class SummaryDataTable extends React.Component {
                     }
                     else {
                         color = 'red';
+                        if (data.validationStatus.type)
+                            value.push(<UncontrolledTooltip placement="top" target={key + rowIndex}>{data.validationStatus.type}</UncontrolledTooltip>)
                     }
                 }
-                value = (<font color={color}>{data[key]}</font>)
+                value.push(<font id={key + rowIndex} color={color}>{data[key]}</font>)
             }
 
                 break
@@ -213,15 +217,20 @@ export default class SummaryDataTable extends React.Component {
                     }
                     else {
                         color = 'red';
+                        if (data.validationStatus.serialNumber)
+                            value.push(<UncontrolledTooltip placement="top" target={key + rowIndex}>{data.validationStatus.serialNumber}</UncontrolledTooltip>)
                     }
                 }
-                value = (<font color={color}>{data[key]}</font>)
+                value.push(<font id={key + rowIndex} color={color}>{data[key]}</font>)
             }
 
                 break
             case 'badge': {
                 if (data[key] == "Mismatch") {
                     value = (<Badge color="danger">{data[key]}</Badge>)
+                }
+                else {
+                    value = data[key]
                 }
                 break
             }
@@ -280,7 +289,7 @@ export default class SummaryDataTable extends React.Component {
                         if (header.operation) {
                             operation = header.operation;
                         }
-                        let value = self.getValue(key, datum, operation)
+                        let value = self.getValue(key, datum, operation, rowIndex)
 
                         
                         columns.push(<Col sm={header.colSize ? header.colSize : 1} className="pad"> {value}</Col>)
