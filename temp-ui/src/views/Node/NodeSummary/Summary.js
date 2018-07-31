@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Col, Row, Input, Card, CardHeader, CardBody, InputGroup, InputGroupAddon, Modal, ModalHeader, ModalBody, ModalFooter, Alert,Media } from 'reactstrap';
+import { Col, Row, Input, Card, CardHeader, CardBody, InputGroup, InputGroupAddon, Modal, ModalHeader, ModalBody, ModalFooter, Alert, Media } from 'reactstrap';
 import { ServerAPI } from '../../../ServerAPI';
 import { Redirect } from 'react-router-dom'
 import { Button } from 'reactstrap';
@@ -27,6 +27,7 @@ class NodeSummary extends React.Component {
             selectedRows: [],
             displayModel: false,
             visible: false,
+            visibleUnique: false,
             showDelete: false,
             redirect: false,
             selectedType: '',
@@ -321,11 +322,11 @@ class NodeSummary extends React.Component {
     }
 
     onDismiss() {
-        this.setState({ visible: false });
+        this.setState({ visible: false, visibleUnique: false });
     }
 
     renderUpgradeModelDialog() {
-        
+
         if (this.state.displayModel) {
             return (
                 <Modal isOpen={this.state.displayModel} toggle={() => this.click()} size="lg" centered="true" >
@@ -333,9 +334,12 @@ class NodeSummary extends React.Component {
                     <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >
                         Name field is mandatory
                     </Alert>
+                    <Alert color="danger" isOpen={this.state.visibleUnique} toggle={() => this.onDismiss()} >
+                        Name field is already exist,please enter unique name
+                    </Alert>
                     <ModalBody>
                         <Row>
-                            <Col sm="6" className="marTop10">Name 
+                            <Col sm="6" className="marTop10">Name
                                 <Input id='name' autoFocus className="marTop10" />
                             </Col>
                             <Col sm="6" className="marTop10">Site
@@ -344,7 +348,7 @@ class NodeSummary extends React.Component {
                             {/* <Input id='site' className="marTop10" /> */}
                         </Row>
                         <Row>
-                            <Col sm="6" className="marTop10">Roles 
+                            <Col sm="6" className="marTop10">Roles
                                 <MultiselectDropDown value={this.state.selectedRoles} getSelectedData={this.handleChanges} options={this.state.roleData} /></Col>
                             <Col sm="6" className="marTop10">
                                 Serial Number <Input id='serialNumber' className="marTop10" />
@@ -371,8 +375,22 @@ class NodeSummary extends React.Component {
     }
 
     addNode() {
-        if (!document.getElementById('name').value) {
-            this.setState({ visible: true });
+        let nodeName = document.getElementById('name').value
+        let data = this.state.nodes
+        let validateUnique = true
+        data.map((datum) => {
+            if (datum.name == nodeName) {
+                validateUnique = false
+            }
+        })
+        if ((!nodeName) || (!validateUnique)) {
+            if (!nodeName) {
+                this.setState({ visible: true });
+            }
+            if (!validateUnique) {
+                this.setState({ visibleUnique: true });
+            }
+
             return;
         }
         let roles = [];
@@ -438,10 +456,10 @@ class NodeSummary extends React.Component {
                         <div className='marginLeft10 '>
                             <Media>
                                 <Media left>
-                                <Button onClick={() => (this.onConfigureClick())} className="custBtn marginLeft13N" outline color="secondary">Configure</Button>
+                                    <Button onClick={() => (this.onConfigureClick())} className="custBtn marginLeft13N" outline color="secondary">Configure</Button>
 
-                            <Button className="custBtn" outline color="secondary" onClick={() => (this.click())}>New</Button>
-                            {this.showDeleteButton()}
+                                    <Button className="custBtn" outline color="secondary" onClick={() => (this.click())}>New</Button>
+                                    {this.showDeleteButton()}
                                 </Media>
                                 <Media body >
                                 </Media>
@@ -455,7 +473,7 @@ class NodeSummary extends React.Component {
 
                     </Col>
                     <Col sm="3">
-                        
+
                         {/* {this.renderFilterComponent()} */}
                     </Col>
                 </Row>
