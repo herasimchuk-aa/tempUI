@@ -26,6 +26,21 @@ class Kubernetes extends Component {
         }
     }
 
+    dashboardClick = (key) => {
+        let kubernetesData = this.state.data;
+        let keyData = kubernetesData[key]
+        if (keyData && keyData.length) {
+            for (let i in keyData) {
+                let roles = keyData[i].roles
+                if (roles && roles.indexOf("k8-master") > -1 && keyData[i].K8URL) {
+                    window.open(keyData[i].K8URL)
+                    return
+                }
+            }
+        }
+
+    }
+
     getData() {
         let table = [];
         let kubernetesData = this.state.data;
@@ -38,7 +53,7 @@ class Kubernetes extends Component {
                     <Media body></Media>
                     <Media right>
                         <Button className="custBtn" outline color="secondary" onClick={() => (this.deploy())}> Deploy </Button>
-                        <Button className="custBtn" outline color="secondary" > Dashboard </Button>
+                        <Button className="custBtn" outline color="secondary" onClick={() => this.dashboardClick(item)} > Dashboard </Button>
                     </Media>
                 </Media>)
             table.push(<br />)
