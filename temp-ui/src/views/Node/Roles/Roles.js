@@ -5,6 +5,7 @@ import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import { roleHead } from '../../../consts'
 import DropDown from '../../../components/dropdown/DropDown';
+import { trimString } from '../../../components/Utility/Utility';
 // import $ from 'jquery';
 
 class Roles extends Component {
@@ -22,7 +23,7 @@ class Roles extends Component {
             displayRoleUpdateModel: false,
             updateRowIndex: null,
             selectedParentRole: null,
-            currentRole:null
+            currentRole: null
         }
     }
 
@@ -108,13 +109,15 @@ class Roles extends Component {
 
 
     addRole() {
-        if (!document.getElementById('roleName').value) {
+        let rolename = document.getElementById('roleName').value
+        let validRoleName = trimString(rolename)
+        if (!validRoleName) {
             this.setState({ alertVisible: true });
             return;
         }
         let a = {
             'Parent': this.state.selectedRole,
-            'Name': document.getElementById('roleName').value,
+            'Name': validRoleName,
             'Description': document.getElementById('roleDesc').value
         }
         ServerAPI.DefaultServer().addRole(this.callback, this, a);
@@ -148,9 +151,9 @@ class Roles extends Component {
                     {this.showDeleteButton()}
                 </Row>
                 <Row className="tableTitle">Roles</Row>
-                <SummaryDataTable heading={this.state.roleHead} data={this.state.data} toggleModel={this.toggleModel} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} showEditButton={true}/>
+                <SummaryDataTable heading={this.state.roleHead} data={this.state.data} toggleModel={this.toggleModel} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} showEditButton={true} />
                 {this.renderUpgradeModelDialog()}
-               
+
             </div>
         );
     }

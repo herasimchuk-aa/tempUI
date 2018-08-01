@@ -18,7 +18,7 @@ export default class SummaryDataTable extends React.Component {
 
     static defaultProps = {
         showCheckBox: true,
-        
+
     }
 
     static getDerivedStateFromProps(props, state) {
@@ -195,7 +195,7 @@ export default class SummaryDataTable extends React.Component {
                 break
             case 'validateType': {
                 let color;
-		console.log(data)
+
                 if (data[key] && data.validationStatus) {
                     if (data.validationStatus && data.validationStatus.isTypeMatched) {
                         color = 'black';
@@ -212,7 +212,7 @@ export default class SummaryDataTable extends React.Component {
                 break
             case 'validateSN': {
                 let color;
-                if (data[key] && data.validationStatus ) {
+                if (data[key] && data.validationStatus) {
                     if (data.validationStatus && data.validationStatus.isSNMatched) {
                         color = 'black';
                     }
@@ -251,6 +251,7 @@ export default class SummaryDataTable extends React.Component {
         let rows = []
         let checkBoxColumn = null
         let editButtonColumn = null
+        let tableSize = 12
         let header = this.drawHeader()
         rows.push(header)
         let self = this
@@ -268,6 +269,7 @@ export default class SummaryDataTable extends React.Component {
                     }
 
                     if (props.showCheckBox) {
+                        tableSize = 11
                         checkBoxColumn = (
                             <Col sm="1" className="pad break-word" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                 <Input key={datum.name ? datum.name + '_' + rowIndex : datum.label + '_' + rowIndex} style={{ cursor: 'pointer' }}
@@ -292,7 +294,7 @@ export default class SummaryDataTable extends React.Component {
                         }
                         let value = self.getValue(key, datum, operation, rowIndex)
 
-                        
+
                         columns.push(<Col sm={header.colSize ? header.colSize : 1} className="pad"> {value}</Col>)
                     })
                     var row;
@@ -310,7 +312,7 @@ export default class SummaryDataTable extends React.Component {
                     else {
                         row = (<Row className={rowClassName} >
                             {checkBoxColumn}
-                            <Col sm="11" className="pad break-word">
+                            <Col sm={tableSize} className="pad break-word">
                                 <Row>
                                     {columns}
                                 </Row>

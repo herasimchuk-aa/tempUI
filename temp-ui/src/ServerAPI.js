@@ -510,6 +510,7 @@ export class ServerNode {
 
 export class ServerInterface {
     constructor(jsonObj) {
+        this.isMngmntIntf = jsonObj.isMngmntIntf;
         this.port = jsonObj.port;
         this.type = jsonObj.type;
         this.IPAddress = jsonObj.ip;
@@ -1244,7 +1245,7 @@ export class ServerAPI {
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 try {
-                    
+
                     let jsonObj = JSON.parse(xhr.responseText);
                     let jsonSite = jsonObj.sites;
                     let retSite = [];

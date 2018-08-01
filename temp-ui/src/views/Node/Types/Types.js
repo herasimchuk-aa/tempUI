@@ -4,6 +4,7 @@ import '../../views.css';
 import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import { typeHead } from '../../../consts';
+import { trimString } from '../../../components/Utility/Utility';
 
 class Types extends Component {
 
@@ -88,8 +89,11 @@ class Types extends Component {
     }
 
     addType() {
+
+        let typename = document.getElementById('label').value
+        let validtypename = trimString(typename)
         let a = {
-            'Id': document.getElementById('label').value,
+            'Id': validtypename,
             'Vendor': document.getElementById('vendor').value,
             'RackUnit': document.getElementById('rackUnit').value,
             'Airflow': document.getElementById('airFlow').value,

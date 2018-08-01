@@ -10,6 +10,7 @@ import '../../views.css';
 import { NotificationManager } from 'react-notifications';
 import SearchComponent from '../../../components/SearchComponent/SearchComponent';
 import MultiselectDropDown from '../../../components/MultiselectDropdown/MultiselectDropDown';
+import { trimString } from '../../../components/Utility/Utility';
 
 class NodeSummary extends React.Component {
     constructor(props) {
@@ -22,7 +23,7 @@ class NodeSummary extends React.Component {
             siteData: [],
             kernelData: [],
             typedata: [],
-            nodeHead: nodeHead,
+            nodeHead: JSON.parse(JSON.stringify(props.heading)),
             selectedRowIndex: [],
             selectedRows: [],
             displayModel: false,
@@ -376,15 +377,16 @@ class NodeSummary extends React.Component {
 
     addNode() {
         let nodeName = document.getElementById('name').value
+        let name = trimString(nodeName)
         let data = this.state.nodes
         let validateUnique = true
         data.map((datum) => {
-            if (datum.name == nodeName) {
+            if (datum.name == name) {
                 validateUnique = false
             }
         })
-        if ((!nodeName) || (!validateUnique)) {
-            if (!nodeName) {
+        if ((!name) || (!validateUnique)) {
+            if (!name) {
                 this.setState({ visible: true });
             }
             if (!validateUnique) {
@@ -396,7 +398,7 @@ class NodeSummary extends React.Component {
         let roles = [];
         this.state.selectedRoles.map((data) => roles.push(data.value));
         let a = {
-            'Name': document.getElementById('name').value,
+            'Name': name,
             'site': this.state.selectedSite,
             'roles': roles,
             'type': this.state.selectedType,
@@ -435,7 +437,7 @@ class NodeSummary extends React.Component {
     }
 
     click() {
-        this.setState({ displayModel: !this.state.displayModel })
+        this.setState({ displayModel: !this.state.displayModel, selectedSite: null, selectedRoles: [], selectedType: null, selectedLinux: null, selectedIso: null })
     }
 
     getFilteredData = (data) => {

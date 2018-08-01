@@ -4,6 +4,7 @@ import '../../views.css';
 import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import { isoHead } from '../../../consts';
+import { trimString } from '../../../components/Utility/Utility';
 
 class BaseLinuxIso extends Component {
 
@@ -101,12 +102,14 @@ class BaseLinuxIso extends Component {
     }
 
     addIso() {
-        if (!document.getElementById('isoName').value) {
+        let iso = document.getElementById('isoName').value
+        let validIso = trimString(iso)
+        if (!validIso) {
             this.setState({ visible: true });
             return;
         }
         let a = {
-            'Name': document.getElementById('isoName').value,
+            'Name': validIso,
             'Location': document.getElementById('isoLoc').value,
             'Description': document.getElementById('isoDesc').value
         }

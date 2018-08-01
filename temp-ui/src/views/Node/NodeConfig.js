@@ -9,6 +9,7 @@ import DropDown from '../../components/dropdown/DropDown';
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
 import MultiselectDropDown from '../../components/MultiselectDropdown/MultiselectDropDown';
+import { validateIPaddress, trimString } from '../../components/Utility/Utility';
 
 
 class NodeConfig extends Component {
@@ -196,7 +197,7 @@ class NodeConfig extends Component {
               }
               else {
                 color = "red"
-                if ( node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].remoteInvader )
+                if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].remoteInvader)
                   remoteInterfaceData.push(<UncontrolledTooltip placement="top" target={remoteInvaderKey}>{node.validationStatus.interfacesStatus[portName].remoteInvader}</UncontrolledTooltip>)
               }
             }
@@ -323,6 +324,12 @@ class NodeConfig extends Component {
       return (
         <Modal isOpen={this.state.displayModel} toggle={() => this.toggleModel0()} size="sm" centered="true" >
           <ModalHeader toggle={() => this.toggleModel0()}>Edit Interface {data.port}</ModalHeader>
+          <Alert color="info" isOpen={this.state.visible} toggle={this.onDismiss}>
+            Name field is mandatory
+          </Alert>
+          <Alert color="danger" isOpen={this.state.visibleIp} toggle={this.onDismissIp}>
+            Ip Address entered is wrong
+          </Alert>
           <ModalBody>
             <div className="marTop10">Name <Input type="text" autoFocus defaultValue={data.port} id="interfacePort" /></div>
             <div className="marTop10">Admin state<Input type="text" defaultValue={data.adminState} disabled id="interfaceAdminState" /></div>
@@ -344,6 +351,24 @@ class NodeConfig extends Component {
   }
 
   updateNodeCall = (interfaceIndex) => {
+
+    let interfaceName = document.getElementById('interfacePort').value
+    let validInterfacename = trimString(interfaceName)
+
+    if (!validInterfacename) {
+      this.setState({ visible: true });
+      return;
+    }
+
+    let ipaddress = document.getElementById('interfaceIpAddress').value
+
+    let ipChk = validateIPaddress(ipaddress)
+
+    if (!ipChk) {
+      this.setState({ visibleIp: true });
+      return;
+    }
+
     let data = this.state.nodes
     data.map((datum) => {
       datum.allInterfaces.map((interfaceItem, rowIndex) => {
@@ -420,22 +445,22 @@ class NodeConfig extends Component {
     this.setState({ visibleIp: false });
   }
 
-  ValidateIPaddress = (ipaddress) => {
-    if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ipaddress)) {
-      return (true)
-    }
-    return (false)
-  }
+
 
   updateNewInterfaceCall = () => {
-    if (!document.getElementById('interName').value) {
+    let interfacename = document.getElementById('interName').value
+
+    let validInterfacename = trimString(interfacename)
+    if (!validInterfacename) {
       this.setState({ visible: true });
       return;
     }
 
     let ipaddress = document.getElementById('interIp').value
 
-    if (!this.ValidateIPaddress(ipaddress)) {
+    let ipChk = validateIPaddress(ipaddress)
+
+    if (!ipChk) {
       this.setState({ visibleIp: true });
       return;
     }
@@ -446,7 +471,7 @@ class NodeConfig extends Component {
         'serverPort': document.getElementById('interRemoteInterface').value
       },
       'IPAddress': document.getElementById('interIp').value,
-      'port': document.getElementById('interName').value,
+      'port': validInterfacename,
       'isMngmntIntf': document.getElementById('mngmntIntf').checked,
     }
     let data = this.state.nodes

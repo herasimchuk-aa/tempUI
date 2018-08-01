@@ -4,6 +4,7 @@ import '../../views.css';
 import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import { siteHead } from '../../../consts';
+import { trimString } from '../../../components/Utility/Utility';
 
 class Site extends Component {
 
@@ -100,12 +101,14 @@ class Site extends Component {
     }
 
     addSite() {
-        if (!document.getElementById('siteName').value) {
+        let site = document.getElementById('siteName').value
+        let validSite = trimString(site)
+        if (!validSite) {
             this.setState({ visible: true });
             return;
         }
         let a = {
-            'Name': document.getElementById('siteName').value,
+            'Name': validSite,
             'Description': document.getElementById('siteDesc').value
         }
         ServerAPI.DefaultServer().addSite(this.callback, this, a);
