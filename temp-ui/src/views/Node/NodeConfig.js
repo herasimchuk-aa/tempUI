@@ -136,7 +136,7 @@ class NodeConfig extends Component {
           <Col sm="2" className="head-name">IP Address</Col>
           <Col sm="2" className="head-name">Remote Node Name</Col>
           <Col sm="2" className="head-name">Remote Interface</Col>
-          <Col sm="1" className="head-name">edit</Col>
+          <Col sm="1" className="head-name">Edit</Col>
         </Row>
       </div>
     )
