@@ -13,7 +13,7 @@ export default class SummaryDataTable extends React.Component {
             popoverOpen: false
         };
         this.counter = 0;
-        this.constHeading = Object.assign([], props.heading)
+        this.constHeading = JSON.parse(JSON.stringify(props.heading))
     }
 
     static defaultProps = {
