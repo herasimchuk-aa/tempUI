@@ -165,10 +165,21 @@ class NodeSummary extends React.Component {
         return siteHtml;
     }
 
+    converter(data) {
+        let arr = [];
+        if (!data || !data.length)
+            return arr;
+        data.map((item) => {
+            arr.push({ 'label': item, 'value': item })
+        })
+        return arr;
+    }
+
     checkBoxClick = (rowIndex, singleRowClick) => {
         if (singleRowClick) {
             let { nodes } = this.state
             let selectedRows = [nodes[rowIndex]]
+            selectedRows[0].roles = this.converter(nodes[rowIndex].roles);
             this.setState({
                 selectedRows, redirect: true
             })
@@ -411,7 +422,7 @@ class NodeSummary extends React.Component {
     }
 
 
-    getSelectRoleValues(select) {
+    /* getSelectRoleValues(select) {
         var result = [];
         var options = select && select.options;
         var opt;
@@ -424,7 +435,7 @@ class NodeSummary extends React.Component {
             }
         }
         return result;
-    }
+    } */
 
     callback(instance, data) {
         let a = instance.state.nodes

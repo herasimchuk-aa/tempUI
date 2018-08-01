@@ -58,7 +58,7 @@ class Dashboard extends Component {
         let retHTML = [];
         retHTML.push(
             <CardHeader id="invader_ip" key="invader_ip">
-                <h5>Default Invader</h5>
+                <h5>Default Server</h5>
             </CardHeader>
         );
         retHTML.push(

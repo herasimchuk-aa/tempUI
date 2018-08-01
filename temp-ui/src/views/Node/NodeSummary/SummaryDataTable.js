@@ -195,7 +195,6 @@ export default class SummaryDataTable extends React.Component {
                 break
             case 'validateType': {
                 let color;
-
                 if (data[key] && data.validationStatus) {
                     if (data.validationStatus && data.validationStatus.isTypeMatched) {
                         color = 'black';
@@ -271,7 +270,7 @@ export default class SummaryDataTable extends React.Component {
                     if (props.showCheckBox) {
                         tableSize = 11
                         checkBoxColumn = (
-                            <Col sm="1" className="pad break-word" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            <Col sm="1" className="" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                 <Input key={datum.name ? datum.name + '_' + rowIndex : datum.label + '_' + rowIndex} style={{ cursor: 'pointer' }}
                                     type="checkbox" onChange={() => (self.checkBoxClick(rowIndex))} defaultChecked={selectedRowIndexes && selectedRowIndexes.length && selectedRowIndexes.indexOf(rowIndex) > -1 ? true : false} />
                             </Col>)

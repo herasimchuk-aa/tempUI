@@ -517,6 +517,7 @@ export class ServerInterface {
         this.admin = jsonObj.admin;
         this.alarms = jsonObj.alarms;
         this.macAddress = jsonObj.macAddress;
+        this.isMngmntIntf = jsonObj.isMngmntIntf;
         this.connectedTo = new ServerConnectedTo(jsonObj.connectedTo);
     }
 }

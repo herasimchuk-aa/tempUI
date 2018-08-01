@@ -568,7 +568,7 @@ class NodeConfig extends Component {
 
   }
 
-  handleChange = (event) => {
+/*   handleChange = (event) => {
     let selectedRoles = this.state.selectedRoles
     let val = event.target.value
     if (!selectedRoles || !selectedRoles.length) {
@@ -580,7 +580,7 @@ class NodeConfig extends Component {
       selectedRoles.push(val)
     }
     this.setState({ selectedRoles: selectedRoles })
-  }
+  } */
 
 
   handleChanges = (selectedOption) => {
