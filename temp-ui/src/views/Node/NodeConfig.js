@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, Label, Media, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
+import { Row, Col, Button, Label, Media, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert, UncontrolledTooltip } from 'reactstrap';
 import { ServerAPI } from '../../ServerAPI';
 import SummaryDataTable from './NodeSummary/SummaryDataTable';
 import { customHistory } from '../../index';
@@ -163,13 +163,13 @@ class NodeConfig extends Component {
           if (rowIndex == interfaces.length - 1) {
             row1 = row1 + ' headerRow3 '
           }
-          let ipData = []
+          /* let ipData = []
           let remoteInvaderData = []
           let remoteInterfaceData = []
-          let color = ''
+          let color = '' */
 
 
-          if (item.IPAddress) {
+          /* if (item.IPAddress) {
             if (node.validationStatus && node.validationStatus.interfacesStatus && Object.keys(node.validationStatus.interfacesStatus).length) {
               let portName = item.port
               if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].isValidIP) {
@@ -183,12 +183,12 @@ class NodeConfig extends Component {
           }
           else {
             ipData = "-"
-          }
+          } */
 
           /* **************** */
 
 
-          if (item.connectedTo.serverName) {
+          /* if (item.connectedTo.serverName) {
             let remoteInvaderKey = 'remoteInvader' + rowIndex
             if (node.validationStatus && node.validationStatus.interfacesStatus && Object.keys(node.validationStatus.interfacesStatus).length) {
               let portName = item.port
@@ -205,12 +205,12 @@ class NodeConfig extends Component {
           }
           else {
             remoteInvaderData = "-"
-          }
+          } */
 
           /* **************** */
 
 
-          if (item.connectedTo.serverPort) {
+          /* if (item.connectedTo.serverPort) {
             let remoteInterfaceKey = 'remoteInterface' + rowIndex
             if (node.validationStatus && node.validationStatus.interfacesStatus && Object.keys(node.validationStatus.interfacesStatus).length) {
               let portName = item.port
@@ -227,7 +227,7 @@ class NodeConfig extends Component {
           }
           else {
             remoteInterfaceData = "-"
-          }
+          } */
 
 
           let row = (<Row className={row1} style={{ marginLeft: '0px', marginRight: '0px' }}>
@@ -235,9 +235,9 @@ class NodeConfig extends Component {
               type="checkbox" onChange={() => (self.checkBoxClickInterface(rowIndex))} defaultChecked={false} /></Col>
             <Col sm="2" className="pad">{item.port ? item.port : '-'}</Col>
             <Col sm="2" className="pad">{item.adminState ? item.adminState : '-'}</Col>
-            <Col sm="2" className="pad">{ipData}</Col>
-            <Col sm="2" className="pad">{remoteInvaderData}</Col>
-            <Col sm="2" className="pad">{remoteInterfaceData}</Col>
+            <Col sm="2" className="pad">{item.IPAddress ? item.IPAddress : '-'}</Col>
+            <Col sm="2" className="pad">{item.connectedTo.serverName ? item.connectedTo.serverName : '-'}</Col>
+            <Col sm="2" className="pad">{item.connectedTo.serverPort ? item.connectedTo.serverPort : "-"}</Col>
             <Col sm="1" className="pad" style={{ cursor: 'pointer' }}><i className="fa fa-pencil" aria-hidden="true" onClick={() => (self.toggleModel(rowIndex))}></i></Col>
 
           </Row>)
@@ -282,8 +282,15 @@ class NodeConfig extends Component {
 
     interfaces = interfaces.filter(function (n) { return n != undefined })
     this.state.nodes[0].allInterfaces = interfaces
+
+    let roles = [];
+    let { selectedRoles } = this.state
+    if (selectedRoles && selectedRoles.length) {
+      selectedRoles.map((data) => (roles.push(data.label)))
+    }
+    this.state.nodes[0].roles = roles
     let a = {
-      nodes: this.state.nodes
+      nodes: this.state.nodes,
     }
     ServerAPI.DefaultServer().updateNode(this.deleteInterfaceCallback, this, a);
 
@@ -337,6 +344,7 @@ class NodeConfig extends Component {
             <div className="marTop10">IP Address<Input type="text" defaultValue={data.IPAddress} id="interfaceIpAddress" /></div>
             <div className="marTop10">Remote Node Name<Input type="text" defaultValue={data.connectedTo.serverName ? data.connectedTo.serverName : '-'} id="interfaceRemoteNodename" /></div>
             <div className="marTop10">Remote Node Interface<Input type="text" defaultValue={data.connectedTo.serverPort ? data.connectedTo.serverPort : '-'} id="interfaceRemoteNodeInterface" /></div>
+            <div className="marTop10"><input type="checkbox" id="mngmntIntf" defaultChecked={data.isMngmntIntf} /> Management Interface</div>
           </ModalBody>
           <ModalFooter>
             <Button outline className="custBtn" color="primary" onClick={() => (this.updateNodeCall(index))}>Update</Button>
@@ -375,9 +383,10 @@ class NodeConfig extends Component {
       datum.allInterfaces.map((interfaceItem, rowIndex) => {
         if (rowIndex === interfaceIndex) {
           interfaceItem.port = document.getElementById('interfacePort').value
-          interfaceItem.IPAddress = document.getElementById('interfaceIpAddress').value,
-            interfaceItem.connectedTo.serverName = document.getElementById('interfaceRemoteNodename').value,
-            interfaceItem.connectedTo.serverPort = document.getElementById('interfaceRemoteNodeInterface').value
+          interfaceItem.IPAddress = document.getElementById('interfaceIpAddress').value
+          interfaceItem.connectedTo.serverName = document.getElementById('interfaceRemoteNodename').value
+          interfaceItem.connectedTo.serverPort = document.getElementById('interfaceRemoteNodeInterface').value
+          interfaceItem.isMngmntIntf = document.getElementById('mngmntIntf').checked
         }
       })
       this.setState({ interfaces: datum.allInterfaces })
@@ -569,19 +578,19 @@ class NodeConfig extends Component {
 
   }
 
-/*   handleChange = (event) => {
-    let selectedRoles = this.state.selectedRoles
-    let val = event.target.value
-    if (!selectedRoles || !selectedRoles.length) {
-      selectedRoles = []
-      selectedRoles.push(val)
-    } else if (selectedRoles.indexOf(val) > -1) {
-      selectedRoles.splice(selectedRoles.indexOf(val), 1)
-    } else {
-      selectedRoles.push(val)
-    }
-    this.setState({ selectedRoles: selectedRoles })
-  } */
+  /*   handleChange = (event) => {
+      let selectedRoles = this.state.selectedRoles
+      let val = event.target.value
+      if (!selectedRoles || !selectedRoles.length) {
+        selectedRoles = []
+        selectedRoles.push(val)
+      } else if (selectedRoles.indexOf(val) > -1) {
+        selectedRoles.splice(selectedRoles.indexOf(val), 1)
+      } else {
+        selectedRoles.push(val)
+      }
+      this.setState({ selectedRoles: selectedRoles })
+    } */
 
 
   handleChanges = (selectedOption) => {
