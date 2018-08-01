@@ -23,7 +23,7 @@ class NodeSummary extends React.Component {
             siteData: [],
             kernelData: [],
             typedata: [],
-            nodeHead: nodeHead,
+            nodeHead: JSON.parse(JSON.stringify(nodeHead)),
             selectedRowIndex: [],
             selectedRows: [],
             displayModel: false,

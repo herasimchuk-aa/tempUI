@@ -14,7 +14,7 @@ class NodeOpSummary extends React.Component {
             data: {},
             nodes: [],
             constNodes: [],
-            nodeSummaryHead: nodeHead
+            nodeSummaryHead: JSON.parse(JSON.stringify(nodeHead)),
         }
     }
 
