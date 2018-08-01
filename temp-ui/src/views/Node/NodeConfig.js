@@ -257,6 +257,7 @@ class NodeConfig extends Component {
     } else {
       selectedRowIndexes.push(rowIndex)
     }
+
     //this.setState({selectedRowIndexes:selectedRowIndexes})
 
   }

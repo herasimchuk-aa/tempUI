@@ -448,7 +448,7 @@ class NodeSummary extends React.Component {
     }
 
     click() {
-        this.setState({ displayModel: !this.state.displayModel, selectedSite: null, selectedRoles: [], selectedType: null, selectedLinux: null, selectedIso: null })
+        this.setState({ displayModel: !this.state.displayModel, selectedSite: null, selectedRoles: [], selectedType: null, selectedLinux: null, selectedIso: null, visible: false, visibleUnique: false })
     }
 
     getFilteredData = (data) => {
@@ -464,13 +464,11 @@ class NodeSummary extends React.Component {
         return (
             <Container-fluid >
                 <Row>
-
                     <Col sm="12">
                         <div className='marginLeft10 '>
                             <Media>
                                 <Media left>
-                                    <Button onClick={() => (this.onConfigureClick())} className="custBtn marginLeft13N" outline color="secondary">Configure</Button>
-
+                                    <Button onClick={() => (this.onConfigureClick())} className="custBtn marginLeft13N" disabled={!(this.state.selectedRowIndex.length > 0)} outline color="secondary">Configure</Button>
                                     <Button className="custBtn" outline color="secondary" onClick={() => (this.click())}>New</Button>
                                     {this.showDeleteButton()}
                                 </Media>
