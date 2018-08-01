@@ -154,7 +154,7 @@ class ConnectivitySummary extends React.Component {
                 else {
                     nodeTypeData = '-'
                 }
-                let nodeStatusData = "-";
+                let nodeStatusData = node.status;
                 if (node.status == "Mismatch") {
                     nodeStatusData = (<Badge color="danger">{node.status}</Badge>)
                 }

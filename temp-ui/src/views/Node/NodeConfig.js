@@ -196,7 +196,7 @@ class NodeConfig extends Component {
               }
               else {
                 color = "red"
-                if (node.validationStatus.interfacesStatus[portName].remoteInvader)
+                if ( node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].remoteInvader )
                   remoteInterfaceData.push(<UncontrolledTooltip placement="top" target={remoteInvaderKey}>{node.validationStatus.interfacesStatus[portName].remoteInvader}</UncontrolledTooltip>)
               }
             }
@@ -218,7 +218,7 @@ class NodeConfig extends Component {
               }
               else {
                 color = "red"
-                if (node.validationStatus.interfacesStatus[portName].remoteInterface)
+                if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].remoteInterface)
                   remoteInterfaceData.push(<UncontrolledTooltip placement="top" target={remoteInterfaceKey}>{node.validationStatus.interfacesStatus[portName].remoteInterface}</UncontrolledTooltip>)
               }
             }

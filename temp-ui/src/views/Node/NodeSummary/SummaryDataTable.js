@@ -163,7 +163,7 @@ export default class SummaryDataTable extends React.Component {
                 break
             case 'validateKernel': {
                 let color;
-                if (data[key]) {
+                if (data[key] && data.validationStatus) {
                     if (data.validationStatus && data.validationStatus.isKernelMatched) {
                         color = 'black';
                     }
@@ -179,7 +179,7 @@ export default class SummaryDataTable extends React.Component {
                 break
             case 'validateISO': {
                 let color;
-                if (data[key]) {
+                if (data[key] && data.validationStatus) {
                     if (data.validationStatus && data.validationStatus.isBaseISOMatched) {
                         color = 'black';
                     }
@@ -195,7 +195,8 @@ export default class SummaryDataTable extends React.Component {
                 break
             case 'validateType': {
                 let color;
-                if (data[key]) {
+		console.log(data)
+                if (data[key] && data.validationStatus) {
                     if (data.validationStatus && data.validationStatus.isTypeMatched) {
                         color = 'black';
                     }
@@ -211,7 +212,7 @@ export default class SummaryDataTable extends React.Component {
                 break
             case 'validateSN': {
                 let color;
-                if (data[key]) {
+                if (data[key] && data.validationStatus ) {
                     if (data.validationStatus && data.validationStatus.isSNMatched) {
                         color = 'black';
                     }
