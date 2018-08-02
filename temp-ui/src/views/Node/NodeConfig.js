@@ -56,7 +56,7 @@ class NodeConfig extends Component {
 
   retrieveRoleData(instance, data) {
     if (!data) {
-      alert("No data received");
+      NotificationManager.error('No Roles present', 'Role');
     }
     else {
       if (Object.keys(data).length) {
@@ -67,7 +67,7 @@ class NodeConfig extends Component {
 
   retrieveIsoData(instance, data) {
     if (!data) {
-      alert("No data received");
+      NotificationManager.error('No Base Linux ISOs present', 'Base Linux ISO');
     }
     else {
       if (Object.keys(data).length) {
@@ -78,7 +78,7 @@ class NodeConfig extends Component {
 
   retrieveKernelsData(instance, data) {
     if (!data) {
-      alert("No data received");
+      NotificationManager.error('No Kernels present', 'Kernel');
     }
     else {
       if (Object.keys(data).length) {
@@ -89,7 +89,7 @@ class NodeConfig extends Component {
 
   retrieveTypesData(instance, data) {
     if (!data) {
-      alert("No data received");
+      NotificationManager.error('No System Types present', 'System Tpye');
     }
     else {
       if (Object.keys(data).length) {
@@ -100,7 +100,7 @@ class NodeConfig extends Component {
 
   retrieveSiteData(instance, data) {
     if (!data) {
-      alert("No data received");
+      NotificationManager.error('No sites present', 'Site');
     }
     else {
       if (Object.keys(data).length) {

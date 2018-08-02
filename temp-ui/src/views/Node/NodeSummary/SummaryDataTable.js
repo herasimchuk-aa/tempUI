@@ -267,14 +267,14 @@ export default class SummaryDataTable extends React.Component {
                         rowClassName += ' headerRow3 '
                     }
 
-                    if (props.showCheckBox) {
-                        tableSize = 11
-                        checkBoxColumn = (
-                            <Col sm="1" className="" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                <Input key={datum.name ? datum.name + '_' + rowIndex : datum.label + '_' + rowIndex} style={{ cursor: 'pointer' }}
-                                    type="checkbox" onChange={() => (self.checkBoxClick(rowIndex))} defaultChecked={selectedRowIndexes && selectedRowIndexes.length && selectedRowIndexes.indexOf(rowIndex) > -1 ? true : false} />
-                            </Col>)
-                    }
+                    // if (props.showCheckBox) {
+                    //     tableSize = 11
+                    //     checkBoxColumn = (
+                    //         <Col sm="1" className="" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    //             <Input key={datum.name ? datum.name + '_' + rowIndex : datum.label + '_' + rowIndex} style={{ cursor: 'pointer' }}
+                    //                 type="checkbox" onChange={() => (self.checkBoxClick(rowIndex))} defaultChecked={selectedRowIndexes && selectedRowIndexes.length && selectedRowIndexes.indexOf(rowIndex) > -1 ? true : false} />
+                    //         </Col>)
+                    // }
 
                     // if(props.showEditButton) {
                     //         editButtonColumn = (
@@ -293,6 +293,15 @@ export default class SummaryDataTable extends React.Component {
                         }
                         let value = self.getValue(key, datum, operation, rowIndex)
 
+
+                        if (props.showCheckBox) {
+                            tableSize = 11
+                            checkBoxColumn = (
+                                <Col sm="1" className="" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                    <Input key={self.counter++} style={{ cursor: 'pointer' }}
+                                        type="checkbox" onChange={() => (self.checkBoxClick(rowIndex))} defaultChecked={selectedRowIndexes && selectedRowIndexes.length && selectedRowIndexes.indexOf(rowIndex) > -1 ? true : false} />
+                                </Col>)
+                        }
 
                         columns.push(<Col sm={header.colSize ? header.colSize : 1} className="pad"> {value}</Col>)
                     })

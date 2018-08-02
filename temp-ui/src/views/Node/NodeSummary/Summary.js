@@ -41,11 +41,11 @@ class NodeSummary extends React.Component {
 
     componentDidMount() {
         ServerAPI.DefaultServer().fetchAllServerNodes(this.updateNodeSummary, this);
-        ServerAPI.DefaultServer().fetchAllRoles(this.retrieveRoleData, this);
-        ServerAPI.DefaultServer().fetchAllIso(this.retrieveIsoData, this);
-        ServerAPI.DefaultServer().fetchAllKernels(this.retrieveKernelsData, this);
-        ServerAPI.DefaultServer().fetchAllSystemTypes(this.retrieveTypesData, this);
-        ServerAPI.DefaultServer().fetchAllSite(this.retrieveSiteData, this);
+        // ServerAPI.DefaultServer().fetchAllRoles(this.retrieveRoleData, this);
+        // ServerAPI.DefaultServer().fetchAllIso(this.retrieveIsoData, this);
+        // ServerAPI.DefaultServer().fetchAllKernels(this.retrieveKernelsData, this);
+        // ServerAPI.DefaultServer().fetchAllSystemTypes(this.retrieveTypesData, this);
+        // ServerAPI.DefaultServer().fetchAllSite(this.retrieveSiteData, this);
     }
 
     updateNodeSummary = (instance, nodes) => {
@@ -57,7 +57,7 @@ class NodeSummary extends React.Component {
 
     retrieveData(instance, data) {
         if (data === undefined) {
-            alert("No data received");
+            NotificationManager.error('No Nodes present', 'Node');
         }
         else {
             instance.setState({ nodes: data, selectedRowIndex: [] });
@@ -67,7 +67,7 @@ class NodeSummary extends React.Component {
 
     retrieveRoleData(instance, data) {
         if (!data) {
-            alert("No data received");
+            NotificationManager.error('No Roles present', 'Role');
         }
         else {
             if (Object.keys(data).length) {
@@ -78,7 +78,7 @@ class NodeSummary extends React.Component {
 
     retrieveIsoData(instance, data) {
         if (!data) {
-            alert("No data received");
+            NotificationManager.error('No Base Linux ISOs present', 'Base Linux ISO');
         }
         else {
             if (Object.keys(data).length) {
@@ -89,7 +89,7 @@ class NodeSummary extends React.Component {
 
     retrieveSiteData(instance, data) {
         if (!data) {
-            alert("No data received");
+            NotificationManager.error('No sites present', 'Site');
         }
         else {
             if (Object.keys(data).length) {
@@ -100,7 +100,7 @@ class NodeSummary extends React.Component {
 
     retrieveKernelsData(instance, data) {
         if (!data) {
-            alert("No data received");
+            NotificationManager.error('No Kernels present', 'Kernel');
         }
         else {
             if (Object.keys(data).length) {
@@ -111,7 +111,7 @@ class NodeSummary extends React.Component {
 
     retrieveTypesData(instance, data) {
         if (!data) {
-            alert("No data received");
+            NotificationManager.error('No System Types present', 'System Tpye');
         }
         else {
             if (Object.keys(data).length) {
@@ -344,10 +344,10 @@ class NodeSummary extends React.Component {
                 <Modal isOpen={this.state.displayModel} toggle={() => this.click()} size="lg" centered="true" >
                     <ModalHeader toggle={() => this.click()}>Add Node</ModalHeader>
                     <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >
-                        Name field is mandatory
+                        {this.state.errMsg}
                     </Alert>
                     <Alert color="danger" isOpen={this.state.visibleUnique} toggle={() => this.onDismiss()} >
-                        Name field is already exist,please enter unique name
+                        {this.state.errMsg}
                     </Alert>
                     <ModalBody>
                         <Row>
@@ -398,12 +398,16 @@ class NodeSummary extends React.Component {
         })
         if ((!name) || (!validateUnique)) {
             if (!name) {
-                this.setState({ visible: true });
+                this.setState({ visible: true, errMsg: "Name field is mandatory" });
             }
             if (!validateUnique) {
-                this.setState({ visibleUnique: true });
+                this.setState({ visibleUnique: true, errMsg: "Name field is already exist, please enter unique name" });
             }
 
+            return;
+        }
+        if (!this.state.selectedRoles.length) {
+            this.setState({ visible: true, errMsg: "Role is mandatory" })
             return;
         }
         let roles = [];
@@ -443,7 +447,7 @@ class NodeSummary extends React.Component {
             a = []
         }
         a.push(data)
-        instance.setState({ data: a, displayModel: !instance.state.displayModel })
+        instance.setState({ data: a, displayModel: !instance.state.displayModel, errMsg: '' })
         NotificationManager.success('Added Successfully', 'Node');
     }
 

@@ -771,9 +771,10 @@ export class ServerAPI {
                     let jsonObj = JSON.parse(xhr.responseText);
                     if (jsonObj.success) {
                         callback(instance);
+                        NotificationManager.success('Deleted Successfully', 'Node');
                     }
                     else
-                        alert("Something went wrong!")
+                        NotificationManager.error('Something went wrong', 'Node');
                 } catch (err) {
                     console.log("POST :: ERROR :: " + err);
                 }

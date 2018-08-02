@@ -8,7 +8,7 @@ export let nodeHead = [
     },
     {
         id: 'site',
-        displayName: 'site',
+        displayName: 'Site',
         colSize: 1
     },
     {
