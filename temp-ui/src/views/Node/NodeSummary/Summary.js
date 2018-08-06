@@ -10,7 +10,8 @@ import '../../views.css';
 import { NotificationManager } from 'react-notifications';
 import SearchComponent from '../../../components/SearchComponent/SearchComponent';
 import MultiselectDropDown from '../../../components/MultiselectDropdown/MultiselectDropDown';
-import { trimString } from '../../../components/Utility/Utility';
+import { trimString, converter } from '../../../components/Utility/Utility';
+import { CSVLink } from 'react-csv';
 
 class NodeSummary extends React.Component {
     constructor(props) {
@@ -165,21 +166,12 @@ class NodeSummary extends React.Component {
         return siteHtml;
     }
 
-    converter(data) {
-        let arr = [];
-        if (!data || !data.length)
-            return arr;
-        data.map((item) => {
-            arr.push({ 'label': item, 'value': item })
-        })
-        return arr;
-    }
 
     checkBoxClick = (rowIndex, singleRowClick) => {
         if (singleRowClick) {
             let { nodes } = this.state
             let selectedRows = [nodes[rowIndex]]
-            selectedRows[0].roles = this.converter(nodes[rowIndex].roles);
+            selectedRows[0].roles = converter(nodes[rowIndex].roles);
             this.setState({
                 selectedRows, redirect: true
             })
@@ -461,6 +453,34 @@ class NodeSummary extends React.Component {
         })
     }
 
+    downloadCSV() {
+        if (!this.state.nodes || !this.state.nodes.length) {
+            return;
+        }
+        let csvData = [];
+        this.state.nodes.map((item) => {
+            console.log(item);
+            csvData.push({
+                'Name': item.name,
+                'Site': item.site,
+                'Status': item.status,
+                'Roles': item.roles,
+                'Type': item.nodeType,
+                'Serial Number': item.serialNumber,
+                'Linux Kernel': item.kernel,
+                'Base Linux ISO': item.linuxISO,
+                // 'Interface Name': item.allInterfaces.map((intItem) => { csvData.push(intItem.port) }),
+                // 'IP Address': item.allInterfaces.map((intItem) => { csvData.push(intItem.IPAddress) }),
+                // 'Management Interface': item.allInterfaces.map((intItem) => { csvData.push(intItem.isMngmntIntf) }),
+
+            })
+
+        })
+
+
+        return <CSVLink data={csvData} className="btn btn-primary">Download CSV</CSVLink>
+    }
+
     render() {
         if (this.state.redirect) {
             return <Redirect push to={{ pathname: '/node/config', state: this.state.selectedRows }} />
@@ -480,6 +500,7 @@ class NodeSummary extends React.Component {
                                 </Media>
                                 <Media right>
                                     <SearchComponent data={this.state.constNodes} getFilteredData={this.getFilteredData} />
+                                    {/* {this.downloadCSV()} */}
                                 </Media>
                             </Media>
                             <Row className="tableTitle">Node Config Summary</Row>

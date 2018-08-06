@@ -21,3 +21,13 @@ export function validateName(name) {
         return false;
     }
 }
+
+export function converter(data) {
+    let arr = [];
+    if (!data || !data.length)
+        return arr;
+    data.map((item) => {
+        arr.push({ 'label': item, 'value': item })
+    })
+    return arr;
+}
