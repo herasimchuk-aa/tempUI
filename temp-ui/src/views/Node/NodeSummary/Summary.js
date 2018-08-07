@@ -42,11 +42,11 @@ class NodeSummary extends React.Component {
 
     componentDidMount() {
         ServerAPI.DefaultServer().fetchAllServerNodes(this.updateNodeSummary, this);
-        // ServerAPI.DefaultServer().fetchAllRoles(this.retrieveRoleData, this);
-        // ServerAPI.DefaultServer().fetchAllIso(this.retrieveIsoData, this);
-        // ServerAPI.DefaultServer().fetchAllKernels(this.retrieveKernelsData, this);
-        // ServerAPI.DefaultServer().fetchAllSystemTypes(this.retrieveTypesData, this);
-        // ServerAPI.DefaultServer().fetchAllSite(this.retrieveSiteData, this);
+        ServerAPI.DefaultServer().fetchAllRoles(this.retrieveRoleData, this);
+        ServerAPI.DefaultServer().fetchAllIso(this.retrieveIsoData, this);
+        ServerAPI.DefaultServer().fetchAllKernels(this.retrieveKernelsData, this);
+        ServerAPI.DefaultServer().fetchAllSystemTypes(this.retrieveTypesData, this);
+        ServerAPI.DefaultServer().fetchAllSite(this.retrieveSiteData, this);
     }
 
     updateNodeSummary = (instance, nodes) => {
@@ -469,6 +469,13 @@ class NodeSummary extends React.Component {
                 'Serial Number': item.serialNumber,
                 'Linux Kernel': item.kernel,
                 'Base Linux ISO': item.linuxISO,
+                'Interface': item.allInterfaces.map((intItem) => {
+                    csvData.push({
+                        'Interface Name': intItem.port,
+                        'IP': intItem.IPAddress,
+                        'Management Interface': intItem.isMngmntIntf
+                    })
+                }),
                 // 'Interface Name': item.allInterfaces.map((intItem) => { csvData.push(intItem.port) }),
                 // 'IP Address': item.allInterfaces.map((intItem) => { csvData.push(intItem.IPAddress) }),
                 // 'Management Interface': item.allInterfaces.map((intItem) => { csvData.push(intItem.isMngmntIntf) }),
