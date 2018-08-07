@@ -11,7 +11,7 @@ import { NotificationManager } from 'react-notifications';
 import SearchComponent from '../../../components/SearchComponent/SearchComponent';
 import MultiselectDropDown from '../../../components/MultiselectDropdown/MultiselectDropDown';
 import { trimString, converter } from '../../../components/Utility/Utility';
-import { CSVLink } from 'react-csv';
+// import { CSVLink } from 'react-csv';
 
 class NodeSummary extends React.Component {
     constructor(props) {
