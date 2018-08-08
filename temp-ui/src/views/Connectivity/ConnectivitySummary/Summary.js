@@ -80,7 +80,7 @@ class ConnectivitySummary extends React.Component {
                                     color = "black"
                                 }
                                 else {
-                                    color = "red"
+                                    color = "black"      /* ****** */
                                 }
                             }
                             ipFont = (<font color={color}>{interfaceItem.IPAddress}</font>)
@@ -112,7 +112,7 @@ class ConnectivitySummary extends React.Component {
                                 color = "black"
                             }
                             else if (interfaceItem.connectedTo.lldpMatched == false || interfaceItem.connectedTo.lldpMatched == 'False') {
-                                color = "red"
+                                color = "black" /*****/
                             }
                             connectedToData = (<font color={color}>{interfaceItem.connectedTo.serverName + " : " + interfaceItem.connectedTo.serverPort}</font>)
                         }
@@ -176,7 +176,7 @@ class ConnectivitySummary extends React.Component {
                     if (node.validationStatus && node.validationStatus.isTypeMatched) {
                         color = "black"
                     } else {
-                        color = "red"
+                        color = "black" /*******/
                         if (node.validationStatus.type)
                             nodeTypeData.push(<UncontrolledTooltip placement="top" target={tooltipId}>{node.validationStatus.type}</UncontrolledTooltip>)
                     }

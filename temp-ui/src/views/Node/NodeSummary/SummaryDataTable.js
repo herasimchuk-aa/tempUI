@@ -1,8 +1,17 @@
-import React from 'react';
-import { Col, Row, Input, Popover, PopoverBody, Badge, UncontrolledTooltip } from 'reactstrap';
+import React, { Component } from 'react';
+import { Table, Column, Cell } from 'fixed-data-table-2'
+import { TextCell, TextCellForArray } from './Cells';
+import 'fixed-data-table-2/dist/fixed-data-table.css';
+import { Input, Popover, PopoverBody } from 'reactstrap';
 
-const POPOVER_PLACEMENT = "auto"
-export default class SummaryDataTable extends React.Component {
+var widthOffset = window.innerWidth < 680 ? 0 : 290;
+const containerWidth = window.innerWidth - widthOffset;
+const containerHeight = window.innerHeight - 300;
+const rowHeight = 50
+const headerHeight = 50
+const POPOVER_PLACEMENT = "top"
+class SummaryDataTable extends Component {
+
     constructor(props) {
         super(props);
         this.state = {
@@ -10,15 +19,15 @@ export default class SummaryDataTable extends React.Component {
             heading: [],
             selectedRowIndexes: [],
             selectEntireRow: false,
-            popoverOpen: false
+            popoverOpen: false,
+            columnWidths: {}
         };
         this.counter = 0;
         this.constHeading = JSON.parse(JSON.stringify(props.heading))
     }
 
     static defaultProps = {
-        showCheckBox: true,
-
+        showCheckBox: true
     }
 
     static getDerivedStateFromProps(props, state) {
@@ -31,44 +40,97 @@ export default class SummaryDataTable extends React.Component {
         }
     }
 
-    drawHeader(props = this.props) {
-        let headNames = [];
-        this.state.heading.map((item) => (headNames.push(<Col sm={item.colSize} className="head-name">{item.displayName}</Col>)));
-        let tableSize = 12
-
-        if (props.showCheckBox) {
-            tableSize = 11
-        }
-        // if (props.showEditButton) {
-        //     tableSize = 10
-        // }
+    render() {
         return (
-            <Row className="headerRow cursor-pointer" id={'Popover-' + POPOVER_PLACEMENT} onClick={this.handleClick} onContextMenu={this.contextMenu}>
-                <Col sm="1" className="head-name"></Col>
-                <Col sm={tableSize} className="head-name" >
-                    <Row>
-                        {headNames}
-                    </Row>
-                </Col>
+            <div>
+                <div id="popoverContainer">
+                    {this.drawPopOver()}
+                    {this.drawtable()}
+                </div>
+            </div>
+        );
+    }
 
-            </Row>
+    drawtable = (props = this.props) => {
+        let { data } = this.state
+        let columns = this.drawColumns()
+        let dataLen = 0
+        if (data && data.length) {
+            dataLen = data.length
+        }
+        let tableHeight = rowHeight * (dataLen) + headerHeight + 2
+        return (
+            <div>
+                <div style={{ float: "right" }} id={'popoverPlacementDiv'}></div>
+                <Table
+                    rowHeight={rowHeight}
+                    headerHeight={headerHeight}
+                    rowsCount={dataLen}
+                    width={containerWidth}
+                    height={Math.min(containerHeight, tableHeight)}
+                    rowClassNameGetter={(rowIndex) => "cursor-pointer"}
+                    onRowDoubleClick={(e, rowIndex) => this.checkBoxClick(rowIndex, true)}
+                    onColumnResizeEndCallback={this._onColumnResizeEndCallback}
+                    isColumnResizing={false}
+                    {...props}>
+                    {columns}
+                </Table>
+            </div>
         )
     }
 
-    handleClick = (event) => {
-        const { popoverOpen } = this.state;
-        if (popoverOpen) this.setState({ popoverOpen: false, });
-
+    _onColumnResizeEndCallback = (newColumnWidth, columnKey) => {
+        this.setState(({ columnWidths }) => ({
+            columnWidths: {
+                ...columnWidths,
+                [columnKey]: newColumnWidth,
+            }
+        }));
     }
 
-    contextMenu = (e) => {
-        if (!e) {
-            return
+    drawColumns = (props = this.props) => {
+        let { heading } = this.props
+        if (!heading || !heading.length)
+            return []
+        let columns = []
+        let self = this
+        let { selectedRowIndexes, columnWidths } = this.state
+        if (props.showCheckBox) {
+            columns.push(
+                <Column
+                    columnKey={"checkBoxColumn"}
+                    cell={({ rowIndex, width, height }) => (
+                        <Cell
+                            width={50}
+                            align="right"
+                        >
+                            <Input key={self.counter++} style={{ cursor: 'pointer' }}
+                                type="checkbox" onChange={() => (self.checkBoxClick(rowIndex))} defaultChecked={selectedRowIndexes
+                                    && selectedRowIndexes.length && selectedRowIndexes.indexOf(rowIndex) > -1 ? true : false} />
+                        </Cell>
+                    )}
+                    width={50}
+                />
+            )
         }
-        e.preventDefault();
-        this.setState({
-            popoverOpen: !this.state.popoverOpen
+        heading.map(function (header) {
+            let headName = header.displayName
+            let id = header.id
+            let operation = header.operation;
+            let cellValue = self.getCellValue(operation)
+            columns.push(
+                <Column
+                    columnKey={id}
+                    header={<Cell key={headName} id={id} onContextMenu={self.contextMenu}>{headName}</Cell>}
+                    cell={cellValue}
+                    flexGrow={1}
+                    width={columnWidths[id] ? columnWidths[id] : 50}
+                    isResizable={header.isResizable}
+                />
+            )
         })
+        return columns
+
     }
 
     drawColumnSelection = () => {
@@ -127,228 +189,58 @@ export default class SummaryDataTable extends React.Component {
         })
     }
 
-
-    drawPopOver = () => {
-        return (
-            <div ref={this.wrapperRef}>
-                <Popover placement={POPOVER_PLACEMENT} isOpen={this.state.popoverOpen} target={'Popover-' + POPOVER_PLACEMENT} toggle={this.contextMenu}>
-                    <PopoverBody>
-                        {this.drawColumnSelection()}
-                    </PopoverBody>
-                </Popover></div>)
-    }
-
-    getValue = (key, data, operation, rowIndex) => {
-        let value = []
-        switch (operation) {
-            case "array":
-                if (data.hasOwnProperty(key)) {
-                    let arr = data[key]
-                    if (arr && arr.length) {
-                        let str = ''
-                        arr.map((val, index) => {
-                            if (index == arr.length - 1) {
-                                str += val
-                            }
-                            else {
-                                str += val + ','
-                            }
-                        })
-                        value = str
-                    }
-                    if (value == "") {
-                        value = '-'
-                    }
-                }
-                break
-            case 'validateKernel': {
-                let color;
-                if (data[key] && data.validationStatus) {
-                    if (data.validationStatus && data.validationStatus.isKernelMatched) {
-                        color = 'black';
-                    }
-                    else {
-                        color = 'red';
-                        if (data.validationStatus.kernel)
-                            value.push(<UncontrolledTooltip placement="top" target={key + rowIndex}>{data.validationStatus.kernel}</UncontrolledTooltip>)
-                    }
-                }
-                value.push(<font id={key + rowIndex} color={color}>{data[key]}</font>)
-            }
-
-                break
-            case 'validateISO': {
-                let color;
-                if (data[key] && data.validationStatus) {
-                    if (data.validationStatus && data.validationStatus.isBaseISOMatched) {
-                        color = 'black';
-                    }
-                    else {
-                        color = 'red';
-                        if (data.validationStatus.baseISO)
-                            value.push(<UncontrolledTooltip placement="top" target={key + rowIndex}>{data.validationStatus.baseISO}</UncontrolledTooltip>)
-                    }
-                }
-                value.push(<font id={key + rowIndex} color={color}>{data[key]}</font>)
-            }
-
-                break
-            case 'validateType': {
-                let color;
-                if (data[key] && data.validationStatus) {
-                    if (data.validationStatus && data.validationStatus.isTypeMatched) {
-                        color = 'black';
-                    }
-                    else {
-                        color = 'red';
-                        if (data.validationStatus.type)
-                            value.push(<UncontrolledTooltip placement="top" target={key + rowIndex}>{data.validationStatus.type}</UncontrolledTooltip>)
-                    }
-                }
-                value.push(<font id={key + rowIndex} color={color}>{data[key]}</font>)
-            }
-
-                break
-            case 'validateSN': {
-                let color;
-                if (data[key] && data.validationStatus) {
-                    if (data.validationStatus && data.validationStatus.isSNMatched) {
-                        color = 'black';
-                    }
-                    else {
-                        color = 'red';
-                        if (data.validationStatus.serialNumber)
-                            value.push(<UncontrolledTooltip placement="top" target={key + rowIndex}>{data.validationStatus.serialNumber}</UncontrolledTooltip>)
-                    }
-                }
-                value.push(<font id={key + rowIndex} color={color}>{data[key]}</font>)
-            }
-
-                break
-            case 'badge': {
-                if (data[key] == "Mismatch") {
-                    value = (<Badge color="danger">{data[key]}</Badge>)
-                }
-                else {
-                    value = data[key]
-                }
-                break
-            }
-            default:
-                value = data[key]
-                break
-        }
-        if (!value) {
-            value = "-"
-        }
-        return value
-    }
-
-
-    drawtable(props = this.props) {
-        let { data, selectedRowIndexes } = this.state
-        let rows = []
-        let checkBoxColumn = null
-        let editButtonColumn = null
-        let tableSize = 12
-        let header = this.drawHeader()
-        rows.push(header)
-        let self = this
-        if (data && data.length) {
-            let colHeader = this.state.heading
-            data.map(function (datum, rowIndex) {
-                if (datum && Object.keys(datum).length) {
-                    let rowClassName = 'headerRow1'
-
-                    if (rowIndex % 2 === 0) {
-                        rowClassName = 'headerRow2'
-                    }
-                    if (rowIndex == data.length - 1) {
-                        rowClassName += ' headerRow3 '
-                    }
-
-                    // if (props.showCheckBox) {
-                    //     tableSize = 11
-                    //     checkBoxColumn = (
-                    //         <Col sm="1" className="" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    //             <Input key={datum.name ? datum.name + '_' + rowIndex : datum.label + '_' + rowIndex} style={{ cursor: 'pointer' }}
-                    //                 type="checkbox" onChange={() => (self.checkBoxClick(rowIndex))} defaultChecked={selectedRowIndexes && selectedRowIndexes.length && selectedRowIndexes.indexOf(rowIndex) > -1 ? true : false} />
-                    //         </Col>)
-                    // }
-
-                    // if(props.showEditButton) {
-                    //         editButtonColumn = (
-                    //             <Col sm="1">
-                    //                 <i className="fa fa-pencil" aria-hidden="true" onClick={() => (self.toggleModel(rowIndex))}></i>
-                    //             </Col>
-                    //         )
-                    // }
-
-                    let columns = []
-                    colHeader.map(function (header) {
-                        let key = header.id
-                        let operation;
-                        if (header.operation) {
-                            operation = header.operation;
-                        }
-                        let value = self.getValue(key, datum, operation, rowIndex)
-
-
-                        if (props.showCheckBox) {
-                            tableSize = 11
-                            checkBoxColumn = (
-                                <Col sm="1" className="" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                    <Input key={self.counter++} style={{ cursor: 'pointer' }}
-                                        type="checkbox" onChange={() => (self.checkBoxClick(rowIndex))} defaultChecked={selectedRowIndexes && selectedRowIndexes.length && selectedRowIndexes.indexOf(rowIndex) > -1 ? true : false} />
-                                </Col>)
-                        }
-
-                        columns.push(<Col sm={header.colSize ? header.colSize : 1} className="pad"> {value}</Col>)
-                    })
-                    var row;
-                    if (props.selectEntireRow) {
-                        row = (<Row className={rowClassName} >
-                            {checkBoxColumn}
-                            <Col sm="11" className="pad break-word" style={{ cursor: 'pointer' }} onClick={() => self.checkBoxClick(rowIndex, true)} >
-                                <Row>
-                                    {columns}
-                                </Row>
-                            </Col>
-                            {/* {editButtonColumn} */}
-                        </Row>)
-                    }
-                    else {
-                        row = (<Row className={rowClassName} >
-                            {checkBoxColumn}
-                            <Col sm={tableSize} className="pad break-word">
-                                <Row>
-                                    {columns}
-                                </Row>
-                            </Col>
-                            {/* {editButtonColumn} */}
-                        </Row>)
-                    }
-                    rows.push(row)
-                }
-            })
-        }
-        return rows
-    }
-
     checkBoxClick = (rowIndex, singleRowClick) => {
         this.props.checkBoxClick(rowIndex, singleRowClick)
     }
 
-    // toggleModel = (rowIndex) => {
-    //     this.props.toggleModel(rowIndex)
-    // }
+    contextMenu = (e) => {
+        if (!e) {
+            return
+        }
+        e.preventDefault();
+        this.setState({
+            popoverOpen: !this.state.popoverOpen
+        })
+    }
 
-    render() {
+    drawPopOver = () => {
+        if (!this.state.popoverOpen)
+            return null
         return (
-            <div >
-                {this.drawtable()}
-                {this.drawPopOver()}
-            </div>
-        );
+            <div ref={this.wrapperRef}>
+                <Popover placement={'top-end'} hideArrow={false}
+                    container={document.getElementById('popoverPlacementDiv')}
+                    isOpen={this.state.popoverOpen} target={'popoverPlacementDiv'} toggle={this.contextMenu}>
+                    <PopoverBody>
+                        {this.drawColumnSelection()}
+                    </PopoverBody>
+                </Popover>
+            </div>)
+    }
+
+
+    getCellValue = (operation) => {
+        let { data } = this.state
+        let value = null
+        switch (operation) {
+            case "array":
+                value = <TextCellForArray data={data} />
+                break
+            // case 'validateKernel':
+            //     break
+            // case 'validateISO':
+            //     break
+            // case 'validateType':
+            //     break
+            // case 'validateSN':
+            //     break
+            // case 'badge':
+            default:
+                value = <TextCell data={data} />
+                break
+        }
+        return value
     }
 }
+
+export default SummaryDataTable;
