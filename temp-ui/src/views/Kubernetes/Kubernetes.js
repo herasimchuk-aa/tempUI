@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Label, Row, Col, Button, Input, Media, Card, CardHeader, CardBody, InputGroup, InputGroupAddon } from 'reactstrap';
 import '../views.css';
 import { ServerAPI } from '../../ServerAPI';
+import ConfirmationModal from '../../components/ConfirmationModal/ConfirmationModal';
 
 class Kubernetes extends Component {
 
@@ -9,7 +10,8 @@ class Kubernetes extends Component {
         super(props);
         this.state = {
             data: [],
-            selectedRowIndex: []
+            selectedRowIndex: [],
+            deployModal: false
         }
     }
 
@@ -52,7 +54,7 @@ class Kubernetes extends Component {
                     </Media>
                     <Media body></Media>
                     <Media right>
-                        <Button className="custBtn" outline color="secondary" onClick={() => (this.deploy())}> Deploy </Button>
+                        <Button className="custBtn" outline color="secondary" onClick={() => (this.openConfirmDeploy())}> Deploy </Button>
                         <Button className="custBtn" outline color="secondary" onClick={() => this.dashboardClick(item)} > Dashboard </Button>
                     </Media>
                 </Media>)
@@ -110,6 +112,16 @@ class Kubernetes extends Component {
         //else {
         //    alert("Please make a selection in order to deploy")
         //}
+    }
+
+    openConfirmDeploy() {
+        this.setState({ deployModal: true })
+    }
+
+    confirmDeploy() {
+        if (this.state.deployModal) {
+            return (<ConfirmationModal action={this.deploy} actionName={'Deploy'} open={true}></ConfirmationModal>)
+        }
     }
 
     renderFilterComponent = () => {
@@ -225,8 +237,8 @@ class Kubernetes extends Component {
             <Container-fluid>
                 <Row>
                     <Col sm="12">
-
                         {this.getData()}
+                        {this.confirmDeploy()}
                     </Col>
                     {/* <Col sm="3">
 
