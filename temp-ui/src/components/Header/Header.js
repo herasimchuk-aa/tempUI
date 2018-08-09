@@ -3,12 +3,20 @@ import {
   Nav,
   NavItem,
   NavbarToggler,
-  NavbarBrand,
+  NavbarBrand, Button
 } from 'reactstrap';
 import Styles from './Header.css';
-import '../../views/views.css'
+import '../../views/views.css';
+import { Redirect } from 'react-router-dom';
 
 class Header extends Component {
+
+  constructor(props) {
+    super(props)
+    this.state = {
+      logout: false
+    }
+  }
 
   sidebarToggle(e) {
     e.preventDefault();
@@ -30,7 +38,14 @@ class Header extends Component {
     document.body.classList.toggle('aside-menu-hidden');
   }
 
+  logOut = () => {
+    this.setState({ logout: true })
+  }
+
   render() {
+    if (this.state.logout) {
+      return <Redirect to={{ pathname: '/' }} />
+    }
     return (
       <header className="app-header navbar">
         {/* <div className="HeaderNameClass" style={{ width: '9%', textAlign: 'center', lineHeight: '25px' }}> PLATINA <font style={{ fontSize: '14px' }}>COMMAND CENTER</font></div> */}
@@ -42,6 +57,7 @@ class Header extends Component {
         <NavbarToggler className="d-md-down-none mr-auto" onClick={this.sidebarToggle}>
           <span className="navbar-toggler-icon"></span>
         </NavbarToggler>
+        <Button className="custBtn" onClick={() => (this.logOut())}><span>Log Out</span></Button>
 
         {/* <NavbarToggler className="d-md-down-none" onClick={this.asideToggle}>
           <span className="navbar-toggler-icon"></span>

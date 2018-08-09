@@ -1,7 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {HashRouter, Route, Switch} from 'react-router-dom';
-import createBrowserHistory from 'history/createBrowserHistory'
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import createBrowserHistory from 'history/createBrowserHistory';
+import { Redirect } from 'react-router-dom';
 
 // Styles
 // Import Flag Icons Set
@@ -13,17 +14,21 @@ import 'simple-line-icons/css/simple-line-icons.css';
 // Import Main styles for this application
 import '../scss/style.scss'
 // Temp fix for reactstrap
-import '../scss/core/_dropdown-menu-right.scss'
+import '../scss/core/_dropdown-menu-right.scss';
 
 // Containers
-import Full from './containers/Full/'
+import Full from './containers/Full/';
+import Login from './views/Login/Login';
+import Dashboard from './views/Dashboard/Dashboard';
 
 export const customHistory = createBrowserHistory()
 
 ReactDOM.render((
-  <HashRouter>
+  <BrowserRouter>
     <Switch>
-      <Route path="/" name="Home" component={Full}/>
+      <Route path="/pcc" name="Home" component={Full} />
+      <Route exact path="/" name="login" component={Login} />
     </Switch>
-  </HashRouter>
+  </BrowserRouter>
+
 ), document.getElementById('root'));

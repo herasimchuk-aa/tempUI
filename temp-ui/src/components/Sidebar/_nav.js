@@ -2,7 +2,7 @@ export default {
   items: [
     {
       name: 'Dashboard',
-      url: '/dashboard',
+      url: '/pcc/dashboard',
       icon: 'icon-speedometer',
       badge: {
         variant: 'info',
@@ -15,83 +15,83 @@ export default {
     },
     {
       name: 'Node',
-      url : '/node',
+      url: '/pcc/node',
       icon: 'icon-puzzle',
-      
+
       children: [
         {
           name: 'Summary',
-          url: '/node/Summary',
+          url: '/pcc/node/Summary',
           icon: 'icon-cursor',
         },
         {
           name: 'Node Config',
-          url: '/node/NodeConfigSummary',
+          url: '/pcc/node/NodeConfigSummary',
           icon: 'icon-layers',
         },
         {
           name: 'Roles',
-          url: '/node/Roles',
+          url: '/pcc/node/Roles',
           icon: 'icon-pie-chart',
         },
         {
           name: 'Types',
-          url: '/node/Types',
+          url: '/pcc/node/Types',
           icon: 'icon-note',
         },
         {
           name: 'Linux Kernel',
-          url: '/node/Linuxkernel',
+          url: '/pcc/node/Linuxkernel',
           icon: 'icon-map',
         },
         {
           name: 'Site',
-          url: '/node/Site',
+          url: '/pcc/node/Site',
           icon: 'icon-map',
         },
         {
           name: 'Base Linux ISO',
-          url: '/node/BaseLinuxIso',
+          url: '/pcc/node/BaseLinuxIso',
           icon: 'icon-bell',
         }
       ],
     },
     {
       name: 'Connectivity',
-      url : '/connectivity',
+      url: '/pcc/connectivity',
       icon: 'icon-pencil',
       children: [
-       {
-         name: 'Summary',
-         url: '/connectivity/Summary',
-         icon: 'icon-star',
-       }
+        {
+          name: 'Summary',
+          url: '/pcc/connectivity/Summary',
+          icon: 'icon-star',
+        }
       ],
     },
     {
       name: 'Monitoring',
-      url: '/monitoring',
+      url: '/pcc/monitoring',
       icon: 'icon-calculator',
       children: [{
         name: 'BMC Monitor',
-        url: '/monitoring/BmcMonitor',
+        url: '/pcc/monitoring/BmcMonitor',
         icon: 'icon-calculator',
       },
       {
-         name: 'Tiles-App',
-         url: '/monitoring/TilesApp',
-         icon: 'icon-layers',
-       },
-      // {
-      //   name: 'IPVS',
-      //   url: '/monitoring/ipvs',
-      //   icon: 'icon-graph',
-      // },
-    ]
+        name: 'Tiles-App',
+        url: '/pcc/monitoring/TilesApp',
+        icon: 'icon-layers',
+      },
+        // {
+        //   name: 'IPVS',
+        //   url: '/monitoring/ipvs',
+        //   icon: 'icon-graph',
+        // },
+      ]
     },
     {
       name: 'Kubernetes',
-      url: '/kubernetes',
+      url: '/pcc/kubernetes',
       icon: 'icon-vector',
     },
     // {

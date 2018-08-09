@@ -383,7 +383,7 @@ class NodeConfig extends Component {
 
   provisionModal() {
     if (this.state.displayProvisionModel) {
-      <ConfirmationModal actionName={'Provision'} open={true}></ConfirmationModal>
+      return (<ConfirmationModal actionName={'Provision'} open={true}></ConfirmationModal>)
     }
   }
 

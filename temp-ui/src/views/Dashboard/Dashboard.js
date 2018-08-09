@@ -28,8 +28,8 @@ import {
 
 class Dashboard extends Component {
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         let ipAddress = ServerAPI.DefaultServer().DefaultInvader();
 
         this.state = {

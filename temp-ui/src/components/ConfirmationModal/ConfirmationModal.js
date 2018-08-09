@@ -15,7 +15,10 @@ class ConfirmationModal extends Component {
     }
 
     action = () => {
-        this.props.action()
+        if(this.props.action){
+            this.props.action()
+        }
+        
         this.setState({ open: false })
     }
 

@@ -27,7 +27,11 @@ import Kubernetes from '../../views/Kubernetes/Kubernetes'
 
 
 class Full extends Component {
+    constructor(props) {
+        super(props)
+    }
     render() {
+
         return (
             <div className="app">
                 <Header />
@@ -38,23 +42,23 @@ class Full extends Component {
                         <NotificationContainer />
                         <Container fluid>
                             <Switch>
-                                <Route path="/dashboard" name="Dashboard" component={Dashboard} />
-                                <Route path="/node/NodeConfigSummary" name="Node-Config" component={NodeSummary} />
-                                <Route path="/node/Summary" name="Summary" component={NodeOpSummary} />
-                                <Route path="/node/Roles" name="Roles" component={Roles} />
-                                <Route path="/node/Types" name="Types" component={Types} />
-                                <Route path="/node/Site" name="Site" component={Site}/>
-                                <Route path="/node/Linuxkernel" name="Linux Kernel" component={LinuxKernel} />
-                                <Route path="/node/BaseLinuxIso" name="Base Linux ISO" component={BaseLinuxIso} />
-                                <Route path="/monitoring/BmcMonitor" name="Summary" component={BmcMonitor} />
-                                <Route path="/connectivity/Summary" name="Summary" component={ConnectivitySummary} />
-                                <Route path="/monitoring/TilesApp" name="Tiles-App" component={TileApp} />
-                                <Route path="/operation/inventory" name="Inventory" component={Inventory} />
-                                <Route path="/operation/playbook" name="Playbook" component={Playbook} />
-                                <Route path="/node/config" name="Monitor" component={NodeConfig} />
-                                <Route path="/kubernetes" name="Kubernetes" component={Kubernetes} />
-                                <Route path="/node" name="Node" component={NodeSummary} />
-                                <Redirect from="/" to="/dashboard" />
+                                <Route path="/pcc/dashboard" name="Dashboard" component={Dashboard} />
+                                <Route path="/pcc/node/NodeConfigSummary" name="Node-Config" component={NodeSummary} />
+                                <Route path="/pcc/node/Summary" name="Summary" component={NodeOpSummary} />
+                                <Route path="/pcc/node/Roles" name="Roles" component={Roles} />
+                                <Route path="/pcc/node/Types" name="Types" component={Types} />
+                                <Route path="/pcc/node/Site" name="Site" component={Site} />
+                                <Route path="/pcc/node/Linuxkernel" name="Linux Kernel" component={LinuxKernel} />
+                                <Route path="/pcc/node/BaseLinuxIso" name="Base Linux ISO" component={BaseLinuxIso} />
+                                <Route path="/pcc/monitoring/BmcMonitor" name="Summary" component={BmcMonitor} />
+                                <Route path="/pcc/connectivity/Summary" name="Summary" component={ConnectivitySummary} />
+                                <Route path="/pcc/monitoring/TilesApp" name="Tiles-App" component={TileApp} />
+                                <Route path="/pcc/operation/inventory" name="Inventory" component={Inventory} />
+                                <Route path="/pcc/operation/playbook" name="Playbook" component={Playbook} />
+                                <Route path="/pcc/node/config" name="Monitor" component={NodeConfig} />
+                                <Route path="/pcc/kubernetes" name="Kubernetes" component={Kubernetes} />
+                                <Route path="/pcc/node" name="Node" component={NodeSummary} />
+                                <Redirect from="/pcc" to="/pcc/dashboard"></Redirect>
                             </Switch>
                         </Container>
                     </main>
