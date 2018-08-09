@@ -261,5 +261,14 @@ from {opacity: 1;}
 to {opacity: 0;}
 }
 
+/* For firefox checkbox column */
+@-moz-document url-prefix() {
+	.form-check-input {
+		position: absolute;
+		margin-top: 0.3rem;
+		margin-left: 0rem !important;
+	}
+  }
+
 
 
