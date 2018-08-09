@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Table, Column, Cell } from 'fixed-data-table-2'
-import { TextCell, TextCellForArray } from './Cells';
+import { TextCell, TextCellForArray, BadgeCell, ValidationCell } from './Cells';
 import 'fixed-data-table-2/dist/fixed-data-table.css';
 import { Input, Popover, PopoverBody } from 'reactstrap';
 
@@ -63,6 +63,7 @@ class SummaryDataTable extends Component {
             <div>
                 <div style={{ float: "right" }} id={'popoverPlacementDiv'}></div>
                 <Table
+                    className="tableOutlineNone"
                     rowHeight={rowHeight}
                     headerHeight={headerHeight}
                     rowsCount={dataLen}
@@ -100,10 +101,7 @@ class SummaryDataTable extends Component {
                 <Column
                     columnKey={"checkBoxColumn"}
                     cell={({ rowIndex, width, height }) => (
-                        <Cell
-                            width={50}
-                            align="right"
-                        >
+                        <Cell width={50} align="right">
                             <Input key={self.counter++} style={{ cursor: 'pointer' }}
                                 type="checkbox" onChange={() => (self.checkBoxClick(rowIndex))} defaultChecked={selectedRowIndexes
                                     && selectedRowIndexes.length && selectedRowIndexes.indexOf(rowIndex) > -1 ? true : false} />
@@ -226,15 +224,21 @@ class SummaryDataTable extends Component {
             case "array":
                 value = <TextCellForArray data={data} />
                 break
-            // case 'validateKernel':
-            //     break
-            // case 'validateISO':
-            //     break
-            // case 'validateType':
-            //     break
-            // case 'validateSN':
-            //     break
-            // case 'badge':
+            case 'validateKernel':
+                value = <ValidationCell data={data} match={'isKernelMatched'} field={'kernel'} />
+                break
+            case 'validateISO':
+                value = <ValidationCell data={data} match={'isBaseISOMatched'} field={'baseISO'} />
+                break
+            case 'validateType':
+                value = <ValidationCell data={data} match={'isTypeMatched'} field={'type'} />
+                break
+            case 'validateSN':
+                value = <ValidationCell data={data} match={'isSNMatched'} field={'serialNumber'} />
+                break
+            case 'badge':
+                value = <BadgeCell data={data} />
+                break
             default:
                 value = <TextCell data={data} />
                 break

@@ -80,7 +80,7 @@ class ConnectivitySummary extends React.Component {
                                     color = "black"
                                 }
                                 else {
-                                    color = "black"      /* ****** */
+                                    color = "red"
                                 }
                             }
                             ipFont = (<font color={color}>{interfaceItem.IPAddress}</font>)
@@ -112,7 +112,7 @@ class ConnectivitySummary extends React.Component {
                                 color = "black"
                             }
                             else if (interfaceItem.connectedTo.lldpMatched == false || interfaceItem.connectedTo.lldpMatched == 'False') {
-                                color = "black" /*****/
+                                color = "red"
                             }
                             connectedToData = (<font color={color}>{interfaceItem.connectedTo.serverName + " : " + interfaceItem.connectedTo.serverPort}</font>)
                         }
@@ -123,9 +123,9 @@ class ConnectivitySummary extends React.Component {
 
                     allLinkDiv = allInterfaces.map((interfaceItem) => {
                         let linkData = '-'
-                        if(interfaceItem.connectedTo.link == true || interfaceItem.connectedTo.link.toLowerCase() == "true")
+                        if (interfaceItem.connectedTo.link == true || interfaceItem.connectedTo.link.toLowerCase() == "true")
                             linkData = "True"
-                        else if(interfaceItem.connectedTo.link == false || interfaceItem.connectedTo.link.toLowerCase() == "false")
+                        else if (interfaceItem.connectedTo.link == false || interfaceItem.connectedTo.link.toLowerCase() == "false")
                             linkData = "False"
                         return (
                             <ListGroup><ListGroupItem>{linkData}</ListGroupItem></ListGroup>
@@ -176,7 +176,7 @@ class ConnectivitySummary extends React.Component {
                     if (node.validationStatus && node.validationStatus.isTypeMatched) {
                         color = "black"
                     } else {
-                        color = "black" /*******/
+                        color = "red"
                         if (node.validationStatus.type)
                             nodeTypeData.push(<UncontrolledTooltip placement="top" target={tooltipId}>{node.validationStatus.type}</UncontrolledTooltip>)
                     }

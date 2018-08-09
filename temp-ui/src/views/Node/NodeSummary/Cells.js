@@ -1,6 +1,6 @@
 import { Cell } from 'fixed-data-table-2'
 import React from 'react'
-
+import { UncontrolledTooltip, Badge } from 'reactstrap'
 
 class CollapseCell extends React.PureComponent {
     render() {
@@ -15,27 +15,6 @@ class CollapseCell extends React.PureComponent {
     }
 };
 module.exports.CollapseCell = CollapseCell;
-
-class ColoredTextCell extends React.PureComponent {
-    render() {
-        const { data, rowIndex, columnKey, ...props } = this.props;
-        return (
-            <Cell {...props}>
-                {this.colorizeText(data.getObjectAt(rowIndex)[columnKey], rowIndex)}
-            </Cell>
-        );
-    }
-
-    colorizeText(str, index) {
-        let val, n = 0;
-        return str.split('').map((letter) => {
-            val = index * 70 + n++;
-            let color = 'hsl(' + val + ', 100%, 50%)';
-            return <span style={{ color }} key={val}>{letter}</span>;
-        });
-    }
-};
-module.exports.ColoredTextCell = ColoredTextCell;
 
 class DateCell extends React.PureComponent {
     render() {
@@ -167,3 +146,38 @@ class TooltipCell extends React.PureComponent {
     }
 };
 module.exports.TooltipCell = TooltipCell;
+
+class BadgeCell extends React.PureComponent {
+    render() {
+        const { data, rowIndex, columnKey, ...props } = this.props;
+        const value = data[rowIndex][columnKey];
+        if (value == 'Mismatch') {
+            return (<Cell {...props}> <Badge color="danger">{value}</Badge> </Cell>)
+        }
+        else
+            return (<Cell {...props}>{value} </Cell>)
+    }
+};
+module.exports.BadgeCell = BadgeCell;
+
+class ValidationCell extends React.PureComponent {
+    render() {
+        let a = [];
+        const { data, rowIndex, columnKey, match, field, ...props } = this.props;
+        const value = data[rowIndex][columnKey];
+        if (value && data[rowIndex].validationStatus) {
+            if (data[rowIndex].validationStatus[match]) {
+                return (<Cell {...props}>  <span style={{ color: 'black' }}>{value}</span> </Cell>)
+            }
+            else {
+                let tooltip = null;
+                if (data[rowIndex].validationStatus[field])
+                    tooltip = (<UncontrolledTooltip placement="top" target={columnKey + rowIndex}>{data[rowIndex].validationStatus[field]}</UncontrolledTooltip>)
+                return (<Cell id={columnKey + rowIndex} {...props}>  <span style={{ color: 'red' }} key={columnKey + rowIndex}>{value}</span> {tooltip} </Cell>);
+            }
+
+        }
+        return <Cell></Cell>
+    }
+}
+module.exports.ValidationCell = ValidationCell;

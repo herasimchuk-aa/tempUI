@@ -41,6 +41,10 @@
 	background-color: #e4e5e640;
 }
 
+.tableOutlineNone {
+	outline: none !important;
+}
+
 .list-group-item {
 	background-color: transparent !important;
 	border: none !important;
