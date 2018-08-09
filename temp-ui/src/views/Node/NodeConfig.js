@@ -10,6 +10,7 @@ import ModalComponent from '../../components/ModalComponent/ModalComponent';
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
 import MultiselectDropDown from '../../components/MultiselectDropdown/MultiselectDropDown';
+import ConfirmationModal from '../../components/ConfirmationModal/ConfirmationModal';
 
 class NodeConfig extends Component {
   constructor(props) {
@@ -323,7 +324,7 @@ class NodeConfig extends Component {
     if (this.state.displayModel) {
       let data = this.state.interfaceData
       return (
-        <ModalComponent getData={this.updateNodeCall} actionHeader={'Update'} data={data} ></ModalComponent>
+        <ModalComponent getData={this.updateNodeCall} actionButton={'Update'} data={data} ></ModalComponent>
       );
     }
   }
@@ -382,18 +383,7 @@ class NodeConfig extends Component {
 
   provisionModal() {
     if (this.state.displayProvisionModel) {
-      return (
-        <Modal isOpen={this.state.displayProvisionModel} toggle={() => this.toggleProvisionModel()} size="sm" centered="true" >
-          <ModalHeader>Provision </ModalHeader>
-          <ModalBody>
-            <div className="marTop10">Do you want to save all these changes?</div>
-          </ModalBody>
-          <ModalFooter>
-            <Button className="custBtn" outline color="primary" onClick={() => (this.toggleProvisionModel())}>Yes</Button>
-            <Button className="custBtn" outline color="primary" onClick={() => (this.toggleProvisionModel())}>No</Button>
-          </ModalFooter>
-        </Modal>
-      );
+      <ConfirmationModal actionName={'Provision'} open={true}></ConfirmationModal>
     }
   }
 
