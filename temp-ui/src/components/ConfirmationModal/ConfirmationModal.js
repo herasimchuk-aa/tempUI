@@ -15,10 +15,10 @@ class ConfirmationModal extends Component {
     }
 
     action = () => {
-        if(this.props.action){
+        if (this.props.action) {
             this.props.action()
         }
-        
+
         this.setState({ open: false })
     }
 
@@ -38,7 +38,6 @@ class ConfirmationModal extends Component {
                     <Button outline className="custBtn" color="primary" onClick={() => (this.cancel())}>No</Button>
                 </ModalFooter>
             </Modal>
-
         )
     }
 }

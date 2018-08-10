@@ -29,7 +29,7 @@ class Login extends Component {
         }
         let psw1 = document.getElementById('password').value
         let psw2 = document.getElementById('confirmPassword').value
-        if (psw1.length != 6) {
+        if (psw1.length < 6) {
             error.push('password must be of 6 characters')
         }
         if (psw1 != psw2) {
@@ -51,8 +51,8 @@ class Login extends Component {
             error.push('Name field is mandatory ')
         }
         let psw = document.getElementById('psw').value
-        if (psw.length != 6) {
-            error.push('password must be of 6 characters')
+        if (psw.length < 6) {
+            error.push('password must be atleast of 6 characters')
         }
         console.log(error.length)
         if (error.length) {
@@ -69,7 +69,7 @@ class Login extends Component {
         let error = []
         let psw1 = document.getElementById('password').value
         let psw2 = document.getElementById('confirmPassword').value
-        if (psw1.length != 6) {
+        if (psw1.length < 6) {
             error.push('password must be of 6 characters')
         }
         if (psw1 != psw2) {

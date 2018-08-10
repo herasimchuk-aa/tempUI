@@ -21,11 +21,23 @@ class ModalComponent extends Component {
         if (!props.data) {
             return
         }
+        let serverName = props.data.connectedTo.serverName
+        let ip = props.data.IPAddress
+        let serverPort = props.data.connectedTo.serverPort;
+        if (!serverName) {
+            serverName = ''
+        }
+        if (!ip) {
+            ip = ''
+        }
+        if (!serverPort) {
+            serverPort = ''
+        }
         return {
             port: props.data.port,
-            ip: props.data.IPAddress,
-            remoteName: props.data.connectedTo.serverName,
-            remoteInterface: props.data.connectedTo.serverPort,
+            ip: ip,
+            remoteName: serverName,
+            remoteInterface: serverPort,
             isMngmntIntf: props.data.isMngmntIntf
         }
     }

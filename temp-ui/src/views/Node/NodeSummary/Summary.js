@@ -344,7 +344,11 @@ class NodeSummary extends React.Component {
                     <ModalBody>
                         <Row>
                             <Col sm="6" className="marTop10">Name
+<<<<<<< Updated upstream
                                 <Input id='nodeName' autoFocus className="marTop10" />
+=======
+                                <Input id='name1' autoFocus className="marTop10" />
+>>>>>>> Stashed changes
                             </Col>
                             <Col sm="6" className="marTop10">Site
                                 <DropDown options={this.state.siteData} getSelectedData={this.getSelectedData} identity={"Site"} default={this.state.selectedSite} />
@@ -355,7 +359,7 @@ class NodeSummary extends React.Component {
                             <Col sm="6" className="marTop10">Roles
                                 <MultiselectDropDown value={this.state.selectedRoles} getSelectedData={this.handleChanges} options={this.state.roleData} /></Col>
                             <Col sm="6" className="marTop10">
-                                Serial Number <Input id='serialNumber' className="marTop10" />
+                                Serial Number <Input id='nodeSerialNumber' className="marTop10" />
                                 <br />Type
                                 <DropDown options={this.state.typedata} getSelectedData={this.getSelectedData} identity={"Type"} default={this.state.selectedType} />
                             </Col>
@@ -379,7 +383,11 @@ class NodeSummary extends React.Component {
     }
 
     addNode() {
+<<<<<<< Updated upstream
         let nodeName = document.getElementById('nodeName').value
+=======
+        let nodeName = document.getElementById('name1').value
+>>>>>>> Stashed changes
         let name = trimString(nodeName)
         let data = this.state.nodes
         let validateUnique = true
@@ -409,7 +417,7 @@ class NodeSummary extends React.Component {
             'site': this.state.selectedSite,
             'roles': roles,
             'type': this.state.selectedType,
-            'serialNumber': document.getElementById('serialNumber').value,
+            'serialNumber': document.getElementById('nodeSerialNumber').value,
             'kernel': this.state.selectedLinux,
             'linuxISO': this.state.selectedIso
         }

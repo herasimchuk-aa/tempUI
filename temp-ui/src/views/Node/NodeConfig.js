@@ -3,6 +3,7 @@ import { Row, Col, Button, Label, Media, Modal, ModalHeader, ModalBody, ModalFoo
 import { ServerAPI } from '../../ServerAPI';
 import SummaryDataTable from './NodeSummary/SummaryDataTable';
 import { customHistory } from '../../index';
+import { Redirect } from 'react-router-dom';
 import '../views.css';
 import { nodeHead } from '../../consts';
 import DropDown from '../../components/dropdown/DropDown';
@@ -11,6 +12,7 @@ import { NotificationContainer, NotificationManager } from 'react-notifications'
 import 'react-notifications/lib/notifications.css';
 import MultiselectDropDown from '../../components/MultiselectDropdown/MultiselectDropDown';
 import ConfirmationModal from '../../components/ConfirmationModal/ConfirmationModal';
+import DiscoverModal from '../../components/DiscoverModal/DiscoverModal';
 
 class NodeConfig extends Component {
   constructor(props) {
@@ -37,7 +39,9 @@ class NodeConfig extends Component {
       displayProvisionModel: false,
       wipeBtn: true,
       rebootBtn: true,
-      interfaces: props.location.state.allInterfaces
+      openDiscoverModal: false,
+      cancelNodeConfig: false,
+      interfaces: props.location.state[0].allInterfaces
     }
     this.counter = 0
   }
@@ -188,106 +192,106 @@ class NodeConfig extends Component {
   interfaceTableContent() {
     let rows = []
     let self = this
-    if (this.state.nodes && this.state.nodes.length) {
-      this.state.nodes.map((node) => {
-        let interfaces = node.allInterfaces
-        if (!interfaces || !interfaces.length) {
-          let row = (<Row className='headerRow1' style={{ marginLeft: '0px', marginRight: '0px' }}>
-            <Col sm="12" className="pad"><h5 className="text-center">Interface data not available</h5></Col>
-          </Row>)
-          rows.push(row)
-          return rows
+    if (this.state.interfaces && this.state.interfaces.length) {
+      // this.state.nodes.map((node) => {
+      let interfaces = this.state.interfaces
+      if (!interfaces || !interfaces.length) {
+        let row = (<Row className='headerRow1' style={{ marginLeft: '0px', marginRight: '0px' }}>
+          <Col sm="12" className="pad"><h5 className="text-center">Interface data not available</h5></Col>
+        </Row>)
+        rows.push(row)
+        return rows
+      }
+      interfaces.map((item, rowIndex) => {
+        let row1 = 'headerRow1'
+        if (rowIndex % 2 === 0) {
+          row1 = 'headerRow2'
         }
-        interfaces.map((item, rowIndex) => {
-          let row1 = 'headerRow1'
-          if (rowIndex % 2 === 0) {
-            row1 = 'headerRow2'
-          }
-          if (rowIndex == interfaces.length - 1) {
-            row1 = row1 + ' headerRow3 '
-          }
-          /* let ipData = []
-          let remoteInvaderData = []
-          let remoteInterfaceData = []
-          let color = '' */
+        if (rowIndex == interfaces.length - 1) {
+          row1 = row1 + ' headerRow3 '
+        }
+        /* let ipData = []
+        let remoteInvaderData = []
+        let remoteInterfaceData = []
+        let color = '' */
 
 
-          /* if (item.IPAddress) {
-            if (node.validationStatus && node.validationStatus.interfacesStatus && Object.keys(node.validationStatus.interfacesStatus).length) {
-              let portName = item.port
-              if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].isValidIP) {
-                color = "black"
-              }
-              else {
-                color = "red"
-              }
+        /* if (item.IPAddress) {
+          if (node.validationStatus && node.validationStatus.interfacesStatus && Object.keys(node.validationStatus.interfacesStatus).length) {
+            let portName = item.port
+            if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].isValidIP) {
+              color = "black"
             }
-            ipData = (<font color={color}>{item.IPAddress}</font>)
-          }
-          else {
-            ipData = "-"
-          } */
-
-          /* **************** */
-
-
-          /* if (item.connectedTo.serverName) {
-            let remoteInvaderKey = 'remoteInvader' + rowIndex
-            if (node.validationStatus && node.validationStatus.interfacesStatus && Object.keys(node.validationStatus.interfacesStatus).length) {
-              let portName = item.port
-              if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].isRemoteInvaderMatched) {
-                color = "black"
-              }
-              else {
-                color = "red"
-                if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].remoteInvader)
-                  remoteInterfaceData.push(<UncontrolledTooltip placement="top" target={remoteInvaderKey}>{node.validationStatus.interfacesStatus[portName].remoteInvader}</UncontrolledTooltip>)
-              }
+            else {
+              color = "red"
             }
-            remoteInvaderData = (<font id={remoteInvaderKey} color={color}>{item.connectedTo.serverName}</font>)
           }
-          else {
-            remoteInvaderData = "-"
-          } */
+          ipData = (<font color={color}>{item.IPAddress}</font>)
+        }
+        else {
+          ipData = "-"
+        } */
 
-          /* **************** */
+        /* **************** */
 
 
-          /* if (item.connectedTo.serverPort) {
-            let remoteInterfaceKey = 'remoteInterface' + rowIndex
-            if (node.validationStatus && node.validationStatus.interfacesStatus && Object.keys(node.validationStatus.interfacesStatus).length) {
-              let portName = item.port
-              if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].isLLDPMatched) {
-                color = "black"
-              }
-              else {
-                color = "red"
-                if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].remoteInterface)
-                  remoteInterfaceData.push(<UncontrolledTooltip placement="top" target={remoteInterfaceKey}>{node.validationStatus.interfacesStatus[portName].remoteInterface}</UncontrolledTooltip>)
-              }
+        /* if (item.connectedTo.serverName) {
+          let remoteInvaderKey = 'remoteInvader' + rowIndex
+          if (node.validationStatus && node.validationStatus.interfacesStatus && Object.keys(node.validationStatus.interfacesStatus).length) {
+            let portName = item.port
+            if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].isRemoteInvaderMatched) {
+              color = "black"
             }
-            remoteInterfaceData.push(<font id={remoteInterfaceKey} color={color}>{item.connectedTo.serverPort}</font>)
+            else {
+              color = "red"
+              if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].remoteInvader)
+                remoteInterfaceData.push(<UncontrolledTooltip placement="top" target={remoteInvaderKey}>{node.validationStatus.interfacesStatus[portName].remoteInvader}</UncontrolledTooltip>)
+            }
           }
-          else {
-            remoteInterfaceData = "-"
-          } */
+          remoteInvaderData = (<font id={remoteInvaderKey} color={color}>{item.connectedTo.serverName}</font>)
+        }
+        else {
+          remoteInvaderData = "-"
+        } */
+
+        /* **************** */
 
 
-          let row = (<Row className={row1} style={{ marginLeft: '0px', marginRight: '0px' }}>
-            <Col sm="1" className="pad" ><Input key={self.counter++} style={{ cursor: 'pointer', marginLeft: '0px' }}
-              type="checkbox" onChange={() => (self.checkBoxClickInterface(rowIndex))} defaultChecked={false} /></Col>
-            <Col sm="2" className="pad">{item.port ? item.port : '-'}</Col>
-            <Col sm="2" className="pad">{item.adminState ? item.adminState : '-'}</Col>
-            <Col sm="2" className="pad">{item.IPAddress ? item.IPAddress : '-'}</Col>
-            <Col sm="2" className="pad">{item.connectedTo.serverName ? item.connectedTo.serverName : '-'}</Col>
-            <Col sm="2" className="pad">{item.connectedTo.serverPort ? item.connectedTo.serverPort : "-"}</Col>
-            <Col sm="1" className="pad" style={{ cursor: 'pointer' }}><i className="fa fa-pencil" aria-hidden="true" onClick={() => (self.updatInterfaceModal(rowIndex))}></i></Col>
+        /* if (item.connectedTo.serverPort) {
+          let remoteInterfaceKey = 'remoteInterface' + rowIndex
+          if (node.validationStatus && node.validationStatus.interfacesStatus && Object.keys(node.validationStatus.interfacesStatus).length) {
+            let portName = item.port
+            if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].isLLDPMatched) {
+              color = "black"
+            }
+            else {
+              color = "red"
+              if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].remoteInterface)
+                remoteInterfaceData.push(<UncontrolledTooltip placement="top" target={remoteInterfaceKey}>{node.validationStatus.interfacesStatus[portName].remoteInterface}</UncontrolledTooltip>)
+            }
+          }
+          remoteInterfaceData.push(<font id={remoteInterfaceKey} color={color}>{item.connectedTo.serverPort}</font>)
+        }
+        else {
+          remoteInterfaceData = "-"
+        } */
 
-          </Row>)
-          rows.push(row)
-        })
 
+        let row = (<Row className={row1} style={{ marginLeft: '0px', marginRight: '0px' }}>
+          <Col sm="1" className="pad" ><Input key={self.counter++} style={{ cursor: 'pointer', marginLeft: '0px' }}
+            type="checkbox" onChange={() => (self.checkBoxClickInterface(rowIndex))} defaultChecked={false} /></Col>
+          <Col sm="2" className="pad">{item.port ? item.port : '-'}</Col>
+          <Col sm="2" className="pad">{item.adminState ? item.adminState : '-'}</Col>
+          <Col sm="2" className="pad">{item.IPAddress ? item.IPAddress : '-'}</Col>
+          <Col sm="2" className="pad">{item.connectedTo.serverName ? item.connectedTo.serverName : '-'}</Col>
+          <Col sm="2" className="pad">{item.connectedTo.serverPort ? item.connectedTo.serverPort : "-"}</Col>
+          <Col sm="1" className="pad" style={{ cursor: 'pointer' }}><i className="fa fa-pencil" aria-hidden="true" onClick={() => (self.updatInterfaceModal(rowIndex))}></i></Col>
+
+        </Row>)
+        rows.push(row)
       })
+
+      // })
     }
     return rows
   }
@@ -397,6 +401,7 @@ class NodeConfig extends Component {
         datum.linuxIso = this.state.selectedIso,
         datum.kernel = this.state.selectedLinux,
         datum.site = this.state.selectedSite,
+        datum.allInterfaces = this.state.interfaces,
         datum.interfaces = this.state.interfaces,
         datum.serialNumber = this.state.selectedSerialNo
       let a = {
@@ -483,16 +488,67 @@ class NodeConfig extends Component {
     this.setState({ selectedSerialNo: e.target.value });
   }
 
+  showDiscoverButton = () => {
+    let allInterfaces = this.state.interfaces
+    let chkDiscoverbtn = null
+    if (!allInterfaces || !allInterfaces.length) {
+      chkDiscoverbtn = false
+    }
+    else {
+      allInterfaces.map((item) => {
+        if (item.isMngmntIntf == true) {
+          chkDiscoverbtn = true
+        }
+      })
+    }
+    if (chkDiscoverbtn) {
+      return (<Button className="custBtn" outline color="secondary" onClick={() => (this.discoverModal())}> Discover </Button>)
+    }
+    else {
+      return (<Button className="custBtn" outline color="secondary" disabled > Discover </Button>)
+    }
+  }
+
+  discoverModal = () => {
+    this.setState({ openDiscoverModal: true })
+  }
+
+  openDiscoverModal = () => {
+    if (this.state.openDiscoverModal) {
+      return (<DiscoverModal isOpen={true} node={this.state.nodes} action={(e) => { this.actualNode(e) }}></DiscoverModal>)
+    }
+  }
+
+  actualNode = (params) => {
+
+    this.setState({
+      selectedType: params.nodeType,
+      selectedIso: params.linuxISO,
+      selectedLinux: params.kernel,
+      interfaces: params.allInterfaces,
+      selectedSerialNo: params.serialNumber,
+      openDiscoverModal: false
+    })
+  }
+
+  cancelNodeConfig = () => {
+    this.setState({ cancelNodeConfig: true })
+  }
+
   render() {
     let { nodes } = this.state
     if (!nodes || !nodes.length) {
       return <div></div>
+    }
+    if (this.state.cancelNodeConfig) {
+      return <Redirect push to={'/pcc/node/NodeConfigSummary'}></Redirect>
     }
     let isSingleNode = this.state.nodes.length === 1 ? true : false
     let nodeNameDiv = null
     let interfaceTableHeader = null
     let interfaceTableContent = null
     let summaryDataTable = null
+    let showDiscoverButton = null
     let selectedRowIndexes = []
     if (isSingleNode) {
       nodeNameDiv =
@@ -505,9 +561,8 @@ class NodeConfig extends Component {
         </div>
       interfaceTableHeader = this.interfaceTableHeader()
       interfaceTableContent = this.interfaceTableContent()
-
+      showDiscoverButton = this.showDiscoverButton()
     } else {
-
       this.state.nodes.map(function (node, i) {
         selectedRowIndexes.push(i)
       })
@@ -521,8 +576,8 @@ class NodeConfig extends Component {
           </Media>
           <Media body><NotificationContainer /></Media>
           <Media right>
-            <Button className="custBtn" outline color="secondary" onClick={() => { customHistory.goBack() }}> Cancel </Button>
-
+            {showDiscoverButton}
+            <Button className="custBtn" outline color="secondary" onClick={() => { this.cancelNodeConfig() }}> Cancel </Button>
             <Button className="custBtn" outline color="secondary" onClick={() => (this.updateSaveNode())}> Save </Button>
           </Media>
         </Media>
@@ -587,6 +642,7 @@ class NodeConfig extends Component {
         {this.renderUpdateInterface()}
         {this.renderAddInterface()}
         {this.provisionModal()}
+        {this.openDiscoverModal()}
 
       </div>
 
