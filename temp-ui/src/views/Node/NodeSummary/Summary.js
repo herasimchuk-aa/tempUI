@@ -344,7 +344,7 @@ class NodeSummary extends React.Component {
                     <ModalBody>
                         <Row>
                             <Col sm="6" className="marTop10">Name
-                                <Input id='name' autoFocus className="marTop10" />
+                                <Input id='nodeName' autoFocus className="marTop10" />
                             </Col>
                             <Col sm="6" className="marTop10">Site
                                 <DropDown options={this.state.siteData} getSelectedData={this.getSelectedData} identity={"Site"} default={this.state.selectedSite} />
@@ -379,7 +379,7 @@ class NodeSummary extends React.Component {
     }
 
     addNode() {
-        let nodeName = document.getElementById('name').value
+        let nodeName = document.getElementById('nodeName').value
         let name = trimString(nodeName)
         let data = this.state.nodes
         let validateUnique = true
@@ -490,7 +490,7 @@ class NodeSummary extends React.Component {
 
     render() {
         if (this.state.redirect) {
-            return <Redirect push to={{ pathname: '/node/config', state: this.state.selectedRows }} />
+            return <Redirect push to={{ pathname: '/pcc/node/config', state: this.state.selectedRows }} />
         }
         return (
             <Container-fluid >

@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Switch, HashRouter } from 'react-router-dom';
 import createBrowserHistory from 'history/createBrowserHistory';
 import { Redirect } from 'react-router-dom';
 
@@ -24,11 +24,11 @@ import Dashboard from './views/Dashboard/Dashboard';
 export const customHistory = createBrowserHistory()
 
 ReactDOM.render((
-  <BrowserRouter>
+  <HashRouter>
     <Switch>
       <Route path="/pcc" name="Home" component={Full} />
       <Route exact path="/" name="login" component={Login} />
     </Switch>
-  </BrowserRouter>
+  </HashRouter>
 
 ), document.getElementById('root'));

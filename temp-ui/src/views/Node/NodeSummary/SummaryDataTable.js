@@ -3,6 +3,8 @@ import { Table, Column, Cell } from 'fixed-data-table-2'
 import { TextCell, TextCellForArray, BadgeCell, ValidationCell } from './Cells';
 import 'fixed-data-table-2/dist/fixed-data-table.css';
 import { Input, Popover, PopoverBody } from 'reactstrap';
+import Dimensions from 'react-dimensions'
+import '../../views.css'
 
 var widthOffset = window.innerWidth < 680 ? 0 : 290;
 const containerWidth = window.innerWidth - widthOffset;
@@ -59,15 +61,16 @@ class SummaryDataTable extends Component {
             dataLen = data.length
         }
         let tableHeight = rowHeight * (dataLen) + headerHeight + 2
+        let tableWidth = this.props.containerWidth
         return (
-            <div>
+            <div >
                 <div style={{ float: "right" }} id={'popoverPlacementDiv'}></div>
                 <Table
                     className="tableOutlineNone"
                     rowHeight={rowHeight}
                     headerHeight={headerHeight}
                     rowsCount={dataLen}
-                    width={containerWidth}
+                    width={tableWidth}
                     height={Math.min(containerHeight, tableHeight)}
                     rowClassNameGetter={(rowIndex) => "cursor-pointer"}
                     onRowDoubleClick={(e, rowIndex) => this.checkBoxClick(rowIndex, true)}
@@ -119,7 +122,7 @@ class SummaryDataTable extends Component {
             columns.push(
                 <Column
                     columnKey={id}
-                    header={<Cell key={headName} id={id} onContextMenu={self.contextMenu}>{headName}</Cell>}
+                    header={<Cell style={{ cursor: 'pointer' }} key={headName} id={id} onContextMenu={self.contextMenu} onClick={self.closePopover}>{headName}</Cell>}
                     cell={cellValue}
                     flexGrow={1}
                     width={columnWidths[id] ? columnWidths[id] : 50}
@@ -201,6 +204,10 @@ class SummaryDataTable extends Component {
         })
     }
 
+    closePopover = () => {
+        this.setState({ popoverOpen: false })
+    }
+
     drawPopOver = () => {
         if (!this.state.popoverOpen)
             return null
@@ -247,4 +254,4 @@ class SummaryDataTable extends Component {
     }
 }
 
-export default SummaryDataTable;
+export default Dimensions()(SummaryDataTable);
