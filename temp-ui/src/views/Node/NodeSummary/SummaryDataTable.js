@@ -45,7 +45,7 @@ class SummaryDataTable extends Component {
     render() {
         return (
             <div>
-                <div id="popoverContainer">
+                <div id="popoverContainer" className="marBot5pc">
                     {this.drawPopOver()}
                     {this.drawtable()}
                 </div>
@@ -63,7 +63,7 @@ class SummaryDataTable extends Component {
         let tableHeight = rowHeight * (dataLen) + headerHeight + 2
         let tableWidth = this.props.containerWidth
         return (
-            <div >
+            <div>
                 <div style={{ float: "right" }} id={'popoverPlacementDiv'}></div>
                 <Table
                     className="tableOutlineNone"

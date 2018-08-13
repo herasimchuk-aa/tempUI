@@ -122,7 +122,7 @@ class LinuxKernel extends Component {
                     <ModalHeader toggle={() => this.cancel()}>Add Linux Kernel</ModalHeader>
                     <ModalBody>
                         <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Name cannot be empty</Alert>
-                        Name <Input autoFocus className="marTop10" id='kernelName' /><br />
+                        Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='kernelName' /><br />
                         Location <Input className="marTop10" id='kernelLoc' /><br />
                         Description <Input className="marTop10" id='kernelDesc' /><br />
                     </ModalBody>
@@ -136,7 +136,7 @@ class LinuxKernel extends Component {
     }
 
     cancel() {
-        this.setState({ displayModel: !this.state.displayModel })
+        this.setState({ displayModel: !this.state.displayModel, visible: false })
     }
 
     addKernel() {
@@ -160,7 +160,7 @@ class LinuxKernel extends Component {
             a = []
         }
         a.push(data)
-        instance.setState({ data: a, displayModel: !instance.state.displayModel })
+        instance.setState({ data: a, displayModel: !instance.state.displayModel, visible: false })
     }
 
 

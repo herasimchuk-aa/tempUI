@@ -343,10 +343,8 @@ class NodeSummary extends React.Component {
                     </Alert>
                     <ModalBody>
                         <Row>
-                            <Col sm="6" className="marTop10">Name
-
+                            <Col sm="6" className="marTop10">Name<font color="red"><sup>*</sup></font>
                                 <Input id='nodeName' autoFocus className="marTop10" />
-
                             </Col>
                             <Col sm="6" className="marTop10">Site
                                 <DropDown options={this.state.siteData} getSelectedData={this.getSelectedData} identity={"Site"} default={this.state.selectedSite} />
@@ -354,7 +352,7 @@ class NodeSummary extends React.Component {
                             {/* <Input id='site' className="marTop10" /> */}
                         </Row>
                         <Row>
-                            <Col sm="6" className="marTop10">Roles
+                            <Col sm="6" className="marTop10">Roles<font color="red"><sup>*</sup></font>
                                 <MultiselectDropDown value={this.state.selectedRoles} getSelectedData={this.handleChanges} options={this.state.roleData} /></Col>
                             <Col sm="6" className="marTop10">
                                 Serial Number <Input id='nodeSerialNumber' className="marTop10" />
@@ -381,9 +379,7 @@ class NodeSummary extends React.Component {
     }
 
     addNode() {
-
         let nodeName = document.getElementById('nodeName').value
-
         let name = trimString(nodeName)
         let data = this.state.nodes
         let validateUnique = true

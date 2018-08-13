@@ -84,7 +84,7 @@ class BaseLinuxIso extends Component {
                     <ModalHeader toggle={() => this.cancel()}>Add Base Linux ISO</ModalHeader>
                     <ModalBody>
                         <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Name cannot be empty</Alert>
-                        Name <Input autoFocus className="marTop10" id='isoName' /><br />
+                        Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='isoName' /><br />
                         Location <Input className="marTop10" id='isoLoc' /><br />
                         Description <Input className="marTop10" id='isoDesc' /><br />
                     </ModalBody>
@@ -98,7 +98,7 @@ class BaseLinuxIso extends Component {
     }
 
     cancel() {
-        this.setState({ displayModel: !this.state.displayModel })
+        this.setState({ displayModel: !this.state.displayModel, visible: false })
     }
 
     addIso() {
@@ -122,7 +122,7 @@ class BaseLinuxIso extends Component {
             a = []
         }
         a.push(data)
-        instance.setState({ data: a, displayModel: !instance.state.displayModel })
+        instance.setState({ data: a, displayModel: !instance.state.displayModel, visible: false })
     }
 
 

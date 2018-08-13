@@ -43,11 +43,29 @@
 
 .tableOutlineNone {
 	outline: none !important;
+	z-index: 0 !important;
+}
+
+.cell {
+	border-right-style: none !important;
+	cursor: pointer;
 }
 
 .list-group-item {
 	background-color: transparent !important;
 	border: none !important;
+}
+
+.fixedDataTableCellLayout_main {
+    border-right-style: none !important; 
+    border-right-width: 1px;
+    border-width: 0 1px 0 0;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    display: block;
+    overflow: hidden;
+    position: absolute;
+    white-space: normal;
 }
 
 
@@ -227,6 +245,10 @@ marRight10{
 
 .marTop40{
 	margin-top:40px;
+}
+
+.marBot5pc{
+	margin-bottom:5%;
 }
 
 .marBot30{

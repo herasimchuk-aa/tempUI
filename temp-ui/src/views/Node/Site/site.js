@@ -84,7 +84,7 @@ class Site extends Component {
                     <ModalHeader toggle={() => this.cancel()}>Add Site</ModalHeader>
                     <ModalBody>
                         <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Name cannot be empty</Alert>
-                        Name <Input autoFocus className="marTop10" id='siteName' /><br />
+                        Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='siteName' /><br />
                         Description <Input className="marTop10" id='siteDesc' /><br />
                     </ModalBody>
                     <ModalFooter>
@@ -97,7 +97,7 @@ class Site extends Component {
     }
 
     cancel() {
-        this.setState({ displayModel: !this.state.displayModel })
+        this.setState({ displayModel: !this.state.displayModel, visible: false })
     }
 
     addSite() {
@@ -120,7 +120,7 @@ class Site extends Component {
             a = []
         }
         a.push(data)
-        instance.setState({ data: a, displayModel: !instance.state.displayModel })
+        instance.setState({ data: a, displayModel: !instance.state.displayModel, visible: false })
     }
 
 

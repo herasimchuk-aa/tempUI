@@ -63,13 +63,13 @@ class Types extends Component {
                     <ModalBody>
                         <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()}>{this.state.errorMsg}</Alert>
                         <Row>
-                            <Col>Name <Input autoFocus className="marTop10" id='label' required={true} /><br />
+                            <Col>Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='typeName' required={true} /><br />
                                 Vendor <Input className="marTop10" id='vendor' /><br />
                                 Rack Unit <Input className="marTop10" id='rackUnit' /><br />
                                 AirFlow <Input className="marTop10" id='airFlow' /><br /></Col><Col>
-                                Front Panel Interface <Input className="marTop10" type="number" min={1} max={32} id='noFPI' /><br />
+                                Front Panel Interface<font color="red"><sup>*</sup></font> <Input className="marTop10" type="number" min={1} max={32} id='noFPI' /><br />
                                 Speed Front Panel Interface <Input className="marTop10" id='SpeedFPI' /><br />
-                                Management Interfaces <Input className="marTop10" type="number" id='noMI' /><br />
+                                Management Interfaces<font color="red"><sup>*</sup></font> <Input className="marTop10" type="number" id='noMI' /><br />
                                 Speed/Type <Input className="marTop10" id='speedType' /><br /></Col>
                         </Row>
                     </ModalBody>
@@ -85,12 +85,12 @@ class Types extends Component {
     }
 
     click() {
-        this.setState({ displayModel: !this.state.displayModel })
+        this.setState({ displayModel: !this.state.displayModel, visible: false })
     }
 
     addType() {
 
-        let typename = document.getElementById('label').value
+        let typename = document.getElementById('typeName').value
         let validtypename = trimString(typename)
         let a = {
             'Id': validtypename,
@@ -115,7 +115,6 @@ class Types extends Component {
             this.setState({ visible: true, errorMsg: 'Please enter a valid Management Interface' });
             return;
         }
-        this.setState({ visible: false })
         ServerAPI.DefaultServer().addSystemTypes(this.callback, this, a);
     }
 
@@ -125,7 +124,7 @@ class Types extends Component {
             a = []
         }
         a.push(data)
-        instance.setState({ data: a, displayModel: !instance.state.displayModel })
+        instance.setState({ data: a, displayModel: !instance.state.displayModel, visible: false })
     }
 
     showDeleteButton() {

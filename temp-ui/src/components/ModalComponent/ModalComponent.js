@@ -95,8 +95,8 @@ class ModalComponent extends Component {
                 <ModalHeader toggle={() => this.closeModal()}>{this.props.actionButton} Interface </ModalHeader>
                 {errorAlert}
                 <ModalBody>
-                    <div className="marTop10">Name <Input autoFocus type="text" id="port" defaultValue={this.state.port} /></div>
-                    <div className="marTop10">IP Address<Input type="text" id="ip" defaultValue={this.state.ip} /></div>
+                    <div className="marTop10">Name<font color="red"><sup>*</sup></font> <Input autoFocus type="text" id="port" defaultValue={this.state.port} /></div>
+                    <div className="marTop10">IP Address<font color="red"><sup>*</sup></font><Input type="text" id="ip" defaultValue={this.state.ip} /></div>
                     <div className="marTop10">Remote Node Name<Input type="text" id="remoteName" defaultValue={this.state.remoteName} /></div>
                     <div className="marTop10">Remote Node Interface<Input type="text" id="remoteInterface" defaultValue={this.state.remoteInterface} /></div>
                     <div className="marTop10"><input type="checkbox" id="mngmntInt" defaultChecked={this.state.isMngmntIntf} /> Management Interface</div>

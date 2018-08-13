@@ -87,7 +87,7 @@ class Roles extends Component {
                     <ModalBody>
                         <Alert color="danger" isOpen={this.state.alertVisible} toggle={() => this.onDismiss()} >Role Name cannot be empty</Alert>
                         Parent Role <DropDown className="marTop10" options={this.state.data} getSelectedData={this.getSelectedData} identity={"Role"} /><br />
-                        Name <Input autoFocus className="marTop10" id='roleName' /><br />
+                        Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='roleName' /><br />
                         Description <Input className="marTop10" id='roleDesc' /><br />
                     </ModalBody>
                     <ModalFooter>
@@ -101,7 +101,7 @@ class Roles extends Component {
     }
 
     cancel() {
-        this.setState({ displayModel: !this.state.displayModel })
+        this.setState({ displayModel: !this.state.displayModel, alertVisible: false })
     }
     onDismiss() {
         this.setState({ alertVisible: false });
@@ -129,7 +129,7 @@ class Roles extends Component {
             a = []
         }
         a.push(data)
-        instance.setState({ data: a, displayModel: !instance.state.displayModel, selectedRole: '' })
+        instance.setState({ data: a, displayModel: !instance.state.displayModel, selectedRole: '', alertVisible: false })
     }
 
     deleteRole() {
