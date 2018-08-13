@@ -177,15 +177,16 @@ class DiscoverModal extends Component {
         this.setState({ isOpen: false })
     }
 
-    // toggle(source) {
-    //     var checkboxes = document.querySelectorAll('input[type="checkbox"]');
-    //     for (var i = 0; i < checkboxes.length; i++) {
-    //         if (checkboxes[i] != source)
-    //             checkboxes[i].checked = source.checked;
-    //     }
-    // }
+    toggle = (e) => {
+        console.log(e.target.value)
+        let checkboxes = document.querySelectorAll('#form1 input[type="checkbox"]')
+        for (let i = 0; i < checkboxes.length; i++) {
+            console.log(checkboxes[i].checked)
+        }
 
-    // 
+    }
+
+
     render() {
         let existingNode = this.state.existingNode[0]
         let existingInterfaces = existingNode.allInterfaces
@@ -193,39 +194,39 @@ class DiscoverModal extends Component {
         return (
             <Modal isOpen={this.state.isOpen} toggle={() => this.cancel()} size="lg" centered="true" >
                 <ModalHeader toggle={() => this.cancel()}> Discover Node </ModalHeader>
-                <ModalBody style={{ margin: '15px' }}>
+                <ModalBody style={{ margin: '15px' }} id="form1">
                     <Row className="headerRow">
-                        <Col sm="4" className="head-name">Fields</Col>
+                        <Col sm="3" className="head-name">Fields</Col>
                         <Col sm="4" className="head-name">Existing values</Col>
                         <Col sm="4" className="head-name">Actual Values</Col>
-                        {/* <Col sm="1" className="head-name"><Input className="form-check-input" onClick={this.toggle(this)} type="checkbox" id="all" name="all" defaultChecked={true} /></Col> */}
+                        <Col sm="1" className="head-name"><input className="form-check-input" onChange={(e) => { this.toggle(e) }} type="checkbox" id="all" name="all" /></Col>
                     </Row>
                     <Row className="headerRow1 ">
-                        <Col sm="4" className="head-name">Type</Col>
+                        <Col sm="3" className="head-name">Type</Col>
                         <Col sm="4" className="head-name">{existingNode.nodeType}</Col>
                         <Col sm="4" className="head-name">{actualNode.nodeType}</Col>
-                        {/* <Col sm="1" className="head-name"><Input className="form-check-input" type="checkbox" id="type" name="type" defaultChecked={true} /></Col> */}
+                        <Col sm="1" className="head-name"><input className="form-check-input" type="checkbox" id="type" name="type" /></Col>
                     </Row>
                     <Row className="headerRow2 ">
-                        <Col sm="4" className="head-name">Serial Number</Col>
+                        <Col sm="3" className="head-name">Serial Number</Col>
                         <Col sm="4" className="head-name">{existingNode.serialNumber}</Col>
                         <Col sm="4" className="head-name">{actualNode.serialNumber}</Col>
-                        {/* <Col sm="1" className="head-name"><Input className="form-check-input" type="checkbox" id="sn" name="sn" defaultChecked={true} /></Col> */}
+                        <Col sm="1" className="head-name"><input className="form-check-input" type="checkbox" id="sn" name="sn" /></Col>
                     </Row>
                     <Row className="headerRow1 ">
-                        <Col sm="4" className="head-name">Linux kernel</Col>
+                        <Col sm="3" className="head-name">Linux kernel</Col>
                         <Col sm="4" className="head-name">{existingNode.kernel}</Col>
                         <Col sm="4" className="head-name">{actualNode.kernel}</Col>
-                        {/* <Col sm="1" className="head-name"><Input className="form-check-input" type="checkbox" id="kernel" name="kernel" defaultChecked={true} /></Col> */}
+                        <Col sm="1" className="head-name"><input className="form-check-input" type="checkbox" id="kernel" name="kernel" /></Col>
                     </Row>
                     <Row className="headerRow2 ">
-                        <Col sm="4" className="head-name">Base Linux Iso</Col>
+                        <Col sm="3" className="head-name">Base Linux Iso</Col>
                         <Col sm="4" className="head-name">{existingNode.linuxISO}</Col>
                         <Col sm="4" className="head-name">{actualNode.linuxISO}</Col>
-                        {/* <Col sm="1" className="head-name"><Input className="form-check-input" type="checkbox" id="iso" name="iso" defaultChecked={true} /></Col> */}
+                        <Col sm="1" className="head-name"><input className="form-check-input" type="checkbox" id="iso" name="iso" /></Col>
                     </Row>
                     <Row className="headerRow1 headerRow3">
-                        <Col sm="4" className="head-name">Interfaces</Col>
+                        <Col sm="3" className="head-name">Interfaces</Col>
                         <Col sm="4" className="head-name" style={{ height: '200px', overflowY: 'scroll' }}>{existingInterfaces.map((item) => {
                             return (<ListGroup>
                                 <ListGroupItem>
@@ -244,7 +245,7 @@ class DiscoverModal extends Component {
                                     </ListGroup>
                                 </div>)
                         })}</Col>
-                        {/* <Col sm="1" className="head-name"><Input className="form-check-input" type="checkbox" id="interface" name="interface" defaultChecked={true} /></Col> */}
+                        <Col sm="1" className="head-name"><input className="form-check-input" type="checkbox" id="interface" name="interface" /></Col>
                     </Row>
                     <h4>Do you want to replace selected values ?</h4>
                 </ModalBody>

@@ -1,10 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-<<<<<<< Updated upstream
-import { BrowserRouter, Route, Switch, HashRouter } from 'react-router-dom';
-=======
+
+
 import { HashRouter, Route, Switch } from 'react-router-dom';
->>>>>>> Stashed changes
+
 import createBrowserHistory from 'history/createBrowserHistory';
 import { Redirect } from 'react-router-dom';
 

@@ -344,11 +344,9 @@ class NodeSummary extends React.Component {
                     <ModalBody>
                         <Row>
                             <Col sm="6" className="marTop10">Name
-<<<<<<< Updated upstream
+
                                 <Input id='nodeName' autoFocus className="marTop10" />
-=======
-                                <Input id='name1' autoFocus className="marTop10" />
->>>>>>> Stashed changes
+
                             </Col>
                             <Col sm="6" className="marTop10">Site
                                 <DropDown options={this.state.siteData} getSelectedData={this.getSelectedData} identity={"Site"} default={this.state.selectedSite} />
@@ -383,11 +381,9 @@ class NodeSummary extends React.Component {
     }
 
     addNode() {
-<<<<<<< Updated upstream
+
         let nodeName = document.getElementById('nodeName').value
-=======
-        let nodeName = document.getElementById('name1').value
->>>>>>> Stashed changes
+
         let name = trimString(nodeName)
         let data = this.state.nodes
         let validateUnique = true
