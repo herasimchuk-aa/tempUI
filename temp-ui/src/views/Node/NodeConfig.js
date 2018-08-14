@@ -359,10 +359,14 @@ class NodeConfig extends Component {
     NotificationManager.success('Updated Successfully', 'Interface');
   }
 
+  closeInterfaceModal = () => {
+    this.setState({displayNewInterfaceModel : false})
+  } 
+
   renderAddInterface() {
     if (this.state.displayNewInterfaceModel) {
       return (
-        <ModalComponent getData={this.updateNewInterfaceCall} actionButton={'Add'}></ModalComponent>
+        <ModalComponent cancel={() => this.closeInterfaceModal()} getData={this.updateNewInterfaceCall} actionButton={'Add'}></ModalComponent>
       );
     }
   }

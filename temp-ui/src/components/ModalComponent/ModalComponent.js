@@ -79,6 +79,7 @@ class ModalComponent extends Component {
 
     closeModal() {
         this.setState({ open: false })
+        this.props.cancel();
     }
 
     render() {
