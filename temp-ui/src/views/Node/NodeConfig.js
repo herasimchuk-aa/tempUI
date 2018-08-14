@@ -525,19 +525,24 @@ class NodeConfig extends Component {
   }
 
   discoverModal = () => {
+    // this.setState({ openDiscoverModal: !this.state.openDiscoverModal, saveBtn: !this.state.saveBtn })
     this.setState({ openDiscoverModal: true, saveBtn: true })
   }
 
   openDiscoverModal = () => {
     if (this.state.openDiscoverModal) {
-      return (<DiscoverModal isOpen={true} node={this.state.nodes} actualNode={this.state.actualNode} action={(e) => { this.actualNode(e) }}></DiscoverModal>)
+      return (<DiscoverModal cancel={() => this.closeDiscoverModal()} node={this.state.nodes} actualNode={this.state.actualNode} action={(e) => { this.actualNode(e) }}></DiscoverModal>)
     }
+  }
+
+  closeDiscoverModal = (e) => {
+    this.setState({ openDiscoverModal: false })
   }
 
   actualNode = (params) => {
 
     this.setState({
-      selectedType: params.nodeType,
+      selectedType: params.type,
       selectedIso: params.linuxISO,
       selectedLinux: params.kernel,
       interfaces: params.interfaces,
@@ -559,7 +564,7 @@ class NodeConfig extends Component {
     this.state.selectedRoles.map((data) => (roles.push(data.label)))
     data.map((datum) => {
       datum.roles = roles,
-        datum.nodeType = type,
+        datum.nodeType = params.type,
         datum.linuxIso = params.linuxISO,
         datum.kernel = params.kernel,
         datum.allInterfaces = interfacedata,
@@ -580,6 +585,7 @@ class NodeConfig extends Component {
     }
     a.push(data)
     instance.setState({ data: a })
+    // instance.setState({ data: a, openDiscoverModal: false })
     NotificationManager.success('Saved Successfully', 'Node Configuration');
   }
 

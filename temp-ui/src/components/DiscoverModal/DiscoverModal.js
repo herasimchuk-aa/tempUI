@@ -7,7 +7,7 @@ class DiscoverModal extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            isOpen: false,
+            isOpen: true,
             showAlert: true,
             existingNode: [],
             blankChkCount: 0,
@@ -16,11 +16,12 @@ class DiscoverModal extends Component {
     }
 
     static getDerivedStateFromProps(props, state) {
-        return { isOpen: props.isOpen, existingNode: props.node, actualNode: props.actualNode }
+        return { existingNode: props.node, actualNode: props.actualNode }
     }
 
-    cancel() {
+    cancel = () => {
         this.setState({ isOpen: false })
+        this.props.cancel()
     }
 
     action(node) {
@@ -122,7 +123,7 @@ class DiscoverModal extends Component {
         let blankChkCount = this.state.blankChkCount
         let err = null
         if (blankChkCount) {
-            err = <Alert color="danger" isOpen={this.state.showAlert} toggle={this.cancelAlert}>please tick minimum one checkbox to proceed!!!</Alert>
+            err = <Alert color="danger" isOpen={this.state.showAlert} toggle={this.cancelAlert}>Please tick minimum one checkbox to proceed!!!</Alert>
         }
         let existingNode = this.state.existingNode[0]
         let actualNode = this.state.actualNode

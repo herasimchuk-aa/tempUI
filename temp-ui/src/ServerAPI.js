@@ -1144,14 +1144,17 @@ export class ServerAPI {
         let sourceURL = this.DefaultInvader() + "/node/modify/";
         xhr.open("POST", sourceURL, { data });
         xhr.setRequestHeader("Content-type", "application/json");
-        data.nodes[0].interfaces = data.nodes[0].allInterfaces
-        data.nodes[0].interfaces.map((intrfc) => {
-            intrfc.ip = intrfc.IPAddress
-            intrfc.connectedTo.port = intrfc.connectedTo.serverPort
-            intrfc.connectedTo.name = intrfc.connectedTo.serverName
-        })
-        data.nodes[0].type = data.nodes[0].nodeType
+        if (data.nodes[0].allInterfaces) {
+            data.nodes[0].interfaces = data.nodes[0].allInterfaces
+            data.nodes[0].interfaces.map((intrfc) => {
 
+                intrfc.ip = intrfc.IPAddress
+                intrfc.connectedTo.port = intrfc.connectedTo.serverPort
+                intrfc.connectedTo.name = intrfc.connectedTo.serverName
+            })
+        }
+        if (data.nodes[0].nodeType)
+            data.nodes[0].type = data.nodes[0].nodeType
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 try {
