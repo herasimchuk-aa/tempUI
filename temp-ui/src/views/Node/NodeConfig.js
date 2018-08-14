@@ -13,6 +13,7 @@ import 'react-notifications/lib/notifications.css';
 import MultiselectDropDown from '../../components/MultiselectDropdown/MultiselectDropDown';
 import ConfirmationModal from '../../components/ConfirmationModal/ConfirmationModal';
 import DiscoverModal from '../../components/DiscoverModal/DiscoverModal';
+import { invaderServerAddress } from '../../config';
 
 class NodeConfig extends Component {
   constructor(props) {
@@ -36,14 +37,18 @@ class NodeConfig extends Component {
       selectedRoles: props.location.state.length == 1 ? props.location.state[0].roles : '',
       selectedSerialNo: props.location.state.length == 1 ? props.location.state[0].serialNumber : '',
       selectedSite: props.location.state.length == 1 ? props.location.state[0].site : '',
+      hostname: props.location.state[0].name,
       displayProvisionModel: false,
+      actualNode: {},
       wipeBtn: true,
       rebootBtn: true,
+      saveBtn: true,
       openDiscoverModal: false,
       cancelNodeConfig: false,
       interfaces: props.location.state[0].allInterfaces
     }
     this.counter = 0
+    console.log(props)
   }
 
   componentDidMount() {
@@ -52,6 +57,16 @@ class NodeConfig extends Component {
     ServerAPI.DefaultServer().fetchAllKernels(this.retrieveKernelsData, this);
     ServerAPI.DefaultServer().fetchAllSystemTypes(this.retrieveTypesData, this);
     ServerAPI.DefaultServer().fetchAllSite(this.retrieveSiteData, this);
+    this.fetchActualNode(this.state.hostname)
+  }
+
+  fetchActualNode(nodeName) {
+    let self = this
+    fetch(invaderServerAddress + '/node/discover/' + nodeName)
+      .then(response => response.json())
+      .then((data) => {
+        self.setState({ actualNode: data })
+      });
   }
 
   retrieveRoleData(instance, data) {
@@ -184,7 +199,7 @@ class NodeConfig extends Component {
       a = []
     }
     a.push(data)
-    instance.setState({ data: a, selectedRowIndexes: [] })
+    instance.setState({ data: a, selectedRowIndexes: [], saveBtn: false })
 
     NotificationManager.success('deleted Successfully', 'Interface');
   }
@@ -347,7 +362,7 @@ class NodeConfig extends Component {
       })
       this.setState({ interfaces: datum.allInterfaces })
     })
-    this.setState({ displayModel: !this.state.displayModel })
+    this.setState({ displayModel: !this.state.displayModel, saveBtn: false })
     NotificationManager.success('Updated Successfully', 'Interface');
   }
 
@@ -377,7 +392,7 @@ class NodeConfig extends Component {
     }
     allInterfaces.push(newInterface)
     data[0].allInterfaces = allInterfaces
-    this.setState({ displayNewInterfaceModel: !this.state.displayNewInterfaceModel, nodes: data, interfaces: allInterfaces })
+    this.setState({ displayNewInterfaceModel: !this.state.displayNewInterfaceModel, nodes: data, interfaces: allInterfaces, saveBtn: false })
     NotificationManager.success('Saved Successfully', 'Interface');
   }
 
@@ -449,18 +464,18 @@ class NodeConfig extends Component {
 
   getSelectedData = (data, identity) => {
     if (identity == 'Type') {
-      this.setState({ selectedType: data })
+      this.setState({ selectedType: data, saveBtn: false })
     }
     if (identity == 'Linux') {
       this.state.selectedIso != data && data != '' ? this.setState({ rebootBtn: false }) : ''
-      this.setState({ selectedLinux: data })
+      this.setState({ selectedLinux: data, saveBtn: false })
     }
     if (identity == 'ISO') {
       this.state.selectedIso != data && data != '' ? this.setState({ wipeBtn: false }) : ''
-      this.setState({ selectedIso: data })
+      this.setState({ selectedIso: data, saveBtn: false })
     }
     if (identity == 'Site') {
-      this.setState({ selectedSite: data })
+      this.setState({ selectedSite: data, saveBtn: false })
     }
 
   }
@@ -481,11 +496,11 @@ class NodeConfig extends Component {
 
 
   handleChanges = (selectedOption) => {
-    this.setState({ selectedRoles: selectedOption });
+    this.setState({ selectedRoles: selectedOption, saveBtn: false });
   }
 
   serialNo = (e) => {
-    this.setState({ selectedSerialNo: e.target.value });
+    this.setState({ selectedSerialNo: e.target.value, saveBtn: false });
   }
 
   showDiscoverButton = () => {
@@ -510,12 +525,12 @@ class NodeConfig extends Component {
   }
 
   discoverModal = () => {
-    this.setState({ openDiscoverModal: true })
+    this.setState({ openDiscoverModal: true, saveBtn: true })
   }
 
   openDiscoverModal = () => {
     if (this.state.openDiscoverModal) {
-      return (<DiscoverModal isOpen={true} node={this.state.nodes} action={(e) => { this.actualNode(e) }}></DiscoverModal>)
+      return (<DiscoverModal isOpen={true} node={this.state.nodes} actualNode={this.state.actualNode} action={(e) => { this.actualNode(e) }}></DiscoverModal>)
     }
   }
 
@@ -525,10 +540,47 @@ class NodeConfig extends Component {
       selectedType: params.nodeType,
       selectedIso: params.linuxISO,
       selectedLinux: params.kernel,
-      interfaces: params.allInterfaces,
+      interfaces: params.interfaces,
+      allInterfaces: params.allInterfaces,
       selectedSerialNo: params.serialNumber,
       openDiscoverModal: false
     })
+
+    let interfacedata = null
+
+    if (params.allInterfaces) {
+      interfacedata = params.allInterfaces
+    } else if (params.interfaces) {
+      interfacedata = params.interfaces
+    }
+
+    let data = this.state.nodes
+    let roles = [];
+    this.state.selectedRoles.map((data) => (roles.push(data.label)))
+    data.map((datum) => {
+      datum.roles = roles,
+        datum.nodeType = type,
+        datum.linuxIso = params.linuxISO,
+        datum.kernel = params.kernel,
+        datum.allInterfaces = interfacedata,
+        datum.interfaces = interfacedata,
+        datum.serialNumber = params.serialNumber
+      let a = {
+        nodes: [datum]
+      }
+      ServerAPI.DefaultServer().updateNode(this.updateActualNodeCallback, this, a);
+    })
+
+  }
+
+  updateActualNodeCallback(instance, data) {
+    let a = instance.state.data
+    if (!a) {
+      a = []
+    }
+    a.push(data)
+    instance.setState({ data: a })
+    NotificationManager.success('Saved Successfully', 'Node Configuration');
   }
 
   cancelNodeConfig = () => {
@@ -578,7 +630,7 @@ class NodeConfig extends Component {
           <Media right>
             {showDiscoverButton}
             <Button className="custBtn" outline color="secondary" onClick={() => { this.cancelNodeConfig() }}> Cancel </Button>
-            <Button className="custBtn" outline color="secondary" onClick={() => (this.updateSaveNode())}> Save </Button>
+            <Button className="custBtn" outline color="secondary" disabled={this.state.saveBtn} onClick={() => (this.updateSaveNode())}> Save </Button>
           </Media>
         </Media>
         <div >
