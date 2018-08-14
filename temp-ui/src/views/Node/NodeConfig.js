@@ -45,10 +45,10 @@ class NodeConfig extends Component {
       saveBtn: true,
       openDiscoverModal: false,
       cancelNodeConfig: false,
-      interfaces: props.location.state[0].allInterfaces
+      interfaces: props.location.state[0].allInterfaces,
+      isLoading: false
     }
     this.counter = 0
-    console.log(props)
   }
 
   componentDidMount() {
@@ -57,17 +57,10 @@ class NodeConfig extends Component {
     ServerAPI.DefaultServer().fetchAllKernels(this.retrieveKernelsData, this);
     ServerAPI.DefaultServer().fetchAllSystemTypes(this.retrieveTypesData, this);
     ServerAPI.DefaultServer().fetchAllSite(this.retrieveSiteData, this);
-    this.fetchActualNode(this.state.hostname)
+
   }
 
-  fetchActualNode(nodeName) {
-    let self = this
-    fetch(invaderServerAddress + '/node/discover/' + nodeName)
-      .then(response => response.json())
-      .then((data) => {
-        self.setState({ actualNode: data })
-      });
-  }
+
 
   retrieveRoleData(instance, data) {
     if (!data) {
@@ -517,7 +510,15 @@ class NodeConfig extends Component {
       })
     }
     if (chkDiscoverbtn) {
-      return (<Button className="custBtn" outline color="secondary" onClick={() => (this.discoverModal())}> Discover </Button>)
+      if (this.state.isLoading) {
+        return (<Button className="custFillBtn" outline color="secondary" onClick={() => (this.discoverModal())
+        }> Discovering.... </Button >)
+      }
+      if (!this.state.isLoading) {
+        return (<Button className='custBtn' outline color="secondary" onClick={() => (this.discoverModal())
+        }> Discover </Button >)
+      }
+
     }
     else {
       return (<Button className="custBtn" outline color="secondary" disabled > Discover </Button>)
@@ -525,22 +526,68 @@ class NodeConfig extends Component {
   }
 
   discoverModal = () => {
-    // this.setState({ openDiscoverModal: !this.state.openDiscoverModal, saveBtn: !this.state.saveBtn })
-    this.setState({ openDiscoverModal: true, saveBtn: true })
+    this.toggleLoading()
+    this.setState({ saveBtn: true })
+    let roles = [];
+    this.state.selectedRoles.map((data) => (roles.push(data.label)))
+    let data = this.state.nodes
+    data.map((datum) => {
+      datum.roles = roles,
+        datum.nodeType = this.state.selectedType,
+        datum.linuxIso = this.state.selectedIso,
+        datum.kernel = this.state.selectedLinux,
+        datum.site = this.state.selectedSite,
+        datum.allInterfaces = this.state.interfaces,
+        datum.interfaces = this.state.interfaces,
+        datum.serialNumber = this.state.selectedSerialNo
+      let a = {
+        nodes: [datum]
+      }
+      ServerAPI.DefaultServer().updateNode(this.updateDiscoverNodeCallback, this, a);
+    })
+
+  }
+
+  toggleLoading = () => {
+    this.setState((prevState, props) => ({
+      isLoading: !prevState.isLoading
+    }))
   }
 
   openDiscoverModal = () => {
     if (this.state.openDiscoverModal) {
       return (<DiscoverModal cancel={() => this.closeDiscoverModal()} node={this.state.nodes} actualNode={this.state.actualNode} action={(e) => { this.actualNode(e) }}></DiscoverModal>)
     }
+
   }
 
   closeDiscoverModal = (e) => {
     this.setState({ openDiscoverModal: false })
   }
 
-  actualNode = (params) => {
 
+  updateDiscoverNodeCallback(instance, data) {
+    let a = instance.state.data
+    if (!a) {
+      a = []
+    }
+    a.push(data)
+    instance.setState({ data: a })
+    instance.fetchActualNode(instance.state.hostname)
+  }
+
+  fetchActualNode(nodeName) {
+    let self = this
+    fetch(invaderServerAddress + '/node/discover/' + nodeName)
+      .then(response => response.json())
+      .then((data) => {
+        self.toggleLoading()
+        self.setState({ actualNode: data, openDiscoverModal: true })
+
+      });
+  }
+
+  actualNode = (params) => {
     this.setState({
       selectedType: params.type,
       selectedIso: params.linuxISO,
