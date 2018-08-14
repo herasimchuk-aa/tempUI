@@ -198,6 +198,7 @@ class NodeConfig extends Component {
   }
 
   interfaceTableContent() {
+    console.log(this.state.interfaces)
     let rows = []
     let self = this
     if (this.state.interfaces && this.state.interfaces.length) {
@@ -515,8 +516,7 @@ class NodeConfig extends Component {
     }
     if (chkDiscoverbtn) {
       if (this.state.isLoading) {
-        return (<Button className="custFillBtn" outline color="secondary" onClick={() => (this.discoverModal())
-        }> Discovering.... </Button >)
+        return (<Button className="custFillBtn" outline color="secondary" style={{ cursor: 'wait' }} > Discovering.... </Button >)
       }
       if (!this.state.isLoading) {
         return (<Button className='custBtn' outline color="secondary" onClick={() => (this.discoverModal())
@@ -593,34 +593,27 @@ class NodeConfig extends Component {
 
   actualNode = (params) => {
     this.setState({
-      selectedType: params.type,
-      selectedIso: params.linuxISO,
-      selectedLinux: params.kernel,
-      interfaces: params.interfaces,
-      allInterfaces: params.allInterfaces,
-      selectedSerialNo: params.serialNumber,
+      selectedType: params.nodeType ? params.nodeType : '',
+      selectedIso: params.linuxISO ? params.linuxISO : '',
+      selectedLinux: params.kernel ? params.kernel : '',
+      interfaces: params.allInterfaces ? params.allInterfaces : [],
+      allInterfaces: params.allInterfaces ? params.allInterfaces : [],
+      selectedSerialNo: params.serialNumber ? params.serialNumber : '',
       openDiscoverModal: false
     })
 
-    let interfacedata = null
-
-    if (params.allInterfaces) {
-      interfacedata = params.allInterfaces
-    } else if (params.interfaces) {
-      interfacedata = params.interfaces
-    }
 
     let data = this.state.nodes
     let roles = [];
     this.state.selectedRoles.map((data) => (roles.push(data.label)))
     data.map((datum) => {
       datum.roles = roles,
-        datum.nodeType = params.type,
-        datum.linuxIso = params.linuxISO,
-        datum.kernel = params.kernel,
-        datum.allInterfaces = interfacedata,
-        datum.interfaces = interfacedata,
-        datum.serialNumber = params.serialNumber
+        datum.nodeType = params.nodeType ? params.nodeType : '',
+        datum.linuxIso = params.linuxISO ? params.linuxISO : '',
+        datum.kernel = params.kernel ? params.kernel : '',
+        datum.allInterfaces = params.allInterfaces ? params.allInterfaces : [],
+        datum.interfaces = params.allInterfaces ? params.allInterfaces : [],
+        datum.serialNumber = params.serialNumber ? params.serialNumber : ''
       let a = {
         nodes: [datum]
       }

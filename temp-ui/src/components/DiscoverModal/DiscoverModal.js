@@ -27,15 +27,47 @@ class DiscoverModal extends Component {
     action(node) {
         let allChecked = document.getElementById('all').checked
         let actNode = node
-        actNode.type = actNode.nodeType
+        actNode.nodeType = actNode.type
+        actNode.allInterfaces = actNode.interfaces
         let existingNode = this.state.existingNode[0]
         let updatedNode = existingNode
         let blankChkCount = 0
+        console.log('actNode', actNode)
+        console.log('updatedNode', updatedNode)
+        //         admin: ""
+        // alarms: ""
+        // connectedTo: {name: "", port: "", link: "", lldpMatched: ""}
+        // link: ""
+        // lldpMatched: ""
+        // name: ""
+        // port: ""
+        // ip: "172.17.2.32"
+        // isMngmntIntf: false
+        // macAddress: ""
+        // port: "eth0"
+        // type: ""
         if (allChecked) {
+            let interfaces = actNode.allInterfaces
+                if(interfaces && interfaces.length){
+                interfaces = interfaces.map(function (item, index) {
+
+                    item.port = actNode.allInterfaces[index].port
+                    item.ip = actNode.allInterfaces[index].ip
+                    item.IPAddress = actNode.allInterfaces[index].ip
+                    item.admin = actNode.allInterfaces[index].admin
+                    item.connectedTo.name = actNode.allInterfaces[index].connectedTo.name
+                    item.connectedTo.port = actNode.allInterfaces[index].connectedTo.port
+
+
+                    return item
+                    })
+                    actNode.allInterfaces = interfaces
+                }
             this.props.action(actNode)
             this.setState({ isOpen: false })
         }
         else {
+            console.log('in all checked')
             let typeChecked = document.getElementById('type').checked
             if (!typeChecked) {
                 blankChkCount++
@@ -70,7 +102,22 @@ class DiscoverModal extends Component {
                 blankChkCount++
                 updatedNode.allInterfaces = updatedNode.allInterfaces
             } else {
-                updatedNode.allInterfaces = actNode.interfaces
+                let interfaces = actNode.allInterfaces
+                if(interfaces && interfaces.length){
+                interfaces = interfaces.map(function (item, index) {
+
+                    item.port = actNode.allInterfaces[index].port
+                    item.ip = actNode.allInterfaces[index].ip
+                    item.IPAddress = actNode.allInterfaces[index].ip
+                    item.admin = actNode.allInterfaces[index].admin
+                    item.connectedTo.name = actNode.allInterfaces[index].connectedTo.name
+                    item.connectedTo.port = actNode.allInterfaces[index].connectedTo.port
+
+
+                    return item
+                    })
+                    updatedNode.allInterfaces = interfaces
+                }
             }
             if (blankChkCount == 5) {
                 return this.setState({ blankChkCount: true })

@@ -1147,14 +1147,23 @@ export class ServerAPI {
         if (data.nodes[0].allInterfaces) {
             data.nodes[0].interfaces = data.nodes[0].allInterfaces
             data.nodes[0].interfaces.map((intrfc) => {
-
-                intrfc.ip = intrfc.IPAddress
+                if(intrfc.IPAddress){
+                    intrfc.ip = intrfc.IPAddress
+                }else{
+                    intrfc.ip = intrfc.ip
+                }
+                
+                
                 intrfc.connectedTo.port = intrfc.connectedTo.serverPort
                 intrfc.connectedTo.name = intrfc.connectedTo.serverName
             })
         }
-        if (data.nodes[0].nodeType)
+        if (data.nodes[0].nodeType) {
             data.nodes[0].type = data.nodes[0].nodeType
+        } else {
+            data.nodes[0].type = ''
+        }
+
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 try {
