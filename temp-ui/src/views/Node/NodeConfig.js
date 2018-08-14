@@ -198,7 +198,6 @@ class NodeConfig extends Component {
   }
 
   interfaceTableContent() {
-    console.log(this.state.interfaces)
     let rows = []
     let self = this
     if (this.state.interfaces && this.state.interfaces.length) {
@@ -361,8 +360,8 @@ class NodeConfig extends Component {
   }
 
   closeInterfaceModal = () => {
-    this.setState({displayNewInterfaceModel : false})
-  } 
+    this.setState({ displayNewInterfaceModel: false })
+  }
 
   renderAddInterface() {
     if (this.state.displayNewInterfaceModel) {
