@@ -89,6 +89,10 @@
 	
 }
 
+.public_fixedDataTableCell_cellContent {
+    padding: 15px 8px !important;
+}
+
 .custFillBtn{
 	color: white  !important;
 	border-radius: 6px  !important;
