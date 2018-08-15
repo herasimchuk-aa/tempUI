@@ -26,48 +26,78 @@ class DiscoverModal extends Component {
 
     action(node) {
         let allChecked = document.getElementById('all').checked
+        let checkboxes = document.querySelectorAll('#form1 input[type="checkbox"]')
         let actNode = node
         actNode.nodeType = actNode.type
         actNode.allInterfaces = actNode.interfaces
         let existingNode = this.state.existingNode[0]
         let updatedNode = existingNode
         let blankChkCount = 0
-        console.log('actNode', actNode)
-        console.log('updatedNode', updatedNode)
-        //         admin: ""
-        // alarms: ""
-        // connectedTo: {name: "", port: "", link: "", lldpMatched: ""}
-        // link: ""
-        // lldpMatched: ""
-        // name: ""
-        // port: ""
-        // ip: "172.17.2.32"
-        // isMngmntIntf: false
-        // macAddress: ""
-        // port: "eth0"
-        // type: ""
         if (allChecked) {
             let interfaces = actNode.allInterfaces
-                if(interfaces && interfaces.length){
+            let existingInterfaces = updatedNode.allInterfaces
+            if (interfaces && interfaces.length) {
                 interfaces = interfaces.map(function (item, index) {
-
                     item.port = actNode.allInterfaces[index].port
                     item.ip = actNode.allInterfaces[index].ip
                     item.IPAddress = actNode.allInterfaces[index].ip
                     item.admin = actNode.allInterfaces[index].admin
                     item.connectedTo.name = actNode.allInterfaces[index].connectedTo.name
                     item.connectedTo.port = actNode.allInterfaces[index].connectedTo.port
-
-
+                    item.connectedTo.serverName = actNode.allInterfaces[index].connectedTo.name
+                    item.connectedTo.serverPort = actNode.allInterfaces[index].connectedTo.port
+                    item.isMngmntIntf = actNode.allInterfaces[index].isMngmntIntf
                     return item
-                    })
-                    actNode.allInterfaces = interfaces
-                }
+                })
+
+                existingInterfaces.map((exItem) => {
+                    if (exItem.isMngmntIntf == true) {
+                        let mngmtInterface = {
+                            port: exItem.port,
+                            ip: exItem.ip,
+                            IPAddress: exItem.IPAddress,
+                            admin: exItem.admin,
+                            connectedTo: {
+                                name: exItem.connectedTo.name,
+                                port: exItem.connectedTo.port,
+                                serverName: exItem.connectedTo.serverName,
+                                serverPort: exItem.connectedTo.serverPort,
+                            },
+                            isMngmntIntf: exItem.isMngmntIntf
+                        }
+
+                        interfaces.push(mngmtInterface)
+                    }
+                })
+
+                actNode.allInterfaces = interfaces
+            }
+            else {
+                existingInterfaces.map((exItem) => {
+                    if (exItem.isMngmntIntf == true) {
+                        let mngmtInterface = {
+                            port: exItem.port,
+                            ip: exItem.ip,
+                            IPAddress: exItem.IPAddress,
+                            admin: exItem.admin,
+                            connectedTo: {
+                                name: exItem.connectedTo.name,
+                                port: exItem.connectedTo.port,
+                                serverName: exItem.connectedTo.serverName,
+                                serverPort: exItem.connectedTo.serverPort,
+                            },
+                            isMngmntIntf: exItem.isMngmntIntf
+                        }
+
+                        interfaces.push(mngmtInterface)
+                    }
+                })
+                actNode.allInterfaces = interfaces
+            }
             this.props.action(actNode)
             this.setState({ isOpen: false })
         }
         else {
-            console.log('in all checked')
             let typeChecked = document.getElementById('type').checked
             if (!typeChecked) {
                 blankChkCount++
@@ -102,24 +132,46 @@ class DiscoverModal extends Component {
                 blankChkCount++
                 updatedNode.allInterfaces = updatedNode.allInterfaces
             } else {
+                let existingInterfaces = updatedNode.allInterfaces
                 let interfaces = actNode.allInterfaces
-                if(interfaces && interfaces.length){
-                interfaces = interfaces.map(function (item, index) {
+                if (interfaces && interfaces.length) {
+                    interfaces = interfaces.map(function (item, index) {
 
-                    item.port = actNode.allInterfaces[index].port
-                    item.ip = actNode.allInterfaces[index].ip
-                    item.IPAddress = actNode.allInterfaces[index].ip
-                    item.admin = actNode.allInterfaces[index].admin
-                    item.connectedTo.name = actNode.allInterfaces[index].connectedTo.name
-                    item.connectedTo.port = actNode.allInterfaces[index].connectedTo.port
-
-
-                    return item
+                        item.port = actNode.allInterfaces[index].port
+                        item.ip = actNode.allInterfaces[index].ip
+                        item.IPAddress = actNode.allInterfaces[index].ip
+                        item.admin = actNode.allInterfaces[index].admin
+                        item.connectedTo.name = actNode.allInterfaces[index].connectedTo.name
+                        item.connectedTo.port = actNode.allInterfaces[index].connectedTo.port
+                        item.connectedTo.serverName = actNode.allInterfaces[index].connectedTo.name
+                        item.connectedTo.serverPort = actNode.allInterfaces[index].connectedTo.port
+                        item.isMngmntIntf = actNode.allInterfaces[index].isMngmntIntf
+                        return item
                     })
+
+                    existingInterfaces.map((exItem) => {
+                        if (exItem.isMngmntIntf == true) {
+                            let mngmtInterface = {
+                                port: exItem.port,
+                                ip: exItem.ip,
+                                IPAddress: exItem.IPAddress,
+                                admin: exItem.admin,
+                                connectedTo: {
+                                    name: exItem.connectedTo.name,
+                                    port: exItem.connectedTo.port,
+                                    serverName: exItem.connectedTo.serverName,
+                                    serverPort: exItem.connectedTo.serverPort,
+                                },
+                                isMngmntIntf: exItem.isMngmntIntf
+                            }
+                            interfaces.push(mngmtInterface)
+                        }
+                    })
+
                     updatedNode.allInterfaces = interfaces
                 }
             }
-            if (blankChkCount == 5) {
+            if (blankChkCount == checkboxes.length - 1) {
                 return this.setState({ blankChkCount: true })
             } else {
                 this.props.action(updatedNode)
@@ -149,6 +201,7 @@ class DiscoverModal extends Component {
     chk = (e) => {
         let count = 0
         let checkboxes = document.querySelectorAll('#form1 input[type="checkbox"]')
+
         if (e.target.checked == false) {
             checkboxes[0].checked = false
         }
@@ -158,7 +211,7 @@ class DiscoverModal extends Component {
                     count++
                 }
             }
-            if (count == 5) {
+            if (count == checkboxes.length - 1) {
                 checkboxes[0].checked = true
             }
         }
@@ -221,10 +274,10 @@ class DiscoverModal extends Component {
                         <Col sm="4" className="head-name-light">{existingNode.linuxISO}</Col>
                         <Col sm="4" className="head-name-light">{actualNode.linuxISO}</Col>
                     </Row>
-                    <Row className="headerRow1 headerRow3">
+                    <Row className="headerRow1 headerRow3" style={{ marginBottom: '20px' }}>
                         <Col sm="1" className="head-check"><input className="form-check-input" type="checkbox" id="interface" onChange={(e) => { this.chk(e) }} name="interface" /></Col>
                         <Col sm="3" className="head-name-light">Interfaces</Col>
-                        <Col sm="4" className="head-name-light" style={{ height: '200px', overflowY: 'auto' }}>{existingInterfaces.map((item) => {
+                        <Col sm="4" className="head-name-light" style={{ maxHeight: '200px', overflowY: 'auto' }}>{existingInterfaces.map((item) => {
                             return (<ListGroup>
                                 <ListGroupItem>
                                     {item.port}
@@ -232,7 +285,7 @@ class DiscoverModal extends Component {
                             </ListGroup>)
                         })}
                         </Col>
-                        <Col sm="4" className="head-name-light" style={{ height: '200px', overflowY: 'auto' }}>{actualInterfaces.map((item, index) => {
+                        <Col sm="4" className="head-name-light" style={{ maxHeight: '200px', overflowY: 'auto' }}>{actualInterfaces.map((item, index) => {
                             return (
                                 <div>
                                     <ListGroup>
@@ -243,12 +296,12 @@ class DiscoverModal extends Component {
                                 </div>)
                         })}</Col>
                     </Row>
-                    <h4>Do you want to replace selected values ?</h4>
+                    <Row>
+                        <Col sm="8" style={{ textAlign: 'left' }}><h5>Do you want to replace selected values ?</h5></Col>
+                        <Col sm="2" style={{ textAlign: 'right' }}><Button outline className="custBtn" color="primary" onClick={() => (this.action(actualNode))}>Yes</Button></Col>
+                        <Col sm="2" style={{ textAlign: 'right' }}><Button outline className="custBtn" color="primary" onClick={() => (this.cancel())}>No</Button></Col>
+                    </Row>
                 </ModalBody>
-                <ModalFooter>
-                    <Button outline className="custBtn" color="primary" onClick={() => (this.action(actualNode))}>Yes</Button>
-                    <Button outline className="custBtn" color="primary" onClick={() => (this.cancel())}>No</Button>
-                </ModalFooter>
             </Modal>
         )
     }
