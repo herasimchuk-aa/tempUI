@@ -165,6 +165,7 @@ class ValidationCell extends React.PureComponent {
         let a = [];
         const { data, rowIndex, columnKey, match, field, ...props } = this.props;
         const value = data[rowIndex][columnKey];
+
         if (value && data[rowIndex].validationStatus) {
             if (data[rowIndex].validationStatus[match]) {
                 return (<Cell {...props}>  <span style={{ color: 'black' }}>{value}</span> </Cell>)
@@ -176,6 +177,9 @@ class ValidationCell extends React.PureComponent {
                 return (<Cell id={columnKey + rowIndex} {...props}>  <span style={{ color: 'red' }} key={columnKey + rowIndex}>{value}</span> {tooltip} </Cell>);
             }
 
+        }
+        if (value) {
+            return (<Cell {...props}>  <span style={{ color: 'black' }}>{value}</span> </Cell>)
         }
         return <Cell></Cell>
     }
