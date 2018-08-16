@@ -178,6 +178,21 @@ class ValidationCell extends React.PureComponent {
             }
 
         }
+        else {
+            // value to be set -
+            if (data[rowIndex].validationStatus) {
+                if (data[rowIndex].validationStatus[match]) {
+                    return (<Cell {...props}>  <span style={{ color: 'black' }}>{'-'}</span> </Cell>)
+                }
+                else {
+                    let tooltip = null;
+                    if (data[rowIndex].validationStatus[field])
+                        tooltip = (<UncontrolledTooltip placement="top" target={columnKey + rowIndex}>{data[rowIndex].validationStatus[field]}</UncontrolledTooltip>)
+                    return (<Cell id={columnKey + rowIndex} {...props}>  <span style={{ color: 'red' }} key={columnKey + rowIndex}>{'-'}</span> {tooltip} </Cell>);
+                }
+            }
+        }
+
         if (value) {
             return (<Cell {...props}>  <span style={{ color: 'black' }}>{value}</span> </Cell>)
         }

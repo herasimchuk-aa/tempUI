@@ -55,11 +55,6 @@
 	z-index: 0 !important;
 }
 
-.cell {
-	border-right-style: none !important;
-	cursor: pointer;
-}
-
 .list-group-item {
 	background-color: transparent !important;
 	border: none !important;
@@ -89,9 +84,6 @@
 	
 }
 
-.public_fixedDataTableCell_cellContent {
-    padding: 15px 8px !important;
-}
 
 .custFillBtn{
 	color: white  !important;
@@ -102,6 +94,11 @@
 	background-color: #4f908e !important;
 	
 }
+
+.form-check-input {
+	margin-top: 0.7rem !important;
+}
+
 
 #register,#forgotpassword,#logInBtn{
 	display: none;

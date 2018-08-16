@@ -54,7 +54,7 @@ class Header extends Component {
           <span className="navbar-toggler-icon"></span>
         </NavbarToggler>
 
-        <NavbarToggler className="d-md-down-none mr-auto" onClick={this.sidebarToggle}>
+        <NavbarToggler className="d-md-down-none mr-auto" onClick={this.sidebarMinimize}>
           <span className="navbar-toggler-icon"></span>
         </NavbarToggler>
         <Button className="custBtn" onClick={() => (this.logOut())}><span>Log Out</span></Button>

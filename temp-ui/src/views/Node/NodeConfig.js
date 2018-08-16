@@ -405,6 +405,11 @@ class NodeConfig extends Component {
 
   updateSaveNode = () => {
     let roles = [];
+    if (this.state.selectedRoles.length == 0) {
+      NotificationManager.error('Role cannot be empty', 'Role');
+      return;
+    }
+
     this.state.selectedRoles.map((data) => (roles.push(data.label)))
     let data = this.state.nodes
     data.map((datum) => {

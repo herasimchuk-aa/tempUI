@@ -73,6 +73,7 @@ class BaseLinuxIso extends Component {
         let table = this.drawtable()
         return (
             <div>
+                <Row className="tableTitle">BMC Monitor</Row>
                 {tableHeader}
                 {table}
             </div>

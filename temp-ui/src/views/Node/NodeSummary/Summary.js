@@ -199,6 +199,7 @@ class NodeSummary extends React.Component {
         if (selectedRowIndex.length) {
             selectedRowIndex.map(function (rowIndex) {
                 selectedRows.push(nodes[rowIndex])
+                selectedRows[0].roles = converter(nodes[rowIndex].roles);
             })
             this.setState({
                 selectedRows, redirect: true

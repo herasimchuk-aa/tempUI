@@ -298,8 +298,10 @@ class DiscoverModal extends Component {
                     </Row>
                     <Row>
                         <Col sm="8" style={{ textAlign: 'left' }}><h5>Do you want to replace selected values ?</h5></Col>
-                        <Col sm="2" style={{ textAlign: 'right' }}><Button outline className="custBtn" color="primary" onClick={() => (this.action(actualNode))}>Yes</Button></Col>
-                        <Col sm="2" style={{ textAlign: 'right' }}><Button outline className="custBtn" color="primary" onClick={() => (this.cancel())}>No</Button></Col>
+                        <Col sm="4" style={{ textAlign: 'right' }}>
+                            <Button outline className="custBtn" color="primary" onClick={() => (this.action(actualNode))}>Yes</Button>
+                            <Button outline className="custBtn" color="primary" onClick={() => (this.cancel())}>No</Button>
+                        </Col>
                     </Row>
                 </ModalBody>
             </Modal>
