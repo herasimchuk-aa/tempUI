@@ -64,9 +64,9 @@ class Types extends Component {
                         <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()}>{this.state.errorMsg}</Alert>
                         <Row>
                             <Col>Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='typeName' required={true} /><br />
-                                Vendor <Input className="marTop10" id='vendor' /><br />
-                                Rack Unit <Input className="marTop10" id='rackUnit' /><br />
-                                AirFlow <Input className="marTop10" id='airFlow' /><br /></Col><Col>
+                                Vendor <Input className="marTop10" id='typeVendor' /><br />
+                                Rack Unit <Input className="marTop10" id='typeRackUnit' /><br />
+                                AirFlow <Input className="marTop10" id='typeAirFlow' /><br /></Col><Col>
                                 Front Panel Interface<font color="red"><sup>*</sup></font> <Input className="marTop10" type="number" min={1} max={32} id='noFPI' /><br />
                                 Speed Front Panel Interface <Input className="marTop10" id='SpeedFPI' /><br />
                                 Management Interfaces<font color="red"><sup>*</sup></font> <Input className="marTop10" type="number" id='noMI' /><br />
@@ -94,9 +94,9 @@ class Types extends Component {
         let validtypename = trimString(typename)
         let a = {
             'Id': validtypename,
-            'Vendor': document.getElementById('vendor').value,
-            'RackUnit': document.getElementById('rackUnit').value,
-            'Airflow': document.getElementById('airFlow').value,
+            'Vendor': document.getElementById('typeVendor').value,
+            'RackUnit': document.getElementById('typeRackUnit').value,
+            'Airflow': document.getElementById('typeAirFlow').value,
             'NumFrontPanelInterface': parseInt(document.getElementById('noFPI').value),
             'SpeedFrontPanelInterface': document.getElementById('SpeedFPI').value,
             'NumMgmtInterface': parseInt(document.getElementById('noMI').value),
