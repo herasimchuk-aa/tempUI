@@ -14,6 +14,9 @@
 .borderBottom{
 	border-bottom: 1px solid #c2cfd6;
 }
+.borderNone{
+	border:none;
+}
 .headerRow2{
 	text-align: left;
 	background-color: #e4e5e640;

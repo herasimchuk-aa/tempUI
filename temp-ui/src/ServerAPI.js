@@ -1147,15 +1147,15 @@ export class ServerAPI {
         if (data.nodes[0].allInterfaces) {
             data.nodes[0].interfaces = data.nodes[0].allInterfaces
             data.nodes[0].interfaces.map((intrfc) => {
-                if(intrfc.IPAddress){
+                if (intrfc.IPAddress) {
                     intrfc.ip = intrfc.IPAddress
-                }else{
+                } else {
                     intrfc.ip = intrfc.ip
                 }
-                
-                
-                intrfc.connectedTo.port = intrfc.connectedTo.serverPort
-                intrfc.connectedTo.name = intrfc.connectedTo.serverName
+
+
+                intrfc.connectedTo.port = intrfc.connectedTo.serverPort ? intrfc.connectedTo.serverPort : ''
+                intrfc.connectedTo.name = intrfc.connectedTo.serverName ? intrfc.connectedTo.serverName : ''
             })
         }
         if (data.nodes[0].nodeType) {

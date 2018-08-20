@@ -173,6 +173,7 @@ class NodeConfig extends Component {
 
     interfaces = interfaces.filter(function (n) { return n != undefined })
     this.state.nodes[0].allInterfaces = interfaces
+    this.setState({ interfaces: interfaces })
 
     let roles = [];
     let { selectedRoles } = this.state
@@ -596,6 +597,10 @@ class NodeConfig extends Component {
   }
 
   actualNode = (params) => {
+
+    params.allInterfaces.map((parm) => {
+      parm.IPAddress = parm.ip
+    })
     this.setState({
       selectedType: params.nodeType ? params.nodeType : '',
       selectedIso: params.linuxISO ? params.linuxISO : '',
