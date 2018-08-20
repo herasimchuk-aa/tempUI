@@ -449,8 +449,12 @@ class DiscoverModal extends Component {
                 }
                 let row = (<Row className={headerClass}>
                     <Col sm="2" className='pad'>{item.name ? item.name : '-'}</Col>
-                    <Col sm="5" className='pad'>{item.existingInterface.port} {item.existingInterface.IPAddress ? item.existingInterface.IPAddress : ''}</Col>
-                    <Col sm="5" className='pad'>{item.actualInterface.port} {item.actualInterface.IPAddress ? item.actualInterface.IPAddress : ''}</Col>
+                    <Col sm="5" className='pad'>{item.existingInterface.port} < br />
+                        <small>{item.existingInterface.IPAddress ? item.existingInterface.IPAddress : ''}</small>
+                    </Col>
+                    <Col sm="5" className='pad'>{item.actualInterface.port} < br />
+                        <small>{item.actualInterface.IPAddress ? item.actualInterface.IPAddress : ''}</small>
+                    </Col>
                 </Row>)
                 rows.push(row)
             })

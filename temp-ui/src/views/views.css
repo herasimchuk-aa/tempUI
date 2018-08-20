@@ -30,6 +30,12 @@
 	margin-bottom: 50px;
 }
 
+#interfaceList{
+	padding: 0px 20px !important;
+	max-height: 200px;
+	overflow: auto;
+}
+
 .head-name{
 	font-weight: 600;
 	font-size: 15px;
