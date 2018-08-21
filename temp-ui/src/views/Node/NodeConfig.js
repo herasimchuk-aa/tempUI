@@ -600,6 +600,8 @@ class NodeConfig extends Component {
 
     params.allInterfaces.map((parm) => {
       parm.IPAddress = parm.ip
+      parm.connectedTo.serverName = parm.connectedTo.name
+      parm.connectedTo.serverPort = parm.connectedTo.port
     })
     this.setState({
       selectedType: params.nodeType ? params.nodeType : '',

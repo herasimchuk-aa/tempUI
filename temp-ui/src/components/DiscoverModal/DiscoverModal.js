@@ -302,7 +302,8 @@ class DiscoverModal extends Component {
     }
 
     interfaceList = () => {
-        let tempCommonInterface = []
+        let tempCommonExistInterface = []
+        let tempCommonActInterface = []
         let existingInterfaces = this.state.existingNode[0].allInterfaces
         let actualInterfaces = this.state.actualNode.interfaces
 
@@ -310,14 +311,15 @@ class DiscoverModal extends Component {
         existingInterfaces.map((exitem, index) => {
             actualInterfaces.map((acItem, acindex) => {
                 if (exitem.port == acItem.port) {
-                    tempCommonInterface.push(exitem)
+                    tempCommonExistInterface.push(exitem)
+                    tempCommonActInterface.push(acItem)
                 }
             })
         })
 
         let stringTemp = []
 
-        tempCommonInterface.map((temp) => {
+        tempCommonExistInterface.map((temp) => {
             stringTemp.push(temp.port)
         })
 
@@ -400,8 +402,8 @@ class DiscoverModal extends Component {
             }
         }
 
-        let finalExistingList = [...tempCommonInterface, ...sameLenEx]
-        let finalActualList = [...tempCommonInterface, ...unCommonActualInterfaces]
+        let finalExistingList = [...tempCommonExistInterface, ...sameLenEx]
+        let finalActualList = [...tempCommonActInterface, ...unCommonActualInterfaces]
 
         let totalCheckBoxLength = finalActualList.length
 
@@ -453,7 +455,7 @@ class DiscoverModal extends Component {
             rows.push(row)
             interfaceTable.map((item, index) => {
                 let headerClass = 'borderBottom'
-                if (index >= tempCommonInterface.length) {
+                if (index >= tempCommonExistInterface.length) {
                     headerClass = 'borderNone'
                 }
                 row = (<Row className={headerClass}>
@@ -462,7 +464,7 @@ class DiscoverModal extends Component {
                         <small>{item.existingInterface.IPAddress ? item.existingInterface.IPAddress : ''}</small>
                     </Col>
                     <Col sm="5" className='pad'>{item.actualInterface.port} < br />
-                        <small>{item.actualInterface.IPAddress ? item.actualInterface.IPAddress : ''}</small>
+                        <small>{item.actualInterface.ip ? item.actualInterface.ip : ''}</small>
                     </Col>
                 </Row>)
                 rows.push(row)

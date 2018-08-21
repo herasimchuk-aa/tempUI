@@ -1154,8 +1154,8 @@ export class ServerAPI {
                 }
 
 
-                intrfc.connectedTo.port = intrfc.connectedTo.serverPort ? intrfc.connectedTo.serverPort : ''
-                intrfc.connectedTo.name = intrfc.connectedTo.serverName ? intrfc.connectedTo.serverName : ''
+                intrfc.connectedTo.port = intrfc.connectedTo.serverPort ? intrfc.connectedTo.serverPort : (intrfc.connectedTo.port ? intrfc.connectedTo.port : '')
+                intrfc.connectedTo.name = intrfc.connectedTo.serverName ? intrfc.connectedTo.serverName : (intrfc.connectedTo.name ? intrfc.connectedTo.name : '')
             })
         }
         if (data.nodes[0].nodeType) {
