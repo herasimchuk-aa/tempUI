@@ -408,6 +408,7 @@ class DiscoverModal extends Component {
 
         let interfaceTable = []
 
+
         for (let i = 0; i < totalCheckBoxLength; i++) {
             let interfaceRow = {}
             interfaceRow.name = <input className="form-check-input" type="checkbox" id={"chk" + i} onChange={(e) => { this.chkInt(e) }}></input>
@@ -441,13 +442,21 @@ class DiscoverModal extends Component {
 
         this.totalInterfaces = interfaceTable
         let rows = []
+
+
+
         if (interfaceTable && interfaceTable.length) {
+            let row = (<Row>
+                <Col sm="6" className='pad'><b>{existingInterfaces.length} existing Interfaces</b></Col>
+                <Col sm="6" className='pad'><b>{actualInterfaces.length} actual Interfaces </b></Col>
+            </Row>)
+            rows.push(row)
             interfaceTable.map((item, index) => {
                 let headerClass = 'borderBottom'
                 if (index >= tempCommonInterface.length) {
                     headerClass = 'borderNone'
                 }
-                let row = (<Row className={headerClass}>
+                row = (<Row className={headerClass}>
                     <Col sm="2" className='pad'>{item.name ? item.name : '-'}</Col>
                     <Col sm="5" className='pad'>{item.existingInterface.port} < br />
                         <small>{item.existingInterface.IPAddress ? item.existingInterface.IPAddress : ''}</small>
@@ -459,7 +468,6 @@ class DiscoverModal extends Component {
                 rows.push(row)
             })
         }
-
         return rows
     }
 
