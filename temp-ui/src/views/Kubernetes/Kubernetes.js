@@ -34,7 +34,7 @@ class Kubernetes extends Component {
         if (keyData && keyData.length) {
             for (let i in keyData) {
                 let roles = keyData[i].roles
-                if (roles && roles.indexOf("k8-master") > -1 && keyData[i].K8URL) {
+                if (roles && (roles.indexOf("k8-master") > -1 || roles.indexOf("kube-master") > -1) && keyData[i].K8URL) {
                     window.open(keyData[i].K8URL)
                     return
                 }
