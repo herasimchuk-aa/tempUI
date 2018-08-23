@@ -113,17 +113,18 @@ class ConnectivitySummary extends React.Component {
                         else if (interfaceItem.connectedTo.lldpMatched == false || interfaceItem.connectedTo.lldpMatched == 'False') {
                             color = "red"
                         } */
-                        if (node.validationStatus && node.validationStatus.interfacesStatus && Object.keys(node.validationStatus.interfacesStatus).length) {
-                            let portName = interfaceItem.port
-                            if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].linkStatus) {
-                                color = "black"
+                        if (interfaceItem.connectedTo.serverName && interfaceItem.connectedTo.serverPort) {
+                            if (node.validationStatus && node.validationStatus.interfacesStatus && Object.keys(node.validationStatus.interfacesStatus).length) {
+                                let portName = interfaceItem.port
+                                if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].linkStatus) {
+                                    color = "black"
+                                }
+                                else if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].linkStatus == false) {
+                                    color = "red"
+                                }
                             }
-                            else if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].linkStatus == false) {
-                                color = "red"
-                            }
+                            connectedToData = (<font color={color}>{interfaceItem.connectedTo.serverName + " : " + interfaceItem.connectedTo.serverPort}</font>)
                         }
-                        connectedToData = (<font color={color}>{interfaceItem.connectedTo.serverName + " : " + interfaceItem.connectedTo.serverPort}</font>)
-
                         return (
                             <ListGroup><ListGroupItem>{connectedToData}</ListGroupItem></ListGroup>
                         )
