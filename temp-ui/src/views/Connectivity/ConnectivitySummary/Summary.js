@@ -107,15 +107,23 @@ class ConnectivitySummary extends React.Component {
 
                     allIntConnDiv = allInterfaces.map((interfaceItem) => {
                         let connectedToData = '-'
-                        if (interfaceItem.connectedTo.serverName && interfaceItem.connectedTo.serverPort) {
-                            if (interfaceItem.connectedTo.lldpMatched == true || interfaceItem.connectedTo.lldpMatched == 'True') {
+                        /* if (interfaceItem.connectedTo.lldpMatched == true || interfaceItem.connectedTo.lldpMatched == 'True') {
+                            color = "black"
+                        }
+                        else if (interfaceItem.connectedTo.lldpMatched == false || interfaceItem.connectedTo.lldpMatched == 'False') {
+                            color = "red"
+                        } */
+                        if (node.validationStatus && node.validationStatus.interfacesStatus && Object.keys(node.validationStatus.interfacesStatus).length) {
+                            let portName = interfaceItem.port
+                            if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].linkStatus) {
                                 color = "black"
                             }
-                            else if (interfaceItem.connectedTo.lldpMatched == false || interfaceItem.connectedTo.lldpMatched == 'False') {
+                            else if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].linkStatus == false) {
                                 color = "red"
                             }
-                            connectedToData = (<font color={color}>{interfaceItem.connectedTo.serverName + " : " + interfaceItem.connectedTo.serverPort}</font>)
                         }
+                        connectedToData = (<font color={color}>{interfaceItem.connectedTo.serverName + " : " + interfaceItem.connectedTo.serverPort}</font>)
+
                         return (
                             <ListGroup><ListGroupItem>{connectedToData}</ListGroupItem></ListGroup>
                         )
@@ -123,16 +131,29 @@ class ConnectivitySummary extends React.Component {
 
                     allLinkDiv = allInterfaces.map((interfaceItem) => {
                         let linkData = '-'
-                        if (interfaceItem.connectedTo.link == true || interfaceItem.connectedTo.link.toLowerCase() == "true")
-                            linkData = "True"
-                        else if (interfaceItem.connectedTo.link == false || interfaceItem.connectedTo.link.toLowerCase() == "false")
-                            linkData = "False"
+                        let color = "black"
+                        if (node.validationStatus && node.validationStatus.interfacesStatus && Object.keys(node.validationStatus.interfacesStatus).length) {
+                            let portName = interfaceItem.port
+                            if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].linkStatus) {
+                                color = "black"
+                                linkData = "True"
+                            }
+                            else if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].linkStatus == false) {
+                                color = "red"
+                                linkData = "False"
+                            }
+                        }
+                        linkData = (<font color={color}>{linkData}</font>)
+                        // if (interfaceItem.connectedTo.link == true || interfaceItem.connectedTo.link.toLowerCase() == "true")
+                        //     linkData = "True"
+                        // else if (interfaceItem.connectedTo.link == false || interfaceItem.connectedTo.link.toLowerCase() == "false")
+                        //     linkData = "False"
                         return (
                             <ListGroup><ListGroupItem>{linkData}</ListGroupItem></ListGroup>
                         )
                     })
                     allLldpMatchDiv = allInterfaces.map((interfaceItem) => {
-                        let lldpData = '-'
+                        /* let lldpData = '-'
                         if (!interfaceItem.isMngmntIntf) {
                             if (interfaceItem.connectedTo.lldpMatched == true ||
                                 interfaceItem.connectedTo.lldpMatched == false ||
@@ -144,29 +165,29 @@ class ConnectivitySummary extends React.Component {
                         }
                         return (
                             <ListGroup><ListGroupItem>{lldpData}</ListGroupItem></ListGroup>
-                        )
+                        ) */
 
-                        /*let lldpFont = "-";
+                        let lldpFont = "-";
                         let color = "black"
-                        if (interfaceItem.connectedTo.lldpMatched) {
-                            if (node.validationStatus && node.validationStatus.interfacesStatus && Object.keys(node.validationStatus.interfacesStatus).length) {
-                                let portName = interfaceItem.port
-                                if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].isLLDPMatched) {
-                                    color = "black"
-                                }
-                                else {
-                                    color = "red"
-                                }
+                        if (node.validationStatus && node.validationStatus.interfacesStatus && Object.keys(node.validationStatus.interfacesStatus).length) {
+                            let portName = interfaceItem.port
+                            if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].isLLDPMatched) {
+                                color = "black"
+                                lldpFont = "True"
                             }
-                            lldpFont = (<font color={color}>{interfaceItem.connectedTo.lldpMatched}</font>)
+                            else if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].isLLDPMatched == false) {
+                                color = "red"
+                                lldpFont = "False"
+                            }
                         }
+                        lldpFont = (<font color={color}>{lldpFont}</font>)
                         return (
                             <ListGroup>
                                 <ListGroupItem>
                                     {lldpFont}
                                 </ListGroupItem>
                             </ListGroup>
-                        ) */
+                        )
                     })
                 }
                 let nodeTypeData = [];

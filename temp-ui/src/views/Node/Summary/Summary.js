@@ -1,6 +1,5 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Styles from './Summary.css';
-import {Grid, Col, Row} from 'react-bootstrap';
 import {HostStats, Host, ServerAPI} from '../../../ServerAPI';
 import SummaryNode from './SummaryNode'
 import {
