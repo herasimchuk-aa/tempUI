@@ -309,12 +309,15 @@ class DiscoverModal extends Component {
 
         //to get common interfaces from existing and actual interfaces
         existingInterfaces.map((exitem, index) => {
-            actualInterfaces.map((acItem, acindex) => {
-                if (exitem.port == acItem.port) {
-                    tempCommonExistInterface.push(exitem)
-                    tempCommonActInterface.push(acItem)
-                }
-            })
+            if (actualInterfaces && actualInterfaces.length) {
+                actualInterfaces.map((acItem, acindex) => {
+                    if (exitem.port == acItem.port) {
+                        tempCommonExistInterface.push(exitem)
+                        tempCommonActInterface.push(acItem)
+                    }
+                })
+            }
+
         })
 
         let stringTemp = []
@@ -331,10 +334,11 @@ class DiscoverModal extends Component {
 
         let stringAct = []
 
-        actualInterfaces.map((act) => {
-            stringAct.push(act.port)
-        })
-
+        if (actualInterfaces && actualInterfaces.length) {
+            actualInterfaces.map((act) => {
+                stringAct.push(act.port)
+            })
+        }
         let unCommonExisting = []
 
         unCommonExisting = stringExist.filter(function (obj) { return stringTemp.indexOf(obj) == -1; });
@@ -368,20 +372,22 @@ class DiscoverModal extends Component {
         let unCommonActualInterfaces = []
         unCommonActual.map((i) => {
             let unCommonActualInterface = {}
-            actualInterfaces.map((act) => {
-                if (act.port == i) {
-                    unCommonActualInterface.port = act.port ? act.port : ''
-                    unCommonActualInterface.ip = act.ip ? act.ip : ''
-                    unCommonActualInterface.IPAddress = act.ip ? act.ip : ''
-                    unCommonActualInterface.admin = act.admin ? act.admin : ''
-                    unCommonActualInterface.connectedTo = {}
-                    unCommonActualInterface.connectedTo.name = act.connectedTo.name ? act.connectedTo.name : ''
-                    unCommonActualInterface.connectedTo.port = act.connectedTo.port ? act.connectedTo.port : ''
-                    unCommonActualInterface.connectedTo.serverName = act.connectedTo.name ? act.connectedTo.name : ''
-                    unCommonActualInterface.connectedTo.serverPort = act.connectedTo.port ? act.connectedTo.port : ''
-                    unCommonActualInterface.isMngmntIntf = act.isMngmntIntf
-                }
-            })
+            if (actualInterfaces && actualInterfaces.length) {
+                actualInterfaces.map((act) => {
+                    if (act.port == i) {
+                        unCommonActualInterface.port = act.port ? act.port : ''
+                        unCommonActualInterface.ip = act.ip ? act.ip : ''
+                        unCommonActualInterface.IPAddress = act.ip ? act.ip : ''
+                        unCommonActualInterface.admin = act.admin ? act.admin : ''
+                        unCommonActualInterface.connectedTo = {}
+                        unCommonActualInterface.connectedTo.name = act.connectedTo.name ? act.connectedTo.name : ''
+                        unCommonActualInterface.connectedTo.port = act.connectedTo.port ? act.connectedTo.port : ''
+                        unCommonActualInterface.connectedTo.serverName = act.connectedTo.name ? act.connectedTo.name : ''
+                        unCommonActualInterface.connectedTo.serverPort = act.connectedTo.port ? act.connectedTo.port : ''
+                        unCommonActualInterface.isMngmntIntf = act.isMngmntIntf
+                    }
+                })
+            }
             unCommonActualInterfaces.push(unCommonActualInterface)
 
         })
@@ -450,7 +456,7 @@ class DiscoverModal extends Component {
         if (interfaceTable && interfaceTable.length) {
             let row = (<Row>
                 <Col sm="6" className='pad'><b>{existingInterfaces.length} existing Interfaces</b></Col>
-                <Col sm="6" className='pad'><b>{actualInterfaces.length} actual Interfaces </b></Col>
+                <Col sm="6" className='pad'><b>{actualInterfaces ? actualInterfaces.length ? actualInterfaces.length : '0' : ''} actual Interfaces </b></Col>
             </Row>)
             rows.push(row)
             interfaceTable.map((item, index) => {
