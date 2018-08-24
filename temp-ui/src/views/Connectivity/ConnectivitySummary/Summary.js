@@ -66,7 +66,7 @@ class ConnectivitySummary extends React.Component {
                 if (allInterfaces && allInterfaces.length) {
                     allIntfDiv = allInterfaces.map((interfaceItem) => {
                         return (
-                            <ListGroup><ListGroupItem>{interfaceItem.port ? interfaceItem.port : '-'}</ListGroupItem></ListGroup>
+                            <ListGroup><ListGroupItem className="visibleOnHover">{interfaceItem.port ? interfaceItem.port : '-'}</ListGroupItem></ListGroup>
                         )
                     })
 
@@ -126,7 +126,7 @@ class ConnectivitySummary extends React.Component {
                             connectedToData = (<font color={color}>{interfaceItem.connectedTo.serverName + " : " + interfaceItem.connectedTo.serverPort}</font>)
                         }
                         return (
-                            <ListGroup><ListGroupItem>{connectedToData}</ListGroupItem></ListGroup>
+                            <ListGroup><ListGroupItem className="visibleOnHover">{connectedToData}</ListGroupItem></ListGroup>
                         )
                     })
 
@@ -229,7 +229,7 @@ class ConnectivitySummary extends React.Component {
                     <Col sm="1" className="pad">{node.name ? node.name : '-'}</Col>
                     <Col sm="1" className="pad">{nodeStatusData}</Col>
                     <Col sm="1" className="pad">{rolesData}</Col>
-                    <Col sm="1" className="pad">{nodeTypeData}</Col>
+                    <Col sm="1" className="pad visibleOnHover">{nodeTypeData}</Col>
                     <Col sm="1" className="pad" style={{ textAlign: "center" }}>
                         {allIntfDiv}
                     </Col>

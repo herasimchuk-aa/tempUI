@@ -67,9 +67,9 @@ class Types extends Component {
                                 Vendor <Input className="marTop10" id='typeVendor' /><br />
                                 Rack Unit <Input className="marTop10" id='typeRackUnit' /><br />
                                 AirFlow <Input className="marTop10" id='typeAirFlow' /><br /></Col><Col>
-                                Front Panel Interface<font color="red"><sup>*</sup></font> <Input className="marTop10" type="number" min={1} max={32} id='noFPI' /><br />
+                                Front Panel Interface<font color="red"><sup>*</sup></font> <Input className="marTop10" type="number" min={1} max={128} id='noFPI' /><br />
                                 Speed Front Panel Interface <Input className="marTop10" id='SpeedFPI' /><br />
-                                Management Interfaces<font color="red"><sup>*</sup></font> <Input className="marTop10" type="number" id='noMI' /><br />
+                                Management Interfaces<font color="red"><sup>*</sup></font> <Input className="marTop10" type="number" min={0} id='noMI' /><br />
                                 Speed/Type <Input className="marTop10" id='speedType' /><br /></Col>
                         </Row>
                     </ModalBody>
@@ -107,11 +107,11 @@ class Types extends Component {
             return;
         }
 
-        if (a.NumFrontPanelInterface > 32 || a.NumFrontPanelInterface < 1 || isNaN(a.NumFrontPanelInterface)) {
-            this.setState({ visible: true, errorMsg: 'Please enter a valid Front Panel Interface (between 1 and 32)' });
+        if (a.NumFrontPanelInterface > 128 || a.NumFrontPanelInterface < 1 || isNaN(a.NumFrontPanelInterface)) {
+            this.setState({ visible: true, errorMsg: 'Please enter a valid Front Panel Interface (between 1 and 128)' });
             return;
         }
-        if (a.NumMgmtInterface > 32 || a.NumMgmtInterface < 1 || isNaN(a.NumMgmtInterface)) {
+        if (a.NumMgmtInterface < 0 || isNaN(a.NumMgmtInterface)) {
             this.setState({ visible: true, errorMsg: 'Please enter a valid Management Interface' });
             return;
         }

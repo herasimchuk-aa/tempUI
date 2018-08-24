@@ -309,6 +309,16 @@ marRight10{
 	animation-fill-mode: forwards
 }
 
+.visibleOnHover{
+	white-space: nowrap; 
+	overflow: hidden;
+	text-overflow:ellipsis;
+}
+.visibleOnHover:hover{
+	overflow: visible;
+}
+
+
 /* Safari 4.0 - 8.0 */
 @-webkit-keyframes mymove {
 from {opacity: 1;}
