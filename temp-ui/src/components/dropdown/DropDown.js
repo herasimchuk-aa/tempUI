@@ -34,7 +34,7 @@ export default class DropDown extends React.Component {
   getOptions(options) {
     let rolesHtml = [];
     rolesHtml.push(<option value=''> -- select an option -- </option>)
-    options.map((item) => (rolesHtml.push(<option value={item.value} >{item.value}</option>)));
+    options.map((item) => (rolesHtml.push(<option value={item.Id} >{item.Name}</option>)));
     return rolesHtml;
   }
 

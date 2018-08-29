@@ -51,17 +51,17 @@ export let nodeHead = [
 
 export let roleHead = [
     {
-        id: 'label',
+        id: 'Name',
         displayName: 'Name',
         colSize: 3
     },
     {
-        id: 'parent',
+        id: 'ParentName',
         displayName: 'Parent Role',
         colSize: 4
     },
     {
-        id: 'description',
+        id: 'Description',
         displayName: 'Description',
         colSize: 4
     },
@@ -69,47 +69,47 @@ export let roleHead = [
 
 export let typeHead = [
     {
-        id: 'label',
+        id: 'Name',
         displayName: 'Name',
         colSize: 2
     },
     {
-        id: 'vendor',
+        id: 'Vendor',
         displayName: 'Vendor',
         colSize: 1
     },
     {
-        id: 'rackUnit',
+        id: 'RackUnit',
         displayName: 'Rack Unit',
         colSize: 1
     },
     {
-        id: 'airflow',
-        displayName: 'AirFlow',
+        id: 'Airflow',
+        displayName: 'Airflow',
         colSize: 1
     },
     {
-        id: 'numFrontPanelInterface',
+        id: 'FrontPanelInterfaces',
         displayName: 'Front panel Interfaces',
         colSize: 2
     },
     {
-        id: 'speedFrontPanelInterface',
+        id: 'SpeedFrontPanelInterfaces',
         displayName: 'Speed Front Panel Interface',
         colSize: 2
     },
     {
-        id: 'numMgmtInterface',
+        id: 'ManagementInterfaces',
         displayName: 'Management Interfaces',
         colSize: 1
     },
     {
-        id: 'speedMgmtInterafce',
+        id: 'SpeedType',
         displayName: 'Speed/Type',
         colSize: 1
     },
     {
-        id: 'description',
+        id: 'Description',
         displayName: 'Notes',
         colSize: 1
     },
@@ -117,17 +117,17 @@ export let typeHead = [
 
 export let kernelHead = [
     {
-        id: 'label',
+        id: 'Name',
         displayName: 'Name',
         colSize: 4
     },
     {
-        id: 'location',
+        id: 'Location',
         displayName: 'Location',
         colSize: 4
     },
     {
-        id: 'description',
+        id: 'Description',
         displayName: 'Description',
         colSize: 4
     }
@@ -135,17 +135,17 @@ export let kernelHead = [
 
 export let isoHead = [
     {
-        id: 'label',
+        id: 'Name',
         displayName: 'Name',
         colSize: 4
     },
     {
-        id: 'location',
+        id: 'Location',
         displayName: 'Location',
         colSize: 4
     },
     {
-        id: 'description',
+        id: 'Description',
         displayName: 'Description',
         colSize: 4
     }
@@ -153,12 +153,12 @@ export let isoHead = [
 
 export let siteHead = [
     {
-        id: 'label',
+        id: 'Name',
         displayName: 'Name',
         colSize: 6
     },
     {
-        id: 'description',
+        id: 'Description',
         displayName: 'Description',
         colSize: 6
     }

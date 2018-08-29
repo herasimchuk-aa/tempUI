@@ -5,6 +5,9 @@ import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import { siteHead } from '../../../consts';
 import { trimString } from '../../../components/Utility/Utility';
+import { getRequest, postRequest } from '../../../apis/RestApi';
+import { FETCH_ALL_SITES, ADD_SITE, DELETE_SITES } from '../../../apis/RestConfig';
+import { NotificationManager } from 'react-notifications';
 
 class Site extends Component {
 
@@ -22,16 +25,14 @@ class Site extends Component {
     }
 
     componentDidMount() {
-        ServerAPI.DefaultServer().fetchAllSite(this.retrieveData, this);
+        this.retrieveSiteData()
     }
 
-    retrieveData(instance, data) {
-        if (!data) {
-            alert("No data received");
-        }
-        else {
-            instance.setState({ data: data, selectedRowIndexes: [] });
-        }
+    retrieveSiteData() {
+        let self = this
+        getRequest(FETCH_ALL_SITES).then(function (json) {
+            self.setState({ data: json.Data, selectedRowIndexes: [] })
+        })
     }
 
     checkBoxClick = (rowIndex) => {
@@ -63,14 +64,16 @@ class Site extends Component {
 
 
     deleteSite() {
-        for (let i = 0; i < this.state.selectedRowIndexes.length; i++) {
-            ServerAPI.DefaultServer().deleteSite(this.callbackDelete, this, this.state.data[this.state.selectedRowIndexes[i]].label);
-        }
-        this.setState({ showDelete: !this.state.showDelete, selectedRowIndexes: [] });
-    }
-
-    callbackDelete(instance, data) {
-        ServerAPI.DefaultServer().fetchAllSite(instance.retrieveData, instance);
+        let self = this;
+        let deleteIds = [];
+        this.state.selectedRowIndexes.map(function (item) {
+            deleteIds.push(self.state.data[item].Id)
+        })
+        postRequest(DELETE_SITES, deleteIds).then(function (data) {
+            console.log(data)
+            self.setState({ showDelete: false, selectedRowIndexes: [] });
+            self.retrieveSiteData();
+        })
     }
 
     onDismiss() {
@@ -101,27 +104,34 @@ class Site extends Component {
     }
 
     addSite() {
+        let self = this;
         let site = document.getElementById('siteName').value
         let validSite = trimString(site)
         if (!validSite) {
             this.setState({ visible: true });
             return;
         }
-        let a = {
+        let params = {
             'Name': validSite,
             'Description': document.getElementById('siteDesc').value
         }
-        ServerAPI.DefaultServer().addSite(this.callback, this, a);
+        postRequest(ADD_SITE, params).then(function (data) {
+            if (data.StatusCode == 200) {
+                let renderedData = self.state.data;
+                if (!renderedData) {
+                    renderedData = []
+                }
+                renderedData.push(data.Data)
+                self.setState({ data: renderedData, displayModel: false, visible: false })
+            }
+            else {
+                NotificationManager.errror("Something went wrong", "Site")
+                self.setState({ displayModel: false, visible: false })
+
+            }
+        })
     }
 
-    callback(instance, data) {
-        let a = instance.state.data
-        if (!a) {
-            a = []
-        }
-        a.push(data)
-        instance.setState({ data: a, displayModel: !instance.state.displayModel, visible: false })
-    }
 
 
     render() {

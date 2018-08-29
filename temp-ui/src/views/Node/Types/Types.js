@@ -5,6 +5,9 @@ import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import { typeHead } from '../../../consts';
 import { trimString } from '../../../components/Utility/Utility';
+import { getRequest, postRequest } from '../../../apis/RestApi';
+import { FETCH_ALL_SYSTEM_TYPES, ADD_SYSTEM_TYPE, DELETE_SYSTEM_TYPES } from '../../../apis/RestConfig';
+import { NotificationManager } from 'react-notifications';
 
 class Types extends Component {
 
@@ -23,16 +26,14 @@ class Types extends Component {
     }
 
     componentDidMount() {
-        ServerAPI.DefaultServer().fetchAllSystemTypes(this.retrieveData, this);
+        this.retrieveTypeData()
     }
 
-    retrieveData(instance, data) {
-        if (!data) {
-            alert("No data received");
-        }
-        else {
-            instance.setState({ data: data, selectedRowIndexes: [] });
-        }
+    retrieveTypeData() {
+        let self = this
+        getRequest(FETCH_ALL_SYSTEM_TYPES).then(function (json) {
+            self.setState({ data: json.Data, selectedRowIndexes: [] })
+        })
     }
 
     checkBoxClick = (rowIndex) => {
@@ -89,44 +90,49 @@ class Types extends Component {
     }
 
     addType() {
-
+        let self = this
         let typename = document.getElementById('typeName').value
         let validtypename = trimString(typename)
-        let a = {
-            'Id': validtypename,
+        let params = {
+            'Name': validtypename,
             'Vendor': document.getElementById('typeVendor').value,
             'RackUnit': document.getElementById('typeRackUnit').value,
             'Airflow': document.getElementById('typeAirFlow').value,
-            'NumFrontPanelInterface': parseInt(document.getElementById('noFPI').value),
-            'SpeedFrontPanelInterface': document.getElementById('SpeedFPI').value,
-            'NumMgmtInterface': parseInt(document.getElementById('noMI').value),
-            'SpeedMgmtInterafce': document.getElementById('speedType').value
+            'FrontPanelInterfaces': parseInt(document.getElementById('noFPI').value),
+            'SpeedFrontPanelInterfaces': document.getElementById('SpeedFPI').value,
+            'ManagementInterfaces': parseInt(document.getElementById('noMI').value),
+            'SpeedType': document.getElementById('speedType').value
         }
-        if (!a.Id) {
+        if (!params.Name) {
             this.setState({ visible: true, errorMsg: 'Please enter the System Name' });
             return;
         }
 
-        if (a.NumFrontPanelInterface > 128 || a.NumFrontPanelInterface < 1 || isNaN(a.NumFrontPanelInterface)) {
+        if (params.FrontPanelInterfaces > 128 || params.FrontPanelInterfaces < 1 || isNaN(params.FrontPanelInterfaces)) {
             this.setState({ visible: true, errorMsg: 'Please enter a valid Front Panel Interface (between 1 and 128)' });
             return;
         }
-        if (a.NumMgmtInterface < 0 || isNaN(a.NumMgmtInterface)) {
+        if (params.ManagementInterfaces < 0 || isNaN(params.ManagementInterfaces)) {
             this.setState({ visible: true, errorMsg: 'Please enter a valid Management Interface' });
             return;
         }
-        ServerAPI.DefaultServer().addSystemTypes(this.callback, this, a);
-    }
+        postRequest(ADD_SYSTEM_TYPE, params).then(function (data) {
+            if (data.StatusCode == 200) {
+                let renderedData = self.state.data;
+                if (!renderedData) {
+                    renderedData = []
+                }
+                renderedData.push(data.Data)
+                self.setState({ data: renderedData, displayModel: false, visible: false })
+            }
+            else {
+                NotificationManager.errror("Something went wrong", "System Type")
+                self.setState({ displayModel: false, visible: false })
 
-    callback(instance, data) {
-        let a = instance.state.data
-        if (!a) {
-            a = []
-        }
-        a.push(data)
-        instance.setState({ data: a, displayModel: !instance.state.displayModel, visible: false })
-    }
+            }
+        })
 
+    }
     showDeleteButton() {
         let a = [];
         if (this.state.showDelete == true) {
@@ -138,15 +144,18 @@ class Types extends Component {
     }
 
     deleteTypes() {
-        for (let i = 0; i < this.state.selectedRowIndexes.length; i++) {
-            ServerAPI.DefaultServer().deleteSystemType(this.callbackDelete, this, this.state.data[this.state.selectedRowIndexes[i]].label);
-        }
-        this.setState({ showDelete: !this.state.showDelete, selectedRowIndexes: [] });
+        let self = this;
+        let deleteIds = [];
+        this.state.selectedRowIndexes.map(function (item) {
+            deleteIds.push(self.state.data[item].Id)
+        })
+        postRequest(DELETE_SYSTEM_TYPES, deleteIds).then(function (data) {
+            console.log(data)
+            self.setState({ showDelete: false, selectedRowIndexes: [] });
+            self.retrieveTypeData();
+        })
     }
 
-    callbackDelete = (instance) => {
-        ServerAPI.DefaultServer().fetchAllSystemTypes(this.retrieveData, this);
-    }
 
 
     render() {

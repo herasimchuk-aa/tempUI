@@ -5,6 +5,9 @@ import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import { isoHead } from '../../../consts';
 import { trimString } from '../../../components/Utility/Utility';
+import { getRequest, postRequest } from '../../../apis/RestApi'
+import { FETCH_ALL_ISOS, ADD_ISO, DELETE_ISOS } from '../../../apis/RestConfig'
+import { NotificationManager } from 'react-notifications';
 
 class BaseLinuxIso extends Component {
 
@@ -22,16 +25,14 @@ class BaseLinuxIso extends Component {
     }
 
     componentDidMount() {
-        ServerAPI.DefaultServer().fetchAllIso(this.retrieveData, this);
+        this.retrieveIsoData()
     }
 
-    retrieveData(instance, data) {
-        if (!data) {
-            alert("No data received");
-        }
-        else {
-            instance.setState({ data: data, selectedRowIndexes: [] });
-        }
+    retrieveIsoData = () => {
+        let self = this
+        getRequest(FETCH_ALL_ISOS).then(function (json) {
+            self.setState({ data: json.Data, selectedRowIndexes: [] })
+        })
     }
 
     checkBoxClick = (rowIndex) => {
@@ -63,14 +64,17 @@ class BaseLinuxIso extends Component {
 
 
     deleteISO() {
-        for (let i = 0; i < this.state.selectedRowIndexes.length; i++) {
-            ServerAPI.DefaultServer().deleteIso(this.callbackDelete, this, this.state.data[this.state.selectedRowIndexes[i]].label);
-        }
-        this.setState({ showDelete: !this.state.showDelete, selectedRowIndexes: [] });
-    }
-
-    callbackDelete(instance, data) {
-        ServerAPI.DefaultServer().fetchAllIso(instance.retrieveData, instance);
+        let self = this;
+        let deleteIds = [];
+        this.state.selectedRowIndexes.map(function (item) {
+            deleteIds.push(self.state.data[item].Id)
+        })
+        console.log(deleteIds)
+        postRequest(DELETE_ISOS, deleteIds).then(function (data) {
+            console.log(data)
+            self.setState({ showDelete: false, selectedRowIndexes: [] });
+            self.retrieveIsoData();
+        })
     }
 
     onDismiss() {
@@ -102,18 +106,33 @@ class BaseLinuxIso extends Component {
     }
 
     addIso() {
+        let self = this
         let iso = document.getElementById('isoName').value
         let validIso = trimString(iso)
         if (!validIso) {
             this.setState({ visible: true });
             return;
         }
-        let a = {
+        let params = {
             'Name': validIso,
             'Location': document.getElementById('isoLoc').value,
             'Description': document.getElementById('isoDesc').value
         }
-        ServerAPI.DefaultServer().addIso(this.callback, this, a);
+        postRequest(ADD_ISO, params).then(function (data) {
+            if (data.StatusCode == 200) {
+                let renderedData = self.state.data;
+                if (!renderedData) {
+                    renderedData = []
+                }
+                renderedData.push(data.Data)
+                self.setState({ data: renderedData, displayModel: false, visible: false })
+            }
+            else {
+                NotificationManager.errror("Something went wrong", "Base ISO")
+                self.setState({ displayModel: false, visible: false })
+
+            }
+        })
     }
 
     callback(instance, data) {

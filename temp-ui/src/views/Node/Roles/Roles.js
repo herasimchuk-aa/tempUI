@@ -6,6 +6,11 @@ import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import { roleHead } from '../../../consts'
 import DropDown from '../../../components/dropdown/DropDown';
 import { trimString } from '../../../components/Utility/Utility';
+import { getRequest, postRequest } from '../../../apis/RestApi';
+import { FETCH_ALL_ROLES, ADD_ROLE, DELETE_ROLES } from '../../../apis/RestConfig';
+import { NotificationManager } from 'react-notifications';
+
+
 // import $ from 'jquery';
 
 class Roles extends Component {
@@ -22,13 +27,29 @@ class Roles extends Component {
             selectedRole: '',
             displayRoleUpdateModel: false,
             updateRowIndex: null,
-            selectedParentRole: null,
-            currentRole: null
         }
     }
 
     componentDidMount() {
-        ServerAPI.DefaultServer().fetchAllRoles(this.retrieveData, this);
+        this.retrieveRoleData()
+    }
+
+    retrieveRoleData() {
+        let self = this
+        getRequest(FETCH_ALL_ROLES).then(function (json) {
+            json.Data.map(function (item, index) {
+                let parentId = json.Data[index].ParentId
+                json.Data[index].ParentName = '-'
+                if (parentId) {
+                    json.Data.find(function (element) {
+                        if (parentId == element.Id) {
+                            json.Data[index].ParentName = element.Name
+                        }
+                    })
+                }
+            })
+            self.setState({ data: json.Data, selectedRowIndexes: [] })
+        })
     }
 
     retrieveData(instance, data) {
@@ -109,18 +130,52 @@ class Roles extends Component {
 
 
     addRole() {
+        let self = this;
         let rolename = document.getElementById('roleName').value
         let validRoleName = trimString(rolename)
         if (!validRoleName) {
             this.setState({ alertVisible: true });
             return;
         }
-        let a = {
-            'Parent': this.state.selectedRole,
-            'Name': validRoleName,
-            'Description': document.getElementById('roleDesc').value
+        let params = {}
+        if (this.state.selectedRole) {
+            params = {
+                'ParentId': parseInt(this.state.selectedRole),
+                'Name': validRoleName,
+                'Description': document.getElementById('roleDesc').value
+            }
         }
-        ServerAPI.DefaultServer().addRole(this.callback, this, a);
+        else {
+            params = {
+                'Name': validRoleName,
+                'Description': document.getElementById('roleDesc').value
+            }
+        }
+        postRequest(ADD_ROLE, params).then(function (data) {
+            if (data.StatusCode == 200) {
+
+                let renderedData = self.state.data;
+                if (!renderedData) {
+                    renderedData = []
+                }
+                data.Data.ParentName = "-"
+                if (data.Data.ParentId) {
+                    self.state.data.find(function (element, index) {
+                        if (data.Data.ParentId == element.Id) {
+                            data.Data.ParentName = element.Name
+                            return;
+                        }
+                    })
+                }
+                renderedData.push(data.Data)
+                self.setState({ data: renderedData, displayModel: false, selectedRole: '', alertVisible: false })
+            }
+            else {
+                NotificationManager.errror("Something went wrong", "Role")
+                self.setState({ displayModel: false, selectedRole: '', alertVisible: false })
+
+            }
+        })
     }
 
     callback(instance, data) {
@@ -133,14 +188,16 @@ class Roles extends Component {
     }
 
     deleteRole() {
-        for (let i = 0; i < this.state.selectedRowIndexes.length; i++) {
-            ServerAPI.DefaultServer().deleteRole(this.callbackDelete, this, this.state.data[this.state.selectedRowIndexes[i]].label);
-        }
-        this.setState({ showDelete: !this.state.showDelete, selectedRowIndexes: [] });
-    }
-
-    callbackDelete = (instance) => {
-        ServerAPI.DefaultServer().fetchAllRoles(this.retrieveData, this);
+        let self = this;
+        let deleteIds = [];
+        this.state.selectedRowIndexes.map(function (item) {
+            deleteIds.push(self.state.data[item].Id)
+        })
+        postRequest(DELETE_ROLES, deleteIds).then(function (data) {
+            console.log(data)
+            self.setState({ showDelete: false, selectedRowIndexes: [] });
+            self.retrieveRoleData();
+        })
     }
 
     render() {

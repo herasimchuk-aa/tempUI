@@ -5,6 +5,9 @@ import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import { kernelHead } from '../../../consts';
 import { trimString } from '../../../components/Utility/Utility';
+import { getRequest, postRequest } from '../../../apis/RestApi'
+import { FETCH_ALL_KERNELS, ADD_KERNEL, DELETE_KERNELS } from '../../../apis/RestConfig'
+import { NotificationManager } from 'react-notifications';
 
 class LinuxKernel extends Component {
 
@@ -22,18 +25,15 @@ class LinuxKernel extends Component {
     }
 
     componentDidMount() {
-        ServerAPI.DefaultServer().fetchAllKernels(this.retrieveData, this);
+        this.retrieveKernelData()
     }
 
-    retrieveData(instance, data) {
-        if (!data) {
-            alert("No data received");
-        }
-        else {
-            instance.setState({ data: data, selectedRowIndexes: [] });
-        }
+    retrieveKernelData() {
+        let self = this
+        getRequest(FETCH_ALL_KERNELS).then(function (json) {
+            self.setState({ data: json.Data, selectedRowIndexes: [] })
+        })
     }
-
 
     drawHeader() {
         return (<Row className="headerRow">
@@ -72,14 +72,16 @@ class LinuxKernel extends Component {
     }
 
     deleteKernel() {
-        for (let i = 0; i < this.state.selectedRowIndexes.length; i++) {
-            ServerAPI.DefaultServer().deleteKernel(this.callbackDelete, this, this.state.data[this.state.selectedRowIndexes[i]].label);
-        }
-        this.setState({ showDelete: !this.state.showDelete, selectedRowIndexes: [] });
-    }
-
-    callbackDelete(instance) {
-        ServerAPI.DefaultServer().fetchAllKernels(instance.retrieveData, instance);
+        let self = this;
+        let deleteIds = [];
+        this.state.selectedRowIndexes.map(function (item) {
+            deleteIds.push(self.state.data[item].Id)
+        })
+        postRequest(DELETE_KERNELS, deleteIds).then(function (data) {
+            console.log(data)
+            self.setState({ showDelete: false, selectedRowIndexes: [] });
+            self.retrieveKernelData();
+        })
     }
 
 
@@ -140,27 +142,33 @@ class LinuxKernel extends Component {
     }
 
     addKernel() {
+        let self = this;
         let kernel = document.getElementById('kernelName').value
         let validKernel = trimString(kernel)
         if (!validKernel) {
             this.setState({ visible: true })
             return;
         }
-        let a = {
+        let params = {
             'Name': validKernel,
             'Location': document.getElementById('kernelLoc').value,
             'Description': document.getElementById('kernelDesc').value
         }
-        ServerAPI.DefaultServer().addKernel(this.callback, this, a);
-    }
+        postRequest(ADD_KERNEL, params).then(function (data) {
+            if (data.StatusCode == 200) {
+                let renderedData = self.state.data;
+                if (!renderedData) {
+                    renderedData = []
+                }
+                renderedData.push(data.Data)
+                self.setState({ data: renderedData, displayModel: false, visible: false })
+            }
+            else {
+                NotificationManager.errror("Something went wrong", "Kernel")
+                self.setState({ displayModel: false, visible: false })
 
-    callback(instance, data) {
-        let a = instance.state.data
-        if (!a) {
-            a = []
-        }
-        a.push(data)
-        instance.setState({ data: a, displayModel: !instance.state.displayModel, visible: false })
+            }
+        })
     }
 
 
