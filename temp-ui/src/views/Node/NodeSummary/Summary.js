@@ -11,6 +11,8 @@ import { NotificationManager } from 'react-notifications';
 import SearchComponent from '../../../components/SearchComponent/SearchComponent';
 import MultiselectDropDown from '../../../components/MultiselectDropdown/MultiselectDropDown';
 import { trimString, converter } from '../../../components/Utility/Utility';
+import { FETCH_ALL_SITES, FETCH_ALL_ROLES, FETCH_ALL_ISOS, FETCH_ALL_KERNELS, FETCH_ALL_SYSTEM_TYPES, FETCH_ALL_NODES, ADD_NODE } from '../../../apis/RestConfig';
+import { getRequest, postRequest } from '../../../apis/RestApi';
 
 class NodeSummary extends React.Component {
     constructor(props) {
@@ -31,138 +33,97 @@ class NodeSummary extends React.Component {
             visibleUnique: false,
             showDelete: false,
             redirect: false,
-            selectedType: '',
-            selectedLinux: '',
-            selectedIso: '',
-            selectedSite: '',
+            selectedTypeId: '',
+            selectedLinuxId: '',
+            selectedIsoId: '',
+            selectedSiteId: '',
             selectedRoles: []
         }
     }
 
     componentDidMount() {
-        ServerAPI.DefaultServer().fetchAllServerNodes(this.updateNodeSummary, this);
-        ServerAPI.DefaultServer().fetchAllRoles(this.retrieveRoleData, this);
-        ServerAPI.DefaultServer().fetchAllIso(this.retrieveIsoData, this);
-        ServerAPI.DefaultServer().fetchAllKernels(this.retrieveKernelsData, this);
-        ServerAPI.DefaultServer().fetchAllSystemTypes(this.retrieveTypesData, this);
-        ServerAPI.DefaultServer().fetchAllSite(this.retrieveSiteData, this);
+        this.getAllData()
     }
 
-    updateNodeSummary = (instance, nodes) => {
-        instance.setState({
-            nodes: nodes,
-            constNodes: Object.assign([], nodes)
-        });
+    getAllData = () => {
+        let typeData = []
+        let self = this
+        let typePromise = getRequest(FETCH_ALL_SYSTEM_TYPES).then(function (json) {
+            typeData = json.Data
+        })
+
+        let roleData = []
+        let rolePromise = getRequest(FETCH_ALL_ROLES).then(function (json) {
+            roleData = json.Data
+        })
+
+        let kernelData = []
+        let kernelPromise = getRequest(FETCH_ALL_KERNELS).then(function (json) {
+            kernelData = json.Data
+        })
+
+        let isoData = []
+        let isoPromise = getRequest(FETCH_ALL_ISOS).then(function (json) {
+            isoData = json.Data
+        })
+
+        let siteData = []
+        let sitePromise = getRequest(FETCH_ALL_SITES).then(function (json) {
+            siteData = json.Data
+        })
+
+        let nodes = []
+        Promise.all([typePromise, rolePromise, kernelPromise, isoPromise, sitePromise]).then(function () {
+            getRequest(FETCH_ALL_NODES).then(function (json) {
+                nodes = self.convertData(json.Data, typeData, kernelData, isoData, siteData, roleData)
+                self.setState({ nodes: nodes, constNodes: Object.assign([], nodes) })
+            })
+        }).then(function () {
+            self.setState({ typedata: typeData, roleData: roleData, kernelData: kernelData, isoData: isoData, siteData: siteData })
+        })
     }
 
-    retrieveData(instance, data) {
-        if (data === undefined) {
-            NotificationManager.error('No Nodes present', 'Node');
-        }
-        else {
-            instance.setState({ nodes: data, selectedRowIndex: [] });
-        }
+    convertData(nodes, types, kernels, isos, sites, roles) {
+        nodes.map((node) => {
+            types.map((item) => {
+                if (item.Id == node.Type_Id) {
+                    node.type = item.Name
+                }
+            })
+            kernels.map((item) => {
+                if (item.Id == node.Kernel_Id) {
+                    node.kernel = item.Name
+                }
+            })
+            isos.map((item) => {
+                if (item.Id == node.Iso_Id) {
+                    node.iso = item.Name
+                }
+            })
+            sites.map((item) => {
+                if (item.Id == node.Site_Id) {
+                    node.site = item.Name
+                }
+            })
+
+        })
+        return nodes
     }
 
-
-    retrieveRoleData(instance, data) {
-        if (!data) {
-            NotificationManager.error('No Roles present', 'Role');
-        }
-        else {
-            if (Object.keys(data).length) {
-                instance.setState({ roleData: data });
-            }
-        }
-    }
-
-    retrieveIsoData(instance, data) {
-        if (!data) {
-            NotificationManager.error('No Base Linux ISOs present', 'Base Linux ISO');
-        }
-        else {
-            if (Object.keys(data).length) {
-                instance.setState({ isoData: data });
-            }
-        }
-    }
-
-    retrieveSiteData(instance, data) {
-        if (!data) {
-            NotificationManager.error('No sites present', 'Site');
-        }
-        else {
-            if (Object.keys(data).length) {
-                instance.setState({ siteData: data });
-            }
-        }
-    }
-
-    retrieveKernelsData(instance, data) {
-        if (!data) {
-            NotificationManager.error('No Kernels present', 'Kernel');
-        }
-        else {
-            if (Object.keys(data).length) {
-                instance.setState({ kernelData: data });
-            }
-        }
-    }
-
-    retrieveTypesData(instance, data) {
-        if (!data) {
-            NotificationManager.error('No System Types present', 'System Tpye');
-        }
-        else {
-            if (Object.keys(data).length) {
-                instance.setState({ typedata: data });
-            }
-        }
-    }
 
     getSelectedData = (data, identity) => {
         if (identity == 'Type') {
-            this.setState({ selectedType: data })
+            this.setState({ selectedTypeId: data })
         }
         if (identity == 'Linux') {
-            this.setState({ selectedLinux: data })
+            this.setState({ selectedLinuxId: data })
         }
         if (identity == 'ISO') {
-            this.setState({ selectedIso: data })
+            this.setState({ selectedIsoId: data })
         }
         if (identity == 'Site') {
-            this.setState({ selectedSite: data })
+            this.setState({ selectedSiteId: data })
         }
-    }
-
-    getRoles() {
-        let rolesHtml = [];
-        this.state.roleData.map((item) => (rolesHtml.push(<option>{item.label}</option>)));
-        return rolesHtml;
-    }
-
-    getTypes() {
-        let typesHtml = [];
-        this.state.typedata.map((item) => (typesHtml.push(<option>{item.label}</option>)));
-        return typesHtml;
-    }
-
-    getKernel() {
-        let kernelHtml = [];
-        this.state.kernelData.map((item) => (kernelHtml.push(<option>{item.label}</option>)));
-        return kernelHtml;
-    }
-
-    getIso() {
-        let isoHtml = [];
-        this.state.isoData.map((item) => (isoHtml.push(<option>{item.label}</option>)));
-        return isoHtml;
-    }
-
-    getSite() {
-        let siteHtml = [];
-        this.state.siteData.map((item) => (siteHtml.push(<option>{item.label}</option>)));
-        return siteHtml;
     }
 
 
@@ -227,101 +188,102 @@ class NodeSummary extends React.Component {
         ServerAPI.DefaultServer().fetchAllServerNodes(this.retrieveData, this);
     }
 
-    renderFilterComponent = () => {
-        let filters = []
-        let filterOptions = [
-            {
-                'id': 'status',
-                'displayName': 'Status',
-                'options': [
-                    {
-                        'id': 'active',
-                        'displayName': 'Active',
-                    },
-                    {
-                        'id': 'unprovisioned',
-                        'displayName': 'Unprovisioned',
-                    }
-                ]
-            }, {
-                'id': 'role',
-                'displayName': 'Role',
-                'options': [
-                    {
-                        'id': 'Leaf',
-                        'displayName': 'Leaf',
-                    },
-                    {
-                        'id': 'Spine',
-                        'displayName': 'Spine',
-                    },
-                    {
-                        'id': 'K8Worker',
-                        'displayName': 'K8Worker',
-                    },
-                    {
-                        'id': 'etcD',
-                        'displayName': 'etcD',
-                    },
-                    {
-                        'id': 'Cache',
-                        'displayName': 'Cache',
-                    }
-                ]
-            },
-            {
-                'id': 'type',
-                'displayName': 'Type',
-                'options': [
-                    {
-                        'id': 'PS-3001',
-                        'displayName': 'PS-3001',
-                    },
-                    {
-                        'id': 'SuperMicro-x',
-                        'displayName': 'SuperMicro-x',
-                    }
-                ]
-            },
-            {
-                'id': 'site',
-                'displayName': 'Site',
-                'options': [
-                    {
-                        'id': 'SJC0',
-                        'displayName': 'SJC0',
-                    }
-                ]
-            }
-        ]
+    // renderFilterComponent = () => {
+    //     let filters = []
+    //     let filterOptions = [
+    //         {
+    //             'id': 'status',
+    //             'displayName': 'Status',
+    //             'options': [
+    //                 {
+    //                     'id': 'active',
+    //                     'displayName': 'Active',
+    //                 },
+    //                 {
+    //                     'id': 'unprovisioned',
+    //                     'displayName': 'Unprovisioned',
+    //                 }
+    //             ]
+    //         }, {
+    //             'id': 'role',
+    //             'displayName': 'Role',
+    //             'options': [
+    //                 {
+    //                     'id': 'Leaf',
+    //                     'displayName': 'Leaf',
+    //                 },
+    //                 {
+    //                     'id': 'Spine',
+    //                     'displayName': 'Spine',
+    //                 },
+    //                 {
+    //                     'id': 'K8Worker',
+    //                     'displayName': 'K8Worker',
+    //                 },
+    //                 {
+    //                     'id': 'etcD',
+    //                     'displayName': 'etcD',
+    //                 },
+    //                 {
+    //                     'id': 'Cache',
+    //                     'displayName': 'Cache',
+    //                 }
+    //             ]
+    //         },
+    //         {
+    //             'id': 'type',
+    //             'displayName': 'Type',
+    //             'options': [
+    //                 {
+    //                     'id': 'PS-3001',
+    //                     'displayName': 'PS-3001',
+    //                 },
+    //                 {
+    //                     'id': 'SuperMicro-x',
+    //                     'displayName': 'SuperMicro-x',
+    //                 }
+    //             ]
+    //         },
+    //         {
+    //             'id': 'site',
+    //             'displayName': 'Site',
+    //             'options': [
+    //                 {
+    //                     'id': 'SJC0',
+    //                     'displayName': 'SJC0',
+    //                 }
+    //             ]
+    //         }
+    //     ]
 
-        filterOptions.map(function (filterOption) {
-            let options = filterOption.options
-            if (!options || !options.length)
-                return null
-            filters.push(<div>
-                <div className="head-name">{filterOption.displayName}</div>
-                <select multiple className="form-control">{options.map(function (option) {
-                    return <option value={option.id}>{option.displayName}</option>
-                })}</select>
-            </div>)
-        })
+    //     filterOptions.map(function (filterOption) {
+    //         let options = filterOption.options
+    //         if (!options || !options.length)
+    //             return null
+    //         filters.push(<div>
+    //             <div className="head-name">{filterOption.displayName}</div>
+    //             <select multiple className="form-control">{options.map(function (option) {
+    //                 return <option value={option.id}>{option.displayName}</option>
+    //             })}</select>
+    //         </div>)
+    //     })
 
-        return (
-            <Card className="borRad">
-                <CardHeader>Filter</CardHeader>
-                <CardBody>
-                    {filters}
-                    <div style={{ paddingTop: '10px' }}>
-                        <Button className="custBtn" outline color="secondary">Apply</Button>
-                        <Button className="custBtn" outline color="secondary">Reset</Button>
-                    </div>
-                </CardBody>
-            </Card>
-        )
-    }
+    //     return (
+    //         <Card className="borRad">
+    //             <CardHeader>Filter</CardHeader>
+    //             <CardBody>
+    //                 {filters}
+    //                 <div style={{ paddingTop: '10px' }}>
+    //                     <Button className="custBtn" outline color="secondary">Apply</Button>
+    //                     <Button className="custBtn" outline color="secondary">Reset</Button>
+    //                 </div>
+    //             </CardBody>
+    //         </Card>
+    //     )
+    // }
 
     handleChanges = (selectedOption) => {
+        console.log(selectedOption)
         this.setState({ selectedRoles: selectedOption });
     }
 
@@ -329,12 +291,12 @@ class NodeSummary extends React.Component {
         this.setState({ visible: false, visibleUnique: false });
     }
 
-    renderUpgradeModelDialog() {
-
+    addNodeModal() {
+        console.log(this.state.roleData)
         if (this.state.displayModel) {
             return (
-                <Modal isOpen={this.state.displayModel} toggle={() => this.click()} size="lg" centered="true" >
-                    <ModalHeader toggle={() => this.click()}>Add Node</ModalHeader>
+                <Modal isOpen={this.state.displayModel} toggle={() => this.toggleAddNodeModal()} size="lg" centered="true" >
+                    <ModalHeader toggle={() => this.toggleAddNodeModal()}>Add Node</ModalHeader>
                     <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >
                         {this.state.errMsg}
                     </Alert>
@@ -347,7 +309,7 @@ class NodeSummary extends React.Component {
                                 <Input id='nodeName' autoFocus className="marTop10" />
                             </Col>
                             <Col sm="6" className="marTop10">Site
-                                <DropDown options={this.state.siteData} getSelectedData={this.getSelectedData} identity={"Site"} default={this.state.selectedSite} />
+                                <DropDown options={this.state.siteData} getSelectedData={this.getSelectedData} identity={"Site"} default={this.state.selectedSiteId} />
                             </Col>
                             {/* <Input id='site' className="marTop10" /> */}
                         </Row>
@@ -357,21 +319,21 @@ class NodeSummary extends React.Component {
                             <Col sm="6" className="marTop10">
                                 Serial Number <Input id='nodeSerialNumber' className="marTop10" />
                                 <br />Type
-                                <DropDown options={this.state.typedata} getSelectedData={this.getSelectedData} identity={"Type"} default={this.state.selectedType} />
+                                <DropDown options={this.state.typedata} getSelectedData={this.getSelectedData} identity={"Type"} default={this.state.selectedTypeId} />
                             </Col>
                         </Row>
                         <Row>
                             <Col sm="6" className="marTop10">Linux Kernel
-                                <DropDown options={this.state.kernelData} getSelectedData={this.getSelectedData} identity={"Linux"} default={this.state.selectedLinux} />
+                                <DropDown options={this.state.kernelData} getSelectedData={this.getSelectedData} identity={"Linux"} default={this.state.selectedLinuxId} />
                             </Col>
                             <Col sm="6" className="marTop10">Base Linux ISO
-                                <DropDown options={this.state.isoData} getSelectedData={this.getSelectedData} identity={"ISO"} default={this.state.selectedIso} />
+                                <DropDown options={this.state.isoData} getSelectedData={this.getSelectedData} identity={"ISO"} default={this.state.selectedIsoId} />
                             </Col>
                         </Row>
                     </ModalBody>
                     <ModalFooter>
                         <Button outline color="primary" className="custBtn" onClick={() => (this.addNode())}>Add</Button>{'  '}
-                        <Button outline color="primary" className="custBtn" onClick={() => (this.click())}>Cancel</Button>
+                        <Button outline color="primary" className="custBtn" onClick={() => (this.toggleAddNodeModal())}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
             );
@@ -381,70 +343,68 @@ class NodeSummary extends React.Component {
     addNode() {
         let nodeName = document.getElementById('nodeName').value
         let name = trimString(nodeName)
-        let data = this.state.nodes
-        let validateUnique = true
-        data.map((datum) => {
-            if (datum.name == name) {
-                validateUnique = false
-            }
-        })
-        if ((!name) || (!validateUnique)) {
-            if (!name) {
-                this.setState({ visible: true, errMsg: "Name field is mandatory" });
-            }
-            if (!validateUnique) {
-                this.setState({ visibleUnique: true, errMsg: "Name field is already exist, please enter unique name" });
-            }
+        let self = this
+        // let validateUnique = true
+        // data.map((datum) => {
+        //     if (datum.name == name) {
+        //         validateUnique = false
+        //     }
+        // })
+        // if ((!name) || (!validateUnique)) {
+        //     if (!name) {
+        //         self.setState({ visible: true, errMsg: "Name field is mandatory" });
+        //     }
+        //     if (!validateUnique) {
+        //         self.setState({ visibleUnique: true, errMsg: "Name field is already exist, please enter unique name" });
+        //     }
 
-            return;
-        }
-        if (!this.state.selectedRoles.length) {
-            this.setState({ visible: true, errMsg: "Role is mandatory" })
-            return;
-        }
+        //     return;
+        // }
+        // if (!this.state.selectedRoles.length) {
+        //     this.setState({ visible: true, errMsg: "Role is mandatory" })
+        //     return;
+        // }
         let roles = [];
         this.state.selectedRoles.map((data) => roles.push(data.value));
-        let a = {
+        let params = {
             'Name': name,
-            'site': this.state.selectedSite,
+            'Iso_Id': parseInt(self.state.selectedIsoId),
+            'Site_Id': parseInt(self.state.selectedSiteId),
             'roles': roles,
-            'type': this.state.selectedType,
-            'serialNumber': document.getElementById('nodeSerialNumber').value,
-            'kernel': this.state.selectedLinux,
-            'linuxISO': this.state.selectedIso
+            'Type_Id': parseInt(self.state.selectedTypeId),
+            'SN': document.getElementById('nodeSerialNumber').value,
+            'Kernel_Id': parseInt(self.state.selectedLinuxId),
         }
-        ServerAPI.DefaultServer().addNode(this.callback, this, a);
-
-    }
-
-
-    /* getSelectRoleValues(select) {
-        var result = [];
-        var options = select && select.options;
-        var opt;
-
-        for (var i = 0, iLen = options.length; i < iLen; i++) {
-            opt = options[i];
-
-            if (opt.selected) {
-                result.push(opt.value || opt.text);
+        postRequest(ADD_NODE, params).then(function (data) {
+            if (data.StatusCode == 200) {
+                let renderedData = self.state.nodes;
+                if (!renderedData) {
+                    renderedData = []
+                }
+                if (data.Data.roles.length) {
+                    data.Data.roles.map((role) => {
+                        self.state.roleData.find(function (element, index) {
+                            if (role == element.Id) {
+                                role.Name = element.Name
+                                return;
+                            }
+                        })
+                    })
+                }
+                console.log(data.Data.roles)
+                renderedData.push(data.Data)
+                self.setState({ data: renderedData, displayModel: false, visible: false })
             }
-        }
-        return result;
-    } */
+            else {
+                NotificationManager.error("Something went wrong", "node")
+                self.setState({ displayModel: false, visible: false })
 
-    callback(instance, data) {
-        let a = instance.state.nodes
-        if (!a) {
-            a = []
-        }
-        a.push(data)
-        instance.setState({ data: a, displayModel: !instance.state.displayModel, errMsg: '' })
-        NotificationManager.success('Added Successfully', 'Node');
+            }
+        })
     }
 
-    click() {
-        this.setState({ displayModel: !this.state.displayModel, selectedSite: null, selectedRoles: [], selectedType: null, selectedLinux: null, selectedIso: null, visible: false, visibleUnique: false })
+    toggleAddNodeModal() {
+        this.setState({ displayModel: !this.state.displayModel, selectedSiteId: null, selectedRoles: [], selectedTypeId: null, selectedLinuxId: null, selectedIsoId: null, visible: false, visibleUnique: false })
     }
 
     getFilteredData = (data) => {
@@ -459,16 +419,15 @@ class NodeSummary extends React.Component {
         }
         let csvData = [];
         this.state.nodes.map((item) => {
-            console.log(item);
             csvData.push({
-                'Name': item.name,
-                'Site': item.site,
-                'Status': item.status,
-                'Roles': item.roles,
-                'Type': item.nodeType,
-                'Serial Number': item.serialNumber,
-                'Linux Kernel': item.kernel,
-                'Base Linux ISO': item.linuxISO,
+                'Name': item.Name,
+                'Site_Id': item.Site_Id,
+                'status': item.status,
+                'roles': item.roles,
+                'Type_Id': item.Type_Id,
+                'SN': item.SN,
+                'Kernel_Id': item.Kernel_Id,
+                'Iso_Id': item.Iso_Id,
                 'Interface': item.allInterfaces.map((intItem) => {
                     csvData.push({
                         'Interface Name': intItem.port,
@@ -479,16 +438,13 @@ class NodeSummary extends React.Component {
                 // 'Interface Name': item.allInterfaces.map((intItem) => { csvData.push(intItem.port) }),
                 // 'IP Address': item.allInterfaces.map((intItem) => { csvData.push(intItem.IPAddress) }),
                 // 'Management Interface': item.allInterfaces.map((intItem) => { csvData.push(intItem.isMngmntIntf) }),
-
             })
-
         })
-
-
         return <CSVLink data={csvData} className="btn btn-primary">Download CSV</CSVLink>
     }
 
     render() {
+
         if (this.state.redirect) {
             return <Redirect push to={{ pathname: '/pcc/node/config', state: this.state.selectedRows }} />
         }
@@ -500,7 +456,7 @@ class NodeSummary extends React.Component {
                             <Media>
                                 <Media left>
                                     <Button onClick={() => (this.onConfigureClick())} className="custBtn marginLeft13N" disabled={!(this.state.selectedRowIndex.length > 0)} outline color="secondary">Configure</Button>
-                                    <Button className="custBtn" outline color="secondary" onClick={() => (this.click())}>New</Button>
+                                    <Button className="custBtn" outline color="secondary" onClick={() => (this.toggleAddNodeModal())}>New</Button>
                                     {this.showDeleteButton()}
                                 </Media>
                                 <Media body >
@@ -515,12 +471,9 @@ class NodeSummary extends React.Component {
                         </div>
 
                     </Col>
-                    <Col sm="3">
-
-                        {/* {this.renderFilterComponent()} */}
-                    </Col>
+                    {/* {this.renderFilterComponent()} */}
                 </Row>
-                {this.renderUpgradeModelDialog()}
+                {this.addNodeModal()}
             </Container-fluid>
         );
     }

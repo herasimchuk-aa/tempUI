@@ -31,6 +31,14 @@ export default class MultiselectDropDown extends Component {
     }
 
     render() {
+
+        let options = this.state.options
+        if (options && options.length) {
+            options.map((item) => {
+                item.label = item.Name
+                item.value = item.Id
+            })
+        }
         return (
             <Select className="marTop10" value={this.state.value} onChange={(e) => this.handleChange(e)} options={this.state.options} multi />
         );

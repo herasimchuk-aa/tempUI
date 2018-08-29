@@ -14,6 +14,8 @@ import MultiselectDropDown from '../../components/MultiselectDropdown/Multiselec
 import ConfirmationModal from '../../components/ConfirmationModal/ConfirmationModal';
 import DiscoverModal from '../../components/DiscoverModal/DiscoverModal';
 import { invaderServerAddress } from '../../config';
+import { FETCH_ALL_SITES, FETCH_ALL_ROLES, FETCH_ALL_ISOS, FETCH_ALL_KERNELS, FETCH_ALL_SYSTEM_TYPES } from '../../apis/RestConfig';
+import { getRequest } from '../../apis/RestApi';
 
 class NodeConfig extends Component {
   constructor(props) {
@@ -22,7 +24,7 @@ class NodeConfig extends Component {
       roleData: [],
       isoData: [],
       kernelData: [],
-      typedata: [],
+      typeData: [],
       siteData: [],
       nodeHead: nodeHead,
       displayModel: false,
@@ -31,13 +33,18 @@ class NodeConfig extends Component {
       interfaceIndex: null,
       nodes: props.location.state,
       selectedRowIndexes: [],
-      selectedType: props.location.state.length == 1 ? props.location.state[0].nodeType : '',
-      selectedLinux: props.location.state.length == 1 ? props.location.state[0].kernel : '',
-      selectedIso: props.location.state.length == 1 ? props.location.state[0].linuxISO : '',
+      // selectedType: props.location.state.length == 1 ? props.location.state[0].type : '',
+      // selectedLinux: props.location.state.length == 1 ? props.location.state[0].kernel : '',
+      // selectedIso: props.location.state.length == 1 ? props.location.state[0].iso : '',
       selectedRoles: props.location.state.length == 1 ? props.location.state[0].roles : '',
-      selectedSerialNo: props.location.state.length == 1 ? props.location.state[0].serialNumber : '',
-      selectedSite: props.location.state.length == 1 ? props.location.state[0].site : '',
-      hostname: props.location.state[0].name,
+      // selectedSite: props.location.state.length == 1 ? props.location.state[0].site : '',
+      selectedSerialNo: props.location.state.length == 1 ? props.location.state[0].SN : '',
+      selectedTypeId: props.location.state.length == 1 ? props.location.state[0].Type_Id : '',
+      selectedLinuxId: props.location.state.length == 1 ? props.location.state[0].Kernel_Id : '',
+      selectedIsoId: props.location.state.length == 1 ? props.location.state[0].Iso_Id : '',
+      // selectedRolesId: props.location.state.length == 1 ? props.location.state[0].roles : '',
+      selectedSiteId: props.location.state.length == 1 ? props.location.state[0].Site_Id : '',
+      hostname: props.location.state[0].Name,
       displayProvisionModel: false,
       actualNode: {},
       wipeBtn: true,
@@ -52,76 +59,42 @@ class NodeConfig extends Component {
   }
 
   componentDidMount() {
-    ServerAPI.DefaultServer().fetchAllRoles(this.retrieveRoleData, this);
-    ServerAPI.DefaultServer().fetchAllIso(this.retrieveIsoData, this);
-    ServerAPI.DefaultServer().fetchAllKernels(this.retrieveKernelsData, this);
-    ServerAPI.DefaultServer().fetchAllSystemTypes(this.retrieveTypesData, this);
-    ServerAPI.DefaultServer().fetchAllSite(this.retrieveSiteData, this);
+    this.getAllData()
+  }
 
+  getAllData = () => {
+    let typeData = []
+    let self = this
+    let typePromise = getRequest(FETCH_ALL_SYSTEM_TYPES).then(function (json) {
+      typeData = json.Data
+    })
+
+    // let roleData = []
+    // let rolePromise = getRequest(FETCH_ALL_ROLES).then(function (json) {
+    //     self.roleData = json.Data
+    // })
+
+    let kernelData = []
+    let kernelPromise = getRequest(FETCH_ALL_KERNELS).then(function (json) {
+      kernelData = json.Data
+    })
+
+    let isoData = []
+    let isoPromise = getRequest(FETCH_ALL_ISOS).then(function (json) {
+      isoData = json.Data
+    })
+
+    let siteData = []
+    let sitePromise = getRequest(FETCH_ALL_SITES).then(function (json) {
+      siteData = json.Data
+    })
+
+    Promise.all([typePromise, kernelPromise, isoPromise, sitePromise]).then(function () {
+      self.setState({ typeData: typeData, kernelData: kernelData, isoData: isoData, siteData: siteData })
+    })
   }
 
 
-
-  retrieveRoleData(instance, data) {
-    if (!data) {
-      NotificationManager.error('No Roles present', 'Role');
-    }
-    else {
-      if (Object.keys(data).length) {
-        instance.setState({ roleData: data });
-      }
-    }
-  }
-
-  retrieveIsoData(instance, data) {
-    if (!data) {
-      NotificationManager.error('No Base Linux ISOs present', 'Base Linux ISO');
-    }
-    else {
-      if (Object.keys(data).length) {
-        instance.setState({ isoData: data });
-      }
-    }
-  }
-
-  retrieveKernelsData(instance, data) {
-    if (!data) {
-      NotificationManager.error('No Kernels present', 'Kernel');
-    }
-    else {
-      if (Object.keys(data).length) {
-        instance.setState({ kernelData: data });
-      }
-    }
-  }
-
-  retrieveTypesData(instance, data) {
-    if (!data) {
-      NotificationManager.error('No System Types present', 'System Tpye');
-    }
-    else {
-      if (Object.keys(data).length) {
-        instance.setState({ typedata: data });
-      }
-    }
-  }
-
-  retrieveSiteData(instance, data) {
-    if (!data) {
-      NotificationManager.error('No sites present', 'Site');
-    }
-    else {
-      if (Object.keys(data).length) {
-        instance.setState({ siteData: data });
-      }
-    }
-  }
-
-  getRoles() {
-    let rolesHtml = [];
-    this.state.roleData.map((item) => (rolesHtml.push(<option>{item.label}</option>)));
-    return rolesHtml;
-  }
 
   interfaceTableHeader() {
     return (
@@ -467,18 +440,18 @@ class NodeConfig extends Component {
 
   getSelectedData = (data, identity) => {
     if (identity == 'Type') {
-      this.setState({ selectedType: data, saveBtn: false })
+      this.setState({ selectedTypeId: data, saveBtn: false })
     }
     if (identity == 'Linux') {
-      this.state.selectedIso != data && data != '' ? this.setState({ rebootBtn: false }) : ''
-      this.setState({ selectedLinux: data, saveBtn: false })
+      this.state.selectedLinux != data && data != '' ? this.setState({ rebootBtn: false }) : ''
+      this.setState({ selectedLinuxId: data, saveBtn: false })
     }
     if (identity == 'ISO') {
       this.state.selectedIso != data && data != '' ? this.setState({ wipeBtn: false }) : ''
       this.setState({ selectedIso: data, saveBtn: false })
     }
     if (identity == 'Site') {
-      this.setState({ selectedSite: data, saveBtn: false })
+      this.setState({ selectedSiteId: data, saveBtn: false })
     }
 
   }
@@ -668,7 +641,7 @@ class NodeConfig extends Component {
         <div>
           <Media className="edit" id="edit">
             <Media left>
-              {this.state.nodes.map((nodeItem) => nodeItem.name)}
+              {this.state.nodes.map((nodeItem) => nodeItem.Name)}
             </Media>
           </Media>
         </div>
@@ -700,7 +673,7 @@ class NodeConfig extends Component {
             <Media>
               <Media body>
                 <Label>Base Linux ISO</Label>
-                <DropDown options={this.state.isoData} getSelectedData={this.getSelectedData} identity={"ISO"} default={this.state.selectedIso} />
+                <DropDown options={this.state.isoData} getSelectedData={this.getSelectedData} identity={"ISO"} default={this.state.selectedIsoId} />
               </Media>
               <Media right>
                 <Button className="custBtn marTop40 marLeft10 " disabled={this.state.wipeBtn} outline color="secondary" onClick={() => { this.wipeISO() }}> Wipe </Button>
@@ -711,7 +684,7 @@ class NodeConfig extends Component {
             <Media>
               <Media body>
                 <Label>Linux Kernel</Label>
-                <DropDown options={this.state.kernelData} getSelectedData={this.getSelectedData} identity={"Linux"} default={this.state.selectedLinux} />
+                <DropDown options={this.state.kernelData} getSelectedData={this.getSelectedData} identity={"Linux"} default={this.state.selectedLinuxId} />
               </Media>
               <Media right>
                 <Button className="custBtn marTop40 marLeft10 " disabled={this.state.rebootBtn} outline color="secondary" > Reboot </Button>
@@ -732,13 +705,13 @@ class NodeConfig extends Component {
               <MultiselectDropDown value={this.state.selectedRoles} getSelectedData={this.handleChanges} options={this.state.roleData} />
             </Col>
             <Col xs='3' ><Label>Type</Label><br />
-              <DropDown options={this.state.typedata} getSelectedData={this.getSelectedData} identity={"Type"} default={this.state.selectedType} />
+              <DropDown options={this.state.typeData} getSelectedData={this.getSelectedData} identity={"Type"} default={this.state.selectedTypeId} />
             </Col>
             <Col xs='3' ><Label>Serial Number</Label><br />
               <Input className="marTop10" type="text" value={this.state.selectedSerialNo} onChange={(e) => { this.serialNo(e) }} />
             </Col>
             <Col xs='3' ><Label>Site</Label><br />
-              <DropDown options={this.state.siteData} getSelectedData={this.getSelectedData} identity={"Site"} default={this.state.selectedSite} />
+              <DropDown options={this.state.siteData} getSelectedData={this.getSelectedData} identity={"Site"} default={this.state.selectedSiteId} />
             </Col>
           </Row>
           {/* {this.confDropdown()} */}
