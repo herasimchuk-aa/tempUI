@@ -39,6 +39,7 @@ export default class MultiselectDropDown extends Component {
                 item.value = item.Name
             })
         }
+        console.log(this.state.value)
         return (
             <Select className="marTop10" value={this.state.value} onChange={(e) => this.handleChange(e)} options={this.state.options} multi />
         );

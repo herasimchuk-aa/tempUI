@@ -36,7 +36,7 @@ class NodeConfig extends Component {
       // selectedType: props.location.state.length == 1 ? props.location.state[0].type : '',
       // selectedLinux: props.location.state.length == 1 ? props.location.state[0].kernel : '',
       // selectedIso: props.location.state.length == 1 ? props.location.state[0].iso : '',
-      selectedRoles: props.location.state.length == 1 ? props.location.state[0].roles : '',
+      selectedRoles: props.location.state.length == 1 ? props.location.state[0].roleDetails : '',
       // selectedSite: props.location.state.length == 1 ? props.location.state[0].site : '',
       selectedSerialNo: props.location.state.length == 1 ? props.location.state[0].SN : '',
       selectedTypeId: props.location.state.length == 1 ? props.location.state[0].Type_Id : '',
@@ -56,6 +56,7 @@ class NodeConfig extends Component {
       isLoading: false
     }
     this.counter = 0
+    console.log(props.location.state)
   }
 
   componentDidMount() {
@@ -92,14 +93,12 @@ class NodeConfig extends Component {
     Promise.all([typePromise, rolePromise, kernelPromise, isoPromise, sitePromise]).then(function () {
 
       node = self.convertData(self.state.nodes, typeData, kernelData, isoData, siteData, roleData)
-      self.setState({ nodes: node, constNodes: Object.assign([], nodes) })
+      self.setState({ nodes: node, selectedRoles: node.roleDetails, constNodes: Object.assign([], nodes) })
     }).then(function () {
       self.setState({ typedata: typeData, roleData: roleData, kernelData: kernelData, isoData: isoData, siteData: siteData })
     })
 
-    Promise.all([typePromise, kernelPromise, isoPromise, sitePromise, rolePromise]).then(function () {
-      self.setState({ typeData: typeData, kernelData: kernelData, isoData: isoData, siteData: siteData, roleData: roleData })
-    })
+
   }
 
   convertData(node, types, kernels, isos, sites, roles) {
@@ -517,6 +516,7 @@ class NodeConfig extends Component {
 
 
   handleChanges = (selectedOption) => {
+    console.log(selectedOption)
     this.setState({ selectedRoles: selectedOption, saveBtn: false });
   }
 
