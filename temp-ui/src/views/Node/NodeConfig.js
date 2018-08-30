@@ -92,51 +92,52 @@ class NodeConfig extends Component {
 
     Promise.all([typePromise, rolePromise, kernelPromise, isoPromise, sitePromise]).then(function () {
 
-      node = self.convertData(self.state.nodes, typeData, kernelData, isoData, siteData, roleData)
-      self.setState({ nodes: node, selectedRoles: node.roleDetails, constNodes: Object.assign([], nodes) })
-    }).then(function () {
-      self.setState({ typedata: typeData, roleData: roleData, kernelData: kernelData, isoData: isoData, siteData: siteData })
+      //   node = self.convertData(self.state.nodes, typeData, kernelData, isoData, siteData, roleData)
+      //   self.setState({ nodes: node, selectedRoles: node.roleDetails, constNodes: Object.assign([], nodes) })
+      // }).then(function () {
+      self.setState({ typeData: typeData, roleData: roleData, kernelData: kernelData, isoData: isoData, siteData: siteData })
     })
 
 
   }
 
-  convertData(node, types, kernels, isos, sites, roles) {
+  // convertData(node, types, kernels, isos, sites, roles) {
 
-    types.map((item) => {
-      if (item.Id == node.Type_Id) {
-        node.type = item.Name
-      }
-    })
-    kernels.map((item) => {
-      if (item.Id == node.Kernel_Id) {
-        node.kernel = item.Name
-      }
-    })
-    isos.map((item) => {
-      if (item.Id == node.Iso_Id) {
-        node.iso = item.Name
-      }
-    })
-    sites.map((item) => {
-      if (item.Id == node.Site_Id) {
-        node.site = item.Name
-      }
-    })
-    let roleIds = node.roles
-    let roleDetails = []
+  //   types.map((item) => {
+  //     if (item.Id == node.Type_Id) {
+  //       node.type = item.Name
+  //     }
+  //   })
+  //   kernels.map((item) => {
+  //     if (item.Id == node.Kernel_Id) {
+  //       node.kernel = item.Name
+  //     }
+  //   })
+  //   isos.map((item) => {
+  //     if (item.Id == node.Iso_Id) {
+  //       node.iso = item.Name
+  //     }
+  //   })
+  //   sites.map((item) => {
+  //     if (item.Id == node.Site_Id) {
+  //       node.site = item.Name
+  //     }
+  //   })
+  //   let roleIds = node.roles
+  //   let roleDetails = []
 
-    for (let roleId of roleIds) {
-      for (let role of roles) {
-        if (role.Id == roleId) {
-          roleDetails.push(role)
-          break
-        }
-      }
-    }
-    node.roleDetails = roleDetails
-    return node
-  }
+  //   for (let roleId of roleIds) {
+  //     for (let role of roles) {
+  //       if (role.Id == roleId) {
+  //         roleDetails.push(role)
+  //         break
+  //       }
+  //     }
+  //   }
+  //   node.roleDetails = roleDetails
+  //   console.log(node)
+  //   return node
+  // }
 
 
 
