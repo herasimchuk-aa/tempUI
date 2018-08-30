@@ -171,7 +171,7 @@ class Roles extends Component {
                 self.setState({ data: renderedData, displayModel: false, selectedRole: '', alertVisible: false })
             }
             else {
-                NotificationManager.errror("Something went wrong", "Role")
+                NotificationManager.error("Something went wrong", "Role")
                 self.setState({ displayModel: false, selectedRole: '', alertVisible: false })
 
             }

@@ -126,7 +126,7 @@ class Types extends Component {
                 self.setState({ data: renderedData, displayModel: false, visible: false })
             }
             else {
-                NotificationManager.errror("Something went wrong", "System Type")
+                NotificationManager.error("Something went wrong", "System Type")
                 self.setState({ displayModel: false, visible: false })
 
             }

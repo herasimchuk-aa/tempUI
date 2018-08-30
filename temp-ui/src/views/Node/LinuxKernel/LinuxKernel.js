@@ -164,7 +164,7 @@ class LinuxKernel extends Component {
                 self.setState({ data: renderedData, displayModel: false, visible: false })
             }
             else {
-                NotificationManager.errror("Something went wrong", "Kernel")
+                NotificationManager.error("Something went wrong", "Kernel")
                 self.setState({ displayModel: false, visible: false })
 
             }

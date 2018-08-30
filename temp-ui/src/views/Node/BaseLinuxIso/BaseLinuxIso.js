@@ -128,7 +128,7 @@ class BaseLinuxIso extends Component {
                 self.setState({ data: renderedData, displayModel: false, visible: false })
             }
             else {
-                NotificationManager.errror("Something went wrong", "Base ISO")
+                NotificationManager.error("Something went wrong", "Base ISO")
                 self.setState({ displayModel: false, visible: false })
 
             }
