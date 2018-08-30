@@ -13,6 +13,7 @@ class ModalComponent extends Component {
             remoteName: '',
             remoteInterface: '',
             isMngmntIntf: false,
+            id: 0,
             error: []
         }
     }
@@ -21,9 +22,9 @@ class ModalComponent extends Component {
         if (!props.data) {
             return
         }
-        let serverName = props.data.connectedTo.serverName
-        let ip = props.data.IPAddress
-        let serverPort = props.data.connectedTo.serverPort;
+        let serverName = props.data.Remote_node_name
+        let ip = props.data.Ip_address
+        let serverPort = props.data.Remote_interface;
         if (!serverName) {
             serverName = ''
         }
@@ -34,7 +35,8 @@ class ModalComponent extends Component {
             serverPort = ''
         }
         return {
-            port: props.data.port,
+            id: props.data.Id,
+            port: props.data.Name,
             ip: ip,
             remoteName: serverName,
             remoteInterface: serverPort,
@@ -61,13 +63,12 @@ class ModalComponent extends Component {
         }
 
         let newInterface = {
-            'connectedTo': {
-                'serverName': document.getElementById('remoteName').value,
-                'serverPort': document.getElementById('remoteInterface').value
-            },
-            'IPAddress': ipAddress,
-            'port': validInterfacename,
-            'isMngmntIntf': document.getElementById('mngmntInt').checked,
+            'Id': this.state.id,
+            'Remote_node_name': document.getElementById('remoteName').value,
+            'Remote_interface': document.getElementById('remoteInterface').value,
+            'Ip_address': ipAddress,
+            'Name': validInterfacename,
+            'Is_management_interface': document.getElementById('mngmntInt').checked,
         }
 
         this.props.getData(newInterface)
@@ -79,7 +80,7 @@ class ModalComponent extends Component {
 
     closeModal() {
         this.setState({ open: false })
-      
+
     }
 
     render() {

@@ -14,8 +14,8 @@ import MultiselectDropDown from '../../components/MultiselectDropdown/Multiselec
 import ConfirmationModal from '../../components/ConfirmationModal/ConfirmationModal';
 import DiscoverModal from '../../components/DiscoverModal/DiscoverModal';
 import { invaderServerAddress } from '../../config';
-import { FETCH_ALL_SITES, FETCH_ALL_ROLES, FETCH_ALL_ISOS, FETCH_ALL_KERNELS, FETCH_ALL_SYSTEM_TYPES } from '../../apis/RestConfig';
-import { getRequest } from '../../apis/RestApi';
+import { FETCH_ALL_SITES, FETCH_ALL_ROLES, FETCH_ALL_ISOS, FETCH_ALL_KERNELS, FETCH_ALL_SYSTEM_TYPES, UPDATE_NODES } from '../../apis/RestConfig';
+import { getRequest, postRequest, putRequest } from '../../apis/RestApi';
 
 class NodeConfig extends Component {
   constructor(props) {
@@ -52,7 +52,7 @@ class NodeConfig extends Component {
       saveBtn: true,
       openDiscoverModal: false,
       cancelNodeConfig: false,
-      interfaces: props.location.state[0].allInterfaces,
+      interfaces: props.location.state[0].interfaces,
       isLoading: false
     }
     this.counter = 0
@@ -91,55 +91,10 @@ class NodeConfig extends Component {
     })
 
     Promise.all([typePromise, rolePromise, kernelPromise, isoPromise, sitePromise]).then(function () {
-
-      //   node = self.convertData(self.state.nodes, typeData, kernelData, isoData, siteData, roleData)
-      //   self.setState({ nodes: node, selectedRoles: node.roleDetails, constNodes: Object.assign([], nodes) })
-      // }).then(function () {
       self.setState({ typeData: typeData, roleData: roleData, kernelData: kernelData, isoData: isoData, siteData: siteData })
     })
 
-
   }
-
-  // convertData(node, types, kernels, isos, sites, roles) {
-
-  //   types.map((item) => {
-  //     if (item.Id == node.Type_Id) {
-  //       node.type = item.Name
-  //     }
-  //   })
-  //   kernels.map((item) => {
-  //     if (item.Id == node.Kernel_Id) {
-  //       node.kernel = item.Name
-  //     }
-  //   })
-  //   isos.map((item) => {
-  //     if (item.Id == node.Iso_Id) {
-  //       node.iso = item.Name
-  //     }
-  //   })
-  //   sites.map((item) => {
-  //     if (item.Id == node.Site_Id) {
-  //       node.site = item.Name
-  //     }
-  //   })
-  //   let roleIds = node.roles
-  //   let roleDetails = []
-
-  //   for (let roleId of roleIds) {
-  //     for (let role of roles) {
-  //       if (role.Id == roleId) {
-  //         roleDetails.push(role)
-  //         break
-  //       }
-  //     }
-  //   }
-  //   node.roleDetails = roleDetails
-  //   console.log(node)
-  //   return node
-  // }
-
-
 
   interfaceTableHeader() {
     return (
@@ -173,16 +128,17 @@ class NodeConfig extends Component {
   }
 
   deleteInterface = () => {
+    let self = this
     let arr = []
-    let interfaces = this.state.nodes[0].allInterfaces
+    let interfaces = self.state.nodes[0].interfaces
     interfaces.map((interfaceItem, index) => {
-      for (let i = 0; i < this.state.selectedRowIndexes.length; i++) {
-        if (index == this.state.selectedRowIndexes[i]) {
-          arr.push(interfaceItem.port)
+      for (let i = 0; i < self.state.selectedRowIndexes.length; i++) {
+        if (index == self.state.selectedRowIndexes[i]) {
+          arr.push(interfaceItem.Name)
         }
       }
       for (let j = 0; j < arr.length; j++) {
-        if (arr[j] == interfaceItem.port) {
+        if (arr[j] == interfaceItem.Name) {
           delete interfaces[index]
         }
       }
@@ -190,37 +146,42 @@ class NodeConfig extends Component {
     })
 
     interfaces = interfaces.filter(function (n) { return n != undefined })
-    this.state.nodes[0].allInterfaces = interfaces
-    this.setState({ interfaces: interfaces })
-
+    self.state.nodes[0].interfaces = interfaces
+    self.setState({ interfaces: interfaces })
     let roles = [];
-    let { selectedRoles } = this.state
-    if (selectedRoles && selectedRoles.length) {
-      selectedRoles.map((data) => (roles.push(data.Id)))
+    if (self.state.selectedRoles && self.state.selectedRoles.length) {
+      self.state.selectedRoles.map((data) => (roles.push(data.Id)))
     }
-    this.state.nodes[0].roles = roles
-    let a = {
-      nodes: this.state.nodes,
-    }
-    ServerAPI.DefaultServer().updateNode(this.deleteInterfaceCallback, this, a);
-  }
 
-  deleteInterfaceCallback(instance, data) {
-    let a = instance.state.data
-    if (!a) {
-      a = []
-    }
-    a.push(data)
-    instance.setState({ data: a, selectedRowIndexes: [], saveBtn: false })
+    let data = self.state.nodes
+    data.map((datum) => {
+      datum.roles = roles,
+        datum.Type_Id = parseInt(self.state.selectedTypeId),
+        datum.Iso_Id = parseInt(self.state.selectedIsoId),
+        datum.kernel_Id = parseInt(self.state.selectedLinuxId),
+        datum.Site_Id = parseInt(self.state.selectedSiteId),
+        datum.interfaces = self.state.interfaces,
+        datum.SN = self.state.selectedSerialNo
 
-    NotificationManager.success('deleted Successfully', 'Interface');
+
+      putRequest(UPDATE_NODES, datum).then(function (data) {
+        if (data.StatusCode == 200) {
+          let renderedData = self.state.nodes;
+          if (!renderedData) {
+            renderedData = []
+          }
+        }
+        else {
+          NotificationManager.error("Something went wrong", "node")
+        }
+      })
+    })
   }
 
   interfaceTableContent() {
     let rows = []
     let self = this
     if (this.state.interfaces && this.state.interfaces.length) {
-      // this.state.nodes.map((node) => {
       let interfaces = this.state.interfaces
       if (!interfaces || !interfaces.length) {
         let row = (<Row className='headerRow1' style={{ marginLeft: '0px', marginRight: '0px' }}>
@@ -237,114 +198,46 @@ class NodeConfig extends Component {
         if (rowIndex == interfaces.length - 1) {
           row1 = row1 + ' headerRow3 '
         }
-        /* let ipData = []
-        let remoteInvaderData = []
-        let remoteInterfaceData = []
-        let color = '' */
-
-
-        /* if (item.IPAddress) {
-          if (node.validationStatus && node.validationStatus.interfacesStatus && Object.keys(node.validationStatus.interfacesStatus).length) {
-            let portName = item.port
-            if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].isValidIP) {
-              color = "black"
-            }
-            else {
-              color = "red"
-            }
-          }
-          ipData = (<font color={color}>{item.IPAddress}</font>)
-        }
-        else {
-          ipData = "-"
-        } */
-
-        /* **************** */
-
-
-        /* if (item.connectedTo.serverName) {
-          let remoteInvaderKey = 'remoteInvader' + rowIndex
-          if (node.validationStatus && node.validationStatus.interfacesStatus && Object.keys(node.validationStatus.interfacesStatus).length) {
-            let portName = item.port
-            if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].isRemoteInvaderMatched) {
-              color = "black"
-            }
-            else {
-              color = "red"
-              if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].remoteInvader)
-                remoteInterfaceData.push(<UncontrolledTooltip placement="top" target={remoteInvaderKey}>{node.validationStatus.interfacesStatus[portName].remoteInvader}</UncontrolledTooltip>)
-            }
-          }
-          remoteInvaderData = (<font id={remoteInvaderKey} color={color}>{item.connectedTo.serverName}</font>)
-        }
-        else {
-          remoteInvaderData = "-"
-        } */
-
-        /* **************** */
-
-
-        /* if (item.connectedTo.serverPort) {
-          let remoteInterfaceKey = 'remoteInterface' + rowIndex
-          if (node.validationStatus && node.validationStatus.interfacesStatus && Object.keys(node.validationStatus.interfacesStatus).length) {
-            let portName = item.port
-            if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].isLLDPMatched) {
-              color = "black"
-            }
-            else {
-              color = "red"
-              if (node.validationStatus.interfacesStatus[portName] && node.validationStatus.interfacesStatus[portName].remoteInterface)
-                remoteInterfaceData.push(<UncontrolledTooltip placement="top" target={remoteInterfaceKey}>{node.validationStatus.interfacesStatus[portName].remoteInterface}</UncontrolledTooltip>)
-            }
-          }
-          remoteInterfaceData.push(<font id={remoteInterfaceKey} color={color}>{item.connectedTo.serverPort}</font>)
-        }
-        else {
-          remoteInterfaceData = "-"
-        } */
-
 
         let row = (<Row className={row1} style={{ marginLeft: '0px', marginRight: '0px' }}>
           <Col sm="1" className="pad" ><Input key={self.counter++} style={{ cursor: 'pointer', marginLeft: '0px' }}
             type="checkbox" onChange={() => (self.checkBoxClickInterface(rowIndex))} defaultChecked={false} /></Col>
-          <Col sm="2" className="pad">{item.port ? item.port : '-'}</Col>
-          <Col sm="2" className="pad">{item.adminState ? item.adminState : '-'}</Col>
-          <Col sm="2" className="pad">{item.IPAddress ? item.IPAddress : '-'}</Col>
-          <Col sm="2" className="pad">{item.connectedTo.serverName ? item.connectedTo.serverName : '-'}</Col>
-          <Col sm="2" className="pad">{item.connectedTo.serverPort ? item.connectedTo.serverPort : "-"}</Col>
-          <Col sm="1" className="pad" style={{ cursor: 'pointer' }}><i className="fa fa-pencil" aria-hidden="true" onClick={() => (self.updatInterfaceModal(rowIndex))}></i></Col>
+          <Col sm="2" className="pad">{item.Name ? item.Name : '-'}</Col>
+          <Col sm="2" className="pad">{item.Admin_state ? item.Admin_state : '-'}</Col>
+          <Col sm="2" className="pad">{item.Ip_address ? item.Ip_address : '-'}</Col>
+          <Col sm="2" className="pad">{item.Remote_node_name ? item.Remote_node_name : '-'}</Col>
+          <Col sm="2" className="pad">{item.Remote_interface ? item.Remote_interface : "-"}</Col>
+          <Col sm="1" className="pad" style={{ cursor: 'pointer' }}><i className="fa fa-pencil" aria-hidden="true" onClick={() => (self.updatInterfaceModal(item.Id))}></i></Col>
 
         </Row>)
         rows.push(row)
       })
-
-      // })
     }
     return rows
   }
 
   checkBoxClickInterface = (rowIndex) => {
     let { selectedRowIndexes } = this.state
+
     let arrayIndex = selectedRowIndexes.indexOf(rowIndex)
     if (arrayIndex > -1) {
       selectedRowIndexes.splice(arrayIndex, 1)
     } else {
       selectedRowIndexes.push(rowIndex)
     }
-    //this.setState({selectedRowIndexes:selectedRowIndexes})
   }
 
-  updatInterfaceModal = (rowIndex) => {
-    let data = this.state.nodes
+  updatInterfaceModal = (Id) => {
+    let interfaceData = this.state.nodes[0].interfaces
     let itemData = {}
-    data.map((datum) => {
-      datum.allInterfaces.map((interfaceItem, datumIndex) => {
-        if (rowIndex === datumIndex) {
-          itemData = interfaceItem
-        }
-      })
+
+    interfaceData.map((interfaceItem) => {
+      if (Id === interfaceItem.Id) {
+        itemData = interfaceItem
+      }
     })
-    this.setState({ displayModel: !this.state.displayModel, interfaceData: itemData, interfaceIndex: rowIndex })
+
+    this.setState({ displayModel: !this.state.displayModel, interfaceData: itemData })
   }
 
   checkBoxClick = (e) => {
@@ -354,6 +247,7 @@ class NodeConfig extends Component {
   renderUpdateInterface() {
     if (this.state.displayModel) {
       let data = this.state.interfaceData
+      console.log(data)
       return (
         <ModalComponent getData={this.updateNodeCall} actionButton={'Update'} data={data} ></ModalComponent>
       );
@@ -363,16 +257,16 @@ class NodeConfig extends Component {
   updateNodeCall = (params) => {
     let data = this.state.nodes
     data.map((datum) => {
-      datum.allInterfaces.map((interfaceItem, rowIndex) => {
-        if (rowIndex === this.state.interfaceIndex) {
-          interfaceItem.port = params.port
-          interfaceItem.IPAddress = params.IPAddress
-          interfaceItem.connectedTo.serverName = params.connectedTo.serverName
-          interfaceItem.connectedTo.serverPort = params.connectedTo.serverPort
-          interfaceItem.isMngmntIntf = params.isMngmntIntf
+      datum.interfaces.map((interfaceItem) => {
+        if (interfaceItem.Id === params.Id) {
+          interfaceItem.Name = params.Name
+          interfaceItem.Ip_address = params.Ip_address
+          interfaceItem.Remote_node_name = params.Remote_node_name
+          interfaceItem.Remote_interface = params.Remote_interface
+          interfaceItem.Is_management_interface = params.Is_management_interface
         }
       })
-      this.setState({ interfaces: datum.allInterfaces })
+      this.setState({ interfaces: datum.interfaces })
     })
     this.setState({ displayModel: !this.state.displayModel, saveBtn: false })
     NotificationManager.success('Updated Successfully', 'Interface');
@@ -391,24 +285,23 @@ class NodeConfig extends Component {
   }
 
   updateNewInterfaceCall = (params) => {
-    let newInterface = {
-      'connectedTo': {
-        'serverName': params.serverName,
-        'serverPort': params.serverPort
-      },
-      'IPAddress': params.IPAddress,
-      'port': params.port,
-      'isMngmntIntf': params.isMngmntIntf,
-    }
     let data = this.state.nodes
     let datum = data[0]
-    let allInterfaces = datum.allInterfaces
-    if (!allInterfaces || !allInterfaces.length) {
-      allInterfaces = []
+    let newInterface = {
+      'Remote_node_name': params.Remote_node_name,
+      'Remote_interface': params.Remote_interface,
+      'Ip_address': params.Ip_address,
+      'Name': params.Name,
+      'Is_management_interface': params.Is_management_interface,
+      'Node_Id': datum.Id
     }
-    allInterfaces.push(newInterface)
-    data[0].allInterfaces = allInterfaces
-    this.setState({ displayNewInterfaceModel: !this.state.displayNewInterfaceModel, nodes: data, interfaces: allInterfaces, saveBtn: false })
+    let interfaces = datum.interfaces
+    if (!interfaces || !interfaces.length) {
+      interfaces = []
+    }
+    interfaces.push(newInterface)
+    data[0].interfaces = interfaces
+    this.setState({ displayNewInterfaceModel: !this.state.displayNewInterfaceModel, nodes: data, interfaces: interfaces, saveBtn: false })
     NotificationManager.success('Saved Successfully', 'Interface');
   }
 
@@ -422,39 +315,40 @@ class NodeConfig extends Component {
     }
   }
 
+
   updateSaveNode = () => {
     let roles = [];
+    let self = this
     if (this.state.selectedRoles.length == 0) {
       NotificationManager.error('Role cannot be empty', 'Role');
       return;
     }
-
-    this.state.selectedRoles.map((data) => (roles.push(data.Id)))
-    let data = this.state.nodes
+    self.state.selectedRoles.map((data) => (roles.push(data.Id)))
+    let data = self.state.nodes
     data.map((datum) => {
       datum.roles = roles,
-        datum.nodeType = this.state.selectedType,
-        datum.linuxIso = this.state.selectedIso,
-        datum.kernel = this.state.selectedLinux,
-        datum.site = this.state.selectedSite,
-        datum.allInterfaces = this.state.interfaces,
-        datum.interfaces = this.state.interfaces,
-        datum.serialNumber = this.state.selectedSerialNo
-      let a = {
-        nodes: [datum]
-      }
-      ServerAPI.DefaultServer().updateNode(this.updateSaveNodeCallback, this, a);
-    })
-  }
+        datum.Type_Id = parseInt(self.state.selectedTypeId),
+        datum.Iso_Id = parseInt(self.state.selectedIsoId),
+        datum.kernel_Id = parseInt(self.state.selectedLinuxId),
+        datum.Site_Id = parseInt(self.state.selectedSiteId),
+        datum.interfaces = self.state.interfaces,
+        datum.SN = self.state.selectedSerialNo
 
-  updateSaveNodeCallback(instance, data) {
-    let a = instance.state.data
-    if (!a) {
-      a = []
-    }
-    a.push(data)
-    instance.setState({ data: a })
-    NotificationManager.success('Saved Successfully', 'Node Configuration');
+
+      putRequest(UPDATE_NODES, datum).then(function (data) {
+        if (data.StatusCode == 200) {
+          let renderedData = self.state.nodes;
+          if (!renderedData) {
+            renderedData = []
+          }
+          NotificationManager.success("Node Updated Successfully", "node")
+        }
+        else {
+          NotificationManager.error("Something went wrong", "node")
+        }
+        self.setState({ displayModel: false, visible: false })
+      })
+    })
   }
 
   wipeISO = () => {
@@ -488,12 +382,12 @@ class NodeConfig extends Component {
       this.setState({ selectedTypeId: data, saveBtn: false })
     }
     if (identity == 'Linux') {
-      this.state.selectedLinux != data && data != '' ? this.setState({ rebootBtn: false }) : ''
+      this.state.selectedLinuxId != data && data != '' ? this.setState({ rebootBtn: false }) : ''
       this.setState({ selectedLinuxId: data, saveBtn: false })
     }
     if (identity == 'ISO') {
-      this.state.selectedIso != data && data != '' ? this.setState({ wipeBtn: false }) : ''
-      this.setState({ selectedIso: data, saveBtn: false })
+      this.state.selectedIsoId != data && data != '' ? this.setState({ wipeBtn: false }) : ''
+      this.setState({ selectedIsoId: data, saveBtn: false })
     }
     if (identity == 'Site') {
       this.setState({ selectedSiteId: data, saveBtn: false })
@@ -501,23 +395,7 @@ class NodeConfig extends Component {
 
   }
 
-  /*   handleChange = (event) => {
-      let selectedRoles = this.state.selectedRoles
-      let val = event.target.value
-      if (!selectedRoles || !selectedRoles.length) {
-        selectedRoles = []
-        selectedRoles.push(val)
-      } else if (selectedRoles.indexOf(val) > -1) {
-        selectedRoles.splice(selectedRoles.indexOf(val), 1)
-      } else {
-        selectedRoles.push(val)
-      }
-      this.setState({ selectedRoles: selectedRoles })
-    } */
-
-
   handleChanges = (selectedOption) => {
-    console.log(selectedOption)
     this.setState({ selectedRoles: selectedOption, saveBtn: false });
   }
 
@@ -526,14 +404,14 @@ class NodeConfig extends Component {
   }
 
   showDiscoverButton = () => {
-    let allInterfaces = this.state.interfaces
+    let interfaces = this.state.interfaces
     let chkDiscoverbtn = null
-    if (!allInterfaces || !allInterfaces.length) {
+    if (!interfaces || !interfaces.length) {
       chkDiscoverbtn = false
     }
     else {
-      allInterfaces.map((item) => {
-        if (item.isMngmntIntf == true) {
+      interfaces.map((item) => {
+        if (item.Is_management_interface == true) {
           chkDiscoverbtn = true
         }
       })
@@ -554,26 +432,34 @@ class NodeConfig extends Component {
   }
 
   discoverModal = () => {
-    this.toggleLoading()
-    this.setState({ saveBtn: true })
+    let self = this
+    self.toggleLoading()
+    self.setState({ saveBtn: true })
     let roles = [];
-    this.state.selectedRoles.map((data) => (roles.push(data.label)))
-    let data = this.state.nodes
+    self.state.selectedRoles.map((data) => (roles.push(data.Name)))
+    let data = self.state.nodes
     data.map((datum) => {
       datum.roles = roles,
-        datum.nodeType = this.state.selectedType,
-        datum.linuxIso = this.state.selectedIso,
-        datum.kernel = this.state.selectedLinux,
-        datum.site = this.state.selectedSite,
-        datum.allInterfaces = this.state.interfaces,
-        datum.interfaces = this.state.interfaces,
-        datum.serialNumber = this.state.selectedSerialNo
-      let a = {
-        nodes: [datum]
-      }
-      ServerAPI.DefaultServer().updateNode(this.updateDiscoverNodeCallback, this, a);
-    })
+        datum.Type_Id = parseInt(self.state.selectedTypeId),
+        datum.Iso_Id = parseInt(self.state.selectedIsoId),
+        datum.kernel_Id = parseInt(self.state.selectedLinuxId),
+        datum.Site_Id = parseInt(self.state.selectedSiteId),
+        datum.interfaces = self.state.interfaces,
+        datum.SN = self.state.selectedSerialNo
 
+      putRequest(UPDATE_NODES, datum).then(function (data) {
+        if (data.StatusCode == 200) {
+          let renderedData = self.state.nodes;
+          if (!renderedData) {
+            renderedData = []
+          }
+        }
+        else {
+          NotificationManager.error("Something went wrong", "node")
+        }
+        self.setState({ displayModel: false, visible: false })
+      })
+    })
   }
 
   toggleLoading = () => {
@@ -586,22 +472,10 @@ class NodeConfig extends Component {
     if (this.state.openDiscoverModal) {
       return (<DiscoverModal cancel={() => this.closeDiscoverModal()} node={this.state.nodes} actualNode={this.state.actualNode} action={(e) => { this.actualNode(e) }}></DiscoverModal>)
     }
-
   }
 
   closeDiscoverModal = (e) => {
     this.setState({ openDiscoverModal: false })
-  }
-
-
-  updateDiscoverNodeCallback(instance, data) {
-    let a = instance.state.data
-    if (!a) {
-      a = []
-    }
-    a.push(data)
-    instance.setState({ data: a })
-    instance.fetchActualNode(instance.state.hostname)
   }
 
   fetchActualNode(nodeName) {
@@ -617,17 +491,16 @@ class NodeConfig extends Component {
 
   actualNode = (params) => {
 
-    params.allInterfaces.map((parm) => {
+    params.interfaces.map((parm) => {
       parm.IPAddress = parm.ip
-      parm.connectedTo.serverName = parm.connectedTo.name
-      parm.connectedTo.serverPort = parm.connectedTo.port
+      // parm.connectedTo.serverName = parm.connectedTo.name
+      // parm.connectedTo.serverPort = parm.connectedTo.port
     })
     this.setState({
       selectedType: params.nodeType ? params.nodeType : '',
       selectedIso: params.linuxISO ? params.linuxISO : '',
       selectedLinux: params.kernel ? params.kernel : '',
-      interfaces: params.allInterfaces ? params.allInterfaces : [],
-      allInterfaces: params.allInterfaces ? params.allInterfaces : [],
+      interfaces: params.interfaces ? params.interfaces : [],
       selectedSerialNo: params.serialNumber ? params.serialNumber : '',
       openDiscoverModal: false
     })
@@ -641,8 +514,6 @@ class NodeConfig extends Component {
         datum.nodeType = params.nodeType ? params.nodeType : '',
         datum.linuxIso = params.linuxISO ? params.linuxISO : '',
         datum.kernel = params.kernel ? params.kernel : '',
-        datum.allInterfaces = params.allInterfaces ? params.allInterfaces : [],
-        datum.interfaces = params.allInterfaces ? params.allInterfaces : [],
         datum.serialNumber = params.serialNumber ? params.serialNumber : ''
       let a = {
         nodes: [datum]
@@ -760,7 +631,6 @@ class NodeConfig extends Component {
               <DropDown options={this.state.siteData} getSelectedData={this.getSelectedData} identity={"Site"} default={this.state.selectedSiteId} />
             </Col>
           </Row>
-          {/* {this.confDropdown()} */}
           <div style={{ padding: '10px' }}>
             {interfaceTableHeader}
             {interfaceTableContent}

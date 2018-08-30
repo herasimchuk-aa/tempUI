@@ -84,41 +84,44 @@ class NodeSummary extends React.Component {
     }
 
     convertData(nodes, types, kernels, isos, sites, roles) {
-        nodes.map((node) => {
-            types.map((item) => {
-                if (item.Id == node.Type_Id) {
-                    node.type = item.Name
-                }
-            })
-            kernels.map((item) => {
-                if (item.Id == node.Kernel_Id) {
-                    node.kernel = item.Name
-                }
-            })
-            isos.map((item) => {
-                if (item.Id == node.Iso_Id) {
-                    node.iso = item.Name
-                }
-            })
-            sites.map((item) => {
-                if (item.Id == node.Site_Id) {
-                    node.site = item.Name
-                }
-            })
-            let roleIds = node.roles
-            let roleDetails = []
+        if (nodes && nodes.length) {
+            nodes.map((node) => {
+                types.map((item) => {
+                    if (item.Id == node.Type_Id) {
+                        node.type = item.Name
+                    }
+                })
+                kernels.map((item) => {
+                    if (item.Id == node.Kernel_Id) {
+                        node.kernel = item.Name
+                    }
+                })
+                isos.map((item) => {
+                    if (item.Id == node.Iso_Id) {
+                        node.iso = item.Name
+                    }
+                })
+                sites.map((item) => {
+                    if (item.Id == node.Site_Id) {
+                        node.site = item.Name
+                    }
+                })
+                let roleIds = node.roles
+                let roleDetails = []
 
-            for (let roleId of roleIds) {
-                for (let role of roles) {
-                    if (role.Id == roleId) {
-                        roleDetails.push(role)
-                        break
+                for (let roleId of roleIds) {
+                    for (let role of roles) {
+                        if (role.Id == roleId) {
+                            roleDetails.push(role)
+                            break
+                        }
                     }
                 }
-            }
-            node.roleDetails = roleDetails
-        })
-        return nodes
+                node.roleDetails = roleDetails
+            })
+            return nodes
+        }
+        return []
     }
 
 

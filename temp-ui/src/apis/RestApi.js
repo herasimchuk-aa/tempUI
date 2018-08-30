@@ -29,3 +29,17 @@ export function postRequest(url, params) {
         .then(response => response.json()) // parses response to JSON
         .catch(error => console.error(`Fetch Error =\n`, error));
 }
+
+export function putRequest(url, params) {
+    let sourceURL = invaderServerAddress + url;
+    return fetch(sourceURL, {
+        method: "PUT",
+        headers: {
+            //"Content-Type": "application/json; charset=utf-8",
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: JSON.stringify(params), // body data type must match "Content-Type" header
+    })
+        .then(response => response.json()) // parses response to JSON
+        .catch(error => console.error(`Fetch Error =\n`, error));
+}
