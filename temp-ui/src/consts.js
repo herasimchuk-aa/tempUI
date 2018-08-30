@@ -2,7 +2,7 @@
 
 export let nodeHead = [
     {
-        id: 'name',
+        id: 'Name',
         displayName: 'Name',
         colSize: 1
     },
@@ -12,25 +12,25 @@ export let nodeHead = [
         colSize: 1
     },
     {
-        id: 'status',
+        id: 'Status',
         displayName: 'Status',
         operation: 'badge',
         colSize: 2
     },
     {
-        id: 'roles',
+        id: 'roleDetails',
         displayName: 'Roles',
         operation: 'array',
         colSize: 2
     },
     {
-        id: 'nodeType',
+        id: 'type',
         displayName: 'Type',
         operation: 'validateType',
         colSize: 1
     },
     {
-        id: 'serialNumber',
+        id: 'SN',
         displayName: 'Serial Number',
         operation: 'validateSN',
         colSize: 2
@@ -42,7 +42,7 @@ export let nodeHead = [
         colSize: 1
     },
     {
-        id: 'linuxISO',
+        id: 'iso',
         displayName: 'Base Linux ISO',
         operation: 'validateISO',
         colSize: 2

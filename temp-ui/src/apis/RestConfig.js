@@ -27,3 +27,17 @@ export const FETCH_ALL_SYSTEM_TYPES = "/type"
 export const ADD_SYSTEM_TYPE = "/type/add"
 export const UPDATE_SYSTEM_TYPE = "/type/update"
 export const DELETE_SYSTEM_TYPES = "/type/delete"
+
+
+// apis for node
+export const FETCH_ALL_NODES = "/node"
+export const ADD_NODE = "/node/add"
+export const UPDATE_NODES = "/node/update"
+export const DELETE_NODES = "/node/delete"
+
+
+// apis for interface
+export const FETCH_ALL_INTERFACES = "/interface"
+export const ADD_INTERFACES = "/interface/add"
+export const UPDATE_INTERFACES = "/interface/update"
+export const DELETE_INTERFACES = "/interface/delete"

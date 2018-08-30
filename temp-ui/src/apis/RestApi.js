@@ -10,7 +10,7 @@ export function getRequest(url) {
         }
     })
         .then(function (response) {
-            console.log(response)
+            // console.log(response)
             return response.json()
         })
         .catch(error => console.error(`Fetch Error =\n`, error));

@@ -36,7 +36,7 @@ export default class MultiselectDropDown extends Component {
         if (options && options.length) {
             options.map((item) => {
                 item.label = item.Name
-                item.value = item.Id
+                item.value = item.Name
             })
         }
         return (

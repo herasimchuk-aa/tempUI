@@ -69,10 +69,10 @@ class NodeConfig extends Component {
       typeData = json.Data
     })
 
-    // let roleData = []
-    // let rolePromise = getRequest(FETCH_ALL_ROLES).then(function (json) {
-    //     self.roleData = json.Data
-    // })
+    let roleData = []
+    let rolePromise = getRequest(FETCH_ALL_ROLES).then(function (json) {
+      roleData = json.Data
+    })
 
     let kernelData = []
     let kernelPromise = getRequest(FETCH_ALL_KERNELS).then(function (json) {
@@ -89,9 +89,54 @@ class NodeConfig extends Component {
       siteData = json.Data
     })
 
-    Promise.all([typePromise, kernelPromise, isoPromise, sitePromise]).then(function () {
-      self.setState({ typeData: typeData, kernelData: kernelData, isoData: isoData, siteData: siteData })
+    Promise.all([typePromise, rolePromise, kernelPromise, isoPromise, sitePromise]).then(function () {
+
+      node = self.convertData(self.state.nodes, typeData, kernelData, isoData, siteData, roleData)
+      self.setState({ nodes: node, constNodes: Object.assign([], nodes) })
+    }).then(function () {
+      self.setState({ typedata: typeData, roleData: roleData, kernelData: kernelData, isoData: isoData, siteData: siteData })
     })
+
+    Promise.all([typePromise, kernelPromise, isoPromise, sitePromise, rolePromise]).then(function () {
+      self.setState({ typeData: typeData, kernelData: kernelData, isoData: isoData, siteData: siteData, roleData: roleData })
+    })
+  }
+
+  convertData(node, types, kernels, isos, sites, roles) {
+
+    types.map((item) => {
+      if (item.Id == node.Type_Id) {
+        node.type = item.Name
+      }
+    })
+    kernels.map((item) => {
+      if (item.Id == node.Kernel_Id) {
+        node.kernel = item.Name
+      }
+    })
+    isos.map((item) => {
+      if (item.Id == node.Iso_Id) {
+        node.iso = item.Name
+      }
+    })
+    sites.map((item) => {
+      if (item.Id == node.Site_Id) {
+        node.site = item.Name
+      }
+    })
+    let roleIds = node.roles
+    let roleDetails = []
+
+    for (let roleId of roleIds) {
+      for (let role of roles) {
+        if (role.Id == roleId) {
+          roleDetails.push(role)
+          break
+        }
+      }
+    }
+    node.roleDetails = roleDetails
+    return node
   }
 
 
@@ -151,7 +196,7 @@ class NodeConfig extends Component {
     let roles = [];
     let { selectedRoles } = this.state
     if (selectedRoles && selectedRoles.length) {
-      selectedRoles.map((data) => (roles.push(data.label)))
+      selectedRoles.map((data) => (roles.push(data.Id)))
     }
     this.state.nodes[0].roles = roles
     let a = {
@@ -384,7 +429,7 @@ class NodeConfig extends Component {
       return;
     }
 
-    this.state.selectedRoles.map((data) => (roles.push(data.label)))
+    this.state.selectedRoles.map((data) => (roles.push(data.Id)))
     let data = this.state.nodes
     data.map((datum) => {
       datum.roles = roles,

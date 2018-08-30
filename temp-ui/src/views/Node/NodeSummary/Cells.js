@@ -111,10 +111,11 @@ class TextCellForArray extends React.PureComponent {
             let str = ''
             arr.map((val, index) => {
                 if (index == arr.length - 1) {
-                    str += val
+                    str += val.Name
                 }
                 else {
-                    str += val + ','
+                    str += val.Name + ','
+
                 }
             })
             value = str

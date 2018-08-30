@@ -125,7 +125,7 @@ class Site extends Component {
                 self.setState({ data: renderedData, displayModel: false, visible: false })
             }
             else {
-                NotificationManager.errror("Something went wrong", "Site")
+                NotificationManager.error("Something went wrong", "Site")
                 self.setState({ displayModel: false, visible: false })
 
             }

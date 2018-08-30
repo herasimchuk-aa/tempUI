@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Col, Row, Input, Card, CardHeader, CardBody, InputGroup, InputGroupAddon, Modal, ModalHeader, ModalBody, ModalFooter, Alert, Media } from 'reactstrap';
 import { ServerAPI } from '../../../ServerAPI';
-import { Redirect } from 'react-router-dom'
+import { Redirect } from 'react-router-dom';
 import { Button } from 'reactstrap';
 import SummaryDataTable from './SummaryDataTable';
 import DropDown from '../../../components/dropdown/DropDown';
@@ -11,7 +11,7 @@ import { NotificationManager } from 'react-notifications';
 import SearchComponent from '../../../components/SearchComponent/SearchComponent';
 import MultiselectDropDown from '../../../components/MultiselectDropdown/MultiselectDropDown';
 import { trimString, converter } from '../../../components/Utility/Utility';
-import { FETCH_ALL_SITES, FETCH_ALL_ROLES, FETCH_ALL_ISOS, FETCH_ALL_KERNELS, FETCH_ALL_SYSTEM_TYPES, FETCH_ALL_NODES, ADD_NODE } from '../../../apis/RestConfig';
+import { FETCH_ALL_SITES, FETCH_ALL_ROLES, FETCH_ALL_ISOS, FETCH_ALL_KERNELS, FETCH_ALL_SYSTEM_TYPES, FETCH_ALL_NODES, ADD_NODE, DELETE_NODES } from '../../../apis/RestConfig';
 import { getRequest, postRequest } from '../../../apis/RestApi';
 
 class NodeSummary extends React.Component {
@@ -105,7 +105,18 @@ class NodeSummary extends React.Component {
                     node.site = item.Name
                 }
             })
+            let roleIds = node.roles
+            let roleDetails = []
 
+            for (let roleId of roleIds) {
+                for (let role of roles) {
+                    if (role.Id == roleId) {
+                        roleDetails.push(role)
+                        break
+                    }
+                }
+            }
+            node.roleDetails = roleDetails
         })
         return nodes
     }
@@ -170,117 +181,25 @@ class NodeSummary extends React.Component {
     showDeleteButton() {
         let a = [];
         if (this.state.showDelete == true) {
-            a.push(<Button className="custBtn animated fadeIn" outline color="secondary" onClick={() => (this.deleteNode())}>Delete</Button>);
+            a.push(<Button className="custBtn animated fadeIn" outline color="secondary" onClick={() => (this.deleteNodes())}>Delete</Button>);
             return a;
         }
         else
             return null;
     }
 
-    deleteNode() {
-        for (let i = 0; i < this.state.selectedRowIndex.length; i++) {
-            ServerAPI.DefaultServer().deleteNode(this.callbackDelete, this, this.state.nodes[this.state.selectedRowIndex[i]].name);
-        }
-        this.setState({ showDelete: !this.state.showDelete });
+    deleteNodes() {
+        let self = this;
+        let deleteIds = [];
+        this.state.selectedRowIndex.map(function (item) {
+            deleteIds.push(self.state.nodes[item].Id)
+        })
+        postRequest(DELETE_NODES, deleteIds).then(function (data) {
+            console.log(data)
+            self.setState({ showDelete: false, selectedRowIndex: [] });
+            self.getAllData();
+        })
     }
-
-    callbackDelete = (instance) => {
-        ServerAPI.DefaultServer().fetchAllServerNodes(this.retrieveData, this);
-    }
-
-    // renderFilterComponent = () => {
-    //     let filters = []
-    //     let filterOptions = [
-    //         {
-    //             'id': 'status',
-    //             'displayName': 'Status',
-    //             'options': [
-    //                 {
-    //                     'id': 'active',
-    //                     'displayName': 'Active',
-    //                 },
-    //                 {
-    //                     'id': 'unprovisioned',
-    //                     'displayName': 'Unprovisioned',
-    //                 }
-    //             ]
-    //         }, {
-    //             'id': 'role',
-    //             'displayName': 'Role',
-    //             'options': [
-    //                 {
-    //                     'id': 'Leaf',
-    //                     'displayName': 'Leaf',
-    //                 },
-    //                 {
-    //                     'id': 'Spine',
-    //                     'displayName': 'Spine',
-    //                 },
-    //                 {
-    //                     'id': 'K8Worker',
-    //                     'displayName': 'K8Worker',
-    //                 },
-    //                 {
-    //                     'id': 'etcD',
-    //                     'displayName': 'etcD',
-    //                 },
-    //                 {
-    //                     'id': 'Cache',
-    //                     'displayName': 'Cache',
-    //                 }
-    //             ]
-    //         },
-    //         {
-    //             'id': 'type',
-    //             'displayName': 'Type',
-    //             'options': [
-    //                 {
-    //                     'id': 'PS-3001',
-    //                     'displayName': 'PS-3001',
-    //                 },
-    //                 {
-    //                     'id': 'SuperMicro-x',
-    //                     'displayName': 'SuperMicro-x',
-    //                 }
-    //             ]
-    //         },
-    //         {
-    //             'id': 'site',
-    //             'displayName': 'Site',
-    //             'options': [
-    //                 {
-    //                     'id': 'SJC0',
-    //                     'displayName': 'SJC0',
-    //                 }
-    //             ]
-    //         }
-    //     ]
-
-    //     filterOptions.map(function (filterOption) {
-    //         let options = filterOption.options
-    //         if (!options || !options.length)
-    //             return null
-    //         filters.push(<div>
-    //             <div className="head-name">{filterOption.displayName}</div>
-    //             <select multiple className="form-control">{options.map(function (option) {
-    //                 return <option value={option.id}>{option.displayName}</option>
-    //             })}</select>
-    //         </div>)
-    //     })
-
-    //     return (
-    //         <Card className="borRad">
-    //             <CardHeader>Filter</CardHeader>
-    //             <CardBody>
-    //                 {filters}
-    //                 <div style={{ paddingTop: '10px' }}>
-    //                     <Button className="custBtn" outline color="secondary">Apply</Button>
-    //                     <Button className="custBtn" outline color="secondary">Reset</Button>
-    //                 </div>
-    //             </CardBody>
-    //         </Card>
-    //     )
-    // }
 
     handleChanges = (selectedOption) => {
         console.log(selectedOption)
@@ -292,7 +211,6 @@ class NodeSummary extends React.Component {
     }
 
     addNodeModal() {
-        console.log(this.state.roleData)
         if (this.state.displayModel) {
             return (
                 <Modal isOpen={this.state.displayModel} toggle={() => this.toggleAddNodeModal()} size="lg" centered="true" >
@@ -344,28 +262,29 @@ class NodeSummary extends React.Component {
         let nodeName = document.getElementById('nodeName').value
         let name = trimString(nodeName)
         let self = this
-        // let validateUnique = true
-        // data.map((datum) => {
-        //     if (datum.name == name) {
-        //         validateUnique = false
-        //     }
-        // })
-        // if ((!name) || (!validateUnique)) {
-        //     if (!name) {
-        //         self.setState({ visible: true, errMsg: "Name field is mandatory" });
-        //     }
-        //     if (!validateUnique) {
-        //         self.setState({ visibleUnique: true, errMsg: "Name field is already exist, please enter unique name" });
-        //     }
+        let validateUnique = true
+        let nodesList = self.state.nodes
+        nodesList.map((datum) => {
+            if (datum.Name == name) {
+                validateUnique = false
+            }
+        })
+        if ((!name) || (!validateUnique)) {
+            if (!name) {
+                self.setState({ visible: true, errMsg: "Name field is mandatory" });
+            }
+            if (!validateUnique) {
+                self.setState({ visibleUnique: true, errMsg: "Name field is already exist, please enter unique name" });
+            }
 
-        //     return;
-        // }
-        // if (!this.state.selectedRoles.length) {
-        //     this.setState({ visible: true, errMsg: "Role is mandatory" })
-        //     return;
-        // }
+            return;
+        }
+        if (!this.state.selectedRoles.length) {
+            this.setState({ visible: true, errMsg: "Role is mandatory" })
+            return;
+        }
         let roles = [];
-        this.state.selectedRoles.map((data) => roles.push(data.value));
+        this.state.selectedRoles.map((data) => roles.push(data.Id));
         let params = {
             'Name': name,
             'Iso_Id': parseInt(self.state.selectedIsoId),
@@ -381,19 +300,10 @@ class NodeSummary extends React.Component {
                 if (!renderedData) {
                     renderedData = []
                 }
-                if (data.Data.roles.length) {
-                    data.Data.roles.map((role) => {
-                        self.state.roleData.find(function (element, index) {
-                            if (role == element.Id) {
-                                role.Name = element.Name
-                                return;
-                            }
-                        })
-                    })
-                }
-                console.log(data.Data.roles)
+
                 renderedData.push(data.Data)
-                self.setState({ data: renderedData, displayModel: false, visible: false })
+                let nodesData = self.convertData(renderedData, self.state.typedata, self.state.kernelData, self.state.isoData, self.state.siteData, self.state.roleData)
+                self.setState({ nodes: nodesData, displayModel: false, visible: false })
             }
             else {
                 NotificationManager.error("Something went wrong", "node")
@@ -411,36 +321,6 @@ class NodeSummary extends React.Component {
         this.setState({
             nodes: data
         })
-    }
-
-    downloadCSV() {
-        if (!this.state.nodes || !this.state.nodes.length) {
-            return;
-        }
-        let csvData = [];
-        this.state.nodes.map((item) => {
-            csvData.push({
-                'Name': item.Name,
-                'Site_Id': item.Site_Id,
-                'status': item.status,
-                'roles': item.roles,
-                'Type_Id': item.Type_Id,
-                'SN': item.SN,
-                'Kernel_Id': item.Kernel_Id,
-                'Iso_Id': item.Iso_Id,
-                'Interface': item.allInterfaces.map((intItem) => {
-                    csvData.push({
-                        'Interface Name': intItem.port,
-                        'IP': intItem.IPAddress,
-                        'Management Interface': intItem.isMngmntIntf
-                    })
-                }),
-                // 'Interface Name': item.allInterfaces.map((intItem) => { csvData.push(intItem.port) }),
-                // 'IP Address': item.allInterfaces.map((intItem) => { csvData.push(intItem.IPAddress) }),
-                // 'Management Interface': item.allInterfaces.map((intItem) => { csvData.push(intItem.isMngmntIntf) }),
-            })
-        })
-        return <CSVLink data={csvData} className="btn btn-primary">Download CSV</CSVLink>
     }
 
     render() {
@@ -471,7 +351,6 @@ class NodeSummary extends React.Component {
                         </div>
 
                     </Col>
-                    {/* {this.renderFilterComponent()} */}
                 </Row>
                 {this.addNodeModal()}
             </Container-fluid>
