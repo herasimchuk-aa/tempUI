@@ -56,7 +56,7 @@ export default {
         }
       ],
     },
-    /* {
+    /*{
       name: 'Connectivity',
       url: '/pcc/connectivity',
       icon: 'icon-pencil',
@@ -88,12 +88,12 @@ export default {
         //   icon: 'icon-graph',
         // },
       ]
-    },
+    },*/
     {
       name: 'Kubernetes',
       url: '/pcc/kubernetes',
       icon: 'icon-vector',
-    }, */
+    },
     // {
     //   title: true,
     //   name: 'Operations',

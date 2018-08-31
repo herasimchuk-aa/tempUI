@@ -3,6 +3,8 @@ import { Label, Row, Col, Button, Input, Media, Card, CardHeader, CardBody, Inpu
 import '../views.css';
 import { ServerAPI } from '../../ServerAPI';
 import ConfirmationModal from '../../components/ConfirmationModal/ConfirmationModal';
+import { getRequest } from '../../apis/RestApi';
+import { FETCH_ALL_KUBERNETES } from '../../apis/RestConfig';
 
 class Kubernetes extends Component {
 
@@ -16,7 +18,15 @@ class Kubernetes extends Component {
     }
 
     componentDidMount() {
-        ServerAPI.DefaultServer().fetchAllKubernetes(this.retrieveData, this);
+        // ServerAPI.DefaultServer().fetchAllKubernetes(this.retrieveData, this);
+        this.retrieveK8Data()
+    }
+
+    retrieveK8Data() {
+        let self = this
+        getRequest(FETCH_ALL_KUBERNETES).then(function (json) {
+            self.setState({ data: json.Data, selectedRowIndex: [] })
+        })
     }
 
     retrieveData(instance, data) {

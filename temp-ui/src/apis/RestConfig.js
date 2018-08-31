@@ -41,3 +41,6 @@ export const FETCH_ALL_INTERFACES = "/interface"
 export const ADD_INTERFACES = "/interface/add"
 export const UPDATE_INTERFACES = "/interface/update"
 export const DELETE_INTERFACES = "/interface/delete"
+
+// apis for k8s
+export const FETCH_ALL_KUBERNETES = "/kubernetes"
