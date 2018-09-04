@@ -194,7 +194,17 @@ class Roles extends Component {
             deleteIds.push(self.state.data[item].Id)
         })
         postRequest(DELETE_ROLES, deleteIds).then(function (data) {
-            console.log(data)
+            let failedIds = data.Data.Failure
+            if (failedIds && failedIds.length) {
+                failedIds.map((item) => {
+                    self.state.data.find((role) => {
+                        if (item == role.Id) {
+                            NotificationManager.error(role.Name + " is in use", "Role")
+                        }
+                    })
+
+                })
+            }
             self.setState({ showDelete: false, selectedRowIndexes: [] });
             self.retrieveRoleData();
         })

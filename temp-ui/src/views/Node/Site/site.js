@@ -70,7 +70,17 @@ class Site extends Component {
             deleteIds.push(self.state.data[item].Id)
         })
         postRequest(DELETE_SITES, deleteIds).then(function (data) {
-            console.log(data)
+            let failedIds = data.Data.Failure
+            if (failedIds && failedIds.length) {
+                failedIds.map((item) => {
+                    self.state.data.find((site) => {
+                        if (item == site.Id) {
+                            NotificationManager.error(site.Name + " is in use", "Site")
+                        }
+                    })
+
+                })
+            }
             self.setState({ showDelete: false, selectedRowIndexes: [] });
             self.retrieveSiteData();
         })

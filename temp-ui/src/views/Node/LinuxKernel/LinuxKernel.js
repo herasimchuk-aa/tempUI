@@ -78,7 +78,17 @@ class LinuxKernel extends Component {
             deleteIds.push(self.state.data[item].Id)
         })
         postRequest(DELETE_KERNELS, deleteIds).then(function (data) {
-            console.log(data)
+            let failedIds = data.Data.Failure
+            if (failedIds && failedIds.length) {
+                failedIds.map((item) => {
+                    self.state.data.find((kernel) => {
+                        if (item == kernel.Id) {
+                            NotificationManager.error(kernel.Name + " is in use", "Kernel")
+                        }
+                    })
+
+                })
+            }
             self.setState({ showDelete: false, selectedRowIndexes: [] });
             self.retrieveKernelData();
         })

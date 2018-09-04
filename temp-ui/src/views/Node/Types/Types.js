@@ -150,7 +150,17 @@ class Types extends Component {
             deleteIds.push(self.state.data[item].Id)
         })
         postRequest(DELETE_SYSTEM_TYPES, deleteIds).then(function (data) {
-            console.log(data)
+            let failedIds = data.Data.Failure
+            if (failedIds && failedIds.length) {
+                failedIds.map((item) => {
+                    self.state.data.find((type) => {
+                        if (item == type.Id) {
+                            NotificationManager.error(type.Name + " is in use", "System Type")
+                        }
+                    })
+
+                })
+            }
             self.setState({ showDelete: false, selectedRowIndexes: [] });
             self.retrieveTypeData();
         })

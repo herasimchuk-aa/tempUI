@@ -71,7 +71,17 @@ class BaseLinuxIso extends Component {
         })
         console.log(deleteIds)
         postRequest(DELETE_ISOS, deleteIds).then(function (data) {
-            console.log(data)
+            let failedIds = data.Data.Failure
+            if (failedIds && failedIds.length) {
+                failedIds.map((item) => {
+                    self.state.data.find((iso) => {
+                        if (item == iso.Id) {
+                            NotificationManager.error(iso.Name + " is in use", "Base ISO")
+                        }
+                    })
+
+                })
+            }
             self.setState({ showDelete: false, selectedRowIndexes: [] });
             self.retrieveIsoData();
         })

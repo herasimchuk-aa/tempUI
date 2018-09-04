@@ -88,14 +88,24 @@ class Kubernetes extends Component {
                     row1 = row1 + ' headerRow3 '
                 }
                 let key = data.name + '_' + index;
+                let rolesArr = [];
                 //<Col sm="1" className="pad"><Input className="marLeft40" id={key} type="checkbox" onClick={() => (this.checkBoxClick(key))} /></Col>
+                data.roles.map((role, j) => {
+                    if (j != data.roles.length - 1) {
+                        rolesArr.push(role.Name + ', ')
+                    }
+                    else {
+                        rolesArr.push(role.Name)
+                    }
+
+                })
                 table.push(
                     <Row className={row1}>
                         <Col sm="1" className="pad"><Input className="marLeft40" id={key} type="checkbox" onClick={() => (this.checkBoxClick(key))} /></Col>
                         <Col sm="2" className="pad">{data.Name}</Col>
                         <Col sm="2" className="pad">{data.K8Status}</Col>
-                        <Col sm="3" className="pad">{data.roles + ' '}</Col>
-                        <Col sm="2" className="pad">{data.type}</Col>
+                        <Col sm="3" className="pad">{rolesArr}</Col>
+                        <Col sm="2" className="pad">{data.type.Name}</Col>
                     </Row>
                 )
             })
