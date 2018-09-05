@@ -87,9 +87,9 @@ class DiscoverModal extends Component {
             let typeChecked = document.getElementById('type').checked
             if (!typeChecked) {
                 blankChkCount++
-                updatedNode.type = updatedNode.type
+                updatedNode.Type = updatedNode.Type
             } else {
-                updatedNode.type = actNode.type
+                updatedNode.Type = actNode.Type
             }
             let snChecked = document.getElementById('sn').checked
             if (!snChecked) {
@@ -97,21 +97,21 @@ class DiscoverModal extends Component {
                 updatedNode.SN = updatedNode.SN
             }
             else {
-                updatedNode.SN = actNode.SN
+                updatedNode.SN = actNode.SerialNumber
             }
             let kernelChecked = document.getElementById('kernel').checked
             if (!kernelChecked) {
                 blankChkCount++
-                updatedNode.kernel = updatedNode.kernel
+                updatedNode.Kernel = updatedNode.Kernel
             } else {
-                updatedNode.kernel = actNode.kernel
+                updatedNode.Kernel = actNode.Kernel
             }
             let isoChecked = document.getElementById('iso').checked
             if (!isoChecked) {
                 blankChkCount++
-                updatedNode.iso = updatedNode.iso
+                updatedNode.BaseISO = updatedNode.BaseISO
             } else {
-                updatedNode.iso = actNode.iso
+                updatedNode.BaseISO = actNode.BaseISO
             }
             let interfaceChecked = document.getElementById('interface').checked
             let updateInterfaces = updatedNode.interfaces
@@ -429,6 +429,7 @@ class DiscoverModal extends Component {
     }
 
     render() {
+        console.log(this.state.existingNode, this.state.actualNode)
         let blankChkCount = this.state.blankChkCount
         let err = null
         if (blankChkCount) {
@@ -459,29 +460,29 @@ class DiscoverModal extends Component {
                     <Row className="headerRow1 borderBottom">
                         <Col sm="1" className="head-check"><input className="form-check-input" onChange={(e) => { this.chk(e) }} type="checkbox" id="type" name="type" /></Col>
                         <Col sm="3" className="head-name-light">Type</Col>
-                        <Col sm="4" className="head-name-light">{existingNode.nodeType}</Col>
-                        <Col sm="4" className="head-name-light">{actualNode.type}</Col>
+                        <Col sm="4" className="head-name-light">{existingNode.Type}</Col>
+                        <Col sm="4" className="head-name-light">{actualNode.Type}</Col>
 
                     </Row>
                     <Row className="headerRow1 borderBottom" >
                         <Col sm="1" className="head-check"><input className="form-check-input" onChange={(e) => { this.chk(e) }} type="checkbox" id="sn" name="sn" /></Col>
                         <Col sm="3" className="head-name-light">Serial Number</Col>
-                        <Col sm="4" className="head-name-light">{existingNode.serialNumber}</Col>
-                        <Col sm="4" className="head-name-light">{actualNode.serialNumber}</Col>
+                        <Col sm="4" className="head-name-light">{existingNode.SN}</Col>
+                        <Col sm="4" className="head-name-light">{actualNode.SerialNumber}</Col>
 
                     </Row>
                     <Row className="headerRow1 borderBottom" >
                         <Col sm="1" className="head-check"><input className="form-check-input" onChange={(e) => { this.chk(e) }} type="checkbox" id="kernel" name="kernel" /></Col>
                         <Col sm="3" className="head-name-light">Linux kernel</Col>
-                        <Col sm="4" className="head-name-light">{existingNode.kernel}</Col>
-                        <Col sm="4" className="head-name-light">{actualNode.kernel}</Col>
+                        <Col sm="4" className="head-name-light">{existingNode.Kernel}</Col>
+                        <Col sm="4" className="head-name-light">{actualNode.Kernel}</Col>
 
                     </Row>
                     <Row className="headerRow1 borderBottom" >
                         <Col sm="1" className="head-check"><input className="form-check-input" onChange={(e) => { this.chk(e) }} type="checkbox" id="iso" name="iso" /></Col>
                         <Col sm="3" className="head-name-light">Base Linux Iso</Col>
-                        <Col sm="4" className="head-name-light">{existingNode.linuxISO}</Col>
-                        <Col sm="4" className="head-name-light">{actualNode.linuxISO}</Col>
+                        <Col sm="4" className="head-name-light">{existingNode.BaseISO}</Col>
+                        <Col sm="4" className="head-name-light">{actualNode.BaseISO}</Col>
                     </Row>
                     <Row className="headerRow1 headerRow3" style={{ marginBottom: '20px' }}>
 

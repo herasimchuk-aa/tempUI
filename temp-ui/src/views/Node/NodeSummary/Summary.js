@@ -88,17 +88,17 @@ class NodeSummary extends React.Component {
             nodes.map((node) => {
                 types.map((item) => {
                     if (item.Id == node.Type_Id) {
-                        node.type = item.Name
+                        node.Type = item.Name
                     }
                 })
                 kernels.map((item) => {
                     if (item.Id == node.Kernel_Id) {
-                        node.kernel = item.Name
+                        node.Kernel = item.Name
                     }
                 })
                 isos.map((item) => {
                     if (item.Id == node.Iso_Id) {
-                        node.iso = item.Name
+                        node.BaseISO = item.Name
                     }
                 })
                 sites.map((item) => {

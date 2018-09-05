@@ -44,3 +44,6 @@ export const DELETE_INTERFACES = "/interface/delete"
 
 // apis for k8s
 export const FETCH_ALL_KUBERNETES = "/kubernetes"
+
+//apis for discover
+export const DISCOVER = "/node/discover"

@@ -14,7 +14,7 @@ import MultiselectDropDown from '../../components/MultiselectDropdown/Multiselec
 import ConfirmationModal from '../../components/ConfirmationModal/ConfirmationModal';
 import DiscoverModal from '../../components/DiscoverModal/DiscoverModal';
 import { invaderServerAddress } from '../../config';
-import { FETCH_ALL_SITES, FETCH_ALL_ROLES, FETCH_ALL_ISOS, FETCH_ALL_KERNELS, FETCH_ALL_SYSTEM_TYPES, UPDATE_NODES } from '../../apis/RestConfig';
+import { FETCH_ALL_SITES, FETCH_ALL_ROLES, FETCH_ALL_ISOS, FETCH_ALL_KERNELS, FETCH_ALL_SYSTEM_TYPES, UPDATE_NODES, DISCOVER, ADD_KERNEL, ADD_SYSTEM_TYPE, ADD_ISO } from '../../apis/RestConfig';
 import { getRequest, postRequest, putRequest } from '../../apis/RestApi';
 
 class NodeConfig extends Component {
@@ -44,7 +44,7 @@ class NodeConfig extends Component {
       selectedIsoId: props.location.state.length == 1 ? props.location.state[0].Iso_Id : '',
       // selectedRolesId: props.location.state.length == 1 ? props.location.state[0].roles : '',
       selectedSiteId: props.location.state.length == 1 ? props.location.state[0].Site_Id : '',
-      hostname: props.location.state[0].Name,
+      nodeId: props.location.state[0].Id,
       displayProvisionModel: false,
       actualNode: {},
       wipeBtn: true,
@@ -158,7 +158,7 @@ class NodeConfig extends Component {
       datum.roles = roles,
         datum.Type_Id = parseInt(self.state.selectedTypeId),
         datum.Iso_Id = parseInt(self.state.selectedIsoId),
-        datum.kernel_Id = parseInt(self.state.selectedLinuxId),
+        datum.Kernel_Id = parseInt(self.state.selectedLinuxId),
         datum.Site_Id = parseInt(self.state.selectedSiteId),
         datum.interfaces = self.state.interfaces,
         datum.SN = self.state.selectedSerialNo
@@ -332,7 +332,7 @@ class NodeConfig extends Component {
       datum.roles = roles,
         datum.Type_Id = parseInt(self.state.selectedTypeId),
         datum.Iso_Id = parseInt(self.state.selectedIsoId),
-        datum.kernel_Id = parseInt(self.state.selectedLinuxId),
+        datum.Kernel_Id = parseInt(self.state.selectedLinuxId),
         datum.Site_Id = parseInt(self.state.selectedSiteId),
         datum.interfaces = self.state.interfaces,
         datum.SN = self.state.selectedSerialNo
@@ -439,13 +439,13 @@ class NodeConfig extends Component {
     self.toggleLoading()
     self.setState({ saveBtn: true })
     let roles = [];
-    self.state.selectedRoles.map((data) => (roles.push(data.Name)))
+    self.state.selectedRoles.map((data) => (roles.push(data.Id)))
     let data = self.state.nodes
     data.map((datum) => {
       datum.roles = roles,
         datum.Type_Id = parseInt(self.state.selectedTypeId),
         datum.Iso_Id = parseInt(self.state.selectedIsoId),
-        datum.kernel_Id = parseInt(self.state.selectedLinuxId),
+        datum.Kernel_Id = parseInt(self.state.selectedLinuxId),
         datum.Site_Id = parseInt(self.state.selectedSiteId),
         datum.interfaces = self.state.interfaces,
         datum.SN = self.state.selectedSerialNo
@@ -461,6 +461,7 @@ class NodeConfig extends Component {
           NotificationManager.error("Something went wrong", "node")
         }
         self.setState({ displayModel: false, visible: false })
+        self.fetchActualNode(self.state.nodeId)
       })
     })
   }
@@ -481,53 +482,172 @@ class NodeConfig extends Component {
     this.setState({ openDiscoverModal: false })
   }
 
-  fetchActualNode(nodeName) {
+  fetchActualNode(nodeId) {
     let self = this
-    fetch(invaderServerAddress + '/node/discover/')
-      .then(response => response.json())
-      .then((data) => {
+    let node = {}
+    node.Id = nodeId
+    postRequest(DISCOVER, node)
+      .then(function (data) {
         self.toggleLoading()
-        self.setState({ actualNode: data, openDiscoverModal: true })
+        self.setState({ actualNode: data.Data, openDiscoverModal: true })
 
       });
   }
 
   actualNode = (params) => {
+    let self = this
+    let kernelId = null
+    let typeId = null
+    let isoId = null
 
-    this.setState({
-      selectedTypeId: params.Type_Id,
-      selectedIsoId: params.Iso_Id,
-      selectedLinuxId: params.kernel_Id,
-      interfaces: params.interfaces ? params.interfaces : [],
-      selectedSerialNo: params.SN ? params.SN : '',
-      openDiscoverModal: false
-    })
+    let kernels = self.state.kernelData
+    let kernelExist = false
+    for (let kernel of kernels) {
+      if (kernel.Name == params.Kernel) {
+        kernelId = kernel.Id
+        kernelExist = true
+        break
+      }
+    }
 
-    let data = self.state.nodes
-    data.map((datum) => {
-      datum.roles = roles,
-        datum.Type_Id = parseInt(params.Type_Id),
-        datum.Iso_Id = parseInt(params.Iso_Id),
-        datum.kernel_Id = parseInt(self.state.selectedLinuxId),
-        datum.Site_Id = parseInt(self.state.selectedSiteId),
-        datum.interfaces = self.state.interfaces,
-        datum.SN = self.state.selectedSerialNo
-
-      putRequest(UPDATE_NODES, datum).then(function (data) {
+    let kernelPro
+    if (!kernelExist) {
+      let dataparams = {
+        'Name': params.Kernel
+      }
+      kernelPro = postRequest(ADD_KERNEL, dataparams).then(function (data) {
         if (data.StatusCode == 200) {
-          let renderedData = self.state.nodes;
+          let renderedData = self.state.kernelData;
           if (!renderedData) {
             renderedData = []
           }
+          kernelId = data.Data.Id
+          renderedData.push(data.Data)
+          self.setState({ kernelData: renderedData })
         }
         else {
-          NotificationManager.error("Something went wrong", "node")
+          NotificationManager.error("Something went wrong", "Kernel")
         }
-        self.setState({ displayModel: false, visible: false })
+      })
+    } else {
+      typePro = Promise.resolve(isoId)
+    }
+
+
+    let types = self.state.typeData
+    let typeExist = false
+    for (let type of types) {
+      if (type.Name == params.Type) {
+        typeId = type.Id
+        typeExist = true
+        break
+      }
+    }
+    let typePro
+    if (!typeExist) {
+      let dataparams = {
+        'Name': params.Type
+      }
+      typePro = postRequest(ADD_SYSTEM_TYPE, dataparams).then(function (data) {
+        if (data.StatusCode == 200) {
+          let renderedData = self.state.typeData;
+          if (!renderedData) {
+            renderedData = []
+          }
+          typeId = data.Data.Id
+          renderedData.push(data.Data)
+          self.setState({ typeData: renderedData })
+        }
+        else {
+          NotificationManager.error("Something went wrong", "type")
+        }
+      })
+    } else {
+      typePro = Promise.resolve(isoId)
+    }
+
+
+
+    let isos = self.state.isoData
+    let isoExist = false
+    for (let iso of isos) {
+      if (iso.Name == params.BaseISO) {
+        isoId = iso.Id
+        isoExist = true
+        break
+      }
+    }
+    let isoPro
+    if (!isoExist) {
+      let dataparams = {
+        'Name': params.BaseISO
+      }
+      isoPro = postRequest(ADD_ISO, dataparams).then(function (data) {
+        if (data.StatusCode == 200) {
+          let renderedData = self.state.isoData;
+          if (!renderedData) {
+            renderedData = []
+          }
+          isoId = data.Data.Id
+          renderedData.push(data.Data)
+          self.setState({ isoData: renderedData })
+        }
+        else {
+          NotificationManager.error("Something went wrong", "iso")
+        }
+      })
+    } else {
+      isoPro = Promise.resolve()
+    }
+
+    Promise.all([kernelPro, typePro, isoPro]).then(function () {
+      params.interfaces.map((item) => {
+        item.Node_Id = self.state.nodeId
+      })
+      self.setState({
+        selectedTypeId: typeId,
+        selectedIsoId: isoId,
+        selectedLinuxId: kernelId,
+        selectedSiteId: params.Site_Id,
+        interfaces: params.interfaces ? params.interfaces : [],
+        selectedSerialNo: params.SerialNumber ? params.SerialNumber : '',
+        openDiscoverModal: false
+      })
+
+    }).then(function () {
+      let data = self.state.nodes
+      let roles = [];
+      if (self.state.selectedRoles && self.state.selectedRoles.length) {
+        self.state.selectedRoles.map((data) => (roles.push(data.Id)))
+      }
+      data.map((datum) => {
+        datum.roles = roles,
+          datum.Type_Id = parseInt(typeId),
+          datum.Iso_Id = parseInt(isoId),
+          datum.Kernel_Id = parseInt(kernelId),
+          datum.Site_Id = parseInt(self.state.selectedSiteId),
+          datum.interfaces = params.interfaces,
+          datum.SN = params.SerialNumber
+
+        putRequest(UPDATE_NODES, datum).then(function (data) {
+          if (data.StatusCode == 200) {
+            let renderedData = self.state.nodes;
+            if (!renderedData) {
+              renderedData = []
+            }
+          }
+          else {
+            NotificationManager.error("Something went wrong", "node")
+          }
+          self.setState({ displayModel: false, visible: false })
+        })
       })
     })
 
+
   }
+
+
 
   cancelNodeConfig = () => {
     this.setState({ cancelNodeConfig: true })

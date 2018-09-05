@@ -24,7 +24,7 @@ export let nodeHead = [
         colSize: 2
     },
     {
-        id: 'type',
+        id: 'Type',
         displayName: 'Type',
         operation: 'validateType',
         colSize: 1
@@ -36,13 +36,13 @@ export let nodeHead = [
         colSize: 2
     },
     {
-        id: 'kernel',
+        id: 'Kernel',
         displayName: 'Linux Kernel',
         operation: 'validateKernel',
         colSize: 1
     },
     {
-        id: 'iso',
+        id: 'BaseISO',
         displayName: 'Base Linux ISO',
         operation: 'validateISO',
         colSize: 2
