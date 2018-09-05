@@ -4,7 +4,7 @@ import '../../views.css';
 import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import { siteHead } from '../../../consts';
-import { trimString } from '../../../components/Utility/Utility';
+import { trimString, getNameById } from '../../../components/Utility/Utility';
 import { getRequest, postRequest } from '../../../apis/RestApi';
 import { FETCH_ALL_SITES, ADD_SITE, DELETE_SITES } from '../../../apis/RestConfig';
 import { NotificationManager } from 'react-notifications';
@@ -70,17 +70,11 @@ class Site extends Component {
             deleteIds.push(self.state.data[item].Id)
         })
         postRequest(DELETE_SITES, deleteIds).then(function (data) {
-            let failedIds = data.Data.Failure
-            if (failedIds && failedIds.length) {
-                failedIds.map((item) => {
-                    self.state.data.find((site) => {
-                        if (item == site.Id) {
-                            NotificationManager.error(site.Name + " is in use", "Site")
-                        }
-                    })
-
-                })
-            }
+            let failedSites = []
+            failedSites = getNameById(data.Data.Failure, self.state.data);
+            failedSites.map((item) => {
+                NotificationManager.error(item + ' is in use', "Site")
+            })
             self.setState({ showDelete: false, selectedRowIndexes: [] });
             self.retrieveSiteData();
         })

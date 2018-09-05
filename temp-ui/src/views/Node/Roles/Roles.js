@@ -5,7 +5,7 @@ import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import { roleHead } from '../../../consts'
 import DropDown from '../../../components/dropdown/DropDown';
-import { trimString } from '../../../components/Utility/Utility';
+import { trimString, getNameById } from '../../../components/Utility/Utility';
 import { getRequest, postRequest } from '../../../apis/RestApi';
 import { FETCH_ALL_ROLES, ADD_ROLE, DELETE_ROLES } from '../../../apis/RestConfig';
 import { NotificationManager } from 'react-notifications';
@@ -194,17 +194,11 @@ class Roles extends Component {
             deleteIds.push(self.state.data[item].Id)
         })
         postRequest(DELETE_ROLES, deleteIds).then(function (data) {
-            let failedIds = data.Data.Failure
-            if (failedIds && failedIds.length) {
-                failedIds.map((item) => {
-                    self.state.data.find((role) => {
-                        if (item == role.Id) {
-                            NotificationManager.error(role.Name + " is in use", "Role")
-                        }
-                    })
-
-                })
-            }
+            let failedRoles = []
+            failedRoles = getNameById(data.Data.Failure, self.state.data);
+            failedRoles.map((item) => {
+                NotificationManager.error(item + ' is in use', "Role")
+            })
             self.setState({ showDelete: false, selectedRowIndexes: [] });
             self.retrieveRoleData();
         })

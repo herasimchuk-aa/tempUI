@@ -4,7 +4,7 @@ import '../../views.css';
 import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import { isoHead } from '../../../consts';
-import { trimString } from '../../../components/Utility/Utility';
+import { trimString, getNameById } from '../../../components/Utility/Utility';
 import { getRequest, postRequest } from '../../../apis/RestApi'
 import { FETCH_ALL_ISOS, ADD_ISO, DELETE_ISOS } from '../../../apis/RestConfig'
 import { NotificationManager } from 'react-notifications';
@@ -71,17 +71,11 @@ class BaseLinuxIso extends Component {
         })
         console.log(deleteIds)
         postRequest(DELETE_ISOS, deleteIds).then(function (data) {
-            let failedIds = data.Data.Failure
-            if (failedIds && failedIds.length) {
-                failedIds.map((item) => {
-                    self.state.data.find((iso) => {
-                        if (item == iso.Id) {
-                            NotificationManager.error(iso.Name + " is in use", "Base ISO")
-                        }
-                    })
-
-                })
-            }
+            let failedISOs = []
+            failedISOs = getNameById(data.Data.Failure, self.state.data);
+            failedISOs.map((item) => {
+                NotificationManager.error(item + ' is in use', "Base ISO")
+            })
             self.setState({ showDelete: false, selectedRowIndexes: [] });
             self.retrieveIsoData();
         })

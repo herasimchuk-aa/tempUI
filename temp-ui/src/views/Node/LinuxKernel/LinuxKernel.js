@@ -4,7 +4,7 @@ import '../../views.css';
 import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import { kernelHead } from '../../../consts';
-import { trimString } from '../../../components/Utility/Utility';
+import { trimString, getNameById } from '../../../components/Utility/Utility';
 import { getRequest, postRequest } from '../../../apis/RestApi'
 import { FETCH_ALL_KERNELS, ADD_KERNEL, DELETE_KERNELS } from '../../../apis/RestConfig'
 import { NotificationManager } from 'react-notifications';
@@ -78,17 +78,11 @@ class LinuxKernel extends Component {
             deleteIds.push(self.state.data[item].Id)
         })
         postRequest(DELETE_KERNELS, deleteIds).then(function (data) {
-            let failedIds = data.Data.Failure
-            if (failedIds && failedIds.length) {
-                failedIds.map((item) => {
-                    self.state.data.find((kernel) => {
-                        if (item == kernel.Id) {
-                            NotificationManager.error(kernel.Name + " is in use", "Kernel")
-                        }
-                    })
-
-                })
-            }
+            let failedKernels = []
+            failedKernels = getNameById(data.Data.Failure, self.state.data);
+            failedKernels.map((item) => {
+                NotificationManager.error(item + ' is in use', "Kernel")
+            })
             self.setState({ showDelete: false, selectedRowIndexes: [] });
             self.retrieveKernelData();
         })

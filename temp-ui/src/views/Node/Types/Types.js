@@ -4,7 +4,7 @@ import '../../views.css';
 import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import { typeHead } from '../../../consts';
-import { trimString } from '../../../components/Utility/Utility';
+import { trimString, getNameById } from '../../../components/Utility/Utility';
 import { getRequest, postRequest } from '../../../apis/RestApi';
 import { FETCH_ALL_SYSTEM_TYPES, ADD_SYSTEM_TYPE, DELETE_SYSTEM_TYPES } from '../../../apis/RestConfig';
 import { NotificationManager } from 'react-notifications';
@@ -150,17 +150,11 @@ class Types extends Component {
             deleteIds.push(self.state.data[item].Id)
         })
         postRequest(DELETE_SYSTEM_TYPES, deleteIds).then(function (data) {
-            let failedIds = data.Data.Failure
-            if (failedIds && failedIds.length) {
-                failedIds.map((item) => {
-                    self.state.data.find((type) => {
-                        if (item == type.Id) {
-                            NotificationManager.error(type.Name + " is in use", "System Type")
-                        }
-                    })
-
-                })
-            }
+            let failedTypes = []
+            failedTypes = getNameById(data.Data.Failure, self.state.data);
+            failedTypes.map((item) => {
+                NotificationManager.error(item + ' is in use', "Type")
+            })
             self.setState({ showDelete: false, selectedRowIndexes: [] });
             self.retrieveTypeData();
         })
