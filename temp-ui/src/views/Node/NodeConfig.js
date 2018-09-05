@@ -483,7 +483,7 @@ class NodeConfig extends Component {
 
   fetchActualNode(nodeName) {
     let self = this
-    fetch(invaderServerAddress + '/node/discover/' + nodeName)
+    fetch(invaderServerAddress + '/node/discover/')
       .then(response => response.json())
       .then((data) => {
         self.toggleLoading()

@@ -2,7 +2,10 @@ import React, { Component } from 'react';
 import { Table, Column, Cell } from 'fixed-data-table-2'
 import { TextCell, TextCellForArray, BadgeCell, ValidationCell, CollapseCell } from './Cells';
 import 'fixed-data-table-2/dist/fixed-data-table.css';
-import { Input, Popover, PopoverBody, Row, Col } from 'reactstrap';
+import {
+    Input, Popover, PopoverBody, Row, Col, ListGroup,
+    ListGroupItem
+} from 'reactstrap';
 import Dimensions from 'react-dimensions'
 import '../../views.css'
 
@@ -95,36 +98,74 @@ class SummaryDataTable extends Component {
         let { columnWidths, data } = this.state
 
         let expandedRow = data[rowIndex]
-        console.log(rowIndex)
-        let dataLen = 0
-        if (expandedRow && expandedRow.length) {
-            dataLen = expandedRow.length
-        }
+        // console.log(rowIndex)
+        // let dataLen = 0
+        // if (expandedRow && expandedRow.length) {
+        //     dataLen = expandedRow.length
+        // }
 
-        let tableHeight = rowHeight * (dataLen) + headerHeight + 2
-        let tableWidth = this.props.containerWidth
-        if (!heading || !heading.length)
-            return []
-        let columnsList = []
-        let self = this
+        // let tableHeight = rowHeight * (dataLen) + headerHeight + 2
+        // let tableWidth = this.props.containerWidth
+        // if (!heading || !heading.length)
+        //     return []
+        // let columnsList = []
+        // let self = this
 
-        heading.map(function (header) {
-            let headName = header.displayName
-            let id = header.id
-            let operation = header.operation;
-            let cellValue = self.getCellValue(operation, expandedRow)
-            columnsList.push(
-                <Column
+        // heading.map(function (header) {
+        //     let headName = header.displayName
+        //     let id = header.id
+        //     let operation = header.operation;
+        //     let cellValue = self.getCellValue(operation, expandedRow)
+        //     columnsList.push(
+        //         <Column
 
-                    columnKey={id}
-                    header={<Cell>{cellValue}</Cell>}
-                    cell={<Cell >check</Cell>}
+        //             columnKey={id}
+        //             header={<Cell>{cellValue}</Cell>}
+        //             cell={<Cell >check</Cell>}
 
-                    width={100}
-                />
+        //             width={100}
+        //         />
+        //     )
+        // })
+
+        let interfaceList = expandedRow.interfaces.map((interfaceItem) => {
+            return (
+                <ListGroup><ListGroupItem className="visibleOnHover">{interfaceItem.Name ? interfaceItem.Name : '-'}</ListGroupItem></ListGroup>
             )
         })
 
+        let ipList = expandedRow.interfaces.map((interfaceItem) => {
+            return (
+                <ListGroup><ListGroupItem className="visibleOnHover">{interfaceItem.Ip_address ? interfaceItem.Ip_address : '-'}</ListGroupItem></ListGroup>
+            )
+        })
+
+        let connectedToList = expandedRow.interfaces.map((interfaceItem) => {
+            return (
+                <ListGroup><ListGroupItem className="visibleOnHover">{interfaceItem.Remote_node_name && interfaceItem.Remote_interface ? interfaceItem.Remote_node_name + interfaceItem.Remote_interface : '-'}</ListGroupItem></ListGroup>
+            )
+        })
+
+        let Admin_stateList = expandedRow.interfaces.map((interfaceItem) => {
+            return (
+                <ListGroup><ListGroupItem className="visibleOnHover">{interfaceItem.Admin_state}</ListGroupItem></ListGroup>
+            )
+        })
+        let Link_statusList = expandedRow.interfaces.map((interfaceItem) => {
+            return (
+                <ListGroup><ListGroupItem className="visibleOnHover">{interfaceItem.Link_status}</ListGroupItem></ListGroup>
+            )
+        })
+        let Lldp_matchedList = expandedRow.interfaces.map((interfaceItem) => {
+            return (
+                <ListGroup><ListGroupItem className="visibleOnHover">{interfaceItem.Lldp_matched}</ListGroupItem></ListGroup>
+            )
+        })
+        let Interface_alarmList = expandedRow.interfaces.map((interfaceItem) => {
+            return (
+                <ListGroup><ListGroupItem className="visibleOnHover">{interfaceItem.Interface_alarm ? interfaceItem.Interface_alarm : '-'}</ListGroupItem></ListGroup>
+            )
+        })
 
         return (
             <div style={style}>
@@ -134,9 +175,10 @@ class SummaryDataTable extends Component {
                     overflow: 'hidden',
                     width: '100%',
                     height: '100%',
-                    marginLeft: '10px'
+                    marginLeft: '30px'
                 }}>
-                    <Table
+
+                    {/* <Table
                         className="tableOutlineNone"
                         rowHeight={rowHeight}
                         headerHeight={50}
@@ -146,9 +188,36 @@ class SummaryDataTable extends Component {
                         isColumnResizing={false}
                         {...props}>
                         {columnsList}
-                    </Table>
+                    </Table> */}
+                    <Row>
+                        <Col></Col>
+                        <Col></Col>
+                        <Col></Col>
+                        <Col></Col>
+                        <Col>
+                            {interfaceList}
+                        </Col>
+                        <Col>
+                            {ipList}
+                        </Col>
+                        <Col>
+                            {connectedToList}
+                        </Col>
+                        <Col>
+                            {Admin_stateList}
+                        </Col>
+                        <Col>
+                            {Link_statusList}
+                        </Col>
+                        <Col>
+                            {Lldp_matchedList}
+                        </Col>
+                        <Col>
+                            {Interface_alarmList}
+                        </Col>
+                    </Row>
                 </div>
-            </div>
+            </div >
 
         );
     }

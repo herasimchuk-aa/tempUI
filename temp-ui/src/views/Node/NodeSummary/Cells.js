@@ -115,11 +115,11 @@ class TextCellForArray extends React.PureComponent {
 
         let value = "-"
         let arr = []
-        console.log(this.props.rowData)
+
         if (this.props.rowData) {
 
             arr = this.props.rowData.interfaces
-            console.log(arr)
+
             if (arr && arr.length) {
                 let str = ''
                 arr.map((val, index) => {
