@@ -268,7 +268,7 @@ class NodeSummary extends React.Component {
         let validateUnique = true
         let nodesList = self.state.nodes
         nodesList.map((datum) => {
-            if (datum.Name == name) {
+            if (datum.Name === name) {
                 validateUnique = false
             }
         })

@@ -30,71 +30,55 @@ class DiscoverModal extends Component {
         let checkboxes = document.querySelectorAll('#form1 input[type="checkbox"]')
         let interfaceCheckboxes = document.querySelectorAll('#interfaceList input[type="checkbox"]')
         let actNode = node
-        actNode.nodeType = actNode.type
-        actNode.allInterfaces = actNode.interfaces
         let existingNode = this.state.existingNode[0]
         let updatedNode = existingNode
         let blankChkCount = 0
         if (allChecked) {
-            let interfaces = actNode.allInterfaces
-            let existingInterfaces = updatedNode.allInterfaces
+            let interfaces = actNode.interfaces
+            let existingInterfaces = updatedNode.interfaces
             if (interfaces && interfaces.length) {
                 interfaces = interfaces.map(function (item, index) {
-                    item.port = actNode.allInterfaces[index].port
-                    item.ip = actNode.allInterfaces[index].ip
-                    item.IPAddress = actNode.allInterfaces[index].ip
-                    item.admin = actNode.allInterfaces[index].admin
-                    item.connectedTo.name = actNode.allInterfaces[index].connectedTo.name
-                    item.connectedTo.port = actNode.allInterfaces[index].connectedTo.port
-                    item.connectedTo.serverName = actNode.allInterfaces[index].connectedTo.name
-                    item.connectedTo.serverPort = actNode.allInterfaces[index].connectedTo.port
-                    item.isMngmntIntf = actNode.allInterfaces[index].isMngmntIntf
+                    item.Name = actNode.interfaces[index].Name
+                    item.Ip_address = actNode.interfaces[index].Ip_address
+                    item.Admin_state = actNode.interfaces[index].Admin_state
+                    item.Remote_node_name = actNode.interfaces[index].Remote_node_name
+                    item.Remote_interface = actNode.interfaces[index].Remote_interface
+                    item.Is_management_interface = actNode.interfaces[index].Is_management_interface
                     return item
                 })
 
                 existingInterfaces.map((exItem) => {
-                    if (exItem.isMngmntIntf == true) {
+                    if (exItem.Is_management_interface == true) {
                         let mngmtInterface = {
-                            port: exItem.port,
-                            ip: exItem.ip,
-                            IPAddress: exItem.IPAddress,
-                            admin: exItem.admin,
-                            connectedTo: {
-                                name: exItem.connectedTo.name,
-                                port: exItem.connectedTo.port,
-                                serverName: exItem.connectedTo.serverName,
-                                serverPort: exItem.connectedTo.serverPort,
-                            },
-                            isMngmntIntf: exItem.isMngmntIntf
+                            Name: exItem.Name,
+                            Ip_address: exItem.Ip_address,
+                            Admin_state: exItem.Admin_state,
+                            Remote_node_name: exItem.Remote_node_name,
+                            Remote_interface: exItem.Remote_interface,
+                            Is_management_interface: exItem.Is_management_interface
                         }
-
                         interfaces.push(mngmtInterface)
                     }
                 })
 
-                actNode.allInterfaces = interfaces
+                actNode.interfaces = interfaces
             }
             else {
                 existingInterfaces.map((exItem) => {
-                    if (exItem.isMngmntIntf == true) {
+                    if (exItem.Is_management_interface == true) {
                         let mngmtInterface = {
-                            port: exItem.port,
-                            ip: exItem.ip,
-                            IPAddress: exItem.IPAddress,
-                            admin: exItem.admin,
-                            connectedTo: {
-                                name: exItem.connectedTo.name,
-                                port: exItem.connectedTo.port,
-                                serverName: exItem.connectedTo.serverName,
-                                serverPort: exItem.connectedTo.serverPort,
-                            },
-                            isMngmntIntf: exItem.isMngmntIntf
+                            Name: exItem.Name,
+                            Ip_address: exItem.Ip_address,
+                            Admin_state: exItem.Admin_state,
+                            Remote_node_name: exItem.Remote_node_name,
+                            Remote_interface: exItem.Remote_interface,
+                            Is_management_interface: exItem.Is_management_interface
                         }
 
                         interfaces.push(mngmtInterface)
                     }
                 })
-                actNode.allInterfaces = interfaces
+                actNode.interfaces = interfaces
             }
             this.props.action(actNode)
             this.setState({ isOpen: false })
@@ -103,17 +87,17 @@ class DiscoverModal extends Component {
             let typeChecked = document.getElementById('type').checked
             if (!typeChecked) {
                 blankChkCount++
-                updatedNode.nodeType = updatedNode.nodeType
+                updatedNode.type = updatedNode.type
             } else {
-                updatedNode.nodeType = actNode.nodeType
+                updatedNode.type = actNode.type
             }
             let snChecked = document.getElementById('sn').checked
             if (!snChecked) {
                 blankChkCount++
-                updatedNode.serialNumber = updatedNode.serialNumber
+                updatedNode.SN = updatedNode.SN
             }
             else {
-                updatedNode.serialNumber = actNode.serialNumber
+                updatedNode.SN = actNode.SN
             }
             let kernelChecked = document.getElementById('kernel').checked
             if (!kernelChecked) {
@@ -125,12 +109,12 @@ class DiscoverModal extends Component {
             let isoChecked = document.getElementById('iso').checked
             if (!isoChecked) {
                 blankChkCount++
-                updatedNode.linuxISO = updatedNode.linuxISO
+                updatedNode.iso = updatedNode.iso
             } else {
-                updatedNode.linuxISO = actNode.linuxISO
+                updatedNode.iso = actNode.iso
             }
             let interfaceChecked = document.getElementById('interface').checked
-            let updateInterfaces = updatedNode.allInterfaces
+            let updateInterfaces = updatedNode.interfaces
             if (!interfaceChecked) {
                 blankChkCount++
 
@@ -140,43 +124,29 @@ class DiscoverModal extends Component {
                     let chkInterface = document.getElementById(interfaceId).checked
                     if (chkInterface) {
                         let newInterfc = {}
-                        if (item.existingInterface.isMngmntIntf) {
-                            updateInterfaces[index].port = item.existingInterface.port ? item.existingInterface.port : '',
-                                updateInterfaces[index].ip = item.existingInterface.ip ? item.existingInterface.ip : '',
-                                updateInterfaces[index].IPAddress = item.existingInterface.ip ? item.existingInterface.ip : '',
-                                updateInterfaces[index].admin = item.existingInterface.admin ? item.existingInterface.admin : '',
-                                updateInterfaces[index].connectedTo = {}
-                            updateInterfaces[index].connectedTo = item.existingInterface.connectedTo ? item.existingInterface.connectedTo : {},
-                                updateInterfaces[index].connectedTo.name = item.existingInterface.connectedTo.name ? item.existingInterface.connectedTo.name : '',
-                                updateInterfaces[index].connectedTo.port = item.existingInterface.connectedTo.port ? item.existingInterface.connectedTo.port : '',
-                                updateInterfaces[index].connectedTo.serverName = item.existingInterface.connectedTo.serverName ? item.existingInterface.connectedTo.serverName : '',
-                                updateInterfaces[index].connectedTo.serverPort = item.existingInterface.connectedTo.serverPort ? item.existingInterface.connectedTo.serverPort : '',
-                                updateInterfaces[index].isMngmntIntf = item.existingInterface.isMngmntIntf
+                        if (item.existingInterface.Is_management_interface) {
+                            updateInterfaces[index].Name = item.existingInterface.Name ? item.existingInterface.Name : '',
+                                updateInterfaces[index].Ip_address = item.existingInterface.Ip_address ? item.existingInterface.Ip_address : '',
+                                updateInterfaces[index].Admin_state = item.existingInterface.Admin_state ? item.existingInterface.Admin_state : '',
+                                updateInterfaces[index].Remote_node_name = item.existingInterface.Remote_node_name ? item.existingInterface.Remote_node_name : '',
+                                updateInterfaces[index].Remote_interface = item.existingInterface.Remote_interface ? item.existingInterface.Remote_interface : '',
+                                updateInterfaces[index].Is_management_interface = item.existingInterface.Is_management_interface
 
                         } else {
-                            item.existingInterface.port = item.actualInterface.port ? item.actualInterface.port : '',
-                                item.existingInterface.ip = item.actualInterface.ip ? item.actualInterface.ip : '',
-                                item.existingInterface.IPAddress = item.actualInterface.ip ? item.actualInterface.ip : '',
-                                item.existingInterface.admin = item.actualInterface.admin ? item.actualInterface.admin : '',
-                                item.existingInterface.connectedTo = item.actualInterface.connectedTo ? item.actualInterface.connectedTo : {},
-                                item.existingInterface.connectedTo.name = item.actualInterface.connectedTo.name ? item.actualInterface.connectedTo.name : '',
-                                item.existingInterface.connectedTo.port = item.actualInterface.connectedTo.port ? item.actualInterface.connectedTo.port : '',
-                                item.existingInterface.connectedTo.serverName = item.actualInterface.connectedTo.serverName ? item.actualInterface.connectedTo.serverName : '',
-                                item.existingInterface.connectedTo.serverPort = item.actualInterface.connectedTo.serverPort ? item.actualInterface.connectedTo.serverPort : '',
-                                item.existingInterface.isMngmntIntf = item.actualInterface.isMngmntIntf
+                            item.existingInterface.Name = item.actualInterface.Name ? item.actualInterface.Name : '',
+                                item.existingInterface.Ip_address = item.actualInterface.Ip_address ? item.actualInterface.Ip_address : '',
+                                item.existingInterface.Admin_state = item.actualInterface.Admin_state ? item.actualInterface.Admin_state : '',
+                                item.existingInterface.Remote_node_name = item.actualInterface.Remote_node_name ? item.actualInterface.Remote_node_name : '',
+                                item.existingInterface.Remote_interface = item.actualInterface.Remote_interface ? item.actualInterface.Remote_interface : '',
+                                item.existingInterface.Is_management_interface = item.actualInterface.Is_management_interface
 
 
-                            newInterfc.port = item.actualInterface.ip ? item.actualInterface.port : '',
-                                newInterfc.ip = item.actualInterface.ip ? item.actualInterface.ip : '',
-                                newInterfc.IPAddress = item.actualInterface.ip ? item.actualInterface.ip : '',
-                                newInterfc.admin = item.actualInterface.admin ? item.actualInterface.admin : '',
-                                newInterfc.connectedTo = {}
-                            newInterfc.connectedTo = item.actualInterface.connectedTo ? item.actualInterface.connectedTo : {},
-                                newInterfc.connectedTo.name = item.actualInterface.connectedTo.name ? item.actualInterface.connectedTo.name : '',
-                                newInterfc.connectedTo.port = item.actualInterface.connectedTo.port ? item.actualInterface.connectedTo.port : '',
-                                newInterfc.connectedTo.serverName = item.actualInterface.connectedTo.serverName ? item.actualInterface.connectedTo.serverName : '',
-                                newInterfc.connectedTo.serverPort = item.actualInterface.connectedTo.serverPort ? item.actualInterface.connectedTo.serverPort : '',
-                                newInterfc.isMngmntIntf = item.actualInterface.isMngmntIntf
+                            newInterfc.Name = item.actualInterface.Name ? item.actualInterface.Name : '',
+                                newInterfc.Ip_address = item.actualInterface.Ip_address ? item.actualInterface.Ip_address : '',
+                                newInterfc.Admin_state = item.actualInterface.Admin_state ? item.actualInterface.Admin_state : '',
+                                newInterfc.Remote_node_name = item.actualInterface.Remote_node_name ? item.actualInterface.Remote_node_name : '',
+                                newInterfc.Remote_interface = item.actualInterface.Remote_interface ? item.actualInterface.Remote_interface : '',
+                                newInterfc.Is_management_interface = item.actualInterface.Is_management_interface
 
                             updateInterfaces.push(newInterfc)
                         }
@@ -188,30 +158,25 @@ class DiscoverModal extends Component {
 
 
 
-                blankInterfaceChkCount == interfaceCheckboxes.length ? ((updatedNode.allInterfaces = updatedNode.allInterfaces) && (updatedNode.interfaces = updatedNode.allInterfaces)) : ((updatedNode.allInterfaces = updateInterfaces) && (updatedNode.interfaces = updateInterfaces))
+                blankInterfaceChkCount == interfaceCheckboxes.length ? ((updatedNode.interfaces = updatedNode.interfaces) && (updatedNode.interfaces = updatedNode.interfaces)) : ((updatedNode.interfaces = updateInterfaces) && (updatedNode.interfaces = updateInterfaces))
 
             } else {
 
-                updatedNode.allInterfaces.map((mngt, mnindex) => {
+                updatedNode.interfaces.map((mngt, mnindex) => {
 
-                    if (mngt.isMngmntIntf) {
+                    if (mngt.Is_management_interface) {
                         let mngmtInterface = {}
-                        mngmtInterface.port = mngt.port ? mngt.port : '',
-                            mngmtInterface.ip = mngt.ip ? mngt.ip : '',
-                            mngmtInterface.IPAddress = mngt.ip ? mngt.ip : '',
-                            mngmtInterface.admin = mngt.admin ? mngt.admin : '',
-                            mngmtInterface.connectedTo = {}
-                        mngmtInterface.connectedTo = mngt.connectedTo ? mngt.connectedTo : {},
-                            mngmtInterface.connectedTo.name = mngt.connectedTo.name ? mngt.connectedTo.name : '',
-                            mngmtInterface.connectedTo.port = mngt.connectedTo.port ? mngt.connectedTo.port : '',
-                            mngmtInterface.connectedTo.serverName = mngt.connectedTo.serverName ? mngt.connectedTo.serverName : '',
-                            mngmtInterface.connectedTo.serverPort = mngt.connectedTo.serverPort ? mngt.connectedTo.serverPort : '',
-                            mngmtInterface.isMngmntIntf = mngt.isMngmntIntf
-                        actNode.allInterfaces.push(mngmtInterface)
+                        mngmtInterface.Name = mngt.Name ? mngt.Name : '',
+                            mngmtInterface.Ip_address = mngt.Ip_address ? mngt.Ip_address : '',
+                            mngmtInterface.Admin_state = mngt.Admin_state ? mngt.Admin_state : '',
+                            mngmtInterface.Remote_node_name = mngt.Remote_node_name ? mngt.Remote_node_name : '',
+                            mngmtInterface.Remote_interface = mngt.Remote_interface ? mngt.Remote_interface : '',
+                            mngmtInterface.Is_management_interface = mngt.Is_management_interface
+                        actNode.interfaces.push(mngmtInterface)
                     }
                 })
 
-                updatedNode.allInterfaces = actNode.allInterfaces
+                updatedNode.interfaces = actNode.interfaces
             }
 
 
@@ -304,14 +269,14 @@ class DiscoverModal extends Component {
     interfaceList = () => {
         let tempCommonExistInterface = []
         let tempCommonActInterface = []
-        let existingInterfaces = this.state.existingNode[0].allInterfaces
+        let existingInterfaces = this.state.existingNode[0].interfaces
         let actualInterfaces = this.state.actualNode.interfaces
 
         //to get common interfaces from existing and actual interfaces
         existingInterfaces.map((exitem, index) => {
             if (actualInterfaces && actualInterfaces.length) {
                 actualInterfaces.map((acItem, acindex) => {
-                    if (exitem.port == acItem.port) {
+                    if (exitem.Name == acItem.Name) {
                         tempCommonExistInterface.push(exitem)
                         tempCommonActInterface.push(acItem)
                     }
@@ -323,20 +288,20 @@ class DiscoverModal extends Component {
         let stringTemp = []
 
         tempCommonExistInterface.map((temp) => {
-            stringTemp.push(temp.port)
+            stringTemp.push(temp.Name)
         })
 
         let stringExist = []
 
         existingInterfaces.map((exist) => {
-            stringExist.push(exist.port)
+            stringExist.push(exist.Name)
         })
 
         let stringAct = []
 
         if (actualInterfaces && actualInterfaces.length) {
             actualInterfaces.map((act) => {
-                stringAct.push(act.port)
+                stringAct.push(act.Name)
             })
         }
         let unCommonExisting = []
@@ -348,17 +313,13 @@ class DiscoverModal extends Component {
             let unCommonExistingInterface = {}
             existingInterfaces.map((exist) => {
 
-                if (exist.port == i) {
-                    unCommonExistingInterface.port = exist.port ? exist.port : ''
-                    unCommonExistingInterface.ip = exist.ip ? exist.ip : ''
-                    unCommonExistingInterface.IPAddress = exist.ip ? exist.ip : ''
-                    unCommonExistingInterface.admin = exist.admin ? exist.admin : ''
-                    unCommonExistingInterface.connectedTo = {}
-                    unCommonExistingInterface.connectedTo.name = exist.connectedTo.name ? exist.connectedTo.name : ''
-                    unCommonExistingInterface.connectedTo.port = exist.connectedTo.port ? exist.connectedTo.port : ''
-                    unCommonExistingInterface.connectedTo.serverName = exist.connectedTo.name ? exist.connectedTo.name : ''
-                    unCommonExistingInterface.connectedTo.serverPort = exist.connectedTo.port ? exist.connectedTo.port : ''
-                    unCommonExistingInterface.isMngmntIntf = exist.isMngmntIntf
+                if (exist.Name == i) {
+                    unCommonExistingInterface.Name = exist.Name ? exist.Name : ''
+                    unCommonExistingInterface.Ip_address = exist.Ip_address ? exist.Ip_address : ''
+                    unCommonExistingInterface.Admin_state = exist.Admin_state ? exist.Admin_state : ''
+                    unCommonExistingInterface.Remote_node_name = exist.Remote_node_name ? exist.Remote_node_name : ''
+                    unCommonExistingInterface.Remote_interface = exist.Remote_interface ? exist.Remote_interface : ''
+                    unCommonExistingInterface.Is_management_interface = exist.Is_management_interface
                 }
             })
             unCommonExistingInterfaces.push(unCommonExistingInterface)
@@ -374,17 +335,13 @@ class DiscoverModal extends Component {
             let unCommonActualInterface = {}
             if (actualInterfaces && actualInterfaces.length) {
                 actualInterfaces.map((act) => {
-                    if (act.port == i) {
-                        unCommonActualInterface.port = act.port ? act.port : ''
-                        unCommonActualInterface.ip = act.ip ? act.ip : ''
-                        unCommonActualInterface.IPAddress = act.ip ? act.ip : ''
-                        unCommonActualInterface.admin = act.admin ? act.admin : ''
-                        unCommonActualInterface.connectedTo = {}
-                        unCommonActualInterface.connectedTo.name = act.connectedTo.name ? act.connectedTo.name : ''
-                        unCommonActualInterface.connectedTo.port = act.connectedTo.port ? act.connectedTo.port : ''
-                        unCommonActualInterface.connectedTo.serverName = act.connectedTo.name ? act.connectedTo.name : ''
-                        unCommonActualInterface.connectedTo.serverPort = act.connectedTo.port ? act.connectedTo.port : ''
-                        unCommonActualInterface.isMngmntIntf = act.isMngmntIntf
+                    if (act.Name == i) {
+                        unCommonActualInterface.Name = act.Name ? act.Name : ''
+                        unCommonActualInterface.Ip_address = act.Ip_address ? act.Ip_address : ''
+                        unCommonActualInterface.Admin_state = act.Admin_state ? act.Admin_state : ''
+                        unCommonActualInterface.Remote_node_name = act.Remote_node_name ? act.Remote_node_name : ''
+                        unCommonActualInterface.Remote_interface = act.Remote_interface ? act.Remote_interface : ''
+                        unCommonActualInterface.Is_management_interface = act.Is_management_interface
                     }
                 })
             }
@@ -422,28 +379,20 @@ class DiscoverModal extends Component {
             interfaceRow.name = <input className="form-check-input" type="checkbox" id={"chk" + i} onChange={(e) => { this.chkInt(e) }}></input>
 
             interfaceRow.existingInterface = {}
-            interfaceRow.existingInterface.port = finalExistingList[i] ? (finalExistingList[i].port ? finalExistingList[i].port : '') : ''
-            interfaceRow.existingInterface.ip = finalExistingList[i] ? (finalExistingList[i].ip ? finalExistingList[i].ip : '') : ''
-            interfaceRow.existingInterface.IPAddress = finalExistingList[i] ? (finalExistingList[i].IPAddress ? finalExistingList[i].IPAddress : '') : ''
-            interfaceRow.existingInterface.admin = finalExistingList[i] ? (finalExistingList[i].admin ? finalExistingList[i].admin : '') : ''
-            interfaceRow.existingInterface.connectedTo = {}
-            interfaceRow.existingInterface.connectedTo.name = finalExistingList[i] ? (finalExistingList[i].connectedTo.name ? finalExistingList[i].connectedTo.name : '') : ''
-            interfaceRow.existingInterface.connectedTo.port = finalExistingList[i] ? (finalExistingList[i].connectedTo.port ? finalExistingList[i].connectedTo.port : '') : ''
-            interfaceRow.existingInterface.connectedTo.serverName = finalExistingList[i] ? (finalExistingList[i].connectedTo.serverName ? finalExistingList[i].connectedTo.serverName : '') : ''
-            interfaceRow.existingInterface.connectedTo.serverPort = finalExistingList[i] ? (finalExistingList[i].connectedTo.serverPort ? finalExistingList[i].connectedTo.serverPort : '') : ''
-            interfaceRow.existingInterface.isMngmntIntf = finalExistingList[i] ? (finalExistingList[i].isMngmntIntf ? finalExistingList[i].isMngmntIntf : false) : false
+            interfaceRow.existingInterface.Name = finalExistingList[i] ? (finalExistingList[i].Name ? finalExistingList[i].Name : '') : ''
+            interfaceRow.existingInterface.Ip_address = finalExistingList[i] ? (finalExistingList[i].Ip_address ? finalExistingList[i].Ip_address : '') : ''
+            interfaceRow.existingInterface.Admin_state = finalExistingList[i] ? (finalExistingList[i].Admin_state ? finalExistingList[i].Admin_state : '') : ''
+            interfaceRow.existingInterface.Remote_node_name = finalExistingList[i] ? (finalExistingList[i].Remote_node_name ? finalExistingList[i].Remote_node_name : '') : ''
+            interfaceRow.existingInterface.Remote_interface = finalExistingList[i] ? (finalExistingList[i].Remote_interface ? finalExistingList[i].Remote_interface : '') : ''
+            interfaceRow.existingInterface.Is_management_interface = finalExistingList[i] ? (finalExistingList[i].Is_management_interface ? finalExistingList[i].Is_management_interface : false) : false
 
             interfaceRow.actualInterface = {}
-            interfaceRow.actualInterface.port = finalActualList[i] ? (finalActualList[i].port ? finalActualList[i].port : '') : ''
-            interfaceRow.actualInterface.ip = finalActualList[i] ? (finalActualList[i].ip ? finalActualList[i].ip : '') : ''
-            interfaceRow.actualInterface.IPAddress = finalActualList[i] ? (finalActualList[i].IPAddress ? finalActualList[i].IPAddress : '') : ''
-            interfaceRow.actualInterface.admin = finalActualList[i] ? (finalActualList[i].admin ? finalActualList[i].admin : '') : ''
-            interfaceRow.actualInterface.connectedTo = {}
-            interfaceRow.actualInterface.connectedTo.name = finalActualList[i] ? (finalActualList[i].connectedTo.name ? finalActualList[i].connectedTo.name : '') : ''
-            interfaceRow.actualInterface.connectedTo.port = finalActualList[i] ? (finalActualList[i].connectedTo.port ? finalActualList[i].connectedTo.port : '') : ''
-            interfaceRow.actualInterface.connectedTo.serverName = finalActualList[i] ? (finalActualList[i].connectedTo.serverName ? finalActualList[i].connectedTo.serverName : '') : ''
-            interfaceRow.actualInterface.connectedTo.serverPort = finalActualList[i] ? (finalActualList[i].connectedTo.serverPort ? finalActualList[i].connectedTo.serverPort : '') : ''
-            interfaceRow.actualInterface.isMngmntIntf = finalActualList[i] ? (finalActualList[i].isMngmntIntf ? finalActualList[i].isMngmntIntf : false) : false
+            interfaceRow.actualInterface.Name = finalActualList[i] ? (finalActualList[i].Name ? finalActualList[i].Name : '') : ''
+            interfaceRow.actualInterface.Ip_address = finalActualList[i] ? (finalActualList[i].Ip_address ? finalActualList[i].Ip_address : '') : ''
+            interfaceRow.actualInterface.Admin_state = finalActualList[i] ? (finalActualList[i].Admin_state ? finalActualList[i].Admin_state : '') : ''
+            interfaceRow.actualInterface.Remote_node_name = finalActualList[i] ? (finalActualList[i].Remote_node_name ? finalActualList[i].Remote_node_name : '') : ''
+            interfaceRow.actualInterface.Remote_interface = finalActualList[i] ? (finalActualList[i].Remote_interface ? finalActualList[i].Remote_interface : '') : ''
+            interfaceRow.actualInterface.Is_management_interface = finalActualList[i] ? (finalActualList[i].Is_management_interface ? finalActualList[i].Is_management_interface : false) : false
 
             interfaceTable.push(interfaceRow)
         }
@@ -466,11 +415,11 @@ class DiscoverModal extends Component {
                 }
                 row = (<Row className={headerClass}>
                     <Col sm="2" className='pad'>{item.name ? item.name : '-'}</Col>
-                    <Col sm="5" className='pad'>{item.existingInterface.port} < br />
-                        <small>{item.existingInterface.IPAddress ? item.existingInterface.IPAddress : ''}</small>
+                    <Col sm="5" className='pad'>{item.existingInterface.Name} < br />
+                        <small>{item.existingInterface.Ip_address ? item.existingInterface.Ip_address : ''}</small>
                     </Col>
-                    <Col sm="5" className='pad'>{item.actualInterface.port} < br />
-                        <small>{item.actualInterface.ip ? item.actualInterface.ip : ''}</small>
+                    <Col sm="5" className='pad'>{item.actualInterface.Name} < br />
+                        <small>{item.actualInterface.Ip_address ? item.actualInterface.Ip_address : ''}</small>
                     </Col>
                 </Row>)
                 rows.push(row)
@@ -487,7 +436,7 @@ class DiscoverModal extends Component {
         }
         let existingNode = this.state.existingNode[0]
         let actualNode = this.state.actualNode
-        let existingInterfaces = existingNode.allInterfaces
+        let existingInterfaces = existingNode.interfaces
         let actualInterfaces = []
         if (actualNode.interfaces) {
             actualInterfaces = actualNode.interfaces

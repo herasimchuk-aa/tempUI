@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Table, Column, Cell } from 'fixed-data-table-2'
-import { TextCell, TextCellForArray, BadgeCell, ValidationCell } from './Cells';
+import { TextCell, TextCellForArray, BadgeCell, ValidationCell, CollapseCell } from './Cells';
 import 'fixed-data-table-2/dist/fixed-data-table.css';
-import { Input, Popover, PopoverBody } from 'reactstrap';
+import { Input, Popover, PopoverBody, Row, Col } from 'reactstrap';
 import Dimensions from 'react-dimensions'
 import '../../views.css'
 
@@ -12,6 +12,9 @@ const containerHeight = window.innerHeight - 300;
 const rowHeight = 50
 const headerHeight = 50
 const POPOVER_PLACEMENT = "top"
+
+
+
 class SummaryDataTable extends Component {
 
     constructor(props) {
@@ -22,10 +25,14 @@ class SummaryDataTable extends Component {
             selectedRowIndexes: [],
             selectEntireRow: false,
             popoverOpen: false,
-            columnWidths: {}
+            columnWidths: {},
+            scrollToRow: null,
+            collapsedRows: new Set(),
+            showCollapse: false
         };
         this.counter = 0;
         this.constHeading = JSON.parse(JSON.stringify(props.heading))
+
     }
 
     static defaultProps = {
@@ -39,6 +46,7 @@ class SummaryDataTable extends Component {
             selectedRowIndexes: props.selectedRowIndexes,
             selectEntireRow: props.selectEntireRow,
             // showEditButton: props.showEditButton
+            showCollapse: props.showCollapse
         }
     }
 
@@ -53,8 +61,100 @@ class SummaryDataTable extends Component {
         );
     }
 
+    _handleCollapseClick = (rowIndex) => {
+        const { collapsedRows } = this.state;
+        const shallowCopyOfCollapsedRows = new Set([...collapsedRows]);
+        let scrollToRow = rowIndex;
+        if (shallowCopyOfCollapsedRows.has(rowIndex)) {
+            shallowCopyOfCollapsedRows.delete(rowIndex);
+            scrollToRow = null
+        } else {
+            shallowCopyOfCollapsedRows.add(rowIndex);
+        }
+
+        this.setState({
+            scrollToRow: scrollToRow,
+            collapsedRows: shallowCopyOfCollapsedRows
+        });
+    }
+
+    _subRowHeightGetter = (index) => {
+
+        return this.state.collapsedRows.has(index) ? 100 : 0;
+    }
+
+    _rowExpandedGetter = ({ rowIndex, width, height, props = this.props }) => {
+        if (!this.state.collapsedRows.has(rowIndex)) {
+            return null;
+        }
+        const style = {
+            height: height,
+            width: width - 2,
+        };
+        let { heading } = this.props
+        let { columnWidths, data } = this.state
+
+        let expandedRow = data[rowIndex]
+        console.log(rowIndex)
+        let dataLen = 0
+        if (expandedRow && expandedRow.length) {
+            dataLen = expandedRow.length
+        }
+
+        let tableHeight = rowHeight * (dataLen) + headerHeight + 2
+        let tableWidth = this.props.containerWidth
+        if (!heading || !heading.length)
+            return []
+        let columnsList = []
+        let self = this
+
+        heading.map(function (header) {
+            let headName = header.displayName
+            let id = header.id
+            let operation = header.operation;
+            let cellValue = self.getCellValue(operation, expandedRow)
+            columnsList.push(
+                <Column
+
+                    columnKey={id}
+                    header={<Cell>{cellValue}</Cell>}
+                    cell={<Cell >check</Cell>}
+
+                    width={100}
+                />
+            )
+        })
+
+
+        return (
+            <div style={style}>
+                <div style={{
+                    backgroundColor: 'transparent',
+                    padding: '10px',
+                    overflow: 'hidden',
+                    width: '100%',
+                    height: '100%',
+                    marginLeft: '10px'
+                }}>
+                    <Table
+                        className="tableOutlineNone"
+                        rowHeight={rowHeight}
+                        headerHeight={50}
+                        rowsCount={dataLen}
+                        width={tableWidth}
+                        height={Math.min(containerHeight, tableHeight)}
+                        isColumnResizing={false}
+                        {...props}>
+                        {columnsList}
+                    </Table>
+                </div>
+            </div>
+
+        );
+    }
+
     drawtable = (props = this.props) => {
-        let { data } = this.state
+        let { data, collapsedRows } = this.state
         let columns = this.drawColumns()
         let dataLen = 0
         if (data && data.length) {
@@ -70,6 +170,8 @@ class SummaryDataTable extends Component {
                     rowHeight={rowHeight}
                     headerHeight={headerHeight}
                     rowsCount={dataLen}
+                    subRowHeightGetter={this._subRowHeightGetter}
+                    rowExpanded={this._rowExpandedGetter}
                     width={tableWidth}
                     height={Math.min(containerHeight, tableHeight)}
                     rowClassNameGetter={(rowIndex) => "cursor-pointer"}
@@ -77,6 +179,7 @@ class SummaryDataTable extends Component {
                     onColumnResizeEndCallback={this._onColumnResizeEndCallback}
                     isColumnResizing={false}
                     {...props}>
+
                     {columns}
                 </Table>
             </div>
@@ -94,6 +197,7 @@ class SummaryDataTable extends Component {
 
     drawColumns = (props = this.props) => {
         let { heading } = this.props
+        let { collapsedRows } = this.state
         if (!heading || !heading.length)
             return []
         let columns = []
@@ -113,6 +217,13 @@ class SummaryDataTable extends Component {
                     width={50}
                 />
             )
+        }
+        if (self.state.showCollapse) {
+            columns.push(<Column
+                cell={<CollapseCell callback={self._handleCollapseClick} collapsedRows={collapsedRows} />}
+                fixed={true}
+                width={30}
+            />)
         }
         heading.map(function (header) {
             let headName = header.displayName
@@ -224,12 +335,30 @@ class SummaryDataTable extends Component {
     }
 
 
-    getCellValue = (operation) => {
+    getCellValue = (operation, rowdata) => {
         let { data } = this.state
         let value = null
         switch (operation) {
             case "array":
-                value = <TextCellForArray data={data} />
+                value = <TextCellForArray data={data} identity={'roles'} />
+                break
+            case "interfaceArray":
+                value = <TextCellForArray data={data} rowData={rowdata} identity={'interfaces'} />
+                break
+            case "ipArray":
+                value = <TextCellForArray data={data} rowData={rowdata} identity={'ip'} />
+                break
+            case "connectedToArray":
+                value = <TextCellForArray data={data} rowData={rowdata} identity={'connectedTo'} />
+                break
+            case "adminStateArray":
+                value = <TextCellForArray data={data} rowData={rowdata} identity={'adminState'} />
+                break
+            case "linkArray":
+                value = <TextCellForArray data={data} rowData={rowdata} identity={'link'} />
+                break
+            case "lldpArray":
+                value = <TextCellForArray data={data} rowData={rowdata} identity={'lldp'} />
                 break
             case 'validateKernel':
                 value = <ValidationCell data={data} match={'isKernelMatched'} field={'kernel'} />
@@ -252,6 +381,10 @@ class SummaryDataTable extends Component {
         }
         return value
     }
+
+
 }
+
+
 
 export default Dimensions()(SummaryDataTable);

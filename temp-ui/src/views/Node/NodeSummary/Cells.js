@@ -1,6 +1,7 @@
 import { Cell } from 'fixed-data-table-2'
 import React from 'react'
-import { UncontrolledTooltip, Badge } from 'reactstrap'
+import { UncontrolledTooltip, Badge, Row, Col, ListGroup, ListGroupItem } from 'reactstrap'
+
 
 class CollapseCell extends React.PureComponent {
     render() {
@@ -8,7 +9,7 @@ class CollapseCell extends React.PureComponent {
         return (
             <Cell {...props}>
                 <a onClick={() => callback(rowIndex)}>
-                    {collapsedRows.has(rowIndex) ? '\u25BC' : '\u25BA'}
+                    {collapsedRows.has(rowIndex) ? '\u2212' : '\u002B'}
                 </a>
             </Cell>
         );
@@ -93,8 +94,10 @@ module.exports.RemovableHeaderCell = RemovableHeaderCell;
 class TextCell extends React.PureComponent {
     render() {
         const { data, rowIndex, columnKey, ...props } = this.props;
+
         return (
             <Cell {...props}>
+
                 {data[rowIndex][columnKey]}
             </Cell>
         );
@@ -103,27 +106,121 @@ class TextCell extends React.PureComponent {
 module.exports.TextCell = TextCell;
 
 class TextCellForArray extends React.PureComponent {
-    render() {
-        const { data, rowIndex, columnKey, ...props } = this.props;
-        let value = "-"
-        let arr = data[rowIndex][columnKey]
-        if (arr && arr.length) {
-            let str = ''
-            arr.map((val, index) => {
-                if (index == arr.length - 1) {
-                    str += val.Name
-                }
-                else {
-                    str += val.Name + ','
 
-                }
-            })
-            value = str
+    render() {
+
+
+
+        const { data, rowIndex, columnKey, rowData, ...props } = this.props;
+
+        let value = "-"
+        let arr = []
+        console.log(this.props.rowData)
+        if (this.props.rowData) {
+
+            arr = this.props.rowData.interfaces
+            console.log(arr)
+            if (arr && arr.length) {
+                let str = ''
+                arr.map((val, index) => {
+                    if (index == arr.length - 1) {
+
+                        if (this.props.identity == 'ip') {
+                            str += val.Ip_address
+                        } else if (this.props.identity == 'connectedTo') {
+                            str += val.Remote_interface + val.Remote_node_name
+                        } else if (this.props.identity == 'adminState') {
+                            str += val.Admin_state
+                        } else if (this.props.identity == 'link') {
+                            str += val.Link_status
+                        } else if (this.props.identity == 'lldp') {
+                            str += val.Lldp_matched
+                        }
+                        else {
+                            str += val.Name
+                        }
+
+                    }
+                    else {
+                        if (this.props.identity == 'ip') {
+                            str += val.Ip_address + "\n"
+                        } else if (this.props.identity == 'connectedTo') {
+                            str += val.Remote_interface + val.Remote_node_name + "\n"
+                        } else if (this.props.identity == 'adminState') {
+                            str += val.Admin_state + "\n"
+                        } else if (this.props.identity == 'link') {
+                            str += val.Link_status + "\n"
+                        } else if (this.props.identity == 'lldp') {
+                            str += val.Lldp_matched + '\n'
+                        } else if (this.props.identity == 'interfaces') {
+                            str += val.Name + '\n'
+
+                        } else {
+                            str += val.Name + '\n'
+                        }
+                    }
+                })
+                value = str
+            }
+
+        } else {
+            if (columnKey == 'roleDetails') {
+                arr = data[rowIndex][columnKey]
+            } else {
+                arr = data[rowIndex]['interfaces']
+            }
+
+            if (arr && arr.length) {
+                let str = ''
+                arr.map((val, index) => {
+                    if (index == arr.length - 1) {
+
+                        if (this.props.identity == 'ip') {
+                            str += val.Ip_address
+                        } else if (this.props.identity == 'connectedTo') {
+                            str += val.Remote_interface + val.Remote_node_name
+                        } else if (this.props.identity == 'adminState') {
+                            str += val.Admin_state
+                        } else if (this.props.identity == 'link') {
+                            str += val.Link_status
+                        } else if (this.props.identity == 'lldp') {
+                            str += val.Lldp_matched
+                        }
+                        else {
+                            str += val.Name
+                        }
+
+                    }
+                    else {
+                        if (this.props.identity == 'ip') {
+                            str += val.Ip_address + "\n"
+                        } else if (this.props.identity == 'connectedTo') {
+                            str += val.Remote_interface + val.Remote_node_name + "\n"
+                        } else if (this.props.identity == 'adminState') {
+                            str += val.Admin_state + "\n"
+                        } else if (this.props.identity == 'link') {
+                            str += val.Link_status + "\n"
+                        } else if (this.props.identity == 'lldp') {
+                            str += val.Lldp_matched + '\n'
+                        } else if (this.props.identity == 'interfaces') {
+                            str += val.Name + '\n'
+
+                        } else {
+                            str += val.Name + '\n'
+                        }
+                    }
+                })
+                value = str
+            }
+
         }
+
 
         return (
             <Cell {...props}>
-                {value}
+                <ListGroup>
+                    <ListGroupItem>{value}</ListGroupItem>
+                </ListGroup>
             </Cell>
         );
     }

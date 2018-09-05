@@ -165,11 +165,14 @@ class NodeConfig extends Component {
 
 
       putRequest(UPDATE_NODES, datum).then(function (data) {
+        console.log('data', data)
         if (data.StatusCode == 200) {
           let renderedData = self.state.nodes;
           if (!renderedData) {
             renderedData = []
           }
+          self.setState({ nodes: interfaces })
+          console.log('rendereddata', renderedData)
         }
         else {
           NotificationManager.error("Something went wrong", "node")
@@ -491,47 +494,39 @@ class NodeConfig extends Component {
 
   actualNode = (params) => {
 
-    params.interfaces.map((parm) => {
-      parm.IPAddress = parm.ip
-      // parm.connectedTo.serverName = parm.connectedTo.name
-      // parm.connectedTo.serverPort = parm.connectedTo.port
-    })
     this.setState({
-      selectedType: params.nodeType ? params.nodeType : '',
-      selectedIso: params.linuxISO ? params.linuxISO : '',
-      selectedLinux: params.kernel ? params.kernel : '',
+      selectedTypeId: params.Type_Id,
+      selectedIsoId: params.Iso_Id,
+      selectedLinuxId: params.kernel_Id,
       interfaces: params.interfaces ? params.interfaces : [],
-      selectedSerialNo: params.serialNumber ? params.serialNumber : '',
+      selectedSerialNo: params.SN ? params.SN : '',
       openDiscoverModal: false
     })
 
-
-    let data = this.state.nodes
-    let roles = [];
-    this.state.selectedRoles.map((data) => (roles.push(data.label)))
+    let data = self.state.nodes
     data.map((datum) => {
       datum.roles = roles,
-        datum.nodeType = params.nodeType ? params.nodeType : '',
-        datum.linuxIso = params.linuxISO ? params.linuxISO : '',
-        datum.kernel = params.kernel ? params.kernel : '',
-        datum.serialNumber = params.serialNumber ? params.serialNumber : ''
-      let a = {
-        nodes: [datum]
-      }
-      ServerAPI.DefaultServer().updateNode(this.updateActualNodeCallback, this, a);
+        datum.Type_Id = parseInt(params.Type_Id),
+        datum.Iso_Id = parseInt(params.Iso_Id),
+        datum.kernel_Id = parseInt(self.state.selectedLinuxId),
+        datum.Site_Id = parseInt(self.state.selectedSiteId),
+        datum.interfaces = self.state.interfaces,
+        datum.SN = self.state.selectedSerialNo
+
+      putRequest(UPDATE_NODES, datum).then(function (data) {
+        if (data.StatusCode == 200) {
+          let renderedData = self.state.nodes;
+          if (!renderedData) {
+            renderedData = []
+          }
+        }
+        else {
+          NotificationManager.error("Something went wrong", "node")
+        }
+        self.setState({ displayModel: false, visible: false })
+      })
     })
 
-  }
-
-  updateActualNodeCallback(instance, data) {
-    let a = instance.state.data
-    if (!a) {
-      a = []
-    }
-    a.push(data)
-    instance.setState({ data: a })
-    // instance.setState({ data: a, openDiscoverModal: false })
-    NotificationManager.success('Saved Successfully', 'Node Configuration');
   }
 
   cancelNodeConfig = () => {
