@@ -1,4 +1,3 @@
-
 export function validateIPaddress(ipaddress) {
     if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ipaddress)) {
         return (true)
@@ -34,4 +33,19 @@ export function converter(data) {
         arr.push({ 'label': item, 'value': item })
     })
     return arr;
+}
+
+export function getNameById(ids, data) {
+    let arr = []
+    if (ids && ids.length) {
+        ids.map((item) => {
+            data.find((key) => {
+                if (item == key.Id) {
+                    arr.push(key.Name)
+                }
+            })
+
+        })
+    }
+    return arr
 }
