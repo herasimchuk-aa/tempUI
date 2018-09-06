@@ -171,7 +171,7 @@ class NodeConfig extends Component {
           if (!renderedData) {
             renderedData = []
           }
-          self.setState({ nodes: interfaces })
+          self.setState({ interfaces: interfaces, selectedRowIndexes: [] })
           console.log('rendereddata', renderedData)
         }
         else {
