@@ -64,6 +64,12 @@
 	z-index: 0 !important;
 }
 
+.tableBorderNone {
+	outline: none !important;
+	border: none !important;
+	z-index: 0 !important;
+}
+
 .list-group-item {
 	background-color: transparent !important;
 	border: none !important;

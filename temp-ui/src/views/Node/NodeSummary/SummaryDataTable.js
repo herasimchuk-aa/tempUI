@@ -81,9 +81,17 @@ class SummaryDataTable extends Component {
         });
     }
 
-    _subRowHeightGetter = (index) => {
-
-        return this.state.collapsedRows.has(index) ? 100 : 0;
+    _subRowHeightGetter = (rowIndex) => {
+        if (this.state.collapsedRows.has(rowIndex)) {
+            let { data } = this.state
+            let expandedRow = data[rowIndex]
+            let dataLen = 0
+            if (expandedRow && expandedRow.interfaces && expandedRow.interfaces.length) {
+                dataLen = expandedRow.interfaces.length
+            }
+            return dataLen * rowHeight
+        }
+        return 0
     }
 
     _rowExpandedGetter = ({ rowIndex, width, height, props = this.props }) => {
@@ -98,72 +106,31 @@ class SummaryDataTable extends Component {
         let { columnWidths, data } = this.state
 
         let expandedRow = data[rowIndex]
-        // console.log(rowIndex)
-        // let dataLen = 0
-        // if (expandedRow && expandedRow.length) {
-        //     dataLen = expandedRow.length
-        // }
+        let dataLen = 0
+        if (expandedRow && expandedRow.interfaces && expandedRow.interfaces.length) {
+            dataLen = expandedRow.interfaces.length
+        }
 
-        // let tableHeight = rowHeight * (dataLen) + headerHeight + 2
-        // let tableWidth = this.props.containerWidth
-        // if (!heading || !heading.length)
-        //     return []
-        // let columnsList = []
-        // let self = this
-
-        // heading.map(function (header) {
-        //     let headName = header.displayName
-        //     let id = header.id
-        //     let operation = header.operation;
-        //     let cellValue = self.getCellValue(operation, expandedRow)
-        //     columnsList.push(
-        //         <Column
-
-        //             columnKey={id}
-        //             header={<Cell>{cellValue}</Cell>}
-        //             cell={<Cell >check</Cell>}
-
-        //             width={100}
-        //         />
-        //     )
-        // })
-
-        let interfaceList = expandedRow.interfaces.map((interfaceItem) => {
-            return (
-                <ListGroup><ListGroupItem className="visibleOnHover">{interfaceItem.Name ? interfaceItem.Name : '-'}</ListGroupItem></ListGroup>
-            )
-        })
-
-        let ipList = expandedRow.interfaces.map((interfaceItem) => {
-            return (
-                <ListGroup><ListGroupItem className="visibleOnHover">{interfaceItem.Ip_address ? interfaceItem.Ip_address : '-'}</ListGroupItem></ListGroup>
-            )
-        })
-
-        let connectedToList = expandedRow.interfaces.map((interfaceItem) => {
-            return (
-                <ListGroup><ListGroupItem className="visibleOnHover">{interfaceItem.Remote_node_name && interfaceItem.Remote_interface ? interfaceItem.Remote_node_name + interfaceItem.Remote_interface : '-'}</ListGroupItem></ListGroup>
-            )
-        })
-
-        let Admin_stateList = expandedRow.interfaces.map((interfaceItem) => {
-            return (
-                <ListGroup><ListGroupItem className="visibleOnHover">{interfaceItem.Admin_state}</ListGroupItem></ListGroup>
-            )
-        })
-        let Link_statusList = expandedRow.interfaces.map((interfaceItem) => {
-            return (
-                <ListGroup><ListGroupItem className="visibleOnHover">{interfaceItem.Link_status}</ListGroupItem></ListGroup>
-            )
-        })
-        let Lldp_matchedList = expandedRow.interfaces.map((interfaceItem) => {
-            return (
-                <ListGroup><ListGroupItem className="visibleOnHover">{interfaceItem.Lldp_matched}</ListGroupItem></ListGroup>
-            )
-        })
-        let Interface_alarmList = expandedRow.interfaces.map((interfaceItem) => {
-            return (
-                <ListGroup><ListGroupItem className="visibleOnHover">{interfaceItem.Interface_alarm ? interfaceItem.Interface_alarm : '-'}</ListGroupItem></ListGroup>
+        let tableHeight = rowHeight * (dataLen)
+        let tableWidth = this.props.containerWidth
+        if (!heading || !heading.length)
+            return []
+        let columnsList = []
+        let self = this
+        heading.map(function (header) {
+            let headName = header.displayName
+            let id = header.id
+            let operation = header.operation;
+            //let cellValue = self.getCellValue(operation, expandedRow)
+            columnsList.push(
+                <Column
+                    columnKey={id}
+                    header={<Cell></Cell>}
+                    cell={<Cell>check</Cell>}
+                    flexGrow={1}
+                    width={columnWidths[id] ? columnWidths[id] : 50}
+                    isResizable={header.isResizable}
+                />
             )
         })
 
@@ -177,53 +144,24 @@ class SummaryDataTable extends Component {
                     height: '100%',
                     marginLeft: '30px'
                 }}>
-
-                    {/* <Table
-                        className="tableOutlineNone"
+                    <Table
+                        className="tableBorderNone"
                         rowHeight={rowHeight}
-                        headerHeight={50}
+                        headerHeight={0}
                         rowsCount={dataLen}
                         width={tableWidth}
-                        height={Math.min(containerHeight, tableHeight)}
+                        height={tableHeight}
                         isColumnResizing={false}
                         {...props}>
                         {columnsList}
-                    </Table> */}
-                    <Row>
-                        <Col></Col>
-                        <Col></Col>
-                        <Col></Col>
-                        <Col></Col>
-                        <Col>
-                            {interfaceList}
-                        </Col>
-                        <Col>
-                            {ipList}
-                        </Col>
-                        <Col>
-                            {connectedToList}
-                        </Col>
-                        <Col>
-                            {Admin_stateList}
-                        </Col>
-                        <Col>
-                            {Link_statusList}
-                        </Col>
-                        <Col>
-                            {Lldp_matchedList}
-                        </Col>
-                        <Col>
-                            {Interface_alarmList}
-                        </Col>
-                    </Row>
+                    </Table>
                 </div>
             </div >
-
         );
     }
 
     drawtable = (props = this.props) => {
-        let { data, collapsedRows } = this.state
+        let { data, scrollToRow } = this.state
         let columns = this.drawColumns()
         let dataLen = 0
         if (data && data.length) {
@@ -236,6 +174,7 @@ class SummaryDataTable extends Component {
                 <div style={{ float: "right" }} id={'popoverPlacementDiv'}></div>
                 <Table
                     className="tableOutlineNone"
+                    scrollToRow={scrollToRow}
                     rowHeight={rowHeight}
                     headerHeight={headerHeight}
                     rowsCount={dataLen}
@@ -248,7 +187,6 @@ class SummaryDataTable extends Component {
                     onColumnResizeEndCallback={this._onColumnResizeEndCallback}
                     isColumnResizing={false}
                     {...props}>
-
                     {columns}
                 </Table>
             </div>
