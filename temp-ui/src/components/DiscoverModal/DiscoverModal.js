@@ -148,7 +148,20 @@ class DiscoverModal extends Component {
                                 newInterfc.Remote_interface = item.actualInterface.Remote_interface ? item.actualInterface.Remote_interface : '',
                                 newInterfc.Is_management_interface = item.actualInterface.Is_management_interface
 
-                            updateInterfaces.push(newInterfc)
+                            updateInterfaces.map((value, key) => {
+                                if (value.Name == newInterfc.Name) {
+                                    updateInterfaces[key].Admin_state = newInterfc.Admin_state ? newInterfc.Admin_state : ''
+                                    updateInterfaces[key].Ip_address = newInterfc.Ip_address ? newInterfc.Ip_address : ''
+                                    updateInterfaces[key].Is_management_interface = newInterfc.Is_management_interface
+                                    updateInterfaces[key].Name = newInterfc.Name
+                                    updateInterfaces[key].Remote_interface = newInterfc.Remote_interface ? newInterfc.Remote_interface : ''
+                                    updateInterfaces[key].Remote_node_name = newInterfc.Remote_node_name ? newInterfc.Remote_node_name : ''
+
+                                }
+                            })
+
+
+                            // updateInterfaces.push(newInterfc)
                         }
                     } else {
                         blankChkCount++
