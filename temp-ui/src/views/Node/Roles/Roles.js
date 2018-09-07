@@ -6,8 +6,8 @@ import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import { roleHead } from '../../../consts'
 import DropDown from '../../../components/dropdown/DropDown';
 import { trimString, getNameById } from '../../../components/Utility/Utility';
-import { getRequest, postRequest } from '../../../apis/RestApi';
-import { FETCH_ALL_ROLES, ADD_ROLE, DELETE_ROLES } from '../../../apis/RestConfig';
+import { getRequest, postRequest, putRequest } from '../../../apis/RestApi';
+import { FETCH_ALL_ROLES, ADD_ROLE, UPDATE_ROLE, DELETE_ROLES } from '../../../apis/RestConfig';
 import { NotificationManager } from 'react-notifications';
 
 
@@ -21,6 +21,7 @@ class Roles extends Component {
             data: [],
             roleHead: roleHead,
             displayModel: false,
+            displayEditModel: false,
             selectedRowIndexes: [],
             showDelete: false,
             alertVisible: false,
@@ -28,6 +29,7 @@ class Roles extends Component {
             displayRoleUpdateModel: false,
             updateRowIndex: null,
         }
+        this.counter = 0;
     }
 
     componentDidMount() {
@@ -178,15 +180,6 @@ class Roles extends Component {
         })
     }
 
-    callback(instance, data) {
-        let a = instance.state.data
-        if (!a) {
-            a = []
-        }
-        a.push(data)
-        instance.setState({ data: a, displayModel: !instance.state.displayModel, selectedRole: '', alertVisible: false })
-    }
-
     deleteRole() {
         let self = this;
         let deleteIds = [];
@@ -204,16 +197,86 @@ class Roles extends Component {
         })
     }
 
+    showEditDialogBox() {
+        if (!this.state.selectedRowIndexes.length || this.state.selectedRowIndexes.length > 1) {
+            alert("Please select one Role to edit")
+            return
+        }
+        this.setState({ displayEditModel: true, selectedRole: this.state.data[this.state.selectedRowIndexes[0]].ParentId })
+        console.log(this.state.data[this.state.selectedRowIndexes[0]])
+
+    }
+
+    toggleEditModal() {
+        this.setState({ displayEditModel: !this.state.displayEditModel })
+    }
+
+    renderEditModelDialog() {
+        if (this.state.displayEditModel) {
+            let edittedData = this.state.data[this.state.selectedRowIndexes[0]]
+            return (
+                <Modal isOpen={this.state.displayEditModel} toggle={() => this.toggleEditModal()} size="sm" centered="true" >
+                    <ModalHeader toggle={() => this.toggleEditModal()}>Edit Role</ModalHeader>
+                    <ModalBody>
+                        Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='roleNameEdit' disabled defaultValue={edittedData.Name} /><br />
+                        Parent Role <DropDown className="marTop10" options={this.state.data} getSelectedData={this.getSelectedData} identity={"Role"} default={this.state.selectedRole} /><br />
+                        Description <Input className="marTop10" id='roleDescEdit' defaultValue={edittedData.Description} /><br />
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button className="custBtn" outline color="primary" onClick={() => (this.editRole())}>Save</Button>
+                        <Button className="custBtn" outline color="primary" onClick={() => (this.toggleEditModal())}>Cancel</Button>
+
+                    </ModalFooter>
+                </Modal>
+            );
+        }
+    }
+
+    editRole = () => {
+        let self = this
+        let edittedData = this.state.data[this.state.selectedRowIndexes[0]]
+        let params = {}
+        if (this.state.selectedRole) {
+            params = {
+                'Id': edittedData.Id,
+                'ParentId': parseInt(this.state.selectedRole),
+                'Description': document.getElementById('roleDescEdit').value ? document.getElementById('roleDescEdit').value : "-"
+            }
+        }
+        else {
+            params = {
+                'Id': edittedData.Id,
+                'Description': document.getElementById('roleDescEdit').value ? document.getElementById('roleDescEdit').value : "-"
+            }
+        }
+        putRequest(UPDATE_ROLE, params).then(function (data) {
+            console.log(data.Data)
+            if (data.StatusCode == 200) {
+                let existingData = self.state.data;
+                existingData[self.state.selectedRowIndexes[0]] = data.Data
+                self.setState({ data: existingData, displayEditModel: false, selectedRowIndexes: [], selectedRole: '' })
+            }
+            else {
+                NotificationManager.error("Something went wrong", "Site")
+                self.setState({ displayEditModel: false, selectedRowIndexes: [], selectedRole: '' })
+
+            }
+        })
+    }
+
+
     render() {
         return (
             <div>
                 <Row >
                     <Button className="custBtn animated fadeIn" id="add" outline color="secondary" onClick={() => (this.cancel())}>New</Button>
+                    <Button onClick={() => (this.showEditDialogBox())} className="custBtn animated fadeIn">Edit</Button>
                     {this.showDeleteButton()}
                 </Row>
                 <Row className="tableTitle">Roles</Row>
-                <SummaryDataTable heading={this.state.roleHead} data={this.state.data} toggleModel={this.toggleModel} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} showEditButton={true} />
+                <SummaryDataTable key={this.counter++} heading={this.state.roleHead} data={this.state.data} toggleModel={this.toggleModel} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} showEditButton={true} />
                 {this.renderUpgradeModelDialog()}
+                {this.renderEditModelDialog()}
 
             </div>
         );

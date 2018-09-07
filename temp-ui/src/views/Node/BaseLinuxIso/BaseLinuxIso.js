@@ -5,8 +5,8 @@ import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import { isoHead } from '../../../consts';
 import { trimString, getNameById } from '../../../components/Utility/Utility';
-import { getRequest, postRequest } from '../../../apis/RestApi'
-import { FETCH_ALL_ISOS, ADD_ISO, DELETE_ISOS } from '../../../apis/RestConfig'
+import { getRequest, postRequest, putRequest } from '../../../apis/RestApi'
+import { FETCH_ALL_ISOS, ADD_ISO, UPDATE_ISO, DELETE_ISOS } from '../../../apis/RestConfig'
 import { NotificationManager } from 'react-notifications';
 
 class BaseLinuxIso extends Component {
@@ -20,8 +20,10 @@ class BaseLinuxIso extends Component {
             showDelete: false,
             selectedRowIndexes: [],
             displayModel: false,
+            displayEditModel: false,
             visible: false
         }
+        this.counter = 0;
     }
 
     componentDidMount() {
@@ -85,7 +87,7 @@ class BaseLinuxIso extends Component {
         this.setState({ visible: false });
     }
 
-    renderUpgradeModelDialog() {
+    renderAddModelDialog() {
         if (this.state.displayModel) {
             return (
                 <Modal isOpen={this.state.displayModel} toggle={() => this.cancel()} size="sm" centered="true" >
@@ -148,17 +150,76 @@ class BaseLinuxIso extends Component {
         instance.setState({ data: a, displayModel: !instance.state.displayModel, visible: false })
     }
 
+    showEditDialogBox() {
+        if (!this.state.selectedRowIndexes.length || this.state.selectedRowIndexes.length > 1) {
+            alert("Please select one ISO to edit")
+            return
+        }
+        this.setState({ displayEditModel: true })
+        console.log(this.state.data[this.state.selectedRowIndexes[0]])
+
+    }
+
+    toggleEditModal() {
+        this.setState({ displayEditModel: !this.state.displayEditModel })
+    }
+
+    renderEditModelDialog() {
+        if (this.state.displayEditModel) {
+            let edittedData = this.state.data[this.state.selectedRowIndexes[0]]
+            return (
+                <Modal isOpen={this.state.displayEditModel} toggle={() => this.toggleEditModal()} size="sm" centered="true" >
+                    <ModalHeader toggle={() => this.toggleEditModal()}>Edit Base Linux ISO</ModalHeader>
+                    <ModalBody>
+                        Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='isoNameEdit' value={edittedData.Name} disabled /><br />
+                        Location <Input className="marTop10" id='isoLocEdit' defaultValue={edittedData.Location} /><br />
+                        Description <Input className="marTop10" id='isoDescEdit' defaultValue={edittedData.Description} /><br />
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button className="custBtn" outline color="primary" onClick={() => (this.editIso())}>Save</Button>{'  '}
+                        <Button className="custBtn" outline color="primary" onClick={() => (this.toggleEditModal())}>Cancel</Button>
+                    </ModalFooter>
+                </Modal>
+            );
+        }
+    }
+
+    editIso = () => {
+        let self = this
+        let edittedData = this.state.data[this.state.selectedRowIndexes[0]]
+        let params = {
+            'Id': edittedData.Id,
+            'Location': document.getElementById('isoLocEdit').value ? document.getElementById('isoLocEdit').value : "-",
+            'Description': document.getElementById('isoDescEdit').value ? document.getElementById('isoDescEdit').value : "-"
+        }
+        putRequest(UPDATE_ISO, params).then(function (data) {
+            console.log(data.Data)
+            if (data.StatusCode == 200) {
+                let existingData = self.state.data;
+                existingData[self.state.selectedRowIndexes[0]] = data.Data
+                self.setState({ data: existingData, displayEditModel: false, selectedRowIndexes: [] })
+            }
+            else {
+                NotificationManager.error("Something went wrong", "Base ISO")
+                self.setState({ displayEditModel: false, selectedRowIndexes: [] })
+
+            }
+        })
+    }
+
 
     render() {
         return (
             <div>
                 <div className='marginLeft10'>
                     <Button onClick={() => (this.cancel())} className="custBtn animated fadeIn marginLeft13N">New</Button>
+                    <Button onClick={() => (this.showEditDialogBox())} className="custBtn animated fadeIn">Edit</Button>
                     {this.showDeleteButton()}
                 </div>
                 <Row className="tableTitle">Base Linux ISO</Row>
-                <SummaryDataTable heading={this.state.isoHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
-                {this.renderUpgradeModelDialog()}
+                <SummaryDataTable key={this.counter++} heading={this.state.isoHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
+                {this.renderAddModelDialog()}
+                {this.renderEditModelDialog()}
             </div>
         );
     }

@@ -5,8 +5,8 @@ import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import { kernelHead } from '../../../consts';
 import { trimString, getNameById } from '../../../components/Utility/Utility';
-import { getRequest, postRequest } from '../../../apis/RestApi'
-import { FETCH_ALL_KERNELS, ADD_KERNEL, DELETE_KERNELS } from '../../../apis/RestConfig'
+import { getRequest, postRequest, putRequest } from '../../../apis/RestApi'
+import { FETCH_ALL_KERNELS, ADD_KERNEL, UPDATE_KERNEL, DELETE_KERNELS } from '../../../apis/RestConfig'
 import { NotificationManager } from 'react-notifications';
 
 class LinuxKernel extends Component {
@@ -20,8 +20,10 @@ class LinuxKernel extends Component {
             showDelete: false,
             selectedRowIndexes: [],
             displayModel: false,
+            displayEditModel: false,
             visible: false
         }
+        this.counter = 0;
     }
 
     componentDidMount() {
@@ -175,16 +177,75 @@ class LinuxKernel extends Component {
         })
     }
 
+    showEditDialogBox() {
+        if (!this.state.selectedRowIndexes.length || this.state.selectedRowIndexes.length > 1) {
+            alert("Please select one Kernel to edit")
+            return
+        }
+        this.setState({ displayEditModel: true })
+        console.log(this.state.data[this.state.selectedRowIndexes[0]])
+
+    }
+
+    toggleEditModal() {
+        this.setState({ displayEditModel: !this.state.displayEditModel })
+    }
+
+    renderEditModelDialog() {
+        if (this.state.displayEditModel) {
+            let edittedData = this.state.data[this.state.selectedRowIndexes[0]]
+            return (
+                <Modal isOpen={this.state.displayEditModel} toggle={() => this.toggleEditModal()} size="sm" centered="true" >
+                    <ModalHeader toggle={() => this.toggleEditModal()}>Edit Linux Kernel</ModalHeader>
+                    <ModalBody>
+                        Name<font color="red"><sup>*</sup></font> <Input autoFocus disabled className="marTop10" id='kernelNameEdit' value={edittedData.Name} /><br />
+                        Location <Input className="marTop10" id='kernelLocEdit' defaultValue={edittedData.Location} /><br />
+                        Description <Input className="marTop10" id='kernelDescEdit' defaultValue={edittedData.Description} /><br />
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button className="custBtn" outline color="primary" onClick={() => (this.editKernel())}>Save</Button>{'  '}
+                        <Button className="custBtn" outline color="primary" onClick={() => (this.toggleEditModal())}>Cancel</Button>
+                    </ModalFooter>
+                </Modal>
+            );
+        }
+    }
+
+    editKernel = () => {
+        let self = this
+        let edittedData = this.state.data[this.state.selectedRowIndexes[0]]
+        let params = {
+            'Id': edittedData.Id,
+            'Location': document.getElementById('kernelLocEdit').value ? document.getElementById('kernelLocEdit').value : "-",
+            'Description': document.getElementById('kernelDescEdit').value ? document.getElementById('kernelDescEdit').value : "-"
+        }
+        putRequest(UPDATE_KERNEL, params).then(function (data) {
+            console.log(data.Data)
+            if (data.StatusCode == 200) {
+                let existingData = self.state.data;
+                existingData[self.state.selectedRowIndexes[0]] = data.Data
+                self.setState({ data: existingData, displayEditModel: false, selectedRowIndexes: [] })
+            }
+            else {
+                NotificationManager.error("Something went wrong", "Kernel")
+                self.setState({ displayEditModel: false, selectedRowIndexes: [] })
+
+            }
+        })
+    }
+
 
     render() {
         return (<div>
             <div className='marginLeft10'>
                 <Button onClick={() => (this.cancel())} className="custBtn animated fadeIn marginLeft13N" outline color="secondary">New</Button>
+                <Button onClick={() => (this.showEditDialogBox())} className="custBtn animated fadeIn">Edit</Button>
                 {this.showDeleteButton()}
             </div>
             <Row className="tableTitle">Linux Kernel</Row>
-            <SummaryDataTable heading={this.state.kernelHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
+            <SummaryDataTable key={this.counter++} heading={this.state.kernelHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
             {this.renderUpgradeModelDialog()}
+            {this.renderEditModelDialog()}
         </div>
         );
     }
