@@ -56,7 +56,7 @@ export default {
         }
       ],
     },
-    /*{
+    {
       name: 'Connectivity',
       url: '/pcc/connectivity',
       icon: 'icon-pencil',
@@ -67,7 +67,7 @@ export default {
           icon: 'icon-star',
         }
       ],
-    },
+    },/*
     {
       name: 'Monitoring',
       url: '/pcc/monitoring',

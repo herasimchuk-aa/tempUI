@@ -56,7 +56,6 @@ class NodeConfig extends Component {
       isLoading: false
     }
     this.counter = 0
-    console.log(props.location.state)
   }
 
   componentDidMount() {
@@ -165,14 +164,14 @@ class NodeConfig extends Component {
 
 
       putRequest(UPDATE_NODES, datum).then(function (data) {
-        console.log('data', data)
+
         if (data.StatusCode == 200) {
           let renderedData = self.state.nodes;
           if (!renderedData) {
             renderedData = []
           }
           self.setState({ interfaces: interfaces, selectedRowIndexes: [] })
-          console.log('rendereddata', renderedData)
+
         }
         else {
           NotificationManager.error("Something went wrong", "node")
@@ -250,7 +249,7 @@ class NodeConfig extends Component {
   renderUpdateInterface() {
     if (this.state.displayModel) {
       let data = this.state.interfaceData
-      console.log(data)
+
       return (
         <ModalComponent getData={this.updateNodeCall} actionButton={'Update'} data={data} ></ModalComponent>
       );

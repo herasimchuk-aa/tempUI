@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Table, Column, Cell } from 'fixed-data-table-2'
-import { TextCell, TextCellForArray, BadgeCell, ValidationCell, CollapseCell } from './Cells';
+import { TextCell, TextCellForArray, BadgeCell, ValidationCell, CollapseCell, GetFirstValueCell } from './Cells';
 import 'fixed-data-table-2/dist/fixed-data-table.css';
 import {
     Input, Popover, PopoverBody, Row, Col, ListGroup,
@@ -30,8 +30,9 @@ class SummaryDataTable extends Component {
             popoverOpen: false,
             columnWidths: {},
             scrollToRow: null,
-            collapsedRows: new Set(),
-            showCollapse: false
+            // collapsedRows: new Set(),
+            showCollapse: false,
+            height: 0
         };
         this.counter = 0;
         this.constHeading = JSON.parse(JSON.stringify(props.heading))
@@ -54,6 +55,7 @@ class SummaryDataTable extends Component {
     }
 
     render() {
+
         return (
             <div>
                 <div id="popoverContainer" className="marBot5pc">
@@ -65,99 +67,130 @@ class SummaryDataTable extends Component {
     }
 
     _handleCollapseClick = (rowIndex) => {
-        const { collapsedRows } = this.state;
-        const shallowCopyOfCollapsedRows = new Set([...collapsedRows]);
+        const { collapsedRows, data } = this.state;
+        // const shallowCopyOfCollapsedRows = new Set([...collapsedRows]);
+
         let scrollToRow = rowIndex;
-        if (shallowCopyOfCollapsedRows.has(rowIndex)) {
-            shallowCopyOfCollapsedRows.delete(rowIndex);
-            scrollToRow = null
-        } else {
-            shallowCopyOfCollapsedRows.add(rowIndex);
+        let sameExpandRowClick = false
+        // if (shallowCopyOfCollapsedRows.has(rowIndex)) {
+        //     shallowCopyOfCollapsedRows.delete(rowIndex);
+        //     scrollToRow = null
+        // } else {
+        //     shallowCopyOfCollapsedRows.add(rowIndex);
+        // }
+        //height of the table 
+        if (this.state.collapsedRows == rowIndex) {
+            sameExpandRowClick = true
         }
+        let dataLen = 0
+        if (data && data.length) {
+            dataLen = data.length
+        }
+        let tableHeight = rowHeight * (dataLen) + headerHeight + 2
+
+        //height of the expanded row
+        let ExpanDataLen = 0
+        if (data[rowIndex] && data[rowIndex].interfaces && data[rowIndex].interfaces.length) {
+            ExpanDataLen = data[rowIndex].interfaces.length
+        }
+        let expandedRowHeight = rowHeight * (ExpanDataLen - 1)
+
+        // if (this.state.collapsedRows == rowIndex) {
+        //     sameExpandRowClick = true
+        //     expandedRowHeight = rowHeight
+        // }
+
+        //total height of the table
+        let totalTableheight = tableHeight + expandedRowHeight
 
         this.setState({
             scrollToRow: scrollToRow,
-            collapsedRows: shallowCopyOfCollapsedRows
+            height: collapsedRows == rowIndex ? tableHeight : totalTableheight,
+
+            collapsedRows: this.state.collapsedRows == rowIndex ? -1 : rowIndex
         });
     }
 
     _subRowHeightGetter = (rowIndex) => {
-        if (this.state.collapsedRows.has(rowIndex)) {
+        if (this.state.collapsedRows == rowIndex) {
             let { data } = this.state
             let expandedRow = data[rowIndex]
             let dataLen = 0
             if (expandedRow && expandedRow.interfaces && expandedRow.interfaces.length) {
                 dataLen = expandedRow.interfaces.length
             }
-            return dataLen * rowHeight
+            return (dataLen - 1) * rowHeight
         }
         return 0
     }
 
     _rowExpandedGetter = ({ rowIndex, width, height, props = this.props }) => {
-        if (!this.state.collapsedRows.has(rowIndex)) {
+        if (this.state.collapsedRows != rowIndex) {
             return null;
+        } else {
+            const style = {
+                height: height,
+                width: width - 2,
+            };
+            let { heading } = this.props
+            let { columnWidths, data } = this.state
+
+            let expandedRow = data[rowIndex]
+            let dataLen = 0
+            if (expandedRow && expandedRow.interfaces && expandedRow.interfaces.length) {
+                dataLen = expandedRow.interfaces.length
+            }
+            this.totalheight = this.totalheight + rowHeight * (dataLen)
+
+            let tableHeight = rowHeight * (dataLen)
+            let tableWidth = this.props.containerWidth
+            if (!heading || !heading.length)
+                return []
+            let columnsList = []
+            let self = this
+            heading.map(function (header) {
+                let headName = header.displayName
+                let id = header.id
+                let operation = header.operation;
+
+                let cellValue = self.getInternalCellValue(operation, expandedRow)
+                columnsList.push(
+                    <Column
+                        columnKey={id}
+                        header={<Cell></Cell>}
+                        cell={cellValue}
+                        flexGrow={1}
+                        width={columnWidths[id] ? columnWidths[id] : 50}
+                        isResizable={header.isResizable}
+                    />
+                )
+            })
+
+            return (
+                <div style={style}>
+                    <div style={{
+                        backgroundColor: 'transparent',
+                        padding: '10px',
+                        width: '100%',
+                        height: '100%',
+                        marginLeft: '8px'
+                    }}>
+                        <Table
+                            className="tableBorderNone"
+                            rowHeight={rowHeight}
+                            headerHeight={0}
+
+                            rowsCount={dataLen - 1}
+                            width={tableWidth}
+                            height={this.state.tableHeight ? this.state.tableHeight : tableHeight}
+                            isColumnResizing={false}
+                            {...props}>
+                            {columnsList}
+                        </Table>
+                    </div>
+                </div >
+            );
         }
-        const style = {
-            height: height,
-            width: width - 2,
-        };
-        let { heading } = this.props
-        let { columnWidths, data } = this.state
-
-        let expandedRow = data[rowIndex]
-        let dataLen = 0
-        if (expandedRow && expandedRow.interfaces && expandedRow.interfaces.length) {
-            dataLen = expandedRow.interfaces.length
-        }
-
-        let tableHeight = rowHeight * (dataLen)
-        let tableWidth = this.props.containerWidth
-        if (!heading || !heading.length)
-            return []
-        let columnsList = []
-        let self = this
-        heading.map(function (header) {
-            let headName = header.displayName
-            let id = header.id
-            let operation = header.operation;
-            //let cellValue = self.getCellValue(operation, expandedRow)
-            columnsList.push(
-                <Column
-                    columnKey={id}
-                    header={<Cell></Cell>}
-                    cell={<Cell>check</Cell>}
-                    flexGrow={1}
-                    width={columnWidths[id] ? columnWidths[id] : 50}
-                    isResizable={header.isResizable}
-                />
-            )
-        })
-
-        return (
-            <div style={style}>
-                <div style={{
-                    backgroundColor: 'transparent',
-                    padding: '10px',
-                    overflow: 'hidden',
-                    width: '100%',
-                    height: '100%',
-                    marginLeft: '30px'
-                }}>
-                    <Table
-                        className="tableBorderNone"
-                        rowHeight={rowHeight}
-                        headerHeight={0}
-                        rowsCount={dataLen}
-                        width={tableWidth}
-                        height={tableHeight}
-                        isColumnResizing={false}
-                        {...props}>
-                        {columnsList}
-                    </Table>
-                </div>
-            </div >
-        );
     }
 
     drawtable = (props = this.props) => {
@@ -169,6 +202,7 @@ class SummaryDataTable extends Component {
         }
         let tableHeight = rowHeight * (dataLen) + headerHeight + 2
         let tableWidth = this.props.containerWidth
+        let totalheight = Math.min(containerHeight, tableHeight)
         return (
             <div>
                 <div style={{ float: "right" }} id={'popoverPlacementDiv'}></div>
@@ -181,7 +215,7 @@ class SummaryDataTable extends Component {
                     subRowHeightGetter={this._subRowHeightGetter}
                     rowExpanded={this._rowExpandedGetter}
                     width={tableWidth}
-                    height={Math.min(containerHeight, tableHeight)}
+                    height={this.state.height ? this.state.height : totalheight}
                     rowClassNameGetter={(rowIndex) => "cursor-pointer"}
                     onRowDoubleClick={(e, rowIndex) => this.checkBoxClick(rowIndex, true)}
                     onColumnResizeEndCallback={this._onColumnResizeEndCallback}
@@ -204,7 +238,7 @@ class SummaryDataTable extends Component {
 
     drawColumns = (props = this.props) => {
         let { heading } = this.props
-        let { collapsedRows } = this.state
+        let { collapsedRows, data } = this.state
         if (!heading || !heading.length)
             return []
         let columns = []
@@ -227,7 +261,7 @@ class SummaryDataTable extends Component {
         }
         if (self.state.showCollapse) {
             columns.push(<Column
-                cell={<CollapseCell callback={self._handleCollapseClick} collapsedRows={collapsedRows} />}
+                cell={<CollapseCell callback={self._handleCollapseClick} collapsedRows={collapsedRows} data={data} />}
                 fixed={true}
                 width={30}
             />)
@@ -236,7 +270,8 @@ class SummaryDataTable extends Component {
             let headName = header.displayName
             let id = header.id
             let operation = header.operation;
-            let cellValue = self.getCellValue(operation)
+            let connectivityRow = self.state.showCollapse
+            let cellValue = self.getCellValue(operation, connectivityRow)
             columns.push(
                 <Column
                     columnKey={id}
@@ -340,44 +375,67 @@ class SummaryDataTable extends Component {
                 </Popover>
             </div>)
     }
+    getInternalCellValue = (operation, expandedRow) => {
 
-
-    getCellValue = (operation, rowdata) => {
         let { data } = this.state
         let value = null
+        switch (operation) {
+            case "array":
+                value = ''
+                break
+            case "interfaceArray":
+                value = <TextCellForArray data={data} expandedrow={expandedRow} identity={'interfaces'} />
+                break
+            case "ipArray":
+                value = <TextCellForArray data={data} expandedrow={expandedRow} identity={'ip'} />
+                break
+            case "connectedToArray":
+                value = <TextCellForArray data={data} expandedrow={expandedRow} identity={'connectedTo'} />
+                break
+            case "adminStateArray":
+                value = <TextCellForArray data={data} expandedrow={expandedRow} identity={'adminState'} />
+                break
+            case "linkArray":
+                value = <TextCellForArray data={data} expandedrow={expandedRow} identity={'link'} />
+                break
+            default:
+                value = ''
+                break
+        }
+        return value
+    }
+
+    getCellValue = (operation, connectivityRow) => {
+        let { data } = this.state
+        let value = null
+
         switch (operation) {
             case "array":
                 value = <TextCellForArray data={data} identity={'roles'} />
                 break
             case "interfaceArray":
-                value = <TextCellForArray data={data} rowData={rowdata} identity={'interfaces'} />
+                value = <GetFirstValueCell data={data} connectivityrow={connectivityRow} identity={'interfaces'} />
                 break
             case "ipArray":
-                value = <TextCellForArray data={data} rowData={rowdata} identity={'ip'} />
+                value = <GetFirstValueCell data={data} connectivityrow={connectivityRow} identity={'ip'} />
                 break
             case "connectedToArray":
-                value = <TextCellForArray data={data} rowData={rowdata} identity={'connectedTo'} />
-                break
-            case "adminStateArray":
-                value = <TextCellForArray data={data} rowData={rowdata} identity={'adminState'} />
+                value = <GetFirstValueCell data={data} connectivityrow={connectivityRow} identity={'connectedTo'} />
                 break
             case "linkArray":
-                value = <TextCellForArray data={data} rowData={rowdata} identity={'link'} />
-                break
-            case "lldpArray":
-                value = <TextCellForArray data={data} rowData={rowdata} identity={'lldp'} />
+                value = <GetFirstValueCell data={data} connectivityrow={connectivityRow} identity={'link'} />
                 break
             case 'validateKernel':
-                value = <ValidationCell data={data} match={'isKernelMatched'} field={'kernel'} />
+                value = <ValidationCell data={data} match={'IsKernelMatched'} field={'kernel'} />
                 break
             case 'validateISO':
-                value = <ValidationCell data={data} match={'isBaseISOMatched'} field={'baseISO'} />
+                value = <ValidationCell data={data} match={'IsBaseISOMatched'} field={'BaseISO'} />
                 break
             case 'validateType':
-                value = <ValidationCell data={data} match={'isTypeMatched'} field={'type'} />
+                value = <ValidationCell data={data} match={'IsTypeMatched'} field={'Type'} />
                 break
             case 'validateSN':
-                value = <ValidationCell data={data} match={'isSNMatched'} field={'serialNumber'} />
+                value = <ValidationCell data={data} match={'IsSNMatched'} field={'SerialNumber'} />
                 break
             case 'badge':
                 value = <BadgeCell data={data} />

@@ -6,12 +6,17 @@ import { UncontrolledTooltip, Badge, Row, Col, ListGroup, ListGroupItem } from '
 class CollapseCell extends React.PureComponent {
     render() {
         const { data, rowIndex, columnKey, collapsedRows, callback, ...props } = this.props;
+        if ((!data[rowIndex].interfaces) || (data[rowIndex].interfaces.length == 1)) {
+            return (<Cell></Cell>)
+        }
+
         return (
+
             <Cell {...props}>
                 <a onClick={() => callback(rowIndex)}>
-                    {collapsedRows.has(rowIndex) ? '\u2212' : '\u002B'}
+                    {collapsedRows == rowIndex ? '\u2212' : '\u002B'}
                 </a>
-            </Cell>
+            </Cell >
         );
     }
 };
@@ -105,62 +110,147 @@ class TextCell extends React.PureComponent {
 };
 module.exports.TextCell = TextCell;
 
-class TextCellForArray extends React.PureComponent {
-
+class GetFirstValueCell extends React.PureComponent {
     render() {
-
-
 
         const { data, rowIndex, columnKey, rowData, ...props } = this.props;
 
         let value = "-"
         let arr = []
 
-        if (this.props.rowData) {
+        arr = data[rowIndex]['interfaces']
 
-            arr = this.props.rowData.interfaces
 
-            if (arr && arr.length) {
-                let str = ''
-                arr.map((val, index) => {
-                    if (index == arr.length - 1) {
 
-                        if (this.props.identity == 'ip') {
-                            str += val.Ip_address
-                        } else if (this.props.identity == 'connectedTo') {
-                            str += val.Remote_interface + val.Remote_node_name
-                        } else if (this.props.identity == 'adminState') {
-                            str += val.Admin_state
-                        } else if (this.props.identity == 'link') {
-                            str += val.Link_status
-                        } else if (this.props.identity == 'lldp') {
-                            str += val.Lldp_matched
-                        }
-                        else {
-                            str += val.Name
-                        }
+        if (arr && arr.length) {
+            let firstInterface = arr[0]
+            if (this.props.identity == 'ip') {
 
+                value = firstInterface.Ip_address ? firstInterface.Ip_address : '-'
+
+                if (firstInterface.Ip_address && firstInterface.ValidationStatus) {
+                    if (firstInterface.ValidationStatus['Is_valid_ip']) {
+                        return (<Cell {...props}>  <span style={{ color: 'black' }}>{value}</span> </Cell>)
                     }
                     else {
-                        if (this.props.identity == 'ip') {
-                            str += val.Ip_address + "\n"
-                        } else if (this.props.identity == 'connectedTo') {
-                            str += val.Remote_interface + val.Remote_node_name + "\n"
-                        } else if (this.props.identity == 'adminState') {
-                            str += val.Admin_state + "\n"
-                        } else if (this.props.identity == 'link') {
-                            str += val.Link_status + "\n"
-                        } else if (this.props.identity == 'lldp') {
-                            str += val.Lldp_matched + '\n'
-                        } else if (this.props.identity == 'interfaces') {
-                            str += val.Name + '\n'
+                        return (<Cell id={'ipFirst' + rowIndex} {...props}>
+                            <span style={{ color: 'red' }} key={'ipFirst' + rowIndex}>{value}</span>
+                            {<UncontrolledTooltip placement="top-start" target={'ipFirst' + rowIndex}>{firstInterface.ValidationStatus['Ip_address'] ? firstInterface.ValidationStatus['Ip_address'] : '-'}</UncontrolledTooltip>}
+                        </Cell>);
+                    }
+                }
+                return (<Cell {...props}>  {value} </Cell>)
 
-                        } else {
-                            str += val.Name + '\n'
+            } else if (this.props.identity == 'connectedTo') {
+
+                value = firstInterface.Remote_interface && firstInterface.Remote_ip ? firstInterface.Remote_interface + ':' + firstInterface.Remote_ip : '-'
+
+                if (firstInterface.Remote_interface && firstInterface.Remote_ip && firstInterface.ValidationStatus) {
+                    if (firstInterface.ValidationStatus['Is_lldp_matched']) {
+                        return (<Cell {...props}>  <span style={{ color: 'black' }}>{value}</span> </Cell>)
+                    }
+                    else {
+                        return (<Cell id={'connectedToFirst' + rowIndex} {...props}>
+                            <span style={{ color: 'red' }} key={'connectedToFirst' + rowIndex}>{value}</span>
+                            {<UncontrolledTooltip placement="top-start" target={'connectedToFirst' + rowIndex}>{firstInterface.ValidationStatus['Remote_interface'] && firstInterface.ValidationStatus['Remote_ip'] ? firstInterface.ValidationStatus['Remote_interface'] + ':' + firstInterface.ValidationStatus['Remote_ip'] : '-'}</UncontrolledTooltip>}
+                        </Cell>);
+                    }
+                }
+                return (<Cell {...props}>  {value} </Cell>)
+
+            } else if (this.props.identity == 'link') {
+                return (
+                    <Cell {...props}>
+                        {firstInterface.Link_status ? firstInterface.Link_status : '-'}
+                    </Cell >
+                );
+            } else {
+                return (
+                    <Cell {...props}>
+                        {firstInterface.Name ? firstInterface.Name : '-'}
+                    </Cell >
+                );
+            }
+        }
+    }
+};
+module.exports.GetFirstValueCell = GetFirstValueCell;
+
+class TextCellForArray extends React.PureComponent {
+
+    render() {
+
+        const { data, rowIndex, columnKey, rowData, expandedrow, ...props } = this.props;
+
+        let value = "-"
+        let arr = []
+        let rIndex = rowIndex
+        rIndex = rIndex + 1
+        if (expandedrow) {
+
+            if (expandedrow.interfaces && expandedrow.interfaces.length) {
+                let val = expandedrow.interfaces[rIndex]
+
+                let str = ''
+
+                if (this.props.identity == 'ip') {
+
+                    value = val.Ip_address ? val.Ip_address : '-'
+
+                    if (val.Ip_address && val.ValidationStatus) {
+                        if (val.ValidationStatus['Is_valid_ip']) {
+                            return (<Cell {...props}>  <span style={{ color: 'black' }}>{value}</span> </Cell>)
+                        }
+                        else {
+                            return (<Cell id={'ip' + rIndex} {...props}>
+                                <span style={{ color: 'red' }} key={'ip' + rIndex}>{value}</span>
+                                {<UncontrolledTooltip placement="top-start" target={'ip' + rIndex}>{val.ValidationStatus['Ip_address'] ? val.ValidationStatus['Ip_address'] : '-'}</UncontrolledTooltip>}
+                            </Cell>);
                         }
                     }
-                })
-                value = str
+                    return (<Cell {...props}>  {value} </Cell>)
+
+                } else if (this.props.identity == 'connectedTo') {
+
+                    value = val.Remote_interface && val.Remote_ip ? val.Remote_interface + ':' + val.Remote_ip : ''
+
+                    if (val.Remote_interface && val.Remote_ip && val.ValidationStatus) {
+                        if (val.ValidationStatus['Is_lldp_matched']) {
+                            return (<Cell {...props}>  <span style={{ color: 'black' }}>{value}</span> </Cell>)
+                        }
+                        else {
+                            return (<Cell id={'connectedTo' + rIndex} {...props}>
+                                <span style={{ color: 'red' }} key={'connectedTo' + rIndex}>{value}</span>
+                                {<UncontrolledTooltip placement="top-start" target={'connectedTo' + rIndex}>{val.ValidationStatus['Remote_interface'] && val.ValidationStatus['Remote_ip'] ? val.ValidationStatus['Remote_interface'] + ':' + val.ValidationStatus['Remote_ip'] : '-'}</UncontrolledTooltip>}
+                            </Cell>);
+                        }
+                    }
+                    return (<Cell {...props}>  {value} </Cell>)
+
+                } else if (this.props.identity == 'link') {
+
+                    return (
+                        <Cell {...props}>
+                            {val.Link_status ? val.Link_status : '-'}
+                        </Cell >
+                    );
+
+                } else if (this.props.identity == 'interfaces') {
+
+                    return (
+                        <Cell {...props}>
+                            {val.Name ? val.Name : '-'}
+                        </Cell >
+                    );
+
+                }
+
+            } else {
+                return (
+                    <Cell {...props}>
+                        {'-'}
+                    </Cell >
+                );
             }
 
         } else {
@@ -169,60 +259,26 @@ class TextCellForArray extends React.PureComponent {
             } else {
                 arr = data[rowIndex]['interfaces']
             }
-
             if (arr && arr.length) {
                 let str = ''
                 arr.map((val, index) => {
                     if (index == arr.length - 1) {
-
-                        if (this.props.identity == 'ip') {
-                            str += val.Ip_address
-                        } else if (this.props.identity == 'connectedTo') {
-                            str += val.Remote_interface + val.Remote_node_name
-                        } else if (this.props.identity == 'adminState') {
-                            str += val.Admin_state
-                        } else if (this.props.identity == 'link') {
-                            str += val.Link_status
-                        } else if (this.props.identity == 'lldp') {
-                            str += val.Lldp_matched
-                        }
-                        else {
-                            str += val.Name
-                        }
-
+                        str = val.Name
                     }
                     else {
-                        if (this.props.identity == 'ip') {
-                            str += val.Ip_address + "\n"
-                        } else if (this.props.identity == 'connectedTo') {
-                            str += val.Remote_interface + val.Remote_node_name + "\n"
-                        } else if (this.props.identity == 'adminState') {
-                            str += val.Admin_state + "\n"
-                        } else if (this.props.identity == 'link') {
-                            str += val.Link_status + "\n"
-                        } else if (this.props.identity == 'lldp') {
-                            str += val.Lldp_matched + '\n'
-                        } else if (this.props.identity == 'interfaces') {
-                            str += val.Name + '\n'
-
-                        } else {
-                            str += val.Name + '\n'
-                        }
+                        str += val.Name + '\n'
                     }
                 })
                 value = str
             }
-
+            return (
+                <Cell {...props}>
+                    {value}
+                </Cell >
+            );
         }
 
 
-        return (
-            <Cell {...props}>
-                <ListGroup>
-                    <ListGroupItem>{value}</ListGroupItem>
-                </ListGroup>
-            </Cell>
-        );
     }
 };
 module.exports.TextCellForArray = TextCellForArray;
@@ -263,29 +319,29 @@ class ValidationCell extends React.PureComponent {
         let a = [];
         const { data, rowIndex, columnKey, match, field, ...props } = this.props;
         const value = data[rowIndex][columnKey];
-
-        if (value && data[rowIndex].validationStatus) {
-            if (data[rowIndex].validationStatus[match]) {
+        console.log('for kernel')
+        if (value && data[rowIndex].ValidationStatus) {
+            if (data[rowIndex].ValidationStatus[match]) {
                 return (<Cell {...props}>  <span style={{ color: 'black' }}>{value}</span> </Cell>)
             }
             else {
                 let tooltip = null;
-                if (data[rowIndex].validationStatus[field])
-                    tooltip = (<UncontrolledTooltip placement="top" target={columnKey + rowIndex}>{data[rowIndex].validationStatus[field]}</UncontrolledTooltip>)
+                if (data[rowIndex].ValidationStatus[field])
+                    tooltip = (<UncontrolledTooltip placement="top-start" target={columnKey + rowIndex}>{data[rowIndex].ValidationStatus[field]}</UncontrolledTooltip>)
                 return (<Cell id={columnKey + rowIndex} {...props}>  <span style={{ color: 'red' }} key={columnKey + rowIndex}>{value}</span> {tooltip} </Cell>);
             }
 
         }
         else {
             // value to be set -
-            if (data[rowIndex].validationStatus) {
-                if (data[rowIndex].validationStatus[match]) {
+            if (data[rowIndex].ValidationStatus) {
+                if (data[rowIndex].ValidationStatus[match]) {
                     return (<Cell {...props}>  <span style={{ color: 'black' }}>{'-'}</span> </Cell>)
                 }
                 else {
                     let tooltip = null;
-                    if (data[rowIndex].validationStatus[field])
-                        tooltip = (<UncontrolledTooltip placement="top" target={columnKey + rowIndex}>{data[rowIndex].validationStatus[field]}</UncontrolledTooltip>)
+                    if (data[rowIndex].ValidationStatus[field])
+                        tooltip = (<UncontrolledTooltip placement="top-start" target={columnKey + rowIndex}>{data[rowIndex].ValidationStatus[field]}</UncontrolledTooltip>)
                     return (<Cell id={columnKey + rowIndex} {...props}>  <span style={{ color: 'red' }} key={columnKey + rowIndex}>{'-'}</span> {tooltip} </Cell>);
                 }
             }

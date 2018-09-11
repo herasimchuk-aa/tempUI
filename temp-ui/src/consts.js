@@ -89,29 +89,29 @@ export let connectivityHead = [
         operation: 'connectedToArray',
         colSize: 2
     },
-    {
-        id: 'Admin_state',
-        displayName: 'Admin state',
-        operation: 'adminStateArray',
-        colSize: 1
-    },
+    // {
+    //     id: 'Admin_state',
+    //     displayName: 'Admin state',
+    //     operation: 'adminStateArray',
+    //     colSize: 1
+    // },
     {
         id: 'Link_status',
         displayName: 'Link',
         operation: 'linkArray',
         colSize: 1
     },
-    {
-        id: 'Lldp_matched',
-        displayName: 'LLDP matched',
-        operation: 'lldpArray',
-        colSize: 1
-    },
-    {
-        id: 'Interface_alarm',
-        displayName: 'Interface Alarms',
-        colSize: 1
-    }
+    // {
+    //     id: 'Lldp_matched',
+    //     displayName: 'LLDP matched',
+    //     operation: 'lldpArray',
+    //     colSize: 1
+    // }
+    // {
+    //     id: 'Interface_alarm',
+    //     displayName: 'Interface Alarms',
+    //     colSize: 1
+    // }
 ]
 
 export let roleHead = [
