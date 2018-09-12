@@ -630,6 +630,7 @@ class NodeConfig extends Component {
               if (!renderedData) {
                 renderedData = []
               }
+              NotificationManager.error("Node Discovered Successfully", "node")
             }
             else {
               NotificationManager.error("Something went wrong", "node")
