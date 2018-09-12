@@ -333,7 +333,6 @@ class ValidationCell extends React.PureComponent {
         let a = [];
         const { data, rowIndex, columnKey, match, field, ...props } = this.props;
         const value = data[rowIndex][columnKey];
-        console.log('for kernel')
         if (value && data[rowIndex].ValidationStatus) {
             if (data[rowIndex].ValidationStatus[match]) {
                 return (<Cell {...props}>  <span style={{ color: 'black' }}>{value}</span> </Cell>)

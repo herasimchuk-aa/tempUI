@@ -468,7 +468,6 @@ class DiscoverModal extends Component {
     }
 
     render() {
-        console.log(this.state.existingNode, this.state.actualNode)
         let blankChkCount = this.state.blankChkCount
         let err = null
         if (blankChkCount) {

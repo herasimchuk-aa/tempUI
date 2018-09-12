@@ -37,7 +37,8 @@ class NodeSummary extends React.Component {
             selectedLinuxId: '',
             selectedIsoId: '',
             selectedSiteId: '',
-            selectedRoles: []
+            selectedRoles: [],
+            isSaveLoading: false
         }
     }
 
@@ -198,14 +199,12 @@ class NodeSummary extends React.Component {
             deleteIds.push(self.state.nodes[item].Id)
         })
         postRequest(DELETE_NODES, deleteIds).then(function (data) {
-            console.log(data)
             self.setState({ showDelete: false, selectedRowIndex: [] });
             self.getAllData();
         })
     }
 
     handleChanges = (selectedOption) => {
-        console.log(selectedOption)
         this.setState({ selectedRoles: selectedOption });
     }
 
@@ -214,6 +213,7 @@ class NodeSummary extends React.Component {
     }
 
     addNodeModal() {
+        let showAddButton = this.showAddButton()
         if (this.state.displayModel) {
             return (
                 <Modal isOpen={this.state.displayModel} toggle={() => this.toggleAddNodeModal()} size="lg" centered="true" >
@@ -258,11 +258,27 @@ class NodeSummary extends React.Component {
                         </Row>
                     </ModalBody>
                     <ModalFooter>
-                        <Button outline color="primary" className="custBtn" onClick={() => (this.addNode())}>Add</Button>{'  '}
+                        {showAddButton}
                         <Button outline color="primary" className="custBtn" onClick={() => (this.toggleAddNodeModal())}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
             );
+        }
+    }
+
+    toggleLoading = () => {
+        this.setState((prevState, props) => ({
+            isSaveLoading: !prevState.isSaveLoading
+        }))
+    }
+
+    showAddButton = () => {
+        if (this.state.isSaveLoading) {
+            return (<Button className="custFillBtn" outline color="secondary" style={{ cursor: 'wait' }} > Adding.... </Button >)
+        }
+        if (!this.state.isSaveLoading) {
+            return (<Button className='custBtn' outline color="secondary" onClick={() => (this.addNode())
+            }> Add </Button >)
         }
     }
 
@@ -278,6 +294,7 @@ class NodeSummary extends React.Component {
         }
 
         let self = this
+        self.toggleLoading()
         let validateUnique = true
         let nodesList = self.state.nodes
         nodesList.map((datum) => {
@@ -312,6 +329,7 @@ class NodeSummary extends React.Component {
             'Kernel_Id': parseInt(self.state.selectedLinuxId),
         }
         postRequest(ADD_NODE, params).then(function (data) {
+            self.toggleLoading()
             if (data.StatusCode == 200) {
                 let renderedData = self.state.nodes;
                 if (!renderedData) {
