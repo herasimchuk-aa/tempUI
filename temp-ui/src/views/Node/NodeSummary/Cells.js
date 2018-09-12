@@ -120,8 +120,6 @@ class GetFirstValueCell extends React.PureComponent {
 
         arr = data[rowIndex]['interfaces']
 
-
-
         if (arr && arr.length) {
             let firstInterface = arr[0]
             if (this.props.identity == 'ip') {
@@ -164,6 +162,12 @@ class GetFirstValueCell extends React.PureComponent {
                         {firstInterface.Link_status ? firstInterface.Link_status : '-'}
                     </Cell >
                 );
+            } else if (this.props.identity == 'lldp') {
+                return (
+                    <Cell {...props}>
+                        {firstInterface.ValidationStatus['Is_lldp_matched'] ? 'true' : 'false'}
+                    </Cell >
+                );
             } else {
                 return (
                     <Cell {...props}>
@@ -172,6 +176,7 @@ class GetFirstValueCell extends React.PureComponent {
                 );
             }
         }
+        return (<Cell {...props}>  {value} </Cell>)
     }
 };
 module.exports.GetFirstValueCell = GetFirstValueCell;
@@ -227,6 +232,13 @@ class TextCellForArray extends React.PureComponent {
                     }
                     return (<Cell {...props}>  {value} </Cell>)
 
+                } else if (this.props.identity == 'lldp') {
+
+                    return (
+                        <Cell {...props}>
+                            {val.ValidationStatus['Is_lldp_matched'] ? 'true' : 'false'}
+                        </Cell >
+                    );
                 } else if (this.props.identity == 'link') {
 
                     return (
@@ -234,7 +246,6 @@ class TextCellForArray extends React.PureComponent {
                             {val.Link_status ? val.Link_status : '-'}
                         </Cell >
                     );
-
                 } else if (this.props.identity == 'interfaces') {
 
                     return (
@@ -242,7 +253,6 @@ class TextCellForArray extends React.PureComponent {
                             {val.Name ? val.Name : '-'}
                         </Cell >
                     );
-
                 }
 
             } else {
@@ -304,12 +314,16 @@ module.exports.TooltipCell = TooltipCell;
 class BadgeCell extends React.PureComponent {
     render() {
         const { data, rowIndex, columnKey, ...props } = this.props;
-        const value = data[rowIndex][columnKey];
-        if (value == 'Mismatch') {
+        let value = '-'
+        if (!data[rowIndex]['ValidationStatus']['OverallStatus']) {
+            value = 'Mismatch'
             return (<Cell {...props}> <Badge color="danger">{value}</Badge> </Cell>)
         }
-        else
+        else {
+            value = 'Registered'
             return (<Cell {...props}>{value} </Cell>)
+        }
+
     }
 };
 module.exports.BadgeCell = BadgeCell;
@@ -325,10 +339,10 @@ class ValidationCell extends React.PureComponent {
                 return (<Cell {...props}>  <span style={{ color: 'black' }}>{value}</span> </Cell>)
             }
             else {
-                let tooltip = null;
-                if (data[rowIndex].ValidationStatus[field])
-                    tooltip = (<UncontrolledTooltip placement="top-start" target={columnKey + rowIndex}>{data[rowIndex].ValidationStatus[field]}</UncontrolledTooltip>)
-                return (<Cell id={columnKey + rowIndex} {...props}>  <span style={{ color: 'red' }} key={columnKey + rowIndex}>{value}</span> {tooltip} </Cell>);
+                return (<Cell id={columnKey + rowIndex} {...props}>
+                    <span style={{ color: 'red' }} key={columnKey + rowIndex}>{value}</span>
+                    <UncontrolledTooltip placement="top-start" target={columnKey + rowIndex}>{data[rowIndex].ValidationStatus[field] ? data[rowIndex].ValidationStatus[field] : '-'}</UncontrolledTooltip>
+                </Cell>);
             }
 
         }
@@ -339,10 +353,10 @@ class ValidationCell extends React.PureComponent {
                     return (<Cell {...props}>  <span style={{ color: 'black' }}>{'-'}</span> </Cell>)
                 }
                 else {
-                    let tooltip = null;
-                    if (data[rowIndex].ValidationStatus[field])
-                        tooltip = (<UncontrolledTooltip placement="top-start" target={columnKey + rowIndex}>{data[rowIndex].ValidationStatus[field]}</UncontrolledTooltip>)
-                    return (<Cell id={columnKey + rowIndex} {...props}>  <span style={{ color: 'red' }} key={columnKey + rowIndex}>{'-'}</span> {tooltip} </Cell>);
+                    return (<Cell id={columnKey + rowIndex} {...props}>
+                        <span style={{ color: 'red' }} key={columnKey + rowIndex}>{'-'}</span>
+                        <UncontrolledTooltip placement="top-start" target={columnKey + rowIndex}>{data[rowIndex].ValidationStatus[field]}</UncontrolledTooltip>
+                    </Cell>);
                 }
             }
         }

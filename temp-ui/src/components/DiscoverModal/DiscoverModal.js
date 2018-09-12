@@ -35,7 +35,7 @@ class DiscoverModal extends Component {
         let blankChkCount = 0
         if (allChecked) {
             let interfaces = actNode.interfaces
-            let existingInterfaces = updatedNode.interfaces
+            let existingInterfaces = updatedNode.interfaces ? updatedNode.interfaces : []
             if (interfaces && interfaces.length) {
                 interfaces = interfaces.map(function (item, index) {
                     item.Name = actNode.interfaces[index].Name
@@ -47,37 +47,41 @@ class DiscoverModal extends Component {
                     return item
                 })
 
-                existingInterfaces.map((exItem) => {
-                    if (exItem.Is_management_interface == true) {
-                        let mngmtInterface = {
-                            Name: exItem.Name,
-                            Ip_address: exItem.Ip_address,
-                            Admin_state: exItem.Admin_state,
-                            Remote_node_name: exItem.Remote_node_name,
-                            Remote_interface: exItem.Remote_interface,
-                            Is_management_interface: exItem.Is_management_interface
+                if (existingInterfaces && existingInterfaces.length) {
+                    existingInterfaces.map((exItem) => {
+                        if (exItem.Is_management_interface == true) {
+                            let mngmtInterface = {
+                                Name: exItem.Name,
+                                Ip_address: exItem.Ip_address,
+                                Admin_state: exItem.Admin_state,
+                                Remote_node_name: exItem.Remote_node_name,
+                                Remote_interface: exItem.Remote_interface,
+                                Is_management_interface: exItem.Is_management_interface
+                            }
+                            interfaces.push(mngmtInterface)
                         }
-                        interfaces.push(mngmtInterface)
-                    }
-                })
+                    })
+                }
 
                 actNode.interfaces = interfaces
             }
             else {
-                existingInterfaces.map((exItem) => {
-                    if (exItem.Is_management_interface == true) {
-                        let mngmtInterface = {
-                            Name: exItem.Name,
-                            Ip_address: exItem.Ip_address,
-                            Admin_state: exItem.Admin_state,
-                            Remote_node_name: exItem.Remote_node_name,
-                            Remote_interface: exItem.Remote_interface,
-                            Is_management_interface: exItem.Is_management_interface
-                        }
+                if (existingInterfaces && existingInterfaces.length) {
+                    existingInterfaces.map((exItem) => {
+                        if (exItem.Is_management_interface == true) {
+                            let mngmtInterface = {
+                                Name: exItem.Name,
+                                Ip_address: exItem.Ip_address,
+                                Admin_state: exItem.Admin_state,
+                                Remote_node_name: exItem.Remote_node_name,
+                                Remote_interface: exItem.Remote_interface,
+                                Is_management_interface: exItem.Is_management_interface
+                            }
 
-                        interfaces.push(mngmtInterface)
-                    }
-                })
+                            interfaces.push(mngmtInterface)
+                        }
+                    })
+                }
                 actNode.interfaces = interfaces
             }
             this.props.action(actNode)
@@ -87,7 +91,7 @@ class DiscoverModal extends Component {
             let typeChecked = document.getElementById('type').checked
             if (!typeChecked) {
                 blankChkCount++
-                updatedNode.Type = updatedNode.Type
+                updatedNode.Type = updatedNode.Type ? updatedNode.Type : ''
             } else {
                 updatedNode.Type = actNode.Type
             }
@@ -102,19 +106,19 @@ class DiscoverModal extends Component {
             let kernelChecked = document.getElementById('kernel').checked
             if (!kernelChecked) {
                 blankChkCount++
-                updatedNode.Kernel = updatedNode.Kernel
+                updatedNode.Kernel = updatedNode.Kernel ? updatedNode.Kernel : ''
             } else {
                 updatedNode.Kernel = actNode.Kernel
             }
             let isoChecked = document.getElementById('iso').checked
             if (!isoChecked) {
                 blankChkCount++
-                updatedNode.BaseISO = updatedNode.BaseISO
+                updatedNode.BaseISO = updatedNode.BaseISO ? updatedNode.BaseISO : ''
             } else {
                 updatedNode.BaseISO = actNode.BaseISO
             }
             let interfaceChecked = document.getElementById('interface').checked
-            let updateInterfaces = updatedNode.interfaces
+            let updateInterfaces = updatedNode.interfaces ? updatedNode.interfaces : []
             if (!interfaceChecked) {
                 blankChkCount++
 
@@ -124,45 +128,37 @@ class DiscoverModal extends Component {
                     let chkInterface = document.getElementById(interfaceId).checked
                     if (chkInterface) {
                         let newInterfc = {}
-                        if (item.existingInterface.Is_management_interface) {
-                            updateInterfaces[index].Name = item.existingInterface.Name ? item.existingInterface.Name : '',
-                                updateInterfaces[index].Ip_address = item.existingInterface.Ip_address ? item.existingInterface.Ip_address : '',
-                                updateInterfaces[index].Admin_state = item.existingInterface.Admin_state ? item.existingInterface.Admin_state : '',
-                                updateInterfaces[index].Remote_node_name = item.existingInterface.Remote_node_name ? item.existingInterface.Remote_node_name : '',
-                                updateInterfaces[index].Remote_interface = item.existingInterface.Remote_interface ? item.existingInterface.Remote_interface : '',
-                                updateInterfaces[index].Is_management_interface = item.existingInterface.Is_management_interface
 
-                        } else {
-                            item.existingInterface.Name = item.actualInterface.Name ? item.actualInterface.Name : '',
-                                item.existingInterface.Ip_address = item.actualInterface.Ip_address ? item.actualInterface.Ip_address : '',
-                                item.existingInterface.Admin_state = item.actualInterface.Admin_state ? item.actualInterface.Admin_state : '',
-                                item.existingInterface.Remote_node_name = item.actualInterface.Remote_node_name ? item.actualInterface.Remote_node_name : '',
-                                item.existingInterface.Remote_interface = item.actualInterface.Remote_interface ? item.actualInterface.Remote_interface : '',
-                                item.existingInterface.Is_management_interface = item.actualInterface.Is_management_interface
+                        item.existingInterface.Name = item.actualInterface.Name ? item.actualInterface.Name : '',
+                            item.existingInterface.Ip_address = item.actualInterface.Ip_address ? item.actualInterface.Ip_address : '',
+                            item.existingInterface.Admin_state = item.actualInterface.Admin_state ? item.actualInterface.Admin_state : '',
+                            item.existingInterface.Remote_node_name = item.actualInterface.Remote_node_name ? item.actualInterface.Remote_node_name : '',
+                            item.existingInterface.Remote_interface = item.actualInterface.Remote_interface ? item.actualInterface.Remote_interface : '',
+                            item.existingInterface.Is_management_interface = item.actualInterface.Is_management_interface
 
 
-                            newInterfc.Name = item.actualInterface.Name ? item.actualInterface.Name : '',
-                                newInterfc.Ip_address = item.actualInterface.Ip_address ? item.actualInterface.Ip_address : '',
-                                newInterfc.Admin_state = item.actualInterface.Admin_state ? item.actualInterface.Admin_state : '',
-                                newInterfc.Remote_node_name = item.actualInterface.Remote_node_name ? item.actualInterface.Remote_node_name : '',
-                                newInterfc.Remote_interface = item.actualInterface.Remote_interface ? item.actualInterface.Remote_interface : '',
-                                newInterfc.Is_management_interface = item.actualInterface.Is_management_interface
+                        newInterfc.Name = item.actualInterface.Name ? item.actualInterface.Name : '',
+                            newInterfc.Ip_address = item.actualInterface.Ip_address ? item.actualInterface.Ip_address : '',
+                            newInterfc.Admin_state = item.actualInterface.Admin_state ? item.actualInterface.Admin_state : '',
+                            newInterfc.Remote_node_name = item.actualInterface.Remote_node_name ? item.actualInterface.Remote_node_name : '',
+                            newInterfc.Remote_interface = item.actualInterface.Remote_interface ? item.actualInterface.Remote_interface : '',
+                            newInterfc.Is_management_interface = item.actualInterface.Is_management_interface
 
-                            updateInterfaces.map((value, key) => {
-                                if (value.Name == newInterfc.Name) {
-                                    updateInterfaces[key].Admin_state = newInterfc.Admin_state ? newInterfc.Admin_state : ''
-                                    updateInterfaces[key].Ip_address = newInterfc.Ip_address ? newInterfc.Ip_address : ''
-                                    updateInterfaces[key].Is_management_interface = newInterfc.Is_management_interface
-                                    updateInterfaces[key].Name = newInterfc.Name
-                                    updateInterfaces[key].Remote_interface = newInterfc.Remote_interface ? newInterfc.Remote_interface : ''
-                                    updateInterfaces[key].Remote_node_name = newInterfc.Remote_node_name ? newInterfc.Remote_node_name : ''
+                        updateInterfaces.map((value, key) => {
+                            if (value.Name == newInterfc.Name) {
+                                updateInterfaces[key].Admin_state = newInterfc.Admin_state ? newInterfc.Admin_state : ''
+                                updateInterfaces[key].Ip_address = newInterfc.Ip_address ? newInterfc.Ip_address : ''
+                                updateInterfaces[key].Is_management_interface = newInterfc.Is_management_interface
+                                updateInterfaces[key].Name = newInterfc.Name
+                                updateInterfaces[key].Remote_interface = newInterfc.Remote_interface ? newInterfc.Remote_interface : ''
+                                updateInterfaces[key].Remote_node_name = newInterfc.Remote_node_name ? newInterfc.Remote_node_name : ''
 
-                                }
-                            })
+                            }
+                        })
 
 
-                            // updateInterfaces.push(newInterfc)
-                        }
+                        updateInterfaces.push(newInterfc)
+
                     } else {
                         blankChkCount++
                         blankInterfaceChkCount++
@@ -171,7 +167,7 @@ class DiscoverModal extends Component {
 
 
 
-                blankInterfaceChkCount == interfaceCheckboxes.length ? ((updatedNode.interfaces = updatedNode.interfaces) && (updatedNode.interfaces = updatedNode.interfaces)) : ((updatedNode.interfaces = updateInterfaces) && (updatedNode.interfaces = updateInterfaces))
+                blankInterfaceChkCount == interfaceCheckboxes.length ? (updatedNode.interfaces = updatedNode.interfaces) : (updatedNode.interfaces = updateInterfaces)
 
             } else {
 
@@ -286,29 +282,35 @@ class DiscoverModal extends Component {
         let actualInterfaces = this.state.actualNode.interfaces
 
         //to get common interfaces from existing and actual interfaces
-        existingInterfaces.map((exitem, index) => {
-            if (actualInterfaces && actualInterfaces.length) {
-                actualInterfaces.map((acItem, acindex) => {
-                    if (exitem.Name == acItem.Name) {
-                        tempCommonExistInterface.push(exitem)
-                        tempCommonActInterface.push(acItem)
-                    }
-                })
-            }
+        if (existingInterfaces && existingInterfaces.length) {
+            existingInterfaces.map((exitem, index) => {
+                if (actualInterfaces && actualInterfaces.length) {
+                    actualInterfaces.map((acItem, acindex) => {
+                        if (exitem.Name == acItem.Name) {
+                            tempCommonExistInterface.push(exitem)
+                            tempCommonActInterface.push(acItem)
+                        }
+                    })
+                }
 
-        })
+            })
+        }
 
         let stringTemp = []
 
-        tempCommonExistInterface.map((temp) => {
-            stringTemp.push(temp.Name)
-        })
+        if (tempCommonExistInterface && tempCommonExistInterface.length) {
+            tempCommonExistInterface.map((temp) => {
+                stringTemp.push(temp.Name)
+            })
+        }
 
         let stringExist = []
 
-        existingInterfaces.map((exist) => {
-            stringExist.push(exist.Name)
-        })
+        if (existingInterfaces && existingInterfaces.length) {
+            existingInterfaces.map((exist) => {
+                stringExist.push(exist.Name)
+            })
+        }
 
         let stringAct = []
 
@@ -317,50 +319,66 @@ class DiscoverModal extends Component {
                 stringAct.push(act.Name)
             })
         }
+
         let unCommonExisting = []
 
-        unCommonExisting = stringExist.filter(function (obj) { return stringTemp.indexOf(obj) == -1; });
+        if (stringExist && stringExist.length) {
+            unCommonExisting = stringExist.filter(function (obj) { return stringTemp.indexOf(obj) == -1; });
+        }
 
         let unCommonExistingInterfaces = []
-        unCommonExisting.map((i) => {
-            let unCommonExistingInterface = {}
-            existingInterfaces.map((exist) => {
+        if (unCommonExisting && unCommonExisting.length) {
+            unCommonExisting.map((i) => {
+                let unCommonExistingInterface = {}
+                existingInterfaces.map((exist) => {
 
-                if (exist.Name == i) {
-                    unCommonExistingInterface.Name = exist.Name ? exist.Name : ''
-                    unCommonExistingInterface.Ip_address = exist.Ip_address ? exist.Ip_address : ''
-                    unCommonExistingInterface.Admin_state = exist.Admin_state ? exist.Admin_state : ''
-                    unCommonExistingInterface.Remote_node_name = exist.Remote_node_name ? exist.Remote_node_name : ''
-                    unCommonExistingInterface.Remote_interface = exist.Remote_interface ? exist.Remote_interface : ''
-                    unCommonExistingInterface.Is_management_interface = exist.Is_management_interface
-                }
+                    if (exist.Name == i) {
+                        unCommonExistingInterface.Name = exist.Name ? exist.Name : ''
+                        unCommonExistingInterface.Ip_address = exist.Ip_address ? exist.Ip_address : ''
+                        unCommonExistingInterface.Admin_state = exist.Admin_state ? exist.Admin_state : ''
+                        unCommonExistingInterface.Remote_node_name = exist.Remote_node_name ? exist.Remote_node_name : ''
+                        unCommonExistingInterface.Remote_interface = exist.Remote_interface ? exist.Remote_interface : ''
+                        unCommonExistingInterface.Is_management_interface = exist.Is_management_interface
+                    }
+                })
+                unCommonExistingInterfaces.push(unCommonExistingInterface)
+
             })
-            unCommonExistingInterfaces.push(unCommonExistingInterface)
-
-        })
+        }
 
         let unCommonActual = []
 
-        unCommonActual = stringAct.filter(function (obj) { return stringTemp.indexOf(obj) == -1; });
+        if (stringAct && stringAct.length) {
+            unCommonActual = stringAct.filter(function (obj) { return stringTemp.indexOf(obj) == -1; });
+        }
 
         let unCommonActualInterfaces = []
-        unCommonActual.map((i) => {
-            let unCommonActualInterface = {}
-            if (actualInterfaces && actualInterfaces.length) {
-                actualInterfaces.map((act) => {
-                    if (act.Name == i) {
-                        unCommonActualInterface.Name = act.Name ? act.Name : ''
-                        unCommonActualInterface.Ip_address = act.Ip_address ? act.Ip_address : ''
-                        unCommonActualInterface.Admin_state = act.Admin_state ? act.Admin_state : ''
-                        unCommonActualInterface.Remote_node_name = act.Remote_node_name ? act.Remote_node_name : ''
-                        unCommonActualInterface.Remote_interface = act.Remote_interface ? act.Remote_interface : ''
-                        unCommonActualInterface.Is_management_interface = act.Is_management_interface
-                    }
-                })
-            }
-            unCommonActualInterfaces.push(unCommonActualInterface)
 
-        })
+        if (unCommonActual && unCommonActual.length) {
+            unCommonActual.map((i) => {
+                let unCommonActualInterface = {}
+                if (actualInterfaces && actualInterfaces.length) {
+                    actualInterfaces.map((act) => {
+                        if (act.Name == i) {
+                            unCommonActualInterface.Name = act.Name ? act.Name : ''
+                            unCommonActualInterface.Ip_address = act.Ip_address ? act.Ip_address : ''
+                            unCommonActualInterface.Admin_state = act.Admin_state ? act.Admin_state : ''
+                            unCommonActualInterface.Remote_node_name = act.Remote_node_name ? act.Remote_node_name : ''
+                            unCommonActualInterface.Remote_interface = act.Remote_interface ? act.Remote_interface : ''
+                            unCommonActualInterface.Is_management_interface = act.Is_management_interface
+                        }
+                    })
+                }
+                unCommonActualInterfaces.push(unCommonActualInterface)
+
+            })
+        }
+
+        let bothInterfaceSame = false
+        if ((tempCommonExistInterface.length == tempCommonActInterface.length) && (unCommonExistingInterfaces.length == 0) && (unCommonActualInterfaces.length == 0)) {
+            bothInterfaceSame = true
+        }
+
         let samelen = unCommonExistingInterfaces.length + unCommonActualInterfaces.length
         let sameLenEx = []
         for (let i = 0; i < samelen; i++) {
@@ -378,8 +396,16 @@ class DiscoverModal extends Component {
             }
         }
 
-        let finalExistingList = [...tempCommonExistInterface, ...sameLenEx]
-        let finalActualList = [...tempCommonActInterface, ...unCommonActualInterfaces]
+        let finalExistingList = []
+        let finalActualList = []
+        if (bothInterfaceSame) {
+            finalExistingList = tempCommonExistInterface
+            finalActualList = tempCommonActInterface
+        } else {
+            finalExistingList = [...tempCommonExistInterface, ...sameLenEx]
+
+            finalActualList = [...tempCommonActInterface, ...unCommonActualInterfaces]
+        }
 
         let totalCheckBoxLength = finalActualList.length
 
@@ -417,7 +443,7 @@ class DiscoverModal extends Component {
 
         if (interfaceTable && interfaceTable.length) {
             let row = (<Row>
-                <Col sm="6" className='pad'><b>{existingInterfaces.length} existing Interfaces</b></Col>
+                <Col sm="6" className='pad'><b>{existingInterfaces ? existingInterfaces.length ? existingInterfaces.length : '0' : ''} existing Interfaces</b></Col>
                 <Col sm="6" className='pad'><b>{actualInterfaces ? actualInterfaces.length ? actualInterfaces.length : '0' : ''} actual Interfaces </b></Col>
             </Row>)
             rows.push(row)

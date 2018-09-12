@@ -10,9 +10,9 @@ import '../../views.css';
 import { NotificationManager } from 'react-notifications';
 import SearchComponent from '../../../components/SearchComponent/SearchComponent';
 import MultiselectDropDown from '../../../components/MultiselectDropdown/MultiselectDropDown';
-import { trimString, converter } from '../../../components/Utility/Utility';
-import { FETCH_ALL_SITES, FETCH_ALL_ROLES, FETCH_ALL_ISOS, FETCH_ALL_KERNELS, FETCH_ALL_SYSTEM_TYPES, FETCH_ALL_NODES, ADD_NODE, DELETE_NODES } from '../../../apis/RestConfig';
-import { getRequest, postRequest } from '../../../apis/RestApi';
+import { trimString, converter, validateIPaddress } from '../../../components/Utility/Utility';
+import { FETCH_ALL_SITES, FETCH_ALL_ROLES, FETCH_ALL_ISOS, FETCH_ALL_KERNELS, FETCH_ALL_SYSTEM_TYPES, FETCH_ALL_NODES, ADD_NODE, UPDATE_NODES, DELETE_NODES } from '../../../apis/RestConfig';
+import { getRequest, postRequest, putRequest } from '../../../apis/RestApi';
 
 class NodeSummary extends React.Component {
     constructor(props) {
@@ -236,7 +236,12 @@ class NodeSummary extends React.Component {
                         </Row>
                         <Row>
                             <Col sm="6" className="marTop10">Roles<font color="red"><sup>*</sup></font>
-                                <MultiselectDropDown value={this.state.selectedRoles} getSelectedData={this.handleChanges} options={this.state.roleData} /></Col>
+                                <MultiselectDropDown value={this.state.selectedRoles} getSelectedData={this.handleChanges} options={this.state.roleData} />
+                                <br />
+                                Host<font color="red"><sup>*</sup></font>
+                                <Input id='hostInterface' className="marTop10" />
+                            </Col>
+
                             <Col sm="6" className="marTop10">
                                 Serial Number <Input id='nodeSerialNumber' className="marTop10" />
                                 <br />Type
@@ -264,6 +269,14 @@ class NodeSummary extends React.Component {
     addNode() {
         let nodeName = document.getElementById('nodeName').value
         let name = trimString(nodeName)
+
+        let host = document.getElementById('hostInterface').value
+        let validIp = validateIPaddress(host)
+        if (!validIp) {
+            this.setState({ visible: true, errMsg: "Please add valid IP Address" })
+            return;
+        }
+
         let self = this
         let validateUnique = true
         let nodesList = self.state.nodes
@@ -290,6 +303,7 @@ class NodeSummary extends React.Component {
         this.state.selectedRoles.map((data) => roles.push(data.Id));
         let params = {
             'Name': name,
+            'Host': host,
             'Iso_Id': parseInt(self.state.selectedIsoId),
             'Site_Id': parseInt(self.state.selectedSiteId),
             'roles': roles,
@@ -303,10 +317,11 @@ class NodeSummary extends React.Component {
                 if (!renderedData) {
                     renderedData = []
                 }
-
+                let addNupdateNode = data.Data
                 renderedData.push(data.Data)
                 let nodesData = self.convertData(renderedData, self.state.typedata, self.state.kernelData, self.state.isoData, self.state.siteData, self.state.roleData)
                 self.setState({ nodes: nodesData, displayModel: false, visible: false })
+
             }
             else {
                 NotificationManager.error("Something went wrong", "node")

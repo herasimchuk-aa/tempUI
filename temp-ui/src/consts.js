@@ -58,6 +58,7 @@ export let connectivityHead = [
     {
         id: 'Status',
         displayName: 'Status',
+        operation: 'badge',
         colSize: 1
     },
     {
@@ -101,12 +102,12 @@ export let connectivityHead = [
         operation: 'linkArray',
         colSize: 1
     },
-    // {
-    //     id: 'Lldp_matched',
-    //     displayName: 'LLDP matched',
-    //     operation: 'lldpArray',
-    //     colSize: 1
-    // }
+    {
+        id: 'Lldp_matched',
+        displayName: 'LLDP matched',
+        operation: 'lldpArray',
+        colSize: 1
+    }
     // {
     //     id: 'Interface_alarm',
     //     displayName: 'Interface Alarms',

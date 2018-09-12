@@ -398,6 +398,9 @@ class SummaryDataTable extends Component {
             case "linkArray":
                 value = <TextCellForArray data={data} expandedrow={expandedRow} identity={'link'} />
                 break
+            case "lldpArray":
+                value = <TextCellForArray data={data} expandedrow={expandedRow} identity={'lldp'} />
+                break
             default:
                 value = ''
                 break
@@ -424,6 +427,9 @@ class SummaryDataTable extends Component {
                 break
             case "linkArray":
                 value = <GetFirstValueCell data={data} connectivityrow={connectivityRow} identity={'link'} />
+                break
+            case "lldpArray":
+                value = <GetFirstValueCell data={data} connectivityrow={connectivityRow} identity={'lldp'} />
                 break
             case 'validateKernel':
                 value = <ValidationCell data={data} match={'IsKernelMatched'} field={'kernel'} />

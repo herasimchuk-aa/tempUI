@@ -406,31 +406,14 @@ class NodeConfig extends Component {
   }
 
   showDiscoverButton = () => {
-    let interfaces = this.state.interfaces
-    let chkDiscoverbtn = null
-    if (!interfaces || !interfaces.length) {
-      chkDiscoverbtn = false
+    if (this.state.isLoading) {
+      return (<Button className="custFillBtn" outline color="secondary" style={{ cursor: 'wait' }} > Discovering.... </Button >)
     }
-    else {
-      interfaces.map((item) => {
-        if (item.Is_management_interface == true) {
-          chkDiscoverbtn = true
-        }
-      })
+    if (!this.state.isLoading) {
+      return (<Button className='custBtn' outline color="secondary" onClick={() => (this.discoverModal())
+      }> Discover </Button >)
     }
-    if (chkDiscoverbtn) {
-      if (this.state.isLoading) {
-        return (<Button className="custFillBtn" outline color="secondary" style={{ cursor: 'wait' }} > Discovering.... </Button >)
-      }
-      if (!this.state.isLoading) {
-        return (<Button className='custBtn' outline color="secondary" onClick={() => (this.discoverModal())
-        }> Discover </Button >)
-      }
 
-    }
-    else {
-      return (<Button className="custBtn" outline color="secondary" disabled > Discover </Button>)
-    }
   }
 
   discoverModal = () => {
@@ -495,9 +478,9 @@ class NodeConfig extends Component {
 
   actualNode = (params) => {
     let self = this
-    let kernelId = null
-    let typeId = null
-    let isoId = null
+    let kernelId = 0
+    let typeId = 0
+    let isoId = 0
 
     let kernels = self.state.kernelData
     let kernelExist = false
@@ -508,28 +491,31 @@ class NodeConfig extends Component {
         break
       }
     }
-
     let kernelPro
     if (!kernelExist) {
-      let dataparams = {
-        'Name': params.Kernel
-      }
-      kernelPro = postRequest(ADD_KERNEL, dataparams).then(function (data) {
-        if (data.StatusCode == 200) {
-          let renderedData = self.state.kernelData;
-          if (!renderedData) {
-            renderedData = []
+      if (params.Kernel) {
+        let dataparams = {
+          'Name': params.Kernel
+        }
+        kernelPro = postRequest(ADD_KERNEL, dataparams).then(function (data) {
+          if (data.StatusCode == 200) {
+            let renderedData = self.state.kernelData;
+            if (!renderedData) {
+              renderedData = []
+            }
+            kernelId = data.Data.Id
+            renderedData.push(data.Data)
+            self.setState({ kernelData: renderedData })
           }
-          kernelId = data.Data.Id
-          renderedData.push(data.Data)
-          self.setState({ kernelData: renderedData })
-        }
-        else {
-          NotificationManager.error("Something went wrong", "Kernel")
-        }
-      })
+          else {
+            NotificationManager.error("Something went wrong", "Kernel")
+          }
+        })
+      } else {
+        kernelId = 0
+      }
     } else {
-      typePro = Promise.resolve(isoId)
+      kernelPro = Promise.resolve()
     }
 
 
@@ -544,25 +530,30 @@ class NodeConfig extends Component {
     }
     let typePro
     if (!typeExist) {
-      let dataparams = {
-        'Name': params.Type
-      }
-      typePro = postRequest(ADD_SYSTEM_TYPE, dataparams).then(function (data) {
-        if (data.StatusCode == 200) {
-          let renderedData = self.state.typeData;
-          if (!renderedData) {
-            renderedData = []
+      if (params.Type) {
+        let dataparams = {
+          'Name': params.Type
+        }
+        typePro = postRequest(ADD_SYSTEM_TYPE, dataparams).then(function (data) {
+          if (data.StatusCode == 200) {
+            let renderedData = self.state.typeData;
+            if (!renderedData) {
+              renderedData = []
+            }
+            typeId = data.Data.Id
+            renderedData.push(data.Data)
+            self.setState({ typeData: renderedData })
           }
-          typeId = data.Data.Id
-          renderedData.push(data.Data)
-          self.setState({ typeData: renderedData })
-        }
-        else {
-          NotificationManager.error("Something went wrong", "type")
-        }
-      })
+          else {
+            NotificationManager.error("Something went wrong", "type")
+          }
+        })
+      } else {
+        typeId = 0
+      }
+
     } else {
-      typePro = Promise.resolve(isoId)
+      typePro = Promise.resolve()
     }
 
 
@@ -578,23 +569,28 @@ class NodeConfig extends Component {
     }
     let isoPro
     if (!isoExist) {
-      let dataparams = {
-        'Name': params.BaseISO
-      }
-      isoPro = postRequest(ADD_ISO, dataparams).then(function (data) {
-        if (data.StatusCode == 200) {
-          let renderedData = self.state.isoData;
-          if (!renderedData) {
-            renderedData = []
+      if (params.BaseISO) {
+        let dataparams = {
+          'Name': params.BaseISO
+        }
+        isoPro = postRequest(ADD_ISO, dataparams).then(function (data) {
+          if (data.StatusCode == 200) {
+            let renderedData = self.state.isoData;
+            if (!renderedData) {
+              renderedData = []
+            }
+            isoId = data.Data.Id
+            renderedData.push(data.Data)
+            self.setState({ isoData: renderedData })
           }
-          isoId = data.Data.Id
-          renderedData.push(data.Data)
-          self.setState({ isoData: renderedData })
-        }
-        else {
-          NotificationManager.error("Something went wrong", "iso")
-        }
-      })
+          else {
+            NotificationManager.error("Something went wrong", "iso")
+          }
+        })
+      } else {
+        isoId = 0
+      }
+
     } else {
       isoPro = Promise.resolve()
     }
@@ -609,7 +605,7 @@ class NodeConfig extends Component {
         selectedLinuxId: kernelId,
         selectedSiteId: params.Site_Id,
         interfaces: params.interfaces ? params.interfaces : [],
-        selectedSerialNo: params.SerialNumber ? params.SerialNumber : '',
+        selectedSerialNo: params.SerialNumber ? params.SerialNumber : params.SN ? params.SN : '',
         openDiscoverModal: false
       })
 
@@ -626,20 +622,20 @@ class NodeConfig extends Component {
           datum.Kernel_Id = parseInt(kernelId),
           datum.Site_Id = parseInt(self.state.selectedSiteId),
           datum.interfaces = params.interfaces,
-          datum.SN = params.SerialNumber
+          datum.SN = params.SerialNumber ? params.SerialNumber : params.SN ? params.SN : '',
 
-        putRequest(UPDATE_NODES, datum).then(function (data) {
-          if (data.StatusCode == 200) {
-            let renderedData = self.state.nodes;
-            if (!renderedData) {
-              renderedData = []
+          putRequest(UPDATE_NODES, datum).then(function (data) {
+            if (data.StatusCode == 200) {
+              let renderedData = self.state.nodes;
+              if (!renderedData) {
+                renderedData = []
+              }
             }
-          }
-          else {
-            NotificationManager.error("Something went wrong", "node")
-          }
-          self.setState({ displayModel: false, visible: false })
-        })
+            else {
+              NotificationManager.error("Something went wrong", "node")
+            }
+            self.setState({ displayModel: false, visible: false })
+          })
       })
     })
 
