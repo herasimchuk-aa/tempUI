@@ -135,7 +135,7 @@ class EthTool extends Component {
                         Description <Input className="marTop10" id='ethDesc' /><br />
                     </ModalBody>
                     <ModalFooter>
-                        <Button className="custBtn" outline color="primary" onClick={() => (this.addGoes())}>Add</Button>{'  '}
+                        <Button className="custBtn" outline color="primary" onClick={() => (this.addEthTool())}>Add</Button>{'  '}
                         <Button className="custBtn" outline color="primary" onClick={() => (this.cancel())}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
@@ -147,16 +147,16 @@ class EthTool extends Component {
         this.setState({ displayModel: !this.state.displayModel, visible: false })
     }
 
-    addGoes() {
+    addEthTool() {
         let self = this;
-        let goes = document.getElementById('ethName').value
-        let validGoes = trimString(goes)
-        if (!validGoes) {
+        let ethTool = document.getElementById('ethName').value
+        let validEthTool = trimString(ethTool)
+        if (!validEthTool) {
             this.setState({ visible: true })
             return;
         }
         let params = {
-            'Name': validGoes,
+            'Name': validEthTool,
             'Location': document.getElementById('ethLoc').value,
             'Description': document.getElementById('ethDesc').value
         }
@@ -242,7 +242,7 @@ class EthTool extends Component {
                 <Button onClick={() => (this.showEditDialogBox())} className="custBtn animated fadeIn">Edit</Button>
                 {this.showDeleteButton()}
             </div>
-            <Row className="tableTitle">Goes</Row>
+            <Row className="tableTitle">EthTool</Row>
             <SummaryDataTable key={this.counter++} heading={this.state.ethHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
             {this.renderUpgradeModelDialog()}
             {this.renderEditModelDialog()}
