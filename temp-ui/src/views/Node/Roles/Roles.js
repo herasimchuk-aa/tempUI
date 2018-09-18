@@ -246,6 +246,7 @@ class Roles extends Component {
         else {
             params = {
                 'Id': edittedData.Id,
+                'ParentId': null,
                 'Description': document.getElementById('roleDescEdit').value ? document.getElementById('roleDescEdit').value : "-"
             }
         }

@@ -209,7 +209,7 @@ class NodeConfig extends Component {
           <Col sm="2" className="pad">{item.Ip_address ? item.Ip_address : '-'}</Col>
           <Col sm="2" className="pad">{item.Remote_node_name ? item.Remote_node_name : '-'}</Col>
           <Col sm="2" className="pad">{item.Remote_interface ? item.Remote_interface : "-"}</Col>
-          <Col sm="1" className="pad" style={{ cursor: 'pointer' }}><i className="fa fa-pencil" aria-hidden="true" onClick={() => (self.updatInterfaceModal(item.Id))}></i></Col>
+          <Col sm="1" className="pad" style={{ cursor: 'pointer' }}><i className="fa fa-pencil" aria-hidden="true" onClick={() => (self.updatInterfaceModal(item.Id, item.Name))}></i></Col>
 
         </Row>)
         rows.push(row)
@@ -229,16 +229,22 @@ class NodeConfig extends Component {
     }
   }
 
-  updatInterfaceModal = (Id) => {
+  updatInterfaceModal = (Id, Name) => {
     let interfaceData = this.state.nodes[0].interfaces
     let itemData = {}
 
     interfaceData.map((interfaceItem) => {
-      if (Id === interfaceItem.Id) {
-        itemData = interfaceItem
+      if (Id > 0) {
+        if (Id === interfaceItem.Id) {
+          itemData = interfaceItem
+        }
+      }
+      else {
+        if (Name === interfaceItem.Name) {
+          itemData = interfaceItem
+        }
       }
     })
-
     this.setState({ displayModel: !this.state.displayModel, interfaceData: itemData })
   }
 
@@ -251,7 +257,7 @@ class NodeConfig extends Component {
       let data = this.state.interfaceData
 
       return (
-        <ModalComponent getData={this.updateNodeCall} actionButton={'Update'} data={data} ></ModalComponent>
+        <ModalComponent cancel={() => this.closeInterfaceModal()} getData={this.updateNodeCall} actionButton={'Update'} data={data} ></ModalComponent>
       );
     }
   }
@@ -263,9 +269,14 @@ class NodeConfig extends Component {
         if (interfaceItem.Id === params.Id) {
           interfaceItem.Name = params.Name
           interfaceItem.Ip_address = params.Ip_address
+          interfaceItem.Subnet = params.Subnet
+          interfaceItem.Speed = parseInt(params.Speed)
+          interfaceItem.FecType = params.FecType
+          interfaceItem.MediaType = params.MediaType
           interfaceItem.Remote_node_name = params.Remote_node_name
           interfaceItem.Remote_interface = params.Remote_interface
           interfaceItem.Is_management_interface = params.Is_management_interface
+          interfaceItem.Autoneg = params.Autoneg
         }
       })
       this.setState({ interfaces: datum.interfaces })
@@ -275,7 +286,7 @@ class NodeConfig extends Component {
   }
 
   closeInterfaceModal = () => {
-    this.setState({ displayNewInterfaceModel: false })
+    this.setState({ displayNewInterfaceModel: false, displayModel: false })
   }
 
   renderAddInterface() {
@@ -290,10 +301,16 @@ class NodeConfig extends Component {
     let data = this.state.nodes
     let datum = data[0]
     let newInterface = {
+      'Id': params.Id,
       'Remote_node_name': params.Remote_node_name,
       'Remote_interface': params.Remote_interface,
       'Ip_address': params.Ip_address,
       'Name': params.Name,
+      'Subnet': params.Subnet,
+      'Speed': parseInt(params.Speed),
+      'FecType': params.FecType,
+      'MediaType': params.MediaType,
+      'Autoneg': params.Autoneg,
       'Is_management_interface': params.Is_management_interface,
       'Node_Id': datum.Id
     }

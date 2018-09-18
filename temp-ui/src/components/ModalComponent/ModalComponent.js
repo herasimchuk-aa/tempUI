@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { validateIPaddress, trimString } from '../Utility/Utility';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert, ListGroupItem, ListGroup } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert, ListGroupItem, ListGroup, Row, Col } from 'reactstrap';
 
 class ModalComponent extends Component {
 
@@ -10,8 +10,13 @@ class ModalComponent extends Component {
             open: true,
             port: '',
             ip: '',
+            subnet: '',
             remoteName: '',
             remoteInterface: '',
+            speed: '',
+            autoNEG: false,
+            fecType: '',
+            mediaType: '',
             isMngmntIntf: false,
             id: 0,
             error: []
@@ -38,6 +43,11 @@ class ModalComponent extends Component {
             id: props.data.Id,
             port: props.data.Name,
             ip: ip,
+            subnet: props.data.Subnet,
+            speed: props.data.Speed,
+            autoNEG: props.data.Autoneg,
+            fecType: props.data.FecType,
+            mediaType: props.data.MediaType,
             remoteName: serverName,
             remoteInterface: serverPort,
             isMngmntIntf: props.data.isMngmntIntf
@@ -63,13 +73,19 @@ class ModalComponent extends Component {
         }
 
         let newInterface = {
-            'Id': this.state.id,
+            'Id': this.state.id++,
             'Remote_node_name': document.getElementById('remoteName').value,
             'Remote_interface': document.getElementById('remoteInterface').value,
             'Ip_address': ipAddress,
             'Name': validInterfacename,
+            'Subnet': document.getElementById('subnet').value,
+            'Speed': document.getElementById('speed').value,
+            'FecType': document.getElementById('fecType').value,
+            'MediaType': document.getElementById('mediaType').value,
+            'Autoneg': document.getElementById('autoNeg').checked,
             'Is_management_interface': document.getElementById('mngmntInt').checked,
         }
+
 
         this.props.getData(newInterface)
     }
@@ -80,7 +96,7 @@ class ModalComponent extends Component {
 
     closeModal() {
         this.setState({ open: false })
-
+        this.props.cancel()
     }
 
     render() {
@@ -93,15 +109,36 @@ class ModalComponent extends Component {
             </Alert>
         }
         return (
-            <Modal isOpen={this.state.open} toggle={() => this.closeModal()} size="sm" centered="true" >
+            <Modal isOpen={this.state.open} toggle={() => this.closeModal()} size="lg" centered="true" >
                 <ModalHeader toggle={() => this.closeModal()}>{this.props.actionButton} Interface </ModalHeader>
                 {errorAlert}
                 <ModalBody>
-                    <div className="marTop10">Name<font color="red"><sup>*</sup></font> <Input autoFocus type="text" id="port" defaultValue={this.state.port} /></div>
+                    <Row>
+                        <Col>Name<font color="red"><sup>*</sup></font> <Input className="marTop10" autoFocus type="text" id="port" defaultValue={this.state.port} /></Col>
+                        <Col>IP Address<font color="red"><sup>*</sup></font><Input className="marTop10" type="text" id="ip" defaultValue={this.state.ip} /></Col>
+                        <Col>Subnet<font color="red"><sup>*</sup></font><Input className="marTop10" type="text" id="subnet" defaultValue={this.state.subnet} /></Col>
+                    </Row>
+                    <Row className="marTop10">
+                        <Col>Speed<Input className="marTop10" type="text" id="speed" defaultValue={this.state.speed} /></Col>
+                        <Col>FEC<Input className="marTop10" type="text" id="fecType" defaultValue={this.state.fecType} /></Col>
+                        <Col>Media<Input className="marTop10" type="text" id="mediaType" defaultValue={this.state.mediaType} /></Col><br />
+                    </Row>
+                    <Row className="marTop10">
+                        <Col>Remote Node Name<Input className="marTop10" type="text" id="remoteName" defaultValue={this.state.remoteName} /></Col>
+                        {/* <Col></Col> */}
+                        <Col>Remote Node Interface<Input className="marTop10" type="text" id="remoteInterface" defaultValue={this.state.remoteInterface} /></Col><br />
+                    </Row>
+                    <Row className="marTop10">
+                        <Col><input className="marTop10" type="checkbox" id="autoNeg" defaultChecked={this.state.autoNEG} /> AutoNEG</Col><br />
+                        {/* <Col></Col> */}
+                        <Col><input className="marTop10" type="checkbox" id="mngmntInt" defaultChecked={this.state.isMngmntIntf} /> Management Interface</Col>
+                    </Row>
+
+                    {/* <div className="marTop10">Name<font color="red"><sup>*</sup></font> <Input autoFocus type="text" id="port" defaultValue={this.state.port} /></div>
                     <div className="marTop10">IP Address<font color="red"><sup>*</sup></font><Input type="text" id="ip" defaultValue={this.state.ip} /></div>
                     <div className="marTop10">Remote Node Name<Input type="text" id="remoteName" defaultValue={this.state.remoteName} /></div>
                     <div className="marTop10">Remote Node Interface<Input type="text" id="remoteInterface" defaultValue={this.state.remoteInterface} /></div>
-                    <div className="marTop10"><input type="checkbox" id="mngmntInt" defaultChecked={this.state.isMngmntIntf} /> Management Interface</div>
+                    <div className="marTop10"><input type="checkbox" id="mngmntInt" defaultChecked={this.state.isMngmntIntf} /> Management Interface</div> */}
                 </ModalBody>
                 <ModalFooter>
                     <Button outline className="custBtn" color="primary" onClick={() => (this.getdata())}>{this.props.actionButton}</Button>

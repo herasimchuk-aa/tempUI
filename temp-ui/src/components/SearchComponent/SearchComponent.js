@@ -15,7 +15,7 @@ class SearchComponent extends Component {
             //  </CardBody>
             // </Card> 
 
-            <Input placeholder="search node.." onChange={(e) => this.onInputChange(e)} style={{width:'400px',marginRight:'-15px',borderRadius:'6px'}}/>
+            <Input placeholder="search" onChange={(e) => this.onInputChange(e)} style={{width:'400px',marginRight:'-15px',borderRadius:'6px'}}/>
         );
     }
 
