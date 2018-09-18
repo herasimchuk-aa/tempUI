@@ -23,7 +23,10 @@ import ConnectivitySummary from '../../views/Connectivity/ConnectivitySummary/Su
 import TileApp from '../../views/Connectivity/TilesApp/TilesApp';
 import Site from '../../views/Node/Site/site';
 import NodeConfig from '../../views/Node/NodeConfig';
-import Kubernetes from '../../views/Kubernetes/Kubernetes'
+import Kubernetes from '../../views/Kubernetes/Kubernetes';
+import LLDP from '../../views/Node/lldp/lldp';
+import Goes from '../../views/Node/Goes/Goes';
+import EthTool from '../../views/Node/EthTool/EthTool';
 
 
 class Full extends Component {
@@ -49,6 +52,9 @@ class Full extends Component {
                                 <Route path="/pcc/node/Types" name="Types" component={Types} />
                                 <Route path="/pcc/node/Site" name="Site" component={Site} />
                                 <Route path="/pcc/node/Linuxkernel" name="Linux Kernel" component={LinuxKernel} />
+                                <Route path="/pcc/node/Goes" name="Goes" component={Goes} />
+                                <Route path="/pcc/node/Lldp" name="Lldp" component={LLDP} />
+                                <Route path="/pcc/node/EthTool" name="ethTool" component={EthTool} />
                                 <Route path="/pcc/node/BaseLinuxIso" name="Base Linux ISO" component={BaseLinuxIso} />
                                 <Route path="/pcc/monitoring/BmcMonitor" name="Summary" component={BmcMonitor} />
                                 <Route path="/pcc/connectivity/Summary" name="Summary" component={ConnectivitySummary} />

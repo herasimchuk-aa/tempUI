@@ -28,6 +28,24 @@ export const ADD_SYSTEM_TYPE = "/type/add"
 export const UPDATE_SYSTEM_TYPE = "/type/update"
 export const DELETE_SYSTEM_TYPES = "/type/delete"
 
+// apis for goes
+export const FETCH_ALL_GOES = "/goes/"
+export const ADD_GOES = "/goes/add"
+export const UPDATE_GOES = "/goes/update"
+export const DELETE_GOES = "/goes/delete"
+
+// apis for lldp
+export const FETCH_ALL_LLDP = "/lldp/"
+export const ADD_LLDP = "/lldp/add"
+export const UPDATE_LLDP = "/lldp/update"
+export const DELETE_LLDP = "/lldp/delete"
+
+// apis for ethtool
+export const FETCH_ALL_ETHTOOL = "/ethtool/"
+export const ADD_ETHTOOL = "/ethtool/add"
+export const UPDATE_ETHTOOL = "/ethtool/update"
+export const DELETE_ETHTOOL = "/ethtool/delete"
+
 
 // apis for node
 export const FETCH_ALL_NODES = "/node"

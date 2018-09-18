@@ -199,6 +199,60 @@ export let kernelHead = [
     }
 ];
 
+export let goesHead = [
+    {
+        id: 'Name',
+        displayName: 'Name',
+        colSize: 4
+    },
+    {
+        id: 'Location',
+        displayName: 'Location',
+        colSize: 4
+    },
+    {
+        id: 'Description',
+        displayName: 'Description',
+        colSize: 4
+    }
+];
+
+export let lldpHead = [
+    {
+        id: 'Name',
+        displayName: 'Name',
+        colSize: 4
+    },
+    {
+        id: 'Location',
+        displayName: 'Location',
+        colSize: 4
+    },
+    {
+        id: 'Description',
+        displayName: 'Description',
+        colSize: 4
+    }
+];
+
+export let ethHead = [
+    {
+        id: 'Name',
+        displayName: 'Name',
+        colSize: 4
+    },
+    {
+        id: 'Location',
+        displayName: 'Location',
+        colSize: 4
+    },
+    {
+        id: 'Description',
+        displayName: 'Description',
+        colSize: 4
+    }
+];
+
 export let isoHead = [
     {
         id: 'Name',

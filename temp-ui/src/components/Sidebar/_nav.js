@@ -45,6 +45,21 @@ export default {
           icon: 'icon-map',
         },
         {
+          name: 'Goes',
+          url: '/pcc/node/Goes',
+          icon: 'icon-map',
+        },
+        {
+          name: 'LLDP',
+          url: '/pcc/node/Lldp',
+          icon: 'icon-map',
+        },
+        {
+          name: 'EthTool',
+          url: '/pcc/node/EthTool',
+          icon: 'icon-map',
+        },
+        {
           name: 'Site',
           url: '/pcc/node/Site',
           icon: 'icon-map',
