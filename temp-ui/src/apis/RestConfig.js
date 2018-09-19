@@ -65,3 +65,7 @@ export const FETCH_ALL_KUBERNETES = "/kubernetes"
 
 //apis for discover
 export const DISCOVER = "/node/discover"
+
+//apis for provision
+export const PROVISION = "/provision/"
+export const GET_PROVISION = "/provision/status/"

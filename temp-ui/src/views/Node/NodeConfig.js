@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, Label, Media, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert, UncontrolledTooltip } from 'reactstrap';
+import { Row, Col, Button, Label, Media, Input, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { ServerAPI } from '../../ServerAPI';
 import SummaryDataTable from './NodeSummary/SummaryDataTable';
 import { customHistory } from '../../index';
@@ -11,10 +11,10 @@ import ModalComponent from '../../components/ModalComponent/ModalComponent';
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
 import MultiselectDropDown from '../../components/MultiselectDropdown/MultiselectDropDown';
-import ConfirmationModal from '../../components/ConfirmationModal/ConfirmationModal';
+import ProvisionProgress from '../../components/ProvisionProgress/ProvisionProgress';
 import DiscoverModal from '../../components/DiscoverModal/DiscoverModal';
 import { invaderServerAddress } from '../../config';
-import { FETCH_ALL_SITES, FETCH_ALL_ROLES, FETCH_ALL_ISOS, FETCH_ALL_KERNELS, FETCH_ALL_SYSTEM_TYPES, UPDATE_NODES, DISCOVER, ADD_KERNEL, ADD_SYSTEM_TYPE, ADD_ISO } from '../../apis/RestConfig';
+import { FETCH_ALL_SITES, FETCH_ALL_ROLES, FETCH_ALL_ISOS, FETCH_ALL_KERNELS, FETCH_ALL_SYSTEM_TYPES, UPDATE_NODES, DISCOVER, ADD_KERNEL, ADD_SYSTEM_TYPE, ADD_ISO, PROVISION } from '../../apis/RestConfig';
 import { getRequest, postRequest, putRequest } from '../../apis/RestApi';
 
 class NodeConfig extends Component {
@@ -53,7 +53,8 @@ class NodeConfig extends Component {
       openDiscoverModal: false,
       cancelNodeConfig: false,
       interfaces: props.location.state[0].interfaces,
-      isLoading: false
+      isLoading: false,
+      executionId: 0
     }
     this.counter = 0
   }
@@ -324,14 +325,32 @@ class NodeConfig extends Component {
     NotificationManager.success('Saved Successfully', 'Interface');
   }
 
-  toggleProvisionModel() {
-    this.setState({ displayProvisionModel: !this.state.displayProvisionModel })
+  onProvisionClick() {
+    let self = this
+    let provisiondata = {}
+    provisiondata.nodeId = self.state.nodeId
+    provisiondata.role = 'cloud-node'
+    postRequest(PROVISION, provisiondata).then(function (data) {
+      if (data.StatusCode == 200) {
+        if (data && data.Data) {
+          let execution_Id = data.Data.Id
+          self.setState({ displayProvisionModel: true, executionId: execution_Id })
+        }
+      }
+      else {
+        NotificationManager.error("Something went wrong", "Provision")
+      }
+    });
   }
 
   provisionModal() {
     if (this.state.displayProvisionModel) {
-      return (<ConfirmationModal actionName={'Provision'} open={true}></ConfirmationModal>)
+      return <ProvisionProgress openPro={true} executionId={this.state.executionId} key={this.state.executionId}></ProvisionProgress>
     }
+  }
+
+  provision = () => {
+    console.log('inside provision')
   }
 
 
@@ -701,6 +720,7 @@ class NodeConfig extends Component {
     }
     return (
       <div className="animated fadeIn">
+
         <Media>
           <Media left >
             {nodeNameDiv}
@@ -742,7 +762,7 @@ class NodeConfig extends Component {
             <Media body>
             </Media>
             <Media right>
-              <Button className="custBtn" outline color="secondary" onClick={() => { this.toggleProvisionModel() }}> Provision </Button>
+              <Button className="custBtn" outline color="secondary" onClick={() => { this.onProvisionClick() }}> Provision </Button>
             </Media>
           </Media>
           <Row className="pad">
