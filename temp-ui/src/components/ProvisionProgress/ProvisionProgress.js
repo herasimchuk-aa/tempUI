@@ -47,6 +47,7 @@ class ProvisionProgress extends Component {
 
     cancel() {
         this.setState({ openPro: false })
+        this.props.cancelPro()
     }
 
     render() {

@@ -376,13 +376,14 @@ class NodeConfig extends Component {
 
   provisionModal() {
     if (this.state.displayProvisionModel) {
-      return <ProvisionProgress openPro={true} executionId={this.state.executionId} key={this.state.executionId}></ProvisionProgress>
+      return <ProvisionProgress cancelPro={() => this.closeProvisionModal()} openPro={true} executionId={this.state.executionId} key={this.state.executionId}></ProvisionProgress>
     }
   }
 
-  provision = () => {
-    console.log('inside provision')
+  closeProvisionModal = (e) => {
+    this.setState({ displayProvisionModel: false })
   }
+
 
 
   updateSaveNode = () => {
