@@ -36,7 +36,7 @@ class ProvisionProgress extends Component {
             let timer = setInterval(function () {
                 getRequest(GET_PROVISION + self.state.executionId).then(function (json) {
                     self.setState({ progress: json.Progress, status: json.Status, color: json.Status == "FAILED" ? 'danger' : 'success' })
-                    if (json.Status == "FAILED" || json.Status == "PROVISIONED" || json.Status == "PARTIAL_PROVISIONED") {
+                    if (json.Status == "FAILED" || json.Status == "PROVISIONED" || json.Status == "PARTIAL_PROVISIONED" || json.Status == "FINISHED") {
                         self.setState({ progress: 100 })
                         clearInterval(timer);
                     }

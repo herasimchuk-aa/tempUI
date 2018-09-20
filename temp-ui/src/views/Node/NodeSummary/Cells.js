@@ -1,6 +1,8 @@
-import { Cell } from 'fixed-data-table-2'
-import React from 'react'
-import { UncontrolledTooltip, Badge, Row, Col, ListGroup, ListGroupItem } from 'reactstrap'
+import { Cell } from 'fixed-data-table-2';
+import React from 'react';
+import { UncontrolledTooltip, Badge, Row, Col, ListGroup, ListGroupItem, Progress } from 'reactstrap';
+import { GET_PROVISION } from '../../../apis/RestConfig';
+import { getRequest } from '../../../apis/RestApi';
 
 
 class CollapseCell extends React.PureComponent {
@@ -33,6 +35,8 @@ class DateCell extends React.PureComponent {
     }
 };
 module.exports.DateCell = DateCell;
+
+
 
 class ImageCell extends React.PureComponent {
     render() {
@@ -109,6 +113,51 @@ class TextCell extends React.PureComponent {
     }
 };
 module.exports.TextCell = TextCell;
+
+class ProvisionCell extends React.PureComponent {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+           progress: 100,
+            status: 'NOT_PROVISION',
+            color: 'warning'
+        }
+    }
+
+    componentDidMount() {
+        const { data, rowIndex, columnKey, ...props } = this.props;
+        let exec_Id = data[rowIndex][columnKey]
+        this.getprovision(exec_Id)
+    }
+
+    getprovision = (exec_Id) => {
+        let self = this
+        if (exec_Id) {
+            let timer = setInterval(function () {
+                getRequest(GET_PROVISION + exec_Id).then(function (json) {
+                    // self.props.getStatus(self.props.rowIndex,json.Status)
+                    self.setState({ progress: json.Progress, status: json.Status, color: json.Status == "FAILED" ? 'danger' : 'success' })
+                    if (json.Status == "FAILED" || json.Status == "PROVISIONED" || json.Status == "PARTIAL_PROVISIONED" || json.Status == "FINISHED") {
+                        self.setState({ progress: 100 })
+                        clearInterval(timer);
+                    }
+                })
+            }(), 5000);
+        }
+    }
+
+    render() {
+        const { data, rowIndex, columnKey, ...props } = this.props;
+        return (
+            <Cell {...props}>
+                {this.state.status}
+                <Progress animated color={this.state.color} value={this.state.progress} className="mb-3" />
+            </Cell>
+        );
+    }
+}; 
+module.exports.ProvisionCell = ProvisionCell;
 
 class GetFirstValueCell extends React.PureComponent {
     render() {

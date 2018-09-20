@@ -47,6 +47,12 @@ export let nodeHead = [
         operation: 'validateISO',
         colSize: 2
     },
+    {
+        id: 'ExecId',
+        displayName: 'Provision status',
+        operation: 'provision',
+        colSize: 2
+    }
 ];
 
 export let connectivityHead = [

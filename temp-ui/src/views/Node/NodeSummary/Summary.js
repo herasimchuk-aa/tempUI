@@ -165,6 +165,8 @@ class NodeSummary extends React.Component {
                     }
                 }
                 node.roleDetails = roleDetails
+
+
             })
             return nodes
         }
