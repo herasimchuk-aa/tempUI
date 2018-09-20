@@ -22,24 +22,25 @@ export default {
         {
           name: 'Summary',
           url: '/pcc/node/Summary',
-          icon: 'icon-cursor',
+          icon: 'icon-book-open',
         },
         {
           name: 'Node Config',
           url: '/pcc/node/NodeConfigSummary',
-          icon: 'icon-layers',
+          // icon: 'icon-layers',
+          icon: 'icon-note'
         },
         {
           name: 'Roles',
           url: '/pcc/node/Roles',
-          icon: 'icon-pie-chart',
+          icon: 'icon-organization',
         },
         {
           name: 'Types',
           url: '/pcc/node/Types',
-          icon: 'icon-note',
+          icon: 'icon-notebook',
         },
-        {
+/*         {
           name: 'Linux Kernel',
           url: '/pcc/node/Linuxkernel',
           icon: 'icon-map',
@@ -68,6 +69,16 @@ export default {
           name: 'Base Linux ISO',
           url: '/pcc/node/BaseLinuxIso',
           icon: 'icon-bell',
+        }, */
+        {
+          name: 'Linux',
+          url: '/pcc/node/linux',
+          icon: 'icon-disc',
+        },
+        {
+          name: 'Apps',
+          url: '/pcc/node/apps',
+          icon: 'icon-vector',
         }
       ],
     },
@@ -83,7 +94,7 @@ export default {
         }
       ],
     },/*
-    {
+    /*{
       name: 'Monitoring',
       url: '/pcc/monitoring',
       icon: 'icon-calculator',

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
+import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert,Media } from 'reactstrap';
 import '../../views.css';
 import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
@@ -211,13 +211,21 @@ class BaseLinuxIso extends Component {
     render() {
         return (
             <div>
-                <div className='marginLeft10'>
-                    <Button onClick={() => (this.cancel())} className="custBtn animated fadeIn marginLeft13N">New</Button>
-                    <Button onClick={() => (this.showEditDialogBox())} className="custBtn animated fadeIn">Edit</Button>
-                    {this.showDeleteButton()}
-                </div>
-                <Row className="tableTitle">Base Linux ISO</Row>
+                <Media className="tableTitle">
+                    <Media body>
+                        <div className="padTop5">Base Linux ISO</div>
+                    </Media>    
+                    <Media right>
+                        <div className='marginLeft10'>
+                        <Button onClick={() => (this.cancel())} className="custBtn animated fadeIn marginLeft13N">New</Button>
+                        <Button onClick={() => (this.showEditDialogBox())} className="custBtn animated fadeIn">Edit</Button>
+                        {this.showDeleteButton()}
+                        </div>
+                    </Media> 
+                </Media>
+                <div style={{height:'250px',overflowY:'scroll'}}>
                 <SummaryDataTable key={this.counter++} heading={this.state.isoHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
+                </div>
                 {this.renderAddModelDialog()}
                 {this.renderEditModelDialog()}
             </div>

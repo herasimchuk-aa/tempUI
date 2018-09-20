@@ -27,6 +27,8 @@ import Kubernetes from '../../views/Kubernetes/Kubernetes';
 import LLDP from '../../views/Node/lldp/lldp';
 import Goes from '../../views/Node/Goes/Goes';
 import EthTool from '../../views/Node/EthTool/EthTool';
+import Linux from '../../views/Node/Linux';
+import App from '../../views/Node/App';
 
 
 class Full extends Component {
@@ -56,6 +58,8 @@ class Full extends Component {
                                 <Route path="/pcc/node/Lldp" name="Lldp" component={LLDP} />
                                 <Route path="/pcc/node/EthTool" name="ethTool" component={EthTool} />
                                 <Route path="/pcc/node/BaseLinuxIso" name="Base Linux ISO" component={BaseLinuxIso} />
+                                <Route path="/pcc/node/linux" name="Linux" component={Linux} />
+                                <Route path="/pcc/node/apps" name="Apps" component={App} />
                                 <Route path="/pcc/monitoring/BmcMonitor" name="Summary" component={BmcMonitor} />
                                 <Route path="/pcc/connectivity/Summary" name="Summary" component={ConnectivitySummary} />
                                 <Route path="/pcc/monitoring/TilesApp" name="Tiles-App" component={TileApp} />

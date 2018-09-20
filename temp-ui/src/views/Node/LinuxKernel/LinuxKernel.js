@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
+import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert,Media } from 'reactstrap';
 import '../../views.css';
 import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
@@ -237,13 +237,22 @@ class LinuxKernel extends Component {
 
     render() {
         return (<div>
-            <div className='marginLeft10'>
-                <Button onClick={() => (this.cancel())} className="custBtn animated fadeIn marginLeft13N" outline color="secondary">New</Button>
-                <Button onClick={() => (this.showEditDialogBox())} className="custBtn animated fadeIn">Edit</Button>
-                {this.showDeleteButton()}
-            </div>
-            <Row className="tableTitle">Linux Kernel</Row>
+            
+            <Media className="tableTitle">
+                <Media body>
+                    <div className="padTop5">Linux Kernel</div>
+                </Media>    
+                <Media right>
+                    <div className='marginLeft10'>
+                        <Button onClick={() => (this.cancel())} className="custBtn animated fadeIn marginLeft13N" outline color="secondary">New</Button>
+                        <Button onClick={() => (this.showEditDialogBox())} className="custBtn animated fadeIn">Edit</Button>
+                        {this.showDeleteButton()}
+                    </div>
+                </Media> 
+            </Media>
+            <div style={{height:'250px',overflowY:'scroll',marginBottom:'20px'}}>
             <SummaryDataTable key={this.counter++} heading={this.state.kernelHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
+            </div>
             {this.renderUpgradeModelDialog()}
             {this.renderEditModelDialog()}
         </div>

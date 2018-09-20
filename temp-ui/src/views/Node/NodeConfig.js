@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Row, Col, Button, Label, Media, Input, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { ServerAPI } from '../../ServerAPI';
+import { ServerAPI, Group } from '../../ServerAPI';
 import SummaryDataTable from './NodeSummary/SummaryDataTable';
 import { customHistory } from '../../index';
 import { Redirect } from 'react-router-dom';
@@ -14,7 +14,7 @@ import MultiselectDropDown from '../../components/MultiselectDropdown/Multiselec
 import ProvisionProgress from '../../components/ProvisionProgress/ProvisionProgress';
 import DiscoverModal from '../../components/DiscoverModal/DiscoverModal';
 import { invaderServerAddress } from '../../config';
-import { FETCH_ALL_SITES, FETCH_ALL_ROLES, FETCH_ALL_ISOS, FETCH_ALL_KERNELS, FETCH_ALL_SYSTEM_TYPES, UPDATE_NODES, DISCOVER, ADD_KERNEL, ADD_SYSTEM_TYPE, ADD_ISO, PROVISION } from '../../apis/RestConfig';
+import { FETCH_ALL_SITES, FETCH_ALL_ROLES, FETCH_ALL_ISOS, FETCH_ALL_KERNELS, FETCH_ALL_SYSTEM_TYPES, UPDATE_NODES, DISCOVER, ADD_KERNEL, ADD_SYSTEM_TYPE, ADD_ISO, FETCH_ALL_GOES, FETCH_ALL_LLDP, FETCH_ALL_ETHTOOL, PROVISION } from '../../apis/RestConfig';
 import { getRequest, postRequest, putRequest } from '../../apis/RestApi';
 
 class NodeConfig extends Component {
@@ -26,6 +26,9 @@ class NodeConfig extends Component {
       kernelData: [],
       typeData: [],
       siteData: [],
+      goesData: [],
+      lldpData:[],
+      ethToolData: [],
       nodeHead: nodeHead,
       displayModel: false,
       displayNewInterfaceModel: false,
@@ -44,6 +47,9 @@ class NodeConfig extends Component {
       selectedIsoId: props.location.state.length == 1 ? props.location.state[0].Iso_Id : '',
       // selectedRolesId: props.location.state.length == 1 ? props.location.state[0].roles : '',
       selectedSiteId: props.location.state.length == 1 ? props.location.state[0].Site_Id : '',
+      selectedGoesId: props.location.state.length == 1 ? props.location.state[0].Goes_Id : '',
+      selectedLldpId: props.location.state.length == 1 ? props.location.state[0].Lldp_Id : '',
+      selectedEthToolId: props.location.state.length == 1 ? props.location.state[0].Ethtool_Id : '',
       nodeId: props.location.state[0].Id,
       displayProvisionModel: false,
       actualNode: {},
@@ -90,8 +96,33 @@ class NodeConfig extends Component {
       siteData = json.Data
     })
 
-    Promise.all([typePromise, rolePromise, kernelPromise, isoPromise, sitePromise]).then(function () {
-      self.setState({ typeData: typeData, roleData: roleData, kernelData: kernelData, isoData: isoData, siteData: siteData })
+    let goesData = []
+    let goesPromise = getRequest(FETCH_ALL_GOES).then(function (json) {
+        goesData = json.Data
+    })
+
+    let lldpData = []
+    let lldpPromise = getRequest(FETCH_ALL_LLDP).then(function (json) {
+        lldpData = json.Data
+    })
+
+    let ethToolData = []
+    let ethToolPromise = getRequest(FETCH_ALL_ETHTOOL).then(function (json) {
+        ethToolData = json.Data
+    })
+
+    Promise.all([typePromise, rolePromise, kernelPromise, isoPromise, sitePromise, goesPromise, lldpPromise, ethToolPromise]).then(function () {
+      self.setState(
+        { 
+          typeData: typeData, 
+          roleData: roleData, 
+          kernelData: kernelData, 
+          isoData: isoData, 
+          siteData: siteData,
+          goesData : goesData,
+          lldpData: lldpData,
+          ethToolData:ethToolData
+        })
     })
 
   }
@@ -112,9 +143,9 @@ class NodeConfig extends Component {
         </Media>
         <Row className="headerRow" style={{ marginLeft: '0px', marginRight: '0px' }}>
           <Col sm="1" className="head-name"></Col>
-          <Col sm="2" className="head-name">Interface Name</Col>
-          <Col sm="2" className="head-name">Admin state</Col>
-          <Col sm="2" className="head-name">IP Address</Col>
+          <Col sm="3" className="head-name">Interface Name</Col>
+          {/* <Col sm="2" className="head-name">Admin state</Col> */}
+          <Col sm="3" className="head-name">IP Address</Col>
           <Col sm="2" className="head-name">Remote Node Name</Col>
           <Col sm="2" className="head-name">Remote Interface</Col>
           <Col sm="1" className="head-name">Edit</Col>
@@ -205,9 +236,9 @@ class NodeConfig extends Component {
         let row = (<Row className={row1} style={{ marginLeft: '0px', marginRight: '0px' }}>
           <Col sm="1" className="pad" ><Input key={self.counter++} style={{ cursor: 'pointer', marginLeft: '0px' }}
             type="checkbox" onChange={() => (self.checkBoxClickInterface(rowIndex))} defaultChecked={false} /></Col>
-          <Col sm="2" className="pad">{item.Name ? item.Name : '-'}</Col>
-          <Col sm="2" className="pad">{item.Admin_state ? item.Admin_state : '-'}</Col>
-          <Col sm="2" className="pad">{item.Ip_address ? item.Ip_address : '-'}</Col>
+          <Col sm="3" className="pad">{item.Name ? item.Name : '-'}</Col>
+          {/* <Col sm="2" className="pad">{item.Admin_state ? item.Admin_state : '-'}</Col> */}
+          <Col sm="3" className="pad">{item.Ip_address ? item.Ip_address : '-'}</Col>
           <Col sm="2" className="pad">{item.Remote_node_name ? item.Remote_node_name : '-'}</Col>
           <Col sm="2" className="pad">{item.Remote_interface ? item.Remote_interface : "-"}</Col>
           <Col sm="1" className="pad" style={{ cursor: 'pointer' }}><i className="fa fa-pencil" aria-hidden="true" onClick={() => (self.updatInterfaceModal(item.Id, item.Name))}></i></Col>
@@ -369,6 +400,9 @@ class NodeConfig extends Component {
         datum.Iso_Id = parseInt(self.state.selectedIsoId),
         datum.Kernel_Id = parseInt(self.state.selectedLinuxId),
         datum.Site_Id = parseInt(self.state.selectedSiteId),
+        datum.Goes_Id = parseInt(self.state.selectedGoesId),
+        datum.Lldp_Id = parseInt(self.state.selectedLldpId),
+        datum.Ethtool_Id = parseInt(self.state.selectedEthToolId),
         datum.interfaces = self.state.interfaces,
         datum.SN = self.state.selectedSerialNo
 
@@ -418,17 +452,33 @@ class NodeConfig extends Component {
   getSelectedData = (data, identity) => {
     if (identity == 'Type') {
       this.setState({ selectedTypeId: data, saveBtn: false })
+      return
     }
     if (identity == 'Linux') {
       this.state.selectedLinuxId != data && data != '' ? this.setState({ rebootBtn: false }) : ''
       this.setState({ selectedLinuxId: data, saveBtn: false })
+      return
     }
     if (identity == 'ISO') {
       this.state.selectedIsoId != data && data != '' ? this.setState({ wipeBtn: false }) : ''
       this.setState({ selectedIsoId: data, saveBtn: false })
+      return
     }
     if (identity == 'Site') {
       this.setState({ selectedSiteId: data, saveBtn: false })
+      return
+    }
+    if (identity == 'Goes') {
+      this.setState({ selectedGoesId: data, saveBtn: false })
+      return
+    }
+    if (identity == 'Lldp') {
+      this.setState({ selectedLldpId: data, saveBtn: false })
+      return
+    }
+    if (identity == 'EthTool') {
+      this.setState({ selectedEthToolId: data, saveBtn: false })
+      return
     }
 
   }
@@ -777,6 +827,17 @@ class NodeConfig extends Component {
             </Col>
             <Col xs='3' ><Label>Site</Label><br />
               <DropDown options={this.state.siteData} getSelectedData={this.getSelectedData} identity={"Site"} default={this.state.selectedSiteId} />
+            </Col>
+          </Row>
+          <Row className="pad">
+            <Col xs='3'><Label>Goes</Label><br />
+              <DropDown options={this.state.goesData} getSelectedData={this.getSelectedData} identity={"Goes"} default={this.state.selectedGoesId} />
+            </Col>
+            <Col xs='3'><Label>LLDP</Label><br />
+              <DropDown options={this.state.lldpData} getSelectedData={this.getSelectedData} identity={"Lldp"} default={this.state.selectedLldpId} />
+            </Col>
+            <Col xs='3'><Label>Ethtool</Label><br />
+              <DropDown options={this.state.ethToolData} getSelectedData={this.getSelectedData} identity={"EthTool"} default={this.state.selectedEthToolId} />
             </Col>
           </Row>
           <div style={{ padding: '10px' }}>

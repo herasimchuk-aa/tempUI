@@ -11,7 +11,7 @@ import { NotificationManager } from 'react-notifications';
 import SearchComponent from '../../../components/SearchComponent/SearchComponent';
 import MultiselectDropDown from '../../../components/MultiselectDropdown/MultiselectDropDown';
 import { trimString, converter, validateIPaddress } from '../../../components/Utility/Utility';
-import { FETCH_ALL_SITES, FETCH_ALL_ROLES, FETCH_ALL_ISOS, FETCH_ALL_KERNELS, FETCH_ALL_SYSTEM_TYPES, FETCH_ALL_NODES, ADD_NODE, UPDATE_NODES, DELETE_NODES } from '../../../apis/RestConfig';
+import { FETCH_ALL_SITES, FETCH_ALL_ROLES, FETCH_ALL_ISOS, FETCH_ALL_KERNELS, FETCH_ALL_SYSTEM_TYPES, FETCH_ALL_NODES, ADD_NODE, UPDATE_NODES, DELETE_NODES, FETCH_ALL_GOES, FETCH_ALL_LLDP, FETCH_ALL_ETHTOOL } from '../../../apis/RestConfig';
 import { getRequest, postRequest, putRequest } from '../../../apis/RestApi';
 
 class NodeSummary extends React.Component {
@@ -25,6 +25,9 @@ class NodeSummary extends React.Component {
             siteData: [],
             kernelData: [],
             typedata: [],
+            goesData: [],
+            lldpData:[],
+            ethToolData: [],
             nodeHead: JSON.parse(JSON.stringify(nodeHead)),
             selectedRowIndex: [],
             selectedRows: [],
@@ -37,6 +40,9 @@ class NodeSummary extends React.Component {
             selectedLinuxId: '',
             selectedIsoId: '',
             selectedSiteId: '',
+            // selectedGoesId: '',
+            // selectedLldpId: '',
+            // selectedEthToolId: '',
             selectedRoles: [],
             isSaveLoading: false
         }
@@ -73,18 +79,43 @@ class NodeSummary extends React.Component {
             siteData = json.Data
         })
 
+        let goesData = []
+        let goesPromise = getRequest(FETCH_ALL_GOES).then(function (json) {
+            goesData = json.Data
+        })
+
+        let lldpData = []
+        let lldpPromise = getRequest(FETCH_ALL_LLDP).then(function (json) {
+            lldpData = json.Data
+        })
+
+        let ethToolData = []
+        let ethToolPromise = getRequest(FETCH_ALL_ETHTOOL).then(function (json) {
+            ethToolData = json.Data
+        })
+
         let nodes = []
-        Promise.all([typePromise, rolePromise, kernelPromise, isoPromise, sitePromise]).then(function () {
+        Promise.all([typePromise, rolePromise, kernelPromise, isoPromise, sitePromise, goesPromise, lldpPromise, ethToolPromise]).then(function () {
             getRequest(FETCH_ALL_NODES).then(function (json) {
-                nodes = self.convertData(json.Data, typeData, kernelData, isoData, siteData, roleData)
+                nodes = self.convertData(json.Data, typeData, kernelData, isoData, siteData, roleData, goesData, lldpData, ethToolData)
                 self.setState({ nodes: nodes, constNodes: Object.assign([], nodes) })
             })
         }).then(function () {
-            self.setState({ typedata: typeData, roleData: roleData, kernelData: kernelData, isoData: isoData, siteData: siteData })
+            self.setState(
+                { 
+                    typedata: typeData, 
+                    roleData: roleData, 
+                    kernelData: kernelData, 
+                    isoData: isoData, 
+                    siteData: siteData, 
+                    goesData: goesData, 
+                    lldpData: lldpData, 
+                    ethToolData: ethToolData 
+                })
         })
     }
 
-    convertData(nodes, types, kernels, isos, sites, roles) {
+    convertData(nodes, types, kernels, isos, sites, roles, goes, lldp, ethTool) {
         if (nodes && nodes.length) {
             nodes.map((node) => {
                 types.map((item) => {
@@ -105,6 +136,21 @@ class NodeSummary extends React.Component {
                 sites.map((item) => {
                     if (item.Id == node.Site_Id) {
                         node.site = item.Name
+                    }
+                })
+                goes.map((item)=> {
+                    if(item.Id == node.Goes_Id) {
+                        node.Goes = item.Name
+                    }
+                })
+                lldp.map((item)=> {
+                    if(item.Id == node.Lldp_Id) {
+                        node.Lldp = item.Name
+                    }
+                })
+                ethTool.map((item)=> {
+                    if(item.Id == node.Ethtool_Id) {
+                        node.EthTool = item.Name
                     }
                 })
                 let roleIds = node.roles
@@ -129,16 +175,32 @@ class NodeSummary extends React.Component {
     getSelectedData = (data, identity) => {
         if (identity == 'Type') {
             this.setState({ selectedTypeId: data })
+            return
         }
         if (identity == 'Linux') {
             this.setState({ selectedLinuxId: data })
+            return
         }
         if (identity == 'ISO') {
             this.setState({ selectedIsoId: data })
+            return
         }
         if (identity == 'Site') {
             this.setState({ selectedSiteId: data })
+            return
         }
+        /* if (identity == 'Goes') {
+            this.setState({ selectedGoesId: data })
+            return
+        }
+        if (identity == 'Lldp') {
+            this.setState({ selectedLldpId: data })
+            return
+        }
+        if (identity == 'EthTool') {
+            this.setState({ selectedEthToolId: data })
+            return
+        } */
     }
 
 
@@ -237,14 +299,19 @@ class NodeSummary extends React.Component {
                         <Row>
                             <Col sm="6" className="marTop10">Roles<font color="red"><sup>*</sup></font>
                                 <MultiselectDropDown value={this.state.selectedRoles} getSelectedData={this.handleChanges} options={this.state.roleData} />
-                                <br />
-                                Host<font color="red"><sup>*</sup></font>
-                                <Input id='hostInterface' className="marTop10" />
                             </Col>
 
                             <Col sm="6" className="marTop10">
                                 Serial Number <Input id='nodeSerialNumber' className="marTop10" />
-                                <br />Type
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col sm="6" className="marTop10">Host<font color="red"><sup>*</sup></font>
+                                <Input id='hostInterface' className="marTop10" />
+                            </Col>
+
+                            <Col sm="6" className="marTop10">
+                                Type 
                                 <DropDown options={this.state.typedata} getSelectedData={this.getSelectedData} identity={"Type"} default={this.state.selectedTypeId} />
                             </Col>
                         </Row>
@@ -256,6 +323,17 @@ class NodeSummary extends React.Component {
                                 <DropDown options={this.state.isoData} getSelectedData={this.getSelectedData} identity={"ISO"} default={this.state.selectedIsoId} />
                             </Col>
                         </Row>
+                        {/* <Row>
+                            <Col className="marTop10">Goes
+                                <DropDown options={this.state.goesData} getSelectedData={this.getSelectedData} identity={"Goes"} default={this.state.selectedGoesId} />
+                            </Col>
+                            <Col className="marTop10">LLDP
+                                <DropDown options={this.state.lldpData} getSelectedData={this.getSelectedData} identity={"Lldp"} default={this.state.selectedLldpId} />
+                            </Col>
+                            <Col className="marTop10">EthTool
+                                <DropDown options={this.state.ethToolData} getSelectedData={this.getSelectedData} identity={"EthTool"} default={this.state.selectedEthToolId} />
+                            </Col>
+                        </Row> */}
                     </ModalBody>
                     <ModalFooter>
                         {showAddButton}
@@ -327,6 +405,9 @@ class NodeSummary extends React.Component {
             'Type_Id': parseInt(self.state.selectedTypeId),
             'SN': document.getElementById('nodeSerialNumber').value,
             'Kernel_Id': parseInt(self.state.selectedLinuxId),
+            // 'Goes_Id': parseInt(self.state.selectedGoesId),
+            // 'Lldp_Id': parseInt(self.state.selectedLldpId),
+            // 'Ethtool_Id': parseInt(self.state.selectedEthToolId),
         }
         postRequest(ADD_NODE, params).then(function (data) {
             self.toggleLoading()
@@ -337,7 +418,7 @@ class NodeSummary extends React.Component {
                 }
                 let addNupdateNode = data.Data
                 renderedData.push(data.Data)
-                let nodesData = self.convertData(renderedData, self.state.typedata, self.state.kernelData, self.state.isoData, self.state.siteData, self.state.roleData)
+                let nodesData = self.convertData(renderedData, self.state.typedata, self.state.kernelData, self.state.isoData, self.state.siteData, self.state.roleData, self.state.goesData, self.state.lldpData, self.state.ethToolData)
                 self.setState({ nodes: nodesData, displayModel: false, visible: false })
 
             }
@@ -350,7 +431,19 @@ class NodeSummary extends React.Component {
     }
 
     toggleAddNodeModal() {
-        this.setState({ displayModel: !this.state.displayModel, selectedSiteId: null, selectedRoles: [], selectedTypeId: null, selectedLinuxId: null, selectedIsoId: null, visible: false, visibleUnique: false })
+        this.setState(
+            { 
+                displayModel: !this.state.displayModel, 
+                selectedSiteId: null, 
+                selectedRoles: [], 
+                selectedTypeId: null, 
+                selectedLinuxId: null, 
+                selectedIsoId: null, 
+                // selectedGoesId: null, 
+                // selectedLldpId: null, 
+                // selectedEthToolId: null, 
+                visible: false, 
+                visibleUnique: false })
     }
 
     getFilteredData = (data) => {

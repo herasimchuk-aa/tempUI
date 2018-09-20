@@ -287,6 +287,9 @@ marRight10{
 .pad{
 	padding: 10px 15px;
 }
+.padTop5{
+	padding-top: 5px;
+}
 
 .padTop30{
     padding-top: 30px;
@@ -378,6 +381,4 @@ to {opacity: 0;}
 ::-webkit-scrollbar-thumb:hover {
     background: #4f908e; 
 }
-
 /* SCRLLBAR CSS END */
-

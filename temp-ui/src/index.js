@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom';
 import { HashRouter, Route, Switch } from 'react-router-dom';
 
 import createBrowserHistory from 'history/createBrowserHistory';
+import { invaderServerAddress } from "./config";
 import { Redirect } from 'react-router-dom';
 
 // Styles
@@ -25,6 +26,8 @@ import Login from './views/Login/Login';
 import Dashboard from './views/Dashboard/Dashboard';
 
 export const customHistory = createBrowserHistory()
+
+Window.invaderServerAddress = invaderServerAddress
 
 ReactDOM.render((
   <HashRouter>

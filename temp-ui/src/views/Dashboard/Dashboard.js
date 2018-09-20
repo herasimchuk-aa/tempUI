@@ -30,11 +30,9 @@ class Dashboard extends Component {
 
     constructor(props) {
         super(props);
-        let ipAddress = ServerAPI.DefaultServer().DefaultInvader();
 
         this.state = {
-            defaultIPAddress: ipAddress,
-            unsubmittedIPAddress: "",
+            ipAddress: Window.invaderServerAddress,
         };
     }
 
@@ -43,14 +41,18 @@ class Dashboard extends Component {
         //server.setupInventory(this.inventoryCallback, this);
     }
 
-    onIPSubmit(event) {
-        console.log(this.state.unsubmittedIPAddress);
-        ServerAPI.DefaultServer().updateInvaderAddress(this.state.unsubmittedIPAddress);
+    onIPSubmit() {
+        if(!this.state.ipAddress) {
+            alert("Enter an IP")
+            return
+        }
+        console.log(this.state.ipAddress);
+        Window.invaderServerAddress = this.state.ipAddress;
     }
 
     onIPChange(event) {
         this.setState({
-            unsubmittedIPAddress: event.target.value,
+            ipAddress: event.target.value,
         });
     }
 
@@ -63,8 +65,8 @@ class Dashboard extends Component {
         );
         retHTML.push(
             <CardBody id="invader_ip_text" key="invader_ip_text">
-                <Input type="text" placeholder="Key" required defaultValue={this.state.defaultIPAddress} onChange={(event) => this.onIPChange(event)} />
-                <Button className="floatRight" color="link" size="lg" onClick={(event) => this.onIPSubmit(event)}> Save </Button>
+                <Input type="text" placeholder="Key" required defaultValue={this.state.ipAddress} onChange={(event) => this.onIPChange(event)} />
+                <Button className="floatRight" color="link" size="lg" onClick={() => this.onIPSubmit()}> Save </Button>
             </CardBody>
         );
         return retHTML;

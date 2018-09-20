@@ -162,7 +162,7 @@ export let typeHead = [
     {
         id: 'SpeedFrontPanelInterfaces',
         displayName: 'Speed Front Panel Interface',
-        colSize: 2
+        colSize: 3
     },
     {
         id: 'ManagementInterfaces',
@@ -173,12 +173,7 @@ export let typeHead = [
         id: 'SpeedType',
         displayName: 'Speed/Type',
         colSize: 1
-    },
-    {
-        id: 'Description',
-        displayName: 'Notes',
-        colSize: 1
-    },
+    }
 ];
 
 export let kernelHead = [

@@ -8,6 +8,8 @@ const routes = {
   '/pcc/node': 'Node',
   '/pcc/node/Summary': 'Summary',
   '/pcc/node/NodeConfigSummary': 'Node Config',
+  '/pcc/node/linux': 'Linux',
+  '/pcc/node/apps': 'Apps',
   '/node/config': 'Configure',
   '/pcc/node/Roles': 'Roles',
   '/pcc/node/Types': 'Types',

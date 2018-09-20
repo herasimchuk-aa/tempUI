@@ -330,17 +330,19 @@ module.exports.BadgeCell = BadgeCell;
 
 class ValidationCell extends React.PureComponent {
     render() {
-        let a = [];
         const { data, rowIndex, columnKey, match, field, ...props } = this.props;
         const value = data[rowIndex][columnKey];
+        let tooltip = null;
         if (value && data[rowIndex].ValidationStatus) {
             if (data[rowIndex].ValidationStatus[match]) {
                 return (<Cell {...props}>  <span style={{ color: 'black' }}>{value}</span> </Cell>)
             }
             else {
+                if (data[rowIndex].ValidationStatus[field])
+                    tooltip = (<UncontrolledTooltip placement="top" target={columnKey + rowIndex}>{data[rowIndex].ValidationStatus[field]}</UncontrolledTooltip>)
                 return (<Cell id={columnKey + rowIndex} {...props}>
                     <span style={{ color: 'red' }} key={columnKey + rowIndex}>{value}</span>
-                    <UncontrolledTooltip placement="top-start" target={columnKey + rowIndex}>{data[rowIndex].ValidationStatus[field] ? data[rowIndex].ValidationStatus[field] : '-'}</UncontrolledTooltip>
+                    {tooltip}
                 </Cell>);
             }
 
@@ -352,9 +354,11 @@ class ValidationCell extends React.PureComponent {
                     return (<Cell {...props}>  <span style={{ color: 'black' }}>{'-'}</span> </Cell>)
                 }
                 else {
+                    if (data[rowIndex].ValidationStatus[field])
+                        tooltip = (<UncontrolledTooltip placement="top" target={columnKey + rowIndex}>{data[rowIndex].ValidationStatus[field]}</UncontrolledTooltip>)
                     return (<Cell id={columnKey + rowIndex} {...props}>
                         <span style={{ color: 'red' }} key={columnKey + rowIndex}>{'-'}</span>
-                        <UncontrolledTooltip placement="top-start" target={columnKey + rowIndex}>{data[rowIndex].ValidationStatus[field]}</UncontrolledTooltip>
+                        {tooltip}
                     </Cell>);
                 }
             }

@@ -1,7 +1,5 @@
-import { invaderServerAddress } from "../config";
-
 export function getRequest(url) {
-    let sourceURL = invaderServerAddress + url;
+    let sourceURL = Window.invaderServerAddress + url;
     return fetch(sourceURL, {
         method: "GET",
         headers: {
@@ -17,7 +15,7 @@ export function getRequest(url) {
 }
 
 export function postRequest(url, params) {
-    let sourceURL = invaderServerAddress + url;
+    let sourceURL = Window.invaderServerAddress + url;
     return fetch(sourceURL, {
         method: "POST",
         headers: {
@@ -31,7 +29,7 @@ export function postRequest(url, params) {
 }
 
 export function putRequest(url, params) {
-    let sourceURL = invaderServerAddress + url;
+    let sourceURL = Window.invaderServerAddress + url;
     return fetch(sourceURL, {
         method: "PUT",
         headers: {
