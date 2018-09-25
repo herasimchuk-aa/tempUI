@@ -27,7 +27,7 @@ class NodeConfig extends Component {
       typeData: [],
       siteData: [],
       goesData: [],
-      lldpData:[],
+      lldpData: [],
       ethToolData: [],
       nodeHead: nodeHead,
       displayModel: false,
@@ -98,30 +98,30 @@ class NodeConfig extends Component {
 
     let goesData = []
     let goesPromise = getRequest(FETCH_ALL_GOES).then(function (json) {
-        goesData = json.Data
+      goesData = json.Data
     })
 
     let lldpData = []
     let lldpPromise = getRequest(FETCH_ALL_LLDP).then(function (json) {
-        lldpData = json.Data
+      lldpData = json.Data
     })
 
     let ethToolData = []
     let ethToolPromise = getRequest(FETCH_ALL_ETHTOOL).then(function (json) {
-        ethToolData = json.Data
+      ethToolData = json.Data
     })
 
     Promise.all([typePromise, rolePromise, kernelPromise, isoPromise, sitePromise, goesPromise, lldpPromise, ethToolPromise]).then(function () {
       self.setState(
-        { 
-          typeData: typeData, 
-          roleData: roleData, 
-          kernelData: kernelData, 
-          isoData: isoData, 
+        {
+          typeData: typeData,
+          roleData: roleData,
+          kernelData: kernelData,
+          isoData: isoData,
           siteData: siteData,
-          goesData : goesData,
+          goesData: goesData,
           lldpData: lldpData,
-          ethToolData:ethToolData
+          ethToolData: ethToolData
         })
     })
 

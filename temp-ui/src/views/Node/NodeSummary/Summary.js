@@ -11,7 +11,7 @@ import { NotificationManager } from 'react-notifications';
 import SearchComponent from '../../../components/SearchComponent/SearchComponent';
 import MultiselectDropDown from '../../../components/MultiselectDropdown/MultiselectDropDown';
 import { trimString, converter, validateIPaddress } from '../../../components/Utility/Utility';
-import { FETCH_ALL_SITES, FETCH_ALL_ROLES, FETCH_ALL_ISOS, FETCH_ALL_KERNELS, FETCH_ALL_SYSTEM_TYPES, FETCH_ALL_NODES, ADD_NODE, UPDATE_NODES, DELETE_NODES, FETCH_ALL_GOES, FETCH_ALL_LLDP, FETCH_ALL_ETHTOOL } from '../../../apis/RestConfig';
+import { FETCH_ALL_SITES, FETCH_ALL_ROLES, FETCH_ALL_ISOS, FETCH_ALL_KERNELS, FETCH_ALL_SYSTEM_TYPES, FETCH_ALL_NODES, ADD_NODE, UPDATE_NODES, DELETE_NODES, FETCH_ALL_GOES, FETCH_ALL_LLDP, FETCH_ALL_ETHTOOL, GET_PROVISION } from '../../../apis/RestConfig';
 import { getRequest, postRequest, putRequest } from '../../../apis/RestApi';
 
 class NodeSummary extends React.Component {
@@ -26,7 +26,7 @@ class NodeSummary extends React.Component {
             kernelData: [],
             typedata: [],
             goesData: [],
-            lldpData:[],
+            lldpData: [],
             ethToolData: [],
             nodeHead: JSON.parse(JSON.stringify(nodeHead)),
             selectedRowIndex: [],
@@ -102,15 +102,15 @@ class NodeSummary extends React.Component {
             })
         }).then(function () {
             self.setState(
-                { 
-                    typedata: typeData, 
-                    roleData: roleData, 
-                    kernelData: kernelData, 
-                    isoData: isoData, 
-                    siteData: siteData, 
-                    goesData: goesData, 
-                    lldpData: lldpData, 
-                    ethToolData: ethToolData 
+                {
+                    typedata: typeData,
+                    roleData: roleData,
+                    kernelData: kernelData,
+                    isoData: isoData,
+                    siteData: siteData,
+                    goesData: goesData,
+                    lldpData: lldpData,
+                    ethToolData: ethToolData
                 })
         })
     }
@@ -138,18 +138,18 @@ class NodeSummary extends React.Component {
                         node.site = item.Name
                     }
                 })
-                goes.map((item)=> {
-                    if(item.Id == node.Goes_Id) {
+                goes.map((item) => {
+                    if (item.Id == node.Goes_Id) {
                         node.Goes = item.Name
                     }
                 })
-                lldp.map((item)=> {
-                    if(item.Id == node.Lldp_Id) {
+                lldp.map((item) => {
+                    if (item.Id == node.Lldp_Id) {
                         node.Lldp = item.Name
                     }
                 })
-                ethTool.map((item)=> {
-                    if(item.Id == node.Ethtool_Id) {
+                ethTool.map((item) => {
+                    if (item.Id == node.Ethtool_Id) {
                         node.EthTool = item.Name
                     }
                 })
@@ -166,12 +166,37 @@ class NodeSummary extends React.Component {
                 }
                 node.roleDetails = roleDetails
 
+                // if(node.ExecId){
+                //     let exec_id = node.ExecId
+                //     this.getprovision(exec_id) 
+                // }
 
             })
             return nodes
         }
         return []
     }
+
+    // getprovision = (exec_id) => {
+    //     console.log('getprovision')
+    //     let self = this
+    //     let provision = {}
+
+    //     if (exec_id) {
+    //         let timer = setInterval(function () {
+    //             getRequest(GET_PROVISION + exec_id).then(function (json) {
+    //                self.setState({ ProvisionProgress: json.Progress, ProvisionStatus: json.Status, ProvisionColor: json.Status == "FAILED" ? 'danger' : 'success' })
+    //                provision  = json
+    //                 if (json.Status == "FAILED" || json.Status == "PROVISIONED" || json.Status == "PARTIAL_PROVISIONED" || json.Status == "FINISHED") {
+
+    //                     clearInterval(timer);
+    //                 }
+    //             })
+    //         }(), 5000);
+    //     }
+    //     console.log(provision)
+    //     return provision
+    // }
 
 
     getSelectedData = (data, identity) => {
@@ -291,7 +316,7 @@ class NodeSummary extends React.Component {
                     <ModalBody>
                         <Row>
                             <Col sm="6" className="marTop10">Name<font color="red"><sup>*</sup></font>
-                                <Input id='nodeName' autoFocus className="marTop10" />
+                                <Input id='nodeTitle' autoFocus className="marTop10" />
                             </Col>
                             <Col sm="6" className="marTop10">Site
                                 <DropDown options={this.state.siteData} getSelectedData={this.getSelectedData} identity={"Site"} default={this.state.selectedSiteId} />
@@ -313,7 +338,7 @@ class NodeSummary extends React.Component {
                             </Col>
 
                             <Col sm="6" className="marTop10">
-                                Type 
+                                Type
                                 <DropDown options={this.state.typedata} getSelectedData={this.getSelectedData} identity={"Type"} default={this.state.selectedTypeId} />
                             </Col>
                         </Row>
@@ -363,8 +388,8 @@ class NodeSummary extends React.Component {
     }
 
     addNode() {
-        let nodeName = document.getElementById('nodeName').value
-        let name = trimString(nodeName)
+        let nodeTitle = document.getElementById('nodeTitle').value
+        let name = trimString(nodeTitle)
 
         let host = document.getElementById('hostInterface').value
         let validIp = validateIPaddress(host)
@@ -387,7 +412,7 @@ class NodeSummary extends React.Component {
                 self.setState({ visible: true, errMsg: "Name field is mandatory" });
             }
             if (!validateUnique) {
-                self.setState({ visibleUnique: true, errMsg: "Name field is already exist, please enter unique name" });
+                self.setState({ visibleUnique: true, errMsg: "Node already exists, please enter unique name" });
             }
 
             return;
@@ -434,18 +459,19 @@ class NodeSummary extends React.Component {
 
     toggleAddNodeModal() {
         this.setState(
-            { 
-                displayModel: !this.state.displayModel, 
-                selectedSiteId: null, 
-                selectedRoles: [], 
-                selectedTypeId: null, 
-                selectedLinuxId: null, 
-                selectedIsoId: null, 
+            {
+                displayModel: !this.state.displayModel,
+                selectedSiteId: null,
+                selectedRoles: [],
+                selectedTypeId: null,
+                selectedLinuxId: null,
+                selectedIsoId: null,
                 // selectedGoesId: null, 
                 // selectedLldpId: null, 
                 // selectedEthToolId: null, 
-                visible: false, 
-                visibleUnique: false })
+                visible: false,
+                visibleUnique: false
+            })
     }
 
     getFilteredData = (data) => {

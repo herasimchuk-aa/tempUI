@@ -119,7 +119,7 @@ class ProvisionCell extends React.PureComponent {
     constructor(props) {
         super(props);
         this.state = {
-           progress: 100,
+            progress: 100,
             status: 'NOT_PROVISION',
             color: 'warning'
         }
@@ -153,10 +153,11 @@ class ProvisionCell extends React.PureComponent {
             <Cell {...props}>
                 {this.state.status}
                 <Progress animated color={this.state.color} value={this.state.progress} className="mb-3" />
+
             </Cell>
         );
     }
-}; 
+};
 module.exports.ProvisionCell = ProvisionCell;
 
 class GetFirstValueCell extends React.PureComponent {
