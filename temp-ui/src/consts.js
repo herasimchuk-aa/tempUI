@@ -7,6 +7,11 @@ export let nodeHead = [
         colSize: 1
     },
     {
+        id: 'Host',
+        displayName: 'Host',
+        colSize: 1
+    },
+    {
         id: 'site',
         displayName: 'Site',
         colSize: 1
@@ -15,7 +20,7 @@ export let nodeHead = [
         id: 'Status',
         displayName: 'Status',
         operation: 'badge',
-        colSize: 2
+        colSize: 1
     },
     {
         id: 'roleDetails',
@@ -59,6 +64,11 @@ export let connectivityHead = [
     {
         id: 'Name',
         displayName: 'Name',
+        colSize: 1
+    },
+    {
+        id: 'Host',
+        displayName: 'Host',
         colSize: 1
     },
     {

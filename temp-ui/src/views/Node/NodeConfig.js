@@ -143,12 +143,11 @@ class NodeConfig extends Component {
         </Media>
         <Row className="headerRow" style={{ marginLeft: '0px', marginRight: '0px' }}>
           <Col sm="1" className="head-name"></Col>
-          <Col sm="3" className="head-name">Interface Name</Col>
-          {/* <Col sm="2" className="head-name">Admin state</Col> */}
-          <Col sm="3" className="head-name">IP Address</Col>
-          <Col sm="2" className="head-name">Remote Node Name</Col>
+          <Col sm="2" className="head-name">Interface Name</Col>
+          <Col sm="2" className="head-name">IP Address</Col>
+          <Col sm="3" className="head-name">Remote Node Name</Col>
           <Col sm="2" className="head-name">Remote Interface</Col>
-          <Col sm="1" className="head-name">Edit</Col>
+          <Col sm="2" className="head-name">Edit</Col>
         </Row>
       </div>
     )
@@ -236,12 +235,11 @@ class NodeConfig extends Component {
         let row = (<Row className={row1} style={{ marginLeft: '0px', marginRight: '0px' }}>
           <Col sm="1" className="pad" ><Input key={self.counter++} style={{ cursor: 'pointer', marginLeft: '0px' }}
             type="checkbox" onChange={() => (self.checkBoxClickInterface(rowIndex))} defaultChecked={false} /></Col>
-          <Col sm="3" className="pad">{item.Name ? item.Name : '-'}</Col>
-          {/* <Col sm="2" className="pad">{item.Admin_state ? item.Admin_state : '-'}</Col> */}
-          <Col sm="3" className="pad">{item.Ip_address ? item.Ip_address : '-'}</Col>
-          <Col sm="2" className="pad">{item.Remote_node_name ? item.Remote_node_name : '-'}</Col>
+          <Col sm="2" className="pad">{item.Name ? item.Name : '-'}</Col>
+          <Col sm="2" className="pad">{item.Ip_address ? item.Ip_address : '-'}</Col>
+          <Col sm="3" className="pad">{item.Remote_node_name ? item.Remote_node_name : '-'}</Col>
           <Col sm="2" className="pad">{item.Remote_interface ? item.Remote_interface : "-"}</Col>
-          <Col sm="1" className="pad" style={{ cursor: 'pointer' }}><i className="fa fa-pencil" aria-hidden="true" onClick={() => (self.updatInterfaceModal(item.Id, item.Name))}></i></Col>
+          <Col sm="2" className="pad" style={{ cursor: 'pointer' }}><i className="fa fa-pencil" aria-hidden="true" onClick={() => (self.updatInterfaceModal(item.Id, item.Name))}></i></Col>
 
         </Row>)
         rows.push(row)
@@ -756,7 +754,7 @@ class NodeConfig extends Component {
         <div>
           <Media className="edit" id="edit">
             <Media left>
-              {this.state.nodes.map((nodeItem) => nodeItem.Name)}
+              {this.state.nodes.map((nodeItem) => nodeItem.Name)} / <small>HOST : {this.state.nodes.map((nodeItem) => nodeItem.Host)}</small>
             </Media>
           </Media>
         </div>

@@ -267,9 +267,9 @@ class TextCellForArray extends React.PureComponent {
 
                 } else if (this.props.identity == 'connectedTo') {
 
-                    value = val.Remote_interface && val.Remote_ip ? val.Remote_interface + ':' + val.Remote_ip : ''
+                    value = val.Remote_interface || val.Remote_ip ? (val.Remote_interface ? val.Remote_interface : '-') + ' : ' + (val.Remote_ip ? val.Remote_ip : '-') : ''
 
-                    if (val.Remote_interface && val.Remote_ip && val.ValidationStatus) {
+                    if (val.ValidationStatus && (val.Remote_interface || val.Remote_ip)) {
                         if (val.ValidationStatus['Is_lldp_matched']) {
                             return (<Cell {...props}>  <span style={{ color: 'black' }}>{value}</span> </Cell>)
                         }
@@ -322,11 +322,15 @@ class TextCellForArray extends React.PureComponent {
             if (arr && arr.length) {
                 let str = ''
                 arr.map((val, index) => {
-                    if (index == arr.length - 1) {
+                    if (arr.length == 1) {
                         str = val.Name
                     }
                     else {
-                        str += val.Name + '\n'
+                        if (index == arr.length - 1) {
+                            str += val.Name
+                        } else {
+                            str += val.Name + ','
+                        }
                     }
                 })
                 value = str
