@@ -684,7 +684,7 @@ class NodeConfig extends Component {
         <div>
           <Media className="edit" id="edit">
             <Media left>
-              {this.state.nodes.map((nodeItem) => nodeItem.Name)}
+              {this.state.nodes.map((nodeItem) => nodeItem.Name)} / <small>HOST : {this.state.nodes.map((nodeItem) => nodeItem.Host)}</small>
             </Media>
           </Media>
         </div>

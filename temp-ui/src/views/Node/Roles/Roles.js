@@ -253,10 +253,15 @@ class Roles extends Component {
             }
         }
         putRequest(UPDATE_ROLE, params).then(function (data) {
-            console.log(data.Data)
             if (data.StatusCode == 200) {
                 let existingData = self.state.data;
                 existingData[self.state.selectedRowIndexes[0]] = data.Data
+                self.state.data.find((item) => {
+                    if (data.Data.ParentId == item.Id) {
+                        existingData[self.state.selectedRowIndexes[0]].ParentName = item.Name
+                        return
+                    }
+                })
                 self.setState({ data: existingData, displayEditModel: false, selectedRowIndexes: [], selectedRole: '' })
             }
             else {

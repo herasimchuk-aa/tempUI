@@ -227,25 +227,28 @@ class NodeSummary extends React.Component {
                     <ModalBody>
                         <Row>
                             <Col sm="6" className="marTop10">Name<font color="red"><sup>*</sup></font>
-                                <Input id='nodeName' autoFocus className="marTop10" />
+                                <Input id='nodeTitle' autoFocus className="marTop10" />
                             </Col>
-                            <Col sm="6" className="marTop10">Site
-                                <DropDown options={this.state.siteData} getSelectedData={this.getSelectedData} identity={"Site"} default={this.state.selectedSiteId} />
+                            <Col sm="6" className="marTop10">
+                                Host<font color="red"><sup>*</sup></font>
+                                <Input id='hostInterface' className="marTop10" />
                             </Col>
                             {/* <Input id='site' className="marTop10" /> */}
                         </Row>
                         <Row>
+                            <Col sm="6" className="marTop10">Type
+                                <DropDown options={this.state.typedata} getSelectedData={this.getSelectedData} identity={"Type"} default={this.state.selectedTypeId} />
+                            </Col>
+                            <Col sm="6" className="marTop10"> Site
+                                <DropDown options={this.state.siteData} getSelectedData={this.getSelectedData} identity={"Site"} default={this.state.selectedSiteId} />
+                            </Col>
+                        </Row>
+                        <Row>
                             <Col sm="6" className="marTop10">Roles<font color="red"><sup>*</sup></font>
                                 <MultiselectDropDown value={this.state.selectedRoles} getSelectedData={this.handleChanges} options={this.state.roleData} />
-                                <br />
-                                Host<font color="red"><sup>*</sup></font>
-                                <Input id='hostInterface' className="marTop10" />
                             </Col>
-
                             <Col sm="6" className="marTop10">
                                 Serial Number <Input id='nodeSerialNumber' className="marTop10" />
-                                <br />Type
-                                <DropDown options={this.state.typedata} getSelectedData={this.getSelectedData} identity={"Type"} default={this.state.selectedTypeId} />
                             </Col>
                         </Row>
                         <Row>
@@ -283,13 +286,13 @@ class NodeSummary extends React.Component {
     }
 
     addNode() {
-        let nodeName = document.getElementById('nodeName').value
-        let name = trimString(nodeName)
+        let nodeTitle = document.getElementById('nodeTitle').value
+        let name = trimString(nodeTitle)
 
         let host = document.getElementById('hostInterface').value
         let validIp = validateIPaddress(host)
         if (!validIp) {
-            this.setState({ visible: true, errMsg: "Please add valid IP Address" })
+            this.setState({ visible: true, errMsg: "Please add valid IP Address in HOST field" })
             return;
         }
 
@@ -307,7 +310,7 @@ class NodeSummary extends React.Component {
                 self.setState({ visible: true, errMsg: "Name field is mandatory" });
             }
             if (!validateUnique) {
-                self.setState({ visibleUnique: true, errMsg: "Name field is already exist, please enter unique name" });
+                self.setState({ visibleUnique: true, errMsg: "Node is already exist, please enter unique name" });
             }
 
             return;
