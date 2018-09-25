@@ -151,7 +151,7 @@ class LLDP extends Component {
 
     showEditDialogBox() {
         if (!this.state.selectedRowIndexes.length || this.state.selectedRowIndexes.length > 1) {
-            alert("Please select one Kernel to edit")
+            alert("Please select one LLDP to edit")
             return
         }
         this.setState({ displayEditModel: true })

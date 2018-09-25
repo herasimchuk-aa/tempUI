@@ -214,12 +214,14 @@ class Roles extends Component {
     renderEditModelDialog() {
         if (this.state.displayEditModel) {
             let edittedData = this.state.data[this.state.selectedRowIndexes[0]]
+            let roles = JSON.parse(JSON.stringify(this.state.data))
+            roles.splice(this.state.data.indexOf(edittedData), 1)
             return (
                 <Modal isOpen={this.state.displayEditModel} toggle={() => this.toggleEditModal()} size="sm" centered="true" >
                     <ModalHeader toggle={() => this.toggleEditModal()}>Edit Role</ModalHeader>
                     <ModalBody>
                         Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='roleNameEdit' disabled defaultValue={edittedData.Name} /><br />
-                        Parent Role <DropDown className="marTop10" options={this.state.data} getSelectedData={this.getSelectedData} identity={"Role"} default={this.state.selectedRole} /><br />
+                        Parent Role <DropDown className="marTop10" options={roles} getSelectedData={this.getSelectedData} identity={"Role"} default={this.state.selectedRole} /><br />
                         Description <Input className="marTop10" id='roleDescEdit' defaultValue={edittedData.Description} /><br />
                     </ModalBody>
                     <ModalFooter>

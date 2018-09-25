@@ -5,6 +5,7 @@ import { ServerAPI } from '../../ServerAPI';
 import ConfirmationModal from '../../components/ConfirmationModal/ConfirmationModal';
 import { getRequest } from '../../apis/RestApi';
 import { FETCH_ALL_KUBERNETES } from '../../apis/RestConfig';
+import { NotificationManager } from 'react-notifications';
 
 class Kubernetes extends Component {
 
@@ -41,14 +42,31 @@ class Kubernetes extends Component {
     dashboardClick = (key) => {
         let kubernetesData = this.state.data;
         let keyData = kubernetesData[key]
+        let counter = 0
         if (keyData && keyData.length) {
             for (let i in keyData) {
                 let roles = keyData[i].roles
-                if (roles && (roles.indexOf("k8-master") > -1 || roles.indexOf("kube-master") > -1) && keyData[i].K8URL) {
-                    window.open(keyData[i].K8URL)
-                    return
+                if (roles && roles.length) {
+                    roles.map((role) => {
+                        if (role && ((role.Name == "k8-master") || (role.Name == "kube-master")) && (keyData[i].K8URL)) {
+                            counter++
+                            window.open(keyData[i].K8URL)
+                            return
+                        }
+
+                    })
                 }
+
+                // if (roles && (roles.indexOf("k8-master") > -1 || roles.indexOf("kube-master") > -1) && keyData[i].K8URL) {
+                //     window.open(keyData[i].K8URL)
+                //     return
+                // }
+
             }
+
+        }
+        if (counter < 1) {
+            NotificationManager.error("k8-master or kube-master is necessary to be in roles in order to redirect to dashboard", "node")
         }
 
     }
