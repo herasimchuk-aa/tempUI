@@ -24,6 +24,7 @@ import '../scss/core/_dropdown-menu-right.scss';
 import Full from './containers/Full/';
 import Login from './views/Login/Login';
 import Dashboard from './views/Dashboard/Dashboard';
+import './apis/Socket'
 
 export const customHistory = createBrowserHistory()
 
