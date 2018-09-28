@@ -34,13 +34,13 @@ class ProvisionProgress extends Component {
         let self = this
         if (self.state.executionId) {
             let timer = setInterval(function () {
-                getRequest(GET_PROVISION + self.state.executionId).then(function (json) {
-                    self.setState({ progress: json.Progress, status: json.Status, color: json.Status == "FAILED" ? 'danger' : 'success' })
-                    if (json.Status == "FAILED" || json.Status == "PROVISIONED" || json.Status == "PARTIAL_PROVISIONED" || json.Status == "FINISHED") {
+                if (window.provisionData) {
+                    self.setState({ progress: window.provisionData.Progress, status: window.provisionData.Status, color: window.provisionData.Status == "FAILED" ? 'danger' : 'success' })
+                    if (window.provisionData.Status == "FAILED" || window.provisionData.Status == "PROVISIONED" || window.provisionData.Status == "PARTIAL_PROVISIONED" || window.provisionData.Status == "FINISHED") {
                         self.setState({ progress: 100 })
                         clearInterval(timer);
                     }
-                })
+                }
             }, 5000);
         }
     }

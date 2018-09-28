@@ -69,3 +69,8 @@ export const DISCOVER = "/node/discover"
 //apis for provision
 export const PROVISION = "/provision/"
 export const GET_PROVISION = "/provision/status/"
+
+//apis for constants
+export const FETCH_ALL_SPEEDS = "/speed"
+export const FETCH_ALL_FECS = "/fec"
+export const FETCH_ALL_MEDIAS = "/media"

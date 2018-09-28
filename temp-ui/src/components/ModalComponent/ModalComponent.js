@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { validateIPaddress, trimString } from '../Utility/Utility';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert, ListGroupItem, ListGroup, Row, Col } from 'reactstrap';
+import DropDown from '../dropdown/DropDown'
 
 class ModalComponent extends Component {
 
@@ -13,13 +14,16 @@ class ModalComponent extends Component {
             subnet: '',
             remoteName: '',
             remoteInterface: '',
-            speed: '',
-            autoNEG: false,
-            fecType: '',
-            mediaType: '',
+            // speed: '',
+            // autoNEG: false,
+            // fecType: '',
+            // mediaType: '',
             isMngmntIntf: false,
             id: 0,
-            error: []
+            error: [],
+            selectedSpeed: '',
+            selectedFec: '',
+            selectedMedia: ''
         }
     }
 
@@ -44,15 +48,31 @@ class ModalComponent extends Component {
             port: props.data.Name,
             ip: ip,
             subnet: props.data.Subnet,
-            speed: props.data.Speed,
-            autoNEG: props.data.Autoneg,
-            fecType: props.data.FecType,
-            mediaType: props.data.MediaType,
+            selectedSpeed: props.data.Speed,
+            // autoNEG: props.data.Autoneg,
+            selectedFec: props.data.FecType,
+            selectedMedia: props.data.MediaType,
             remoteName: serverName,
             remoteInterface: serverPort,
             isMngmntIntf: props.data.isMngmntIntf
         }
     }
+
+    getSelectedData = (data, identity) => {
+        if (identity == 'Speed') {
+            this.setState({ selectedSpeed: data })
+            return
+        }
+        if (identity == 'Fec') {
+            this.setState({ selectedFec: data })
+            return
+        }
+        if (identity == 'Media') {
+            this.setState({ selectedMedia: data })
+            return
+        }
+    }
+
     getdata = () => {
         let interfaceName = document.getElementById('port').value
         let validInterfacename = trimString(interfaceName)
@@ -79,10 +99,10 @@ class ModalComponent extends Component {
             'Ip_address': ipAddress,
             'Name': validInterfacename,
             'Subnet': document.getElementById('subnet').value,
-            'Speed': document.getElementById('speed').value,
-            'FecType': document.getElementById('fecType').value,
-            'MediaType': document.getElementById('mediaType').value,
-            'Autoneg': document.getElementById('autoNeg').checked,
+            'Speed': this.state.selectedSpeed,
+            'FecType': this.state.selectedFec,
+            'MediaType': this.state.selectedMedia,
+            // 'Autoneg': document.getElementById('autoNeg').checked,
             'Is_management_interface': document.getElementById('mngmntInt').checked,
         }
 
@@ -119,9 +139,9 @@ class ModalComponent extends Component {
                         <Col>Subnet<font color="red"><sup>*</sup></font><Input className="marTop10" type="text" id="subnet" defaultValue={this.state.subnet} /></Col>
                     </Row>
                     <Row className="marTop10">
-                        <Col>Speed<Input className="marTop10" type="text" id="speed" defaultValue={this.state.speed} /></Col>
-                        <Col>FEC<Input className="marTop10" type="text" id="fecType" defaultValue={this.state.fecType} /></Col>
-                        <Col>Media<Input className="marTop10" type="text" id="mediaType" defaultValue={this.state.mediaType} /></Col><br />
+                        <Col>Speed<DropDown options={this.props.speedData} getSelectedData={this.getSelectedData} identity={"Speed"} default={this.state.selectedSpeed} /></Col>
+                        <Col>FEC<DropDown options={this.props.fecData} getSelectedData={this.getSelectedData} identity={"Fec"} default={this.state.selectedFec} /></Col>
+                        <Col>Media<DropDown options={this.props.mediaData} getSelectedData={this.getSelectedData} identity={"Media"} default={this.state.selectedMedia} /></Col><br />
                     </Row>
                     <Row className="marTop10">
                         <Col>Remote Node Name<Input className="marTop10" type="text" id="remoteName" defaultValue={this.state.remoteName} /></Col>
@@ -129,8 +149,6 @@ class ModalComponent extends Component {
                         <Col>Remote Node Interface<Input className="marTop10" type="text" id="remoteInterface" defaultValue={this.state.remoteInterface} /></Col><br />
                     </Row>
                     <Row className="marTop10">
-                        <Col><input className="marTop10" type="checkbox" id="autoNeg" defaultChecked={this.state.autoNEG} /> AutoNEG</Col><br />
-                        {/* <Col></Col> */}
                         <Col><input className="marTop10" type="checkbox" id="mngmntInt" defaultChecked={this.state.isMngmntIntf} /> Management Interface</Col>
                     </Row>
 

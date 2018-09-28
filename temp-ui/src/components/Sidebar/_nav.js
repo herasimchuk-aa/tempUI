@@ -59,17 +59,17 @@ export default {
           name: 'EthTool',
           url: '/pcc/node/EthTool',
           icon: 'icon-map',
-        },
+        },*/
         {
           name: 'Site',
           url: '/pcc/node/Site',
           icon: 'icon-map',
         },
-        {
+        /*{
           name: 'Base Linux ISO',
           url: '/pcc/node/BaseLinuxIso',
           icon: 'icon-bell',
-        }, */
+        },*/ 
         {
           name: 'Linux',
           url: '/pcc/node/linux',

@@ -14,8 +14,9 @@ import MultiselectDropDown from '../../components/MultiselectDropdown/Multiselec
 import ProvisionProgress from '../../components/ProvisionProgress/ProvisionProgress';
 import DiscoverModal from '../../components/DiscoverModal/DiscoverModal';
 import { invaderServerAddress } from '../../config';
-import { FETCH_ALL_SITES, FETCH_ALL_ROLES, FETCH_ALL_ISOS, FETCH_ALL_KERNELS, FETCH_ALL_SYSTEM_TYPES, UPDATE_NODES, DISCOVER, ADD_KERNEL, ADD_SYSTEM_TYPE, ADD_ISO, FETCH_ALL_GOES, FETCH_ALL_LLDP, FETCH_ALL_ETHTOOL, PROVISION } from '../../apis/RestConfig';
+import { FETCH_ALL_SITES, FETCH_ALL_ROLES, FETCH_ALL_ISOS, FETCH_ALL_KERNELS, FETCH_ALL_SYSTEM_TYPES, UPDATE_NODES, DISCOVER, ADD_KERNEL, ADD_SYSTEM_TYPE, ADD_ISO, FETCH_ALL_GOES, FETCH_ALL_LLDP, FETCH_ALL_ETHTOOL, PROVISION, FETCH_ALL_SPEEDS, FETCH_ALL_FECS, FETCH_ALL_MEDIAS } from '../../apis/RestConfig';
 import { getRequest, postRequest, putRequest } from '../../apis/RestApi';
+// import '../../apis/Socket'
 
 class NodeConfig extends Component {
   constructor(props) {
@@ -29,6 +30,9 @@ class NodeConfig extends Component {
       goesData: [],
       lldpData: [],
       ethToolData: [],
+      speedData: [],
+      fecData: [],
+      mediaData: [],
       nodeHead: nodeHead,
       displayModel: false,
       displayNewInterfaceModel: false,
@@ -111,7 +115,22 @@ class NodeConfig extends Component {
       ethToolData = json.Data
     })
 
-    Promise.all([typePromise, rolePromise, kernelPromise, isoPromise, sitePromise, goesPromise, lldpPromise, ethToolPromise]).then(function () {
+    let speedData = []
+    let speedPromise = getRequest(FETCH_ALL_SPEEDS).then(function (json) {
+      speedData = json.Data
+    })
+
+    let fecData = []
+    let fecPromise = getRequest(FETCH_ALL_FECS).then(function (json) {
+      fecData = json.Data
+    })
+
+    let mediaData = []
+    let mediaPromise = getRequest(FETCH_ALL_MEDIAS).then(function (json) {
+      mediaData = json.Data
+    })
+
+    Promise.all([typePromise, rolePromise, kernelPromise, isoPromise, sitePromise, goesPromise, lldpPromise, ethToolPromise, speedPromise, fecPromise, mediaPromise]).then(function () {
       self.setState(
         {
           typeData: typeData,
@@ -121,7 +140,10 @@ class NodeConfig extends Component {
           siteData: siteData,
           goesData: goesData,
           lldpData: lldpData,
-          ethToolData: ethToolData
+          ethToolData: ethToolData,
+          speedData: speedData,
+          fecData: fecData,
+          mediaData: mediaData
         })
     })
 
@@ -143,11 +165,14 @@ class NodeConfig extends Component {
         </Media>
         <Row className="headerRow" style={{ marginLeft: '0px', marginRight: '0px' }}>
           <Col sm="1" className="head-name"></Col>
-          <Col sm="2" className="head-name">Interface Name</Col>
-          <Col sm="2" className="head-name">IP Address</Col>
-          <Col sm="3" className="head-name">Remote Node Name</Col>
+          <Col sm="1" className="head-name">Interface Name</Col>
+          <Col sm="1" className="head-name">IP Address</Col>
+          <Col sm="2" className="head-name">Remote Node Name</Col>
           <Col sm="2" className="head-name">Remote Interface</Col>
-          <Col sm="2" className="head-name">Edit</Col>
+          <Col sm="1" className="head-name">Speed</Col>
+          <Col sm="1" className="head-name">FEC</Col>
+          <Col sm="1" className="head-name">Media</Col>
+          <Col sm="1" className="head-name">Edit</Col>
         </Row>
       </div>
     )
@@ -235,11 +260,14 @@ class NodeConfig extends Component {
         let row = (<Row className={row1} style={{ marginLeft: '0px', marginRight: '0px' }}>
           <Col sm="1" className="pad" ><Input key={self.counter++} style={{ cursor: 'pointer', marginLeft: '0px' }}
             type="checkbox" onChange={() => (self.checkBoxClickInterface(rowIndex))} defaultChecked={false} /></Col>
-          <Col sm="2" className="pad">{item.Name ? item.Name : '-'}</Col>
-          <Col sm="2" className="pad">{item.Ip_address ? item.Ip_address : '-'}</Col>
-          <Col sm="3" className="pad">{item.Remote_node_name ? item.Remote_node_name : '-'}</Col>
+          <Col sm="1" className="pad">{item.Name ? item.Name : '-'}</Col>
+          <Col sm="1" className="pad">{item.Ip_address ? item.Ip_address : '-'}</Col>
+          <Col sm="2" className="pad">{item.Remote_node_name ? item.Remote_node_name : '-'}</Col>
           <Col sm="2" className="pad">{item.Remote_interface ? item.Remote_interface : "-"}</Col>
-          <Col sm="2" className="pad" style={{ cursor: 'pointer' }}><i className="fa fa-pencil" aria-hidden="true" onClick={() => (self.updatInterfaceModal(item.Id, item.Name))}></i></Col>
+          <Col sm="1" className="pad">{item.Speed ? item.Speed : "-"}</Col>
+          <Col sm="1" className="pad">{item.FecType ? item.FecType : "-"}</Col>
+          <Col sm="1" className="pad">{item.MediaType ? item.MediaType : "-"}</Col>
+          <Col sm="1" className="pad" style={{ cursor: 'pointer' }}><i className="fa fa-pencil" aria-hidden="true" onClick={() => (self.updatInterfaceModal(item.Id, item.Name))}></i></Col>
 
         </Row>)
         rows.push(row)
@@ -287,7 +315,14 @@ class NodeConfig extends Component {
       let data = this.state.interfaceData
 
       return (
-        <ModalComponent cancel={() => this.closeInterfaceModal()} getData={this.updateNodeCall} actionButton={'Update'} data={data} ></ModalComponent>
+        <ModalComponent
+          cancel={() => this.closeInterfaceModal()}
+          getData={this.updateNodeCall}
+          actionButton={'Update'}
+          data={data}
+          speedData={this.state.speedData}
+          fecData={this.state.fecData}
+          mediaData={this.state.mediaData} ></ModalComponent>
       );
     }
   }
@@ -300,13 +335,13 @@ class NodeConfig extends Component {
           interfaceItem.Name = params.Name
           interfaceItem.Ip_address = params.Ip_address
           interfaceItem.Subnet = params.Subnet
-          interfaceItem.Speed = parseInt(params.Speed)
+          interfaceItem.Speed = params.Speed
           interfaceItem.FecType = params.FecType
           interfaceItem.MediaType = params.MediaType
           interfaceItem.Remote_node_name = params.Remote_node_name
           interfaceItem.Remote_interface = params.Remote_interface
           interfaceItem.Is_management_interface = params.Is_management_interface
-          interfaceItem.Autoneg = params.Autoneg
+          // interfaceItem.Autoneg = params.Autoneg
         }
       })
       this.setState({ interfaces: datum.interfaces })
@@ -322,7 +357,14 @@ class NodeConfig extends Component {
   renderAddInterface() {
     if (this.state.displayNewInterfaceModel) {
       return (
-        <ModalComponent cancel={() => this.closeInterfaceModal()} getData={this.updateNewInterfaceCall} actionButton={'Add'}></ModalComponent>
+        <ModalComponent
+          cancel={() => this.closeInterfaceModal()}
+          getData={this.updateNewInterfaceCall}
+          actionButton={'Add'}
+          speedData={this.state.speedData}
+          fecData={this.state.fecData}
+          mediaData={this.state.mediaData}
+        ></ModalComponent>
       );
     }
   }
@@ -337,10 +379,10 @@ class NodeConfig extends Component {
       'Ip_address': params.Ip_address,
       'Name': params.Name,
       'Subnet': params.Subnet,
-      'Speed': parseInt(params.Speed),
+      'Speed': params.Speed,
       'FecType': params.FecType,
       'MediaType': params.MediaType,
-      'Autoneg': params.Autoneg,
+      // 'Autoneg': params.Autoneg,
       'Is_management_interface': params.Is_management_interface,
       'Node_Id': datum.Id
     }
@@ -355,10 +397,36 @@ class NodeConfig extends Component {
   }
 
   onProvisionClick() {
+    if (!document.getElementById('provisionGoes').checked && !document.getElementById('provisionLldp').checked &&
+      !document.getElementById('provisionEthtool').checked && !document.getElementById('provisionInterfaces').checked) {
+      alert("Please select an App to provision")
+      return
+    }
     let self = this
-    let provisiondata = {}
+    let provisiondata = Object.assign({}, {
+      'nodeId': '',
+      'role': '',
+      'items': {
+        'goes': false,
+        'lldp': false,
+        'ethtool': false,
+        'interfaces': false
+      }
+    })
     provisiondata.nodeId = self.state.nodeId
     provisiondata.role = 'cloud-node'
+    if (document.getElementById('provisionGoes').checked) {
+      provisiondata.items.goes = true
+    }
+    if (document.getElementById('provisionLldp').checked) {
+      provisiondata.items.lldp = true
+    }
+    if (document.getElementById('provisionEthtool').checked) {
+      provisiondata.items.ethtool = true
+    }
+    if (document.getElementById('provisionInterfaces').checked) {
+      provisiondata.items.interfaces = true
+    }
     postRequest(PROVISION, provisiondata).then(function (data) {
       if (data.StatusCode == 200) {
         if (data && data.Data) {
@@ -837,6 +905,14 @@ class NodeConfig extends Component {
             </Col>
             <Col xs='3'><Label>Ethtool</Label><br />
               <DropDown options={this.state.ethToolData} getSelectedData={this.getSelectedData} identity={"EthTool"} default={this.state.selectedEthToolId} />
+            </Col>
+            <Col><Label>Provision :</Label><br />
+              <div className="equiSpace">
+                <div><input type="checkbox" id="provisionGoes" defaultChecked={true} /> Goes </div>
+                <div><input type="checkbox" id="provisionLldp" defaultChecked={true} /> LLDP </div>
+                <div><input type="checkbox" id="provisionEthtool" defaultChecked={true} /> Ethtool </div>
+                <div><input type="checkbox" id="provisionInterfaces" defaultChecked={true} /> Interfaces </div>
+              </ div>
             </Col>
           </Row>
           <div style={{ padding: '10px' }}>

@@ -262,6 +262,9 @@ class Roles extends Component {
                         return
                     }
                 })
+                if (data.Data.ParentId == 0) {
+                    existingData[self.state.selectedRowIndexes[0]].ParentName = '-'
+                }
                 self.setState({ data: existingData, displayEditModel: false, selectedRowIndexes: [], selectedRole: '' })
             }
             else {

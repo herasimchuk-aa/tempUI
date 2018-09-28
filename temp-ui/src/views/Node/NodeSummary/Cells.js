@@ -1,6 +1,6 @@
 import { Cell } from 'fixed-data-table-2';
 import React from 'react';
-import { UncontrolledTooltip, Badge, Row, Col, ListGroup, ListGroupItem, Progress } from 'reactstrap';
+import { UncontrolledTooltip, Badge, Row, Col, ListGroup, ListGroupItem, Progress, Label } from 'reactstrap';
 import { GET_PROVISION } from '../../../apis/RestConfig';
 import { getRequest } from '../../../apis/RestApi';
 
@@ -120,7 +120,7 @@ class ProvisionCell extends React.PureComponent {
         super(props);
         this.state = {
             progress: 100,
-            status: 'NOT_PROVISION',
+            status: 'NOT_PROVISIONED',
             color: 'warning'
         }
     }
@@ -129,6 +129,9 @@ class ProvisionCell extends React.PureComponent {
         const { data, rowIndex, columnKey, ...props } = this.props;
         let exec_Id = data[rowIndex][columnKey]
         this.getprovision(exec_Id)
+        // if (window.provisionData) {
+        //     this.getprovision(window.provisionData.Id)
+        // }
     }
 
     getprovision = (exec_Id) => {
@@ -151,8 +154,9 @@ class ProvisionCell extends React.PureComponent {
         const { data, rowIndex, columnKey, ...props } = this.props;
         return (
             <Cell {...props}>
+                {/* <Label className="visibleOnHover">{this.state.status}</Label> */}
                 {this.state.status}
-                <Progress animated color={this.state.color} value={this.state.progress} className="mb-3" />
+                <Progress color={this.state.color} value={this.state.progress} className="mb-3" />
 
             </Cell>
         );
@@ -329,7 +333,7 @@ class TextCellForArray extends React.PureComponent {
                         if (index == arr.length - 1) {
                             str += val.Name
                         } else {
-                            str += val.Name + ','
+                            str += val.Name + ', '
                         }
                     }
                 })

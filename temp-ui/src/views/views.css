@@ -382,3 +382,13 @@ to {opacity: 0;}
     background: #4f908e; 
 }
 /* SCRLLBAR CSS END */
+
+.equiSpace {
+	display: flex;
+	align-content: space-around;
+}
+
+.equiSpace > div {
+	flex: 1;
+	margin-top: 20px;
+}

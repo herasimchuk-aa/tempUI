@@ -597,7 +597,7 @@ export class ServerAPI {
         // this.invaderServerAddress = "http://192.168.53.130:8080";
         //    this.invaderServerAddress = "http://172.17.2.37:8080";
         this.invaderServerAddress = invaderServerAddress;
-        this.fetchAllNodeSetupInfo();
+        // this.fetchAllNodeSetupInfo();
     }
 
     DefaultInvader() {
@@ -607,7 +607,7 @@ export class ServerAPI {
     updateInvaderAddress(invaderAddress) {
         this.invaderServerAddress = invaderAddress;
         // If IP address is changing we need to update Inventory information.
-        this.fetchAllNodeSetupInfo();
+        // this.fetchAllNodeSetupInfo();
     }
 
     static DefaultServer() {
