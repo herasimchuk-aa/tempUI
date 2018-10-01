@@ -171,19 +171,19 @@ class DiscoverModal extends Component {
 
             } else {
 
-                updatedNode.interfaces.map((mngt, mnindex) => {
+                // updatedNode.interfaces.map((mngt, mnindex) => {
 
-                    if (mngt.Is_management_interface) {
-                        let mngmtInterface = {}
-                        mngmtInterface.Name = mngt.Name ? mngt.Name : '',
-                            mngmtInterface.Ip_address = mngt.Ip_address ? mngt.Ip_address : '',
-                            mngmtInterface.Admin_state = mngt.Admin_state ? mngt.Admin_state : '',
-                            mngmtInterface.Remote_node_name = mngt.Remote_node_name ? mngt.Remote_node_name : '',
-                            mngmtInterface.Remote_interface = mngt.Remote_interface ? mngt.Remote_interface : '',
-                            mngmtInterface.Is_management_interface = mngt.Is_management_interface
-                        actNode.interfaces.push(mngmtInterface)
-                    }
-                })
+                //     if (mngt.Is_management_interface) {
+                //         let mngmtInterface = {}
+                //         mngmtInterface.Name = mngt.Name ? mngt.Name : '',
+                //             mngmtInterface.Ip_address = mngt.Ip_address ? mngt.Ip_address : '',
+                //             mngmtInterface.Admin_state = mngt.Admin_state ? mngt.Admin_state : '',
+                //             mngmtInterface.Remote_node_name = mngt.Remote_node_name ? mngt.Remote_node_name : '',
+                //             mngmtInterface.Remote_interface = mngt.Remote_interface ? mngt.Remote_interface : '',
+                //             mngmtInterface.Is_management_interface = mngt.Is_management_interface
+                //         actNode.interfaces.push(mngmtInterface)
+                //     }
+                // })
 
                 updatedNode.interfaces = actNode.interfaces
             }
