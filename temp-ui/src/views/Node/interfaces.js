@@ -11,13 +11,21 @@ class Interfaces extends Component {
             selectedRowIndexes: [],
             displayAddInterfaceModal: false,
             displayUpdateInterfaceModel: false,
-            singleInterface: {}
+            singleInterface: {},
+            speedData: [],
+            fecData: [],
+            mediaData: []
         }
         this.counter = 0;
     }
 
     static getDerivedStateFromProps(props, state) {
-        return { node: props.data[0] }
+        return {
+            node: props.data[0],
+            speedData: props.speedData,
+            fecData: props.fecData,
+            mediaData: props.mediaData
+        }
     }
 
     interfaceTableHeader() {
@@ -25,7 +33,7 @@ class Interfaces extends Component {
             <div className="padTop30">
                 <Media>
                     <Media left>
-                        <h5>Interfaces from interface component</h5>
+                        <h5>Interfaces</h5>
                     </Media>
                     <Media body>
                     </Media>
@@ -83,13 +91,11 @@ class Interfaces extends Component {
         let self = this
         let interfaces = self.state.node.interfaces
         if (interfaces && interfaces.length) {
-            if (!interfaces || !interfaces.length) {
-                let row = (<Row className='headerRow1' style={{ marginLeft: '0px', marginRight: '0px' }}>
-                    <Col sm="12" className="pad"><h5 className="text-center">Interface data not available</h5></Col>
-                </Row>)
-                rows.push(row)
+            if (interfaces[0] == null) {
+
                 return rows
             }
+
             interfaces.map((item, rowIndex) => {
                 let row1 = 'headerRow1'
                 if (rowIndex % 2 === 0) {
@@ -111,6 +117,13 @@ class Interfaces extends Component {
                 </Row>)
                 rows.push(row)
             })
+        }
+        if (!interfaces || !interfaces.length) {
+            let row = (<Row className='headerRow1' style={{ marginLeft: '0px', marginRight: '0px' }}>
+                <Col sm="12" className="pad"><h5 className="text-center">Interface data not available</h5></Col>
+            </Row>)
+            rows.push(row)
+            return rows
         }
         return rows
     }
@@ -149,7 +162,7 @@ class Interfaces extends Component {
         if (this.state.displayUpdateInterfaceModel) {
             let data = this.state.singleInterface
             return (
-                <ModalComponent cancel={() => this.closeInterfaceModal()} getData={this.updateInterface} actionButton={'Update'} data={data} ></ModalComponent>
+                <ModalComponent cancel={() => this.closeInterfaceModal()} speedData={this.state.speedData} fecData={this.state.fecData} mediaData={this.state.mediaData} getData={this.updateInterface} actionButton={'Update'} data={data} ></ModalComponent>
             );
         }
     }
@@ -186,7 +199,7 @@ class Interfaces extends Component {
     renderAddInterface() {
         if (this.state.displayAddInterfaceModal) {
             return (
-                <ModalComponent cancel={() => this.closeInterfaceModal()} getData={this.addInterface} actionButton={'Add'}></ModalComponent>
+                <ModalComponent cancel={() => this.closeInterfaceModal()} speedData={this.state.speedData} fecData={this.state.fecData} mediaData={this.state.mediaData} getData={this.addInterface} actionButton={'Add'}></ModalComponent>
             );
         }
     }

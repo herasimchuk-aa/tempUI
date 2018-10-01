@@ -535,7 +535,7 @@ class NodeConfig extends Component {
           datum.Iso_Id = parseInt(self.state.selectedIsoId),
           datum.Kernel_Id = parseInt(self.state.selectedLinuxId),
           datum.Site_Id = parseInt(self.state.selectedSiteId),
-          datum.interfaces = args[0].interfaces ? args[0].interfaces : [null],
+          datum.interfaces = args[0].interfaces.length ? args[0].interfaces : [null],
           datum.SN = self.state.selectedSerialNo
 
 
@@ -543,7 +543,7 @@ class NodeConfig extends Component {
           if (data.StatusCode == 200) {
             let node = []
             node.push(data.Data)
-            console.log(node)
+
             self.setState({ nodes: node, saveBtn: false })
           }
           else {
@@ -552,7 +552,6 @@ class NodeConfig extends Component {
         })
       })
     } else {
-      console.log('else')
       let nodeData = []
       nodeData.push(args[0])
       self.setState({ nodes: nodeData, saveBtn: false })
@@ -587,7 +586,7 @@ class NodeConfig extends Component {
           </Media>
         </div>
       showDiscoverButton = this.showDiscoverButton()
-      interfaceDiv = <Interfaces data={this.state.nodes} update={this.updateInterfaces} ></Interfaces>
+      interfaceDiv = <Interfaces data={this.state.nodes} speedData={this.state.speedData} fecData={this.state.fecData} mediaData={this.state.mediaData} update={this.updateInterfaces} ></Interfaces>
     } else {
       this.state.nodes.map(function (node, i) {
         selectedRowIndexes.push(i)
