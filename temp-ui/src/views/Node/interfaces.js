@@ -44,11 +44,14 @@ class Interfaces extends Component {
                 </Media>
                 <Row className="headerRow" style={{ marginLeft: '0px', marginRight: '0px' }}>
                     <Col sm="1" className="head-name"></Col>
-                    <Col sm="2" className="head-name">Interface Name</Col>
-                    <Col sm="2" className="head-name">IP Address</Col>
-                    <Col sm="3" className="head-name">Remote Node Name</Col>
+                    <Col sm="1" className="head-name">Interface Name</Col>
+                    <Col sm="1" className="head-name">IP Address</Col>
+                    <Col sm="2" className="head-name">Remote Node Name</Col>
                     <Col sm="2" className="head-name">Remote Interface</Col>
-                    <Col sm="2" className="head-name">Edit</Col>
+                    <Col sm="1" className="head-name">Speed</Col>
+                    <Col sm="1" className="head-name">FEC</Col>
+                    <Col sm="1" className="head-name">Media</Col>
+                    <Col sm="1" className="head-name">Edit</Col>
                 </Row>
             </div>
         )
@@ -108,10 +111,13 @@ class Interfaces extends Component {
                 let row = (<Row className={row1} style={{ marginLeft: '0px', marginRight: '0px' }}>
                     <Col sm="1" className="pad" ><Input key={self.counter++} style={{ cursor: 'pointer', marginLeft: '0px' }}
                         type="checkbox" onChange={() => (self.checkBoxClickInterface(rowIndex))} defaultChecked={false} /></Col>
-                    <Col sm="2" className="pad">{item.Name ? item.Name : '-'}</Col>
-                    <Col sm="2" className="pad">{item.Ip_address ? item.Ip_address : '-'}</Col>
-                    <Col sm="3" className="pad">{item.Remote_node_name ? item.Remote_node_name : '-'}</Col>
+                    <Col sm="1" className="pad">{item.Name ? item.Name : '-'}</Col>
+                    <Col sm="1" className="pad">{item.Ip_address ? item.Ip_address : '-'}</Col>
+                    <Col sm="2" className="pad">{item.Remote_node_name ? item.Remote_node_name : '-'}</Col>
                     <Col sm="2" className="pad">{item.Remote_interface ? item.Remote_interface : "-"}</Col>
+                    <Col sm="1" className="pad">{item.Speed ? item.Speed : "-"}</Col>
+                    <Col sm="1" className="pad">{item.FecType ? item.FecType : "-"}</Col>
+                    <Col sm="1" className="pad">{item.MediaType ? item.MediaType : "-"}</Col>
                     <Col sm="2" className="pad" style={{ cursor: 'pointer' }}><i className="fa fa-pencil" aria-hidden="true" onClick={() => (self.getUpdatedInterface(item.Id, item.Name))}></i></Col>
 
                 </Row>)
@@ -175,7 +181,7 @@ class Interfaces extends Component {
                 interfaceItem.Name = params.Name
                 interfaceItem.Ip_address = params.Ip_address
                 interfaceItem.Subnet = params.Subnet
-                interfaceItem.Speed = parseInt(params.Speed)
+                interfaceItem.Speed = params.Speed
                 interfaceItem.FecType = params.FecType
                 interfaceItem.MediaType = params.MediaType
                 interfaceItem.Remote_node_name = params.Remote_node_name
@@ -213,7 +219,7 @@ class Interfaces extends Component {
             'Ip_address': params.Ip_address,
             'Name': params.Name,
             'Subnet': params.Subnet,
-            'Speed': parseInt(params.Speed),
+            'Speed': params.Speed,
             'FecType': params.FecType,
             'MediaType': params.MediaType,
             'Autoneg': params.Autoneg,

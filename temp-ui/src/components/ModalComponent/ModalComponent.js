@@ -29,7 +29,7 @@ class ModalComponent extends Component {
 
     static getDerivedStateFromProps(props, state) {
         if (!props.data) {
-            return
+            return {}
         }
         let serverName = props.data.Remote_node_name
         let ip = props.data.Ip_address
