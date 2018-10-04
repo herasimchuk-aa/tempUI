@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert,Media } from 'reactstrap';
+import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert, Media } from 'reactstrap';
 import '../../views.css';
 import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
@@ -8,6 +8,9 @@ import { trimString, getNameById } from '../../../components/Utility/Utility';
 import { getRequest, postRequest, putRequest } from '../../../apis/RestApi'
 import { FETCH_ALL_ISOS, ADD_ISO, UPDATE_ISO, DELETE_ISOS } from '../../../apis/RestConfig'
 import { NotificationManager } from 'react-notifications';
+import { subscribeToIsoSocket } from '../../../apis/Socket';
+import { connect } from 'react-redux';
+import { getISOs } from '../../../actions/baseIsoActions';
 
 class BaseLinuxIso extends Component {
 
@@ -27,7 +30,13 @@ class BaseLinuxIso extends Component {
     }
 
     componentDidMount() {
-        this.retrieveIsoData()
+        this.props.getISOs(FETCH_ALL_ISOS)
+    }
+
+    static getDerivedStateFromProps(props) {
+        return {
+            data: props.data ? props.data.toJS() : []
+        }
     }
 
     retrieveIsoData = () => {
@@ -214,17 +223,17 @@ class BaseLinuxIso extends Component {
                 <Media className="tableTitle">
                     <Media body>
                         <div className="padTop5">Base Linux ISO</div>
-                    </Media>    
+                    </Media>
                     <Media right>
                         <div className='marginLeft10'>
-                        <Button onClick={() => (this.cancel())} className="custBtn animated fadeIn marginLeft13N">New</Button>
-                        <Button onClick={() => (this.showEditDialogBox())} className="custBtn animated fadeIn">Edit</Button>
-                        {this.showDeleteButton()}
+                            <Button onClick={() => (this.cancel())} className="custBtn animated fadeIn marginLeft13N">New</Button>
+                            <Button onClick={() => (this.showEditDialogBox())} className="custBtn animated fadeIn">Edit</Button>
+                            {this.showDeleteButton()}
                         </div>
-                    </Media> 
+                    </Media>
                 </Media>
-                <div style={{height:'250px',overflowY:'scroll'}}>
-                <SummaryDataTable key={this.counter++} heading={this.state.isoHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
+                <div style={{ height: '250px', overflowY: 'scroll' }}>
+                    <SummaryDataTable key={this.counter++} heading={this.state.isoHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
                 </div>
                 {this.renderAddModelDialog()}
                 {this.renderEditModelDialog()}
@@ -236,4 +245,16 @@ class BaseLinuxIso extends Component {
 
 }
 
-export default BaseLinuxIso;
+function mapStateToProps(state) {
+    return {
+        data: state.baseIsos.get('isos')
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        getISOs: (url) => dispatch(getISOs(url))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(BaseLinuxIso)

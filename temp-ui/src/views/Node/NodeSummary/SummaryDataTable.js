@@ -366,7 +366,7 @@ class SummaryDataTable extends Component {
             return null
         return (
             <div ref={this.wrapperRef}>
-                <Popover placement={'top-end'} hideArrow={false}
+                <Popover placement={'top-end'}
                     container={document.getElementById('popoverPlacementDiv')}
                     isOpen={this.state.popoverOpen} target={'popoverPlacementDiv'} toggle={this.contextMenu}>
                     <PopoverBody>
