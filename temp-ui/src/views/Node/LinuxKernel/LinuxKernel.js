@@ -271,7 +271,7 @@ class LinuxKernel extends Component {
 
 function mapStateToProps(state) {
     return {
-        data: state.kernel.getIn(['kernelData'])
+        data: state.kernelReducer.getIn(['kernelData'])
     }
 }
 

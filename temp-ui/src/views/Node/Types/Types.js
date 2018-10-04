@@ -8,6 +8,8 @@ import { trimString, getNameById } from '../../../components/Utility/Utility';
 import { getRequest, postRequest, putRequest } from '../../../apis/RestApi';
 import { FETCH_ALL_SYSTEM_TYPES, ADD_SYSTEM_TYPE, UPDATE_SYSTEM_TYPE, DELETE_SYSTEM_TYPES } from '../../../apis/RestConfig';
 import { NotificationManager } from 'react-notifications';
+import { connect } from 'react-redux'
+import { fetchTypes } from '../../../actions/systemTypeAction';
 
 class Types extends Component {
 
@@ -28,7 +30,13 @@ class Types extends Component {
     }
 
     componentDidMount() {
-        this.retrieveTypeData()
+        this.props.fetchTypes(FETCH_ALL_SYSTEM_TYPES)
+    }
+
+    static getDerivedStateFromProps(props) {
+        return {
+            data: props.data ? props.data.toJS() : []
+        }
     }
 
     retrieveTypeData() {
@@ -265,4 +273,16 @@ class Types extends Component {
 
 }
 
-export default Types;
+function mapStateToProps(state) {
+    return {
+        data: state.systemTypeReducer.getIn(['typeData'])
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        fetchTypes: (url) => dispatch(fetchTypes(url))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Types);

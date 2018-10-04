@@ -9,6 +9,8 @@ import { trimString, getNameById } from '../../../components/Utility/Utility';
 import { getRequest, postRequest, putRequest } from '../../../apis/RestApi';
 import { FETCH_ALL_ROLES, ADD_ROLE, UPDATE_ROLE, DELETE_ROLES } from '../../../apis/RestConfig';
 import { NotificationManager } from 'react-notifications';
+import { connect } from 'react-redux';
+import { fetchRoles } from '../../../actions/roleAction';
 
 
 // import $ from 'jquery';
@@ -33,7 +35,13 @@ class Roles extends Component {
     }
 
     componentDidMount() {
-        this.retrieveRoleData()
+        this.props.fetchRoles(FETCH_ALL_ROLES)
+    }
+
+    static getDerivedStateFromProps(props) {
+        return {
+            data: props.data ? props.data.toJS() : []
+        }
     }
 
     retrieveRoleData() {
@@ -297,4 +305,16 @@ class Roles extends Component {
 
 }
 
-export default Roles;
+function mapStateToProps(state) {
+    return {
+        data: state.roleReducer.get('roles')
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        fetchRoles: (url) => dispatch(fetchRoles(url))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Roles)

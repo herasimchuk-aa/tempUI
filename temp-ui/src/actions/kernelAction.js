@@ -1,8 +1,8 @@
 import I from 'immutable'
 import { getRequest } from '../apis/RestApi';
-import { FETCH_ALL_KERNELS } from '../apis/RestConfig';
+
 export const fetchKernels = (url) => (dispatch) => {
-    getRequest(FETCH_ALL_KERNELS).then(function (json) {
+    getRequest(url).then(function (json) {
         dispatch(setKernelData(I.fromJS(json.Data)))
     })
 }

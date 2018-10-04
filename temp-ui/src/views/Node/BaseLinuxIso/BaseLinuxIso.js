@@ -247,7 +247,7 @@ class BaseLinuxIso extends Component {
 
 function mapStateToProps(state) {
     return {
-        data: state.baseIsos.get('isos')
+        data: state.baseISOReducer.get('isos')
     }
 }
 

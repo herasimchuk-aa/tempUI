@@ -3,7 +3,7 @@ import I from 'immutable';
 
 const initialState = I.fromJS({ 'isos': I.List() })
 
-export function baseISOReducer(state = initialState, action) {
+export default function baseISOReducer(state = initialState, action) {
     switch (action.type) {
         case SET_ISOS: {
             return state.set('isos', action.payload)
