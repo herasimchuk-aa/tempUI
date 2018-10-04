@@ -125,38 +125,23 @@ class ProvisionCell extends React.PureComponent {
         }
     }
 
-    componentDidMount() {
-        const { data, rowIndex, columnKey, ...props } = this.props;
-        let exec_Id = data[rowIndex][columnKey]
-        this.getprovision(exec_Id)
-        // if (window.provisionData) {
-        //     this.getprovision(window.provisionData.Id)
-        // }
-    }
-
-    getprovision = (exec_Id) => {
-        let self = this
-        if (exec_Id) {
-            let timer = setInterval(function () {
-                getRequest(GET_PROVISION + exec_Id).then(function (json) {
-                    // self.props.getStatus(self.props.rowIndex,json.Status)
-                    self.setState({ progress: json.Progress, status: json.Status, color: json.Status == "FAILED" ? 'danger' : 'success' })
-                    if (json.Status == "FAILED" || json.Status == "PROVISIONED" || json.Status == "PARTIAL_PROVISIONED" || json.Status == "FINISHED") {
-                        self.setState({ progress: 100 })
-                        clearInterval(timer);
-                    }
-                })
-            }(), 5000);
-        }
-    }
-
     render() {
         const { data, rowIndex, columnKey, ...props } = this.props;
+        let rowData = data[rowIndex]
+        let color = this.state.color
+        let status = this.state.status
+        let progress = this.state.progress
+        if (rowData && rowData.executionStatusObj) {
+            if (rowData.executionStatusObj.Status) {
+                color = rowData.executionStatusObj.Status == "FAILED" ? 'danger' : 'success'
+                status = rowData.executionStatusObj.Status
+            }
+            progress = rowData.executionStatusObj.Progress
+        }
         return (
             <Cell {...props}>
-                {/* <Label className="visibleOnHover">{this.state.status}</Label> */}
-                {this.state.status}
-                <Progress color={this.state.color} value={this.state.progress} className="mb-3" />
+                {status}
+                <Progress color={color} value={this.state.progress} className="mb-3" />
 
             </Cell>
         );

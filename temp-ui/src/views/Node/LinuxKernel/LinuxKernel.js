@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert,Media } from 'reactstrap';
+import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert, Media } from 'reactstrap';
 import '../../views.css';
 import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
@@ -8,6 +8,8 @@ import { trimString, getNameById } from '../../../components/Utility/Utility';
 import { getRequest, postRequest, putRequest } from '../../../apis/RestApi'
 import { FETCH_ALL_KERNELS, ADD_KERNEL, UPDATE_KERNEL, DELETE_KERNELS } from '../../../apis/RestConfig'
 import { NotificationManager } from 'react-notifications';
+import { connect } from 'react-redux'
+import { fetchKernels } from '../../../actions/kernelAction';
 
 class LinuxKernel extends Component {
 
@@ -27,7 +29,14 @@ class LinuxKernel extends Component {
     }
 
     componentDidMount() {
-        this.retrieveKernelData()
+        //this.retrieveKernelData()
+        this.props.fetchKernels(FETCH_ALL_KERNELS)
+    }
+
+    static getDerivedStateFromProps(props) {
+        return {
+            data: props.data ? props.data.toJS() : []
+        }
     }
 
     retrieveKernelData() {
@@ -237,30 +246,39 @@ class LinuxKernel extends Component {
 
     render() {
         return (<div>
-            
+
             <Media className="tableTitle">
                 <Media body>
                     <div className="padTop5">Linux Kernel</div>
-                </Media>    
+                </Media>
                 <Media right>
                     <div className='marginLeft10'>
                         <Button onClick={() => (this.cancel())} className="custBtn animated fadeIn marginLeft13N" outline color="secondary">New</Button>
                         <Button onClick={() => (this.showEditDialogBox())} className="custBtn animated fadeIn">Edit</Button>
                         {this.showDeleteButton()}
                     </div>
-                </Media> 
+                </Media>
             </Media>
-            <div style={{height:'250px',overflowY:'scroll',marginBottom:'20px'}}>
-            <SummaryDataTable key={this.counter++} heading={this.state.kernelHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
+            <div style={{ height: '250px', overflowY: 'scroll', marginBottom: '20px' }}>
+                <SummaryDataTable key={this.counter++} heading={this.state.kernelHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
             </div>
             {this.renderUpgradeModelDialog()}
             {this.renderEditModelDialog()}
         </div>
         );
     }
-
-
-
 }
 
-export default LinuxKernel;
+function mapStateToProps(state) {
+    return {
+        data: state.kernel.getIn(['kernelData'])
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        fetchKernels: (url) => dispatch(fetchKernels(url))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(LinuxKernel);

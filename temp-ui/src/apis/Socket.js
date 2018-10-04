@@ -1,32 +1,18 @@
 import { invaderServerAddress } from "../config";
-// (function () {
-//     let channelName = "inventoryUpdate"
-//     let wsuri = 'ws://' + invaderServerAddress + '/ws/join?uname=' + channelName;
-//     let socket = new WebSocket(wsuri);
+import I from 'immutable'
+import { setNodes } from "../actions/nodeAction";
 
-//     socket.onmessage = function (event) {
-//         var data = JSON.parse(event.data);
+export default class Socket {
 
-//         console.log(data);
+    constructor(store) {
+        this.store = store
+    }
 
-//         switch (data.Type) {
-//             case 0: // JOIN
-//                 break;
-//             case 1: // LEAVE
-
-//                 break;
-//             case 2: // MESSAGE
-//                 window.provisionData = data.Content
-//                 break;
-//         }
-//     }
-// }())
-
-export class WebSocket {
     initWebSocket() {
         let channelName = "inventoryUpdate"
         let wsuri = 'ws://' + "172.17.146.60:8080" + '/ws/join?uname=' + channelName;
         let socket = new WebSocket(wsuri);
+        let self = this
         socket.onmessage = function (event) {
             var data = JSON.parse(event.data);
 
@@ -39,7 +25,17 @@ export class WebSocket {
 
                     break;
                 case 2: // MESSAGE
-                    window.provisionData = data.Content
+                    let state = self.store.getState()
+                    let nodes = state.nodeSummary && state.nodeSummary.size ? state.nodeSummary.getIn(['nodes']) : I.List()
+                    if (nodes && nodes.size) {
+                        nodes = nodes.map(function (node) {
+                            if (node.get('Id') === data.Content.NodeId) {
+                                node = node.set('executionStatusObj', I.fromJS(data.Content))
+                            }
+                            return node
+                        })
+                    }
+                    self.store.dispatch(setNodes(nodes))
                     break;
             }
         }

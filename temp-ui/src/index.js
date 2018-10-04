@@ -4,9 +4,14 @@ import ReactDOM from 'react-dom';
 
 import { HashRouter, Route, Switch } from 'react-router-dom';
 
-import createBrowserHistory from 'history/createBrowserHistory';
+
 import { invaderServerAddress } from "./config";
-import { Redirect } from 'react-router-dom';
+
+import { Provider } from 'react-redux'
+import { createStore, applyMiddleware } from 'redux'
+import thunk from 'redux-thunk'
+import appReducer from './reducers/appReducer'
+import I from 'immutable'
 
 // Styles
 // Import Flag Icons Set
@@ -24,18 +29,24 @@ import '../scss/core/_dropdown-menu-right.scss';
 import Full from './containers/Full/';
 import Login from './views/Login/Login';
 import Dashboard from './views/Dashboard/Dashboard';
-import './apis/Socket'
+import Socket from './apis/Socket'
 
-export const customHistory = createBrowserHistory()
+
 
 Window.invaderServerAddress = invaderServerAddress
 
+const store = createStore(appReducer, applyMiddleware(thunk))
+var socket = new Socket(store)
+socket.initWebSocket()
+
 ReactDOM.render((
-  <HashRouter>
-    <Switch>
-      <Route path="/pcc" name="Home" component={Full} />
-      <Route exact path="/" name="login" component={Login} />
-    </Switch>
-  </HashRouter>
+  <Provider store={store}>
+    <HashRouter>
+      <Switch>
+        <Route path="/pcc" name="Home" component={Full} />
+        <Route exact path="/" name="login" component={Login} />
+      </Switch>
+    </HashRouter>
+  </Provider>
 
 ), document.getElementById('root'));

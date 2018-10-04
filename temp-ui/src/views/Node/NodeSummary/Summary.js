@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { Col, Row, Input, Card, CardHeader, CardBody, InputGroup, InputGroupAddon, Modal, ModalHeader, ModalBody, ModalFooter, Alert, Media } from 'reactstrap';
-import { ServerAPI } from '../../../ServerAPI';
+import { Col, Row, Input, Modal, ModalHeader, ModalBody, ModalFooter, Alert, Media } from 'reactstrap';
 import { Redirect } from 'react-router-dom';
 import { Button } from 'reactstrap';
 import SummaryDataTable from './SummaryDataTable';
@@ -13,8 +12,10 @@ import MultiselectDropDown from '../../../components/MultiselectDropdown/Multise
 import { trimString, converter, validateIPaddress } from '../../../components/Utility/Utility';
 import { FETCH_ALL_SITES, FETCH_ALL_ROLES, FETCH_ALL_ISOS, FETCH_ALL_KERNELS, FETCH_ALL_SYSTEM_TYPES, FETCH_ALL_NODES, ADD_NODE, UPDATE_NODES, DELETE_NODES } from '../../../apis/RestConfig';
 import { getRequest, postRequest, putRequest } from '../../../apis/RestApi';
+import { fetchNodes } from '../../../actions/nodeAction';
+import { connect } from 'react-redux'
 
-class NodeSummary extends React.Component {
+class NodeSummary extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -43,122 +44,14 @@ class NodeSummary extends React.Component {
     }
 
     componentDidMount() {
-        this.getAllData()
+        this.props.fetchNodes(FETCH_ALL_NODES)
     }
 
-    getAllData = () => {
-        let typeData = []
-        let self = this
-        let typePromise = getRequest(FETCH_ALL_SYSTEM_TYPES).then(function (json) {
-            typeData = json.Data
-        })
-
-        let roleData = []
-        let rolePromise = getRequest(FETCH_ALL_ROLES).then(function (json) {
-            roleData = json.Data
-        })
-
-        let kernelData = []
-        let kernelPromise = getRequest(FETCH_ALL_KERNELS).then(function (json) {
-            kernelData = json.Data
-        })
-
-        let isoData = []
-        let isoPromise = getRequest(FETCH_ALL_ISOS).then(function (json) {
-            isoData = json.Data
-        })
-
-        let siteData = []
-        let sitePromise = getRequest(FETCH_ALL_SITES).then(function (json) {
-            siteData = json.Data
-        })
-
-        let nodes = []
-        Promise.all([typePromise, rolePromise, kernelPromise, isoPromise, sitePromise]).then(function () {
-            getRequest(FETCH_ALL_NODES).then(function (json) {
-                nodes = self.convertData(json.Data, typeData, kernelData, isoData, siteData, roleData)
-                self.setState({ nodes: nodes, constNodes: Object.assign([], nodes) })
-            })
-        }).then(function () {
-            self.setState(
-                {
-                    typedata: typeData,
-                    roleData: roleData,
-                    kernelData: kernelData,
-                    isoData: isoData,
-                    siteData: siteData,
-                })
-        })
-    }
-
-    convertData(nodes, types, kernels, isos, sites, roles) {
-        if (nodes && nodes.length) {
-            nodes.map((node) => {
-                types.map((item) => {
-                    if (item.Id == node.Type_Id) {
-                        node.Type = item.Name
-                    }
-                })
-                kernels.map((item) => {
-                    if (item.Id == node.Kernel_Id) {
-                        node.Kernel = item.Name
-                    }
-                })
-                isos.map((item) => {
-                    if (item.Id == node.Iso_Id) {
-                        node.BaseISO = item.Name
-                    }
-                })
-                sites.map((item) => {
-                    if (item.Id == node.Site_Id) {
-                        node.site = item.Name
-                    }
-                })
-                let roleIds = node.roles
-                let roleDetails = []
-
-                for (let roleId of roleIds) {
-                    for (let role of roles) {
-                        if (role.Id == roleId) {
-                            roleDetails.push(role)
-                            break
-                        }
-                    }
-                }
-                node.roleDetails = roleDetails
-
-                // if(node.ExecId){
-                //     let exec_id = node.ExecId
-                //     this.getprovision(exec_id) 
-                // }
-
-            })
-            return nodes
+    static getDerivedStateFromProps(props) {
+        return {
+            nodes: props.nodes ? props.nodes.toJS() : []
         }
-        return []
     }
-
-    // getprovision = (exec_id) => {
-    //     console.log('getprovision')
-    //     let self = this
-    //     let provision = {}
-
-    //     if (exec_id) {
-    //         let timer = setInterval(function () {
-    //             getRequest(GET_PROVISION + exec_id).then(function (json) {
-    //                self.setState({ ProvisionProgress: json.Progress, ProvisionStatus: json.Status, ProvisionColor: json.Status == "FAILED" ? 'danger' : 'success' })
-    //                provision  = json
-    //                 if (json.Status == "FAILED" || json.Status == "PROVISIONED" || json.Status == "PARTIAL_PROVISIONED" || json.Status == "FINISHED") {
-
-    //                     clearInterval(timer);
-    //                 }
-    //             })
-    //         }(), 5000);
-    //     }
-    //     console.log(provision)
-    //     return provision
-    // }
-
 
     getSelectedData = (data, identity) => {
         if (identity == 'Type') {
@@ -238,7 +131,7 @@ class NodeSummary extends React.Component {
         })
         postRequest(DELETE_NODES, deleteIds).then(function (data) {
             self.setState({ showDelete: false, selectedRowIndex: [] });
-            self.getAllData();
+            //self.getAllData();
         })
     }
 
@@ -430,7 +323,6 @@ class NodeSummary extends React.Component {
                                 </Media>
                                 <Media right>
                                     <SearchComponent data={this.state.constNodes} getFilteredData={this.getFilteredData} />
-                                    {/* {this.downloadCSV()} */}
                                 </Media>
                             </Media>
                             <Row className="tableTitle">Node Config Summary</Row>
@@ -444,4 +336,19 @@ class NodeSummary extends React.Component {
         );
     }
 }
-export default NodeSummary;
+
+
+function mapStateToProps(state) {
+    return {
+        nodes: state.nodeSummary.getIn(['nodes'])
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        fetchNodes: (url) => dispatch(fetchNodes(url)),
+        setSelectedNode: (node) => dispatch(fetchNodes(node))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(NodeSummary);
