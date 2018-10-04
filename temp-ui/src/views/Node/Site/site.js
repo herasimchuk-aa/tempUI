@@ -8,6 +8,8 @@ import { trimString, getNameById } from '../../../components/Utility/Utility';
 import { getRequest, postRequest, putRequest } from '../../../apis/RestApi';
 import { FETCH_ALL_SITES, ADD_SITE, UPDATE_SITE, DELETE_SITES } from '../../../apis/RestConfig';
 import { NotificationManager } from 'react-notifications';
+import { connect } from 'react-redux';
+import { getSites } from '../../../actions/siteAction';
 
 class Site extends Component {
 
@@ -27,14 +29,13 @@ class Site extends Component {
     }
 
     componentDidMount() {
-        this.retrieveSiteData()
+        this.props.getSites(FETCH_ALL_SITES)
     }
 
-    retrieveSiteData() {
-        let self = this
-        getRequest(FETCH_ALL_SITES).then(function (json) {
-            self.setState({ data: json.Data, selectedRowIndexes: [] })
-        })
+    static getDerivedStateFromProps(props) {
+        return {
+            data: props.data ? props.data.toJS() : []
+        }
     }
 
     checkBoxClick = (rowIndex) => {
@@ -78,7 +79,7 @@ class Site extends Component {
                 NotificationManager.error(item + ' is in use', "Site")
             })
             self.setState({ showDelete: false, selectedRowIndexes: [] });
-            self.retrieveSiteData();
+            self.props.getSites(FETCH_ALL_SITES);
         })
     }
 
@@ -215,4 +216,16 @@ class Site extends Component {
 
 }
 
-export default Site;
+function mapStateToProps(state) {
+    return {
+        data: state.siteReducer.get('sites')
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        getSites: (url) => dispatch(getSites(url))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Site);

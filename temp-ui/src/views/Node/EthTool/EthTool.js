@@ -8,6 +8,8 @@ import { trimString, getNameById } from '../../../components/Utility/Utility';
 import { getRequest, postRequest, putRequest } from '../../../apis/RestApi'
 import { FETCH_ALL_ETHTOOL, ADD_ETHTOOL, UPDATE_ETHTOOL, DELETE_ETHTOOL } from '../../../apis/RestConfig'
 import { NotificationManager } from 'react-notifications';
+import { connect } from 'react-redux';
+import { getEthTool } from '../../../actions/ethToolAction';
 
 class EthTool extends Component {
 
@@ -27,14 +29,13 @@ class EthTool extends Component {
     }
 
     componentDidMount() {
-        this.retrieveEthData()
+        this.props.getEthTool(FETCH_ALL_ETHTOOL)
     }
 
-    retrieveEthData() {
-        let self = this
-        getRequest(FETCH_ALL_ETHTOOL).then(function (json) {
-            self.setState({ data: json.Data, selectedRowIndexes: [] })
-        })
+    static getDerivedStateFromProps(props) {
+        return {
+            data: props.data ? props.data.toJS() : []
+        }
     }
 
     drawHeader() {
@@ -86,7 +87,7 @@ class EthTool extends Component {
                 NotificationManager.error(item + ' is in use', "ETHTOOL")
             })
             self.setState({ showDelete: false, selectedRowIndexes: [] });
-            self.retrieveEthData();
+            self.props.getEthTool(FETCH_ALL_ETHTOOL);
         })
     }
 
@@ -240,16 +241,16 @@ class EthTool extends Component {
             <Media className="tableTitle">
                 <Media body>
                     <div className="padTop5">EthTool</div>
-                </Media>    
+                </Media>
                 <Media right>
                     <div className='marginLeft10'>
                         <Button onClick={() => (this.cancel())} className="custBtn animated fadeIn marginLeft13N" outline color="secondary">New</Button>
                         <Button onClick={() => (this.showEditDialogBox())} className="custBtn animated fadeIn">Edit</Button>
                         {this.showDeleteButton()}
                     </div>
-                </Media> 
+                </Media>
             </Media>
-            <div style={{height:'200px',overflowY:'scroll', overflowX:'hidden'}}>
+            <div style={{ height: '200px', overflowY: 'scroll', overflowX: 'hidden' }}>
                 <SummaryDataTable key={this.counter++} heading={this.state.ethHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
             </div>
             {this.renderUpgradeModelDialog()}
@@ -262,4 +263,16 @@ class EthTool extends Component {
 
 }
 
-export default EthTool;
+function mapStateToProps(state) {
+    return {
+        data: state.ethToolReducer.get('ethTools')
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        getEthTool: (url) => dispatch(getEthTool(url))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(EthTool);

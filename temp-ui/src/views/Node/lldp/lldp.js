@@ -8,6 +8,8 @@ import { trimString, getNameById } from '../../../components/Utility/Utility';
 import { getRequest, postRequest, putRequest } from '../../../apis/RestApi'
 import { FETCH_ALL_LLDP, ADD_LLDP, UPDATE_LLDP, DELETE_LLDP } from '../../../apis/RestConfig'
 import { NotificationManager } from 'react-notifications';
+import { connect } from 'react-redux';
+import { getLLDP } from '../../../actions/lldpAction';
 
 class LLDP extends Component {
 
@@ -27,14 +29,13 @@ class LLDP extends Component {
     }
 
     componentDidMount() {
-        this.retrieveLLDPData()
+        this.props.getLLDP(FETCH_ALL_LLDP);
     }
 
-    retrieveLLDPData() {
-        let self = this
-        getRequest(FETCH_ALL_LLDP).then(function (json) {
-            self.setState({ data: json.Data, selectedRowIndexes: [] })
-        })
+    static getDerivedStateFromProps(props) {
+        return {
+            data: props.data ? props.data.toJS() : []
+        }
     }
 
     drawHeader() {
@@ -86,7 +87,7 @@ class LLDP extends Component {
                 NotificationManager.error(item + ' is in use', "LLDP")
             })
             self.setState({ showDelete: false, selectedRowIndexes: [] });
-            self.retrieveLLDPData();
+            self.props.getLLDP(FETCH_ALL_LLDP);
         })
     }
 
@@ -212,26 +213,35 @@ class LLDP extends Component {
             <Media className="tableTitle">
                 <Media body>
                     <div className="padTop5">LLDP</div>
-                </Media>    
+                </Media>
                 <Media right>
                     <div className='marginLeft10'>
                         <Button onClick={() => (this.cancel())} className="custBtn animated fadeIn marginLeft13N">New</Button>
                         <Button onClick={() => (this.showEditDialogBox())} className="custBtn animated fadeIn">Edit</Button>
                         {this.showDeleteButton()}
                     </div>
-                </Media> 
+                </Media>
             </Media>
-            <div style={{height:'200px',overflowY:'scroll', overflowX:'hidden'}}>
-            <SummaryDataTable key={this.counter++} heading={this.state.lldpHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
+            <div style={{ height: '200px', overflowY: 'scroll', overflowX: 'hidden' }}>
+                <SummaryDataTable key={this.counter++} heading={this.state.lldpHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
             </div>
             {this.renderUpgradeModelDialog()}
             {this.renderEditModelDialog()}
         </div>
         );
     }
-
-
-
 }
 
-export default LLDP;
+function mapStateToProps(state) {
+    return {
+        data: state.lldpReducer.get('lldps')
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        getLLDP: (url) => dispatch(getLLDP(url))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(LLDP);

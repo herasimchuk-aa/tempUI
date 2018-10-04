@@ -1,15 +1,22 @@
 import { combineReducers } from 'redux'
 import kernelReducer from './kernelReducer'
-import nodeSummary from './nodeReducer'
-import baseISOReducer from './baseIsoReducer'
 import roleReducer from './roleReducer'
 import systemTypeReducer from './systemTypeReducer'
+import nodeReducer from './nodeReducer'
+import { baseISOReducer } from './baseIsoReducer'
+import siteReducer from './siteReducer'
+import lldpReducer from './lldpReducer'
+import goesReducer from './goesReducer'
+import ethToolReducer from './ethToolReducer'
 
 export default combineReducers({
-    kernelReducer,
-    nodeSummary,
+    nodeReducer,
     baseISOReducer,
+    kernelReducer,
+    siteReducer,
+    goesReducer,
+    lldpReducer,
+    ethToolReducer,
     roleReducer,
     systemTypeReducer
-
 })

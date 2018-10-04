@@ -340,7 +340,7 @@ class NodeSummary extends Component {
 
 function mapStateToProps(state) {
     return {
-        nodes: state.nodeSummary.getIn(['nodes'])
+        nodes: state.nodeReducer.getIn(['nodes'])
     }
 }
 

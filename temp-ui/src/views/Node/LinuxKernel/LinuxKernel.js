@@ -29,7 +29,6 @@ class LinuxKernel extends Component {
     }
 
     componentDidMount() {
-        //this.retrieveKernelData()
         this.props.fetchKernels(FETCH_ALL_KERNELS)
     }
 
@@ -37,13 +36,6 @@ class LinuxKernel extends Component {
         return {
             data: props.data ? props.data.toJS() : []
         }
-    }
-
-    retrieveKernelData() {
-        let self = this
-        getRequest(FETCH_ALL_KERNELS).then(function (json) {
-            self.setState({ data: json.Data, selectedRowIndexes: [] })
-        })
     }
 
     drawHeader() {
@@ -95,7 +87,7 @@ class LinuxKernel extends Component {
                 NotificationManager.error(item + ' is in use', "Kernel")
             })
             self.setState({ showDelete: false, selectedRowIndexes: [] });
-            self.retrieveKernelData();
+            self.props.fetchKernels(FETCH_ALL_KERNELS);
         })
     }
 

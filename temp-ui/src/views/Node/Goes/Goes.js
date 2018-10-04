@@ -8,6 +8,8 @@ import { trimString, getNameById } from '../../../components/Utility/Utility';
 import { getRequest, postRequest, putRequest } from '../../../apis/RestApi'
 import { FETCH_ALL_GOES, ADD_GOES, UPDATE_GOES, DELETE_GOES } from '../../../apis/RestConfig'
 import { NotificationManager } from 'react-notifications';
+import { connect } from 'react-redux';
+import { getGoes } from '../../../actions/goesAction';
 
 class Goes extends Component {
 
@@ -27,14 +29,13 @@ class Goes extends Component {
     }
 
     componentDidMount() {
-        this.retrieveGoesData()
+        this.props.getGoes(FETCH_ALL_GOES)
     }
 
-    retrieveGoesData() {
-        let self = this
-        getRequest(FETCH_ALL_GOES).then(function (json) {
-            self.setState({ data: json.Data, selectedRowIndexes: [] })
-        })
+    static getDerivedStateFromProps(props) {
+        return {
+            data: props.data ? props.data.toJS() : []
+        }
     }
 
     drawHeader() {
@@ -86,7 +87,7 @@ class Goes extends Component {
                 NotificationManager.error(item + ' is in use', "Goes")
             })
             self.setState({ showDelete: false, selectedRowIndexes: [] });
-            self.retrieveGoesData();
+            self.props.getGoes(FETCH_ALL_GOES);
         })
     }
 
@@ -240,17 +241,17 @@ class Goes extends Component {
             <Media className="tableTitle">
                 <Media body>
                     <div className="padTop5">Goes</div>
-                </Media>    
+                </Media>
                 <Media right>
                     <div className='marginLeft10'>
                         <Button onClick={() => (this.cancel())} className="custBtn animated fadeIn marginLeft13N">New</Button>
                         <Button onClick={() => (this.showEditDialogBox())} className="custBtn animated fadeIn">Edit</Button>
                         {this.showDeleteButton()}
                     </div>
-                </Media> 
+                </Media>
             </Media>
-            <div style={{height:'200px',overflowY:'scroll', overflowX:'hidden'}}>
-            <SummaryDataTable key={this.counter++} heading={this.state.goesHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
+            <div style={{ height: '200px', overflowY: 'scroll', overflowX: 'hidden' }}>
+                <SummaryDataTable key={this.counter++} heading={this.state.goesHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
             </div>
             {this.renderUpgradeModelDialog()}
             {this.renderEditModelDialog()}
@@ -262,4 +263,16 @@ class Goes extends Component {
 
 }
 
-export default Goes;
+function mapStateToProps(state) {
+    return {
+        data: state.goesReducer.get('goes')
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        getGoes: (url) => dispatch(getGoes(url))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Goes);
