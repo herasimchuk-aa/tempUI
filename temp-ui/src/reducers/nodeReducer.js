@@ -1,9 +1,10 @@
 
 import I from 'immutable'
-import { SET_NODES, SET_SELECTED_NODE_INFO } from '../actions/nodeAction';
+import { SET_NODES, SET_SELECTED_NODES } from '../actions/nodeAction';
 
 const inititalState = I.fromJS({
-    'nodes': I.List()
+    'nodes': I.List(),
+    'selectedNodes': I.List()
 })
 
 export default function nodeReducer(state = inititalState, action) {
@@ -11,8 +12,8 @@ export default function nodeReducer(state = inititalState, action) {
         case SET_NODES:
             state = state.set('nodes', action.payload)
             return state
-        case SET_SELECTED_NODE_INFO:
-            state = state.set('selectedNode', action.payload)
+        case SET_SELECTED_NODES:
+            state = state.set('selectedNodes', action.payload)
             return state
         default:
             return state

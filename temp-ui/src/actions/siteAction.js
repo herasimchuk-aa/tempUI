@@ -2,8 +2,8 @@ import I from 'immutable'
 import { getRequest } from '../apis/RestApi';
 
 export const getSites = (url) => (dispatch) => {
-    getRequest(url).then(function (json) {
-        dispatch(setSiteData(I.fromJS(json.Data)))
+    return getRequest(url).then(function (json) {
+        return dispatch(setSiteData(I.fromJS(json.Data)))
     })
 }
 

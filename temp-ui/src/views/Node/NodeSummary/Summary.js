@@ -12,8 +12,9 @@ import MultiselectDropDown from '../../../components/MultiselectDropdown/Multise
 import { trimString, converter, validateIPaddress } from '../../../components/Utility/Utility';
 import { FETCH_ALL_SITES, FETCH_ALL_ROLES, FETCH_ALL_ISOS, FETCH_ALL_KERNELS, FETCH_ALL_SYSTEM_TYPES, FETCH_ALL_NODES, ADD_NODE, UPDATE_NODES, DELETE_NODES } from '../../../apis/RestConfig';
 import { getRequest, postRequest, putRequest } from '../../../apis/RestApi';
-import { fetchNodes } from '../../../actions/nodeAction';
+import { fetchNodes, setSelectedNodes } from '../../../actions/nodeAction';
 import { connect } from 'react-redux'
+import I from 'immutable'
 
 class NodeSummary extends Component {
     constructor(props) {
@@ -76,11 +77,14 @@ class NodeSummary extends Component {
     checkBoxClick = (rowIndex, singleRowClick) => {
         if (singleRowClick) {
             let { nodes } = this.state
+            let selectedNodes = I.List()
+            selectedNodes = selectedNodes.push(I.fromJS(nodes[rowIndex]))
             let selectedRows = [nodes[rowIndex]]
             selectedRows[0].roles = converter(nodes[rowIndex].roles);
             this.setState({
                 selectedRows, redirect: true
             })
+            this.props.setSelectedNodes(selectedNodes)
             return
         }
         let { selectedRowIndex } = this.state
@@ -306,7 +310,7 @@ class NodeSummary extends Component {
     render() {
 
         if (this.state.redirect) {
-            return <Redirect push to={{ pathname: '/pcc/node/config', state: this.state.selectedRows }} />
+            return <Redirect push to={{ pathname: '/pcc/node/config'}} />
         }
         return (
             <Container-fluid >
@@ -347,7 +351,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         fetchNodes: (url) => dispatch(fetchNodes(url)),
-        setSelectedNode: (node) => dispatch(fetchNodes(node))
+        setSelectedNodes: (nodes) => dispatch(setSelectedNodes(nodes))
     }
 }
 

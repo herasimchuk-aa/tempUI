@@ -2,8 +2,8 @@ import { getRequest } from "../apis/RestApi";
 import I from 'immutable'
 
 export const getISOs = (url) => (dispatch) => {
-    getRequest(url).then(function (json) {
-        dispatch(setISOs(I.fromJS(json.Data)))
+    return getRequest(url).then(function (json) {
+        return dispatch(setISOs(I.fromJS(json.Data)))
     })
 }
 

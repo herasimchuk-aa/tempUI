@@ -8,6 +8,9 @@ import siteReducer from './siteReducer'
 import lldpReducer from './lldpReducer'
 import goesReducer from './goesReducer'
 import ethToolReducer from './ethToolReducer'
+import speedReducer from './speedReducer'
+import fecReducer from './fecReducer'
+import mediaReducer from './mediaReducer'
 
 export default combineReducers({
     nodeReducer,
@@ -18,5 +21,8 @@ export default combineReducers({
     lldpReducer,
     ethToolReducer,
     roleReducer,
-    systemTypeReducer
+    systemTypeReducer,
+    speedReducer,
+    fecReducer,
+    mediaReducer,
 })

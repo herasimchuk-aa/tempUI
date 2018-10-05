@@ -6,43 +6,28 @@ import { Redirect } from 'react-router-dom';
 import '../views.css';
 import { nodeHead } from '../../consts';
 import DropDown from '../../components/dropdown/DropDown';
-import ModalComponent from '../../components/ModalComponent/ModalComponent';
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
 import MultiselectDropDown from '../../components/MultiselectDropdown/MultiselectDropDown';
 import ProvisionProgress from '../../components/ProvisionProgress/ProvisionProgress';
 import DiscoverModal from '../../components/DiscoverModal/DiscoverModal';
-import { invaderServerAddress } from '../../config';
-import { FETCH_ALL_SITES, FETCH_ALL_ROLES, FETCH_ALL_ISOS, FETCH_ALL_KERNELS, FETCH_ALL_SYSTEM_TYPES, UPDATE_NODES, DISCOVER, ADD_KERNEL, ADD_SYSTEM_TYPE, ADD_ISO, FETCH_ALL_GOES, FETCH_ALL_LLDP, FETCH_ALL_ETHTOOL, PROVISION, FETCH_ALL_SPEEDS, FETCH_ALL_FECS, FETCH_ALL_MEDIAS } from '../../apis/RestConfig';
+import { UPDATE_NODES, DISCOVER, ADD_KERNEL, ADD_SYSTEM_TYPE, ADD_ISO, FETCH_ALL_GOES, FETCH_ALL_LLDP, FETCH_ALL_ETHTOOL, PROVISION, FETCH_ALL_SPEEDS, FETCH_ALL_FECS, FETCH_ALL_MEDIAS } from '../../apis/RestConfig';
 import { getRequest, postRequest, putRequest } from '../../apis/RestApi';
 import Interfaces from './interfaces';
+import { connect } from 'react-redux';
+import I from 'immutable'
+import { fetchFecs } from '../../actions/fecAction';
+import { fetchMedias } from '../../actions/mediaAction';
+import { fetchSpeeds } from '../../actions/speedAction';
+import { getEthTool } from '../../actions/ethToolAction';
+import { getLLDP } from '../../actions/lldpAction';
+import { getGoes } from '../../actions/goesAction';
 
 class NodeConfig extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      roleData: [],
-      isoData: [],
-      kernelData: [],
-      typeData: [],
-      siteData: [],
-      goesData: [],
-      lldpData: [],
-      ethToolData: [],
-      speedData: [],
-      fecData: [],
-      mediaData: [],
       nodeHead: nodeHead,
-      nodes: props.location.state,
-      selectedRoles: props.location.state.length == 1 ? props.location.state[0].roleDetails : '',
-      selectedSerialNo: props.location.state.length == 1 ? props.location.state[0].SN : '',
-      selectedTypeId: props.location.state.length == 1 ? props.location.state[0].Type_Id : '',
-      selectedLinuxId: props.location.state.length == 1 ? props.location.state[0].Kernel_Id : '',
-      selectedIsoId: props.location.state.length == 1 ? props.location.state[0].Iso_Id : '',
-      selectedSiteId: props.location.state.length == 1 ? props.location.state[0].Site_Id : '',
-      selectedGoesId: props.location.state.length == 1 ? props.location.state[0].Goes_Id : '',
-      selectedLldpId: props.location.state.length == 1 ? props.location.state[0].Lldp_Id : '',
-      selectedEthToolId: props.location.state.length == 1 ? props.location.state[0].Ethtool_Id : '',
       displayProvisionModel: false,
       actualNode: {},
       wipeBtn: true,
@@ -57,83 +42,43 @@ class NodeConfig extends Component {
   }
 
   componentDidMount() {
-    this.getAllData()
+    this.initRequests()
   }
 
-  getAllData = () => {
-    let typeData = []
-    let self = this
-    let typePromise = getRequest(FETCH_ALL_SYSTEM_TYPES).then(function (json) {
-      typeData = json.Data
-    })
+  static getDerivedStateFromProps(props) {
+    let { selectedNodes, roleData, kernelData, typeData, siteData, goesData, lldpData, ethToolData, speedData, fecData, mediaData, isoData } = props
+    return {
+      nodes: selectedNodes ? selectedNodes.toJS() : [],
+      selectedRoles: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'roleDetails'], I.List()).toJS() : '',
+      selectedSerialNo: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'SN']) : '',
+      selectedTypeId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'Type_Id']) : '',
+      selectedLinuxId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'Kernel_Id']) : '',
+      selectedIsoId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'Iso_Id']) : '',
+      selectedSiteId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'Site_Id']) : '',
+      selectedGoesId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'Goes_Id']) : '',
+      selectedLldpId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'Lldp_Id']) : '',
+      selectedEthToolId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'Ethtool_Id']) : '',
+      roleData: roleData ? roleData.toJS() : [],
+      isoData: isoData ? isoData.toJS() : [],
+      kernelData: kernelData ? kernelData.toJS() : [],
+      typeData: typeData ? typeData.toJS() : [],
+      siteData: siteData ? siteData.toJS() : [],
+      goesData: goesData ? goesData.toJS() : [],
+      lldpData: lldpData ? lldpData.toJS() : [],
+      ethToolData: ethToolData ? ethToolData.toJS() : [],
+      speedData: speedData ? speedData.toJS() : [],
+      fecData: fecData ? fecData.toJS() : [],
+      mediaData: mediaData ? mediaData.toJS() : [],
+    }
+  }
 
-    let roleData = []
-    let rolePromise = getRequest(FETCH_ALL_ROLES).then(function (json) {
-      roleData = json.Data
-    })
-
-    let kernelData = []
-    let kernelPromise = getRequest(FETCH_ALL_KERNELS).then(function (json) {
-      kernelData = json.Data
-    })
-
-    let isoData = []
-    let isoPromise = getRequest(FETCH_ALL_ISOS).then(function (json) {
-      isoData = json.Data
-    })
-
-    let siteData = []
-    let sitePromise = getRequest(FETCH_ALL_SITES).then(function (json) {
-      siteData = json.Data
-    })
-
-    let goesData = []
-    let goesPromise = getRequest(FETCH_ALL_GOES).then(function (json) {
-      goesData = json.Data
-    })
-
-    let lldpData = []
-    let lldpPromise = getRequest(FETCH_ALL_LLDP).then(function (json) {
-      lldpData = json.Data
-    })
-
-    let ethToolData = []
-    let ethToolPromise = getRequest(FETCH_ALL_ETHTOOL).then(function (json) {
-      ethToolData = json.Data
-    })
-
-    let speedData = []
-    let speedPromise = getRequest(FETCH_ALL_SPEEDS).then(function (json) {
-      speedData = json.Data
-    })
-
-    let fecData = []
-    let fecPromise = getRequest(FETCH_ALL_FECS).then(function (json) {
-      fecData = json.Data
-    })
-
-    let mediaData = []
-    let mediaPromise = getRequest(FETCH_ALL_MEDIAS).then(function (json) {
-      mediaData = json.Data
-    })
-
-    Promise.all([typePromise, rolePromise, kernelPromise, isoPromise, sitePromise, goesPromise, lldpPromise, ethToolPromise, speedPromise, fecPromise, mediaPromise]).then(function () {
-      self.setState(
-        {
-          typeData: typeData,
-          roleData: roleData,
-          kernelData: kernelData,
-          isoData: isoData,
-          siteData: siteData,
-          goesData: goesData,
-          lldpData: lldpData,
-          ethToolData: ethToolData,
-          speedData: speedData,
-          fecData: fecData,
-          mediaData: mediaData
-        })
-    })
-
+  initRequests = () => {
+    this.props.fetchEthTool(FETCH_ALL_ETHTOOL)
+    this.props.fetchGoes(FETCH_ALL_GOES)
+    this.props.fetchLLDP(FETCH_ALL_LLDP)
+    this.props.fetchFecs()
+    this.props.fetchMedias()
+    this.props.fetchSpeeds()
   }
 
 
@@ -680,11 +625,38 @@ class NodeConfig extends Component {
         </div>
         {this.provisionModal()}
         {this.openDiscoverModal()}
-
       </div>
 
     )
   }
 }
 
-export default NodeConfig;
+function mapStateToProps(state) {
+  return {
+    selectedNodes: state.nodeReducer.getIn(['selectedNodes']),
+    roleData: state.roleReducer.getIn(['roles']),
+    isoData: state.baseISOReducer.getIn(['isos']),
+    kernelData: state.kernelReducer.getIn(['kernels']),
+    typeData: state.systemTypeReducer.getIn(['types']),
+    siteData: state.siteReducer.getIn(['sites']),
+    goesData: state.goesReducer.getIn(['goes']),
+    lldpData: state.lldpReducer.getIn(['lldps']),
+    ethToolData: state.ethToolReducer.getIn(['ethTools']),
+    speedData: state.speedReducer.getIn(['speeds']),
+    fecData: state.fecReducer.getIn(['fecs']),
+    mediaData: state.mediaReducer.getIn(['medias']),
+  }
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    fetchFecs: () => dispatch(fetchFecs()),
+    fetchMedias: () => dispatch(fetchMedias()),
+    fetchSpeeds: () => dispatch(fetchSpeeds()),
+    fetchEthTool: (url) => dispatch(getEthTool(url)),
+    fetchLLDP: (url) => dispatch(getLLDP(url)),
+    fetchGoes: (url) => dispatch(getGoes(url))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(NodeConfig);

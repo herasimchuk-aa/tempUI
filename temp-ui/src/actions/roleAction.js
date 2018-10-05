@@ -2,7 +2,7 @@ import I from 'immutable'
 import { getRequest } from '../apis/RestApi';
 
 export const fetchRoles = (url) => (dispatch) => {
-    getRequest(url).then(function (json) {
+    return getRequest(url).then(function (json) {
         json.Data.map(function (item, index) {
             let parentId = json.Data[index].ParentId
             json.Data[index].ParentName = '-'
@@ -14,7 +14,7 @@ export const fetchRoles = (url) => (dispatch) => {
                 })
             }
         })
-        dispatch(setRoleData(I.fromJS(json.Data)))
+        return dispatch(setRoleData(I.fromJS(json.Data)))
     })
 }
 

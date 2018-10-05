@@ -275,7 +275,7 @@ class Types extends Component {
 
 function mapStateToProps(state) {
     return {
-        data: state.systemTypeReducer.getIn(['typeData'])
+        data: state.systemTypeReducer.getIn(['types'])
     }
 }
 
