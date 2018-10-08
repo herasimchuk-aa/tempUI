@@ -46,6 +46,18 @@ export const ADD_ETHTOOL = "/ethtool/add"
 export const UPDATE_ETHTOOL = "/ethtool/update"
 export const DELETE_ETHTOOL = "/ethtool/delete"
 
+// apis for ipRoute
+export const FETCH_ALL_IPROUTE = "/iproute/"
+export const ADD_IPROUTE = "/iproute/add"
+export const UPDATE_IPROUTE = "/iproute/update"
+export const DELETE_IPROUTE = "/iproute/delete"
+
+// apis for frr
+export const FETCH_ALL_FRR = "/frr/"
+export const ADD_FRR = "/frr/add"
+export const UPDATE_FRR = "/frr/update"
+export const DELETE_FRR = "/frr/delete"
+
 
 // apis for node
 export const FETCH_ALL_NODES = "/node"

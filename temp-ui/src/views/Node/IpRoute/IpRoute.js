@@ -3,22 +3,22 @@ import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Al
 import '../../views.css';
 import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
-import { frrHead } from '../../../consts';
+import { ipRouteHead } from '../../../consts';
 import { trimString, getNameById } from '../../../components/Utility/Utility';
-import { FETCH_ALL_FRR, ADD_FRR, UPDATE_FRR, DELETE_FRR } from '../../../apis/RestConfig';
-import { postRequest } from '../../../apis/RestApi';
+import { getRequest, postRequest, putRequest } from '../../../apis/RestApi';
+import { FETCH_ALL_IPROUTE, ADD_IPROUTE, UPDATE_IPROUTE, DELETE_IPROUTE } from '../../../apis/RestConfig';
 import { NotificationManager } from 'react-notifications';
 import { connect } from 'react-redux';
-import { getFrr, addFrr, updateFrr } from '../../../actions/frrAction';
+import { getIpRoute, addIpRoutes, updateIpRoute } from '../../../actions/ipRouteAction';
 
-class Frr extends Component {
+class IpRoute extends Component {
 
 
     constructor(props) {
         super(props)
         this.state = {
             data: [],
-            frrHead: frrHead,
+            ipRouteHead: ipRouteHead,
             showDelete: false,
             selectedRowIndexes: [],
             displayModel: false,
@@ -29,7 +29,7 @@ class Frr extends Component {
     }
 
     componentDidMount() {
-        this.props.getFrr(FETCH_ALL_FRR)
+        this.props.getIpRoute(FETCH_ALL_IPROUTE)
     }
 
     static getDerivedStateFromProps(props) {
@@ -58,7 +58,7 @@ class Frr extends Component {
     showDeleteButton() {
         let a = [];
         if (this.state.showDelete == true) {
-            a.push(<Button className="custBtn animated fadeIn" outline color="secondary" onClick={() => (this.deleteFrr())}>Delete</Button>);
+            a.push(<Button className="custBtn animated fadeIn" outline color="secondary" onClick={() => (this.deleteIpRoute())}>Delete</Button>);
             return a;
         }
         else
@@ -66,20 +66,20 @@ class Frr extends Component {
     }
 
 
-    deleteFrr() {
+    deleteIpRoute() {
         let self = this;
         let deleteIds = [];
         this.state.selectedRowIndexes.map(function (item) {
             deleteIds.push(self.state.data[item].Id)
         })
-        postRequest(DELETE_FRR, deleteIds).then(function (data) {
+        postRequest(DELETE_IPROUTE, deleteIds).then(function (data) {
             let failedSites = []
             failedSites = getNameById(data.Data.Failure, self.state.data);
             failedSites.map((item) => {
                 NotificationManager.error(item + ' is in use', "Site")
             })
             self.setState({ showDelete: false, selectedRowIndexes: [] });
-            self.props.getFrr(FETCH_ALL_FRR);
+            self.props.getIpRoute(FETCH_ALL_IPROUTE);
         })
     }
 
@@ -91,15 +91,15 @@ class Frr extends Component {
         if (this.state.displayModel) {
             return (
                 <Modal isOpen={this.state.displayModel} toggle={() => this.cancel()} size="sm" centered="true" >
-                    <ModalHeader toggle={() => this.cancel()}>Add Frr</ModalHeader>
+                    <ModalHeader toggle={() => this.cancel()}>Add IpRoute</ModalHeader>
                     <ModalBody>
                         <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Name cannot be empty</Alert>
-                        Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='frrName' /><br />
-                        Location <Input className="marTop10" id='frrLoc' /><br />
-                        Description <Input className="marTop10" id='frrDesc' /><br />
+                        Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='ipRouteName' /><br />
+                        Location <Input className="marTop10" id='ipRouteLoc' /><br />
+                        Description <Input className="marTop10" id='ipRouteDesc' /><br />
                     </ModalBody>
                     <ModalFooter>
-                        <Button className="custBtn" outline color="primary" onClick={() => (this.addFrr())}>Add</Button>{'  '}
+                        <Button className="custBtn" outline color="primary" onClick={() => (this.addIpRoute())}>Add</Button>{'  '}
                         <Button className="custBtn" outline color="primary" onClick={() => (this.cancel())}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
@@ -111,33 +111,33 @@ class Frr extends Component {
         this.setState({ displayModel: !this.state.displayModel, visible: false })
     }
 
-    addFrr() {
+    addIpRoute() {
         let self = this;
-        let frr = document.getElementById('frrName').value
-        let validFrr = trimString(frr)
-        if (!validFrr) {
+        let ipRoute = document.getElementById('ipRouteName').value
+        let validIpRoute = trimString(ipRoute)
+        if (!validIpRoute) {
             this.setState({ visible: true });
             return;
         }
         let params = {
-            'Name': validFrr,
-            'Location': document.getElementById('frrLoc').value,
-            'Description': document.getElementById('frrDesc').value
+            'Name': validIpRoute,
+            'Location': document.getElementById('ipRouteLoc').value,
+            'Description': document.getElementById('ipRouteDesc').value
         }
-        let frrPromise = self.props.addFrr(ADD_FRR, params)
+        let itPromise = self.props.addIpRoutes(ADD_IPROUTE, params)
 
-        frrPromise.then(function (value) {
-            NotificationManager.success("Frr added successfully", "Frr") // "Success!"
+        itPromise.then(function (value) {
+            NotificationManager.success("IpRoute added successfully", "IpRoute") // "Success!"
         }).catch(function (e) {
             console.warn(e)
-            NotificationManager.error("Something went wrong", "Frr") // "error!"
+            NotificationManager.error("Something went wrong", "IpRoute") // "error!"
         })
         self.setState({ displayModel: false, visible: false })
     }
 
     showEditDialogBox() {
         if (!this.state.selectedRowIndexes.length || this.state.selectedRowIndexes.length > 1) {
-            alert("Please select one Frr to edit")
+            alert("Please select one IpRoute to edit")
             return
         }
         this.setState({ displayEditModel: true })
@@ -152,14 +152,14 @@ class Frr extends Component {
             let edittedData = this.state.data[this.state.selectedRowIndexes[0]]
             return (
                 <Modal isOpen={this.state.displayEditModel} toggle={() => this.toggleEditModal()} size="sm" centered="true" >
-                    <ModalHeader toggle={() => this.toggleEditModal()}>Edit Frr</ModalHeader>
+                    <ModalHeader toggle={() => this.toggleEditModal()}>Edit Ip Route</ModalHeader>
                     <ModalBody>
                         Name<font color="red"><sup>*</sup></font> <Input autoFocus disabled className="marTop10" value={edittedData.Name} /><br />
-                        Location <Input className="marTop10" id='frrLocEdit' defaultValue={edittedData.Location} /><br />
-                        Description <Input className="marTop10" id='frrDescEdit' defaultValue={edittedData.Description} /><br />
+                        Location <Input className="marTop10" id='ippLocEdit' defaultValue={edittedData.Location} /><br />
+                        Description <Input className="marTop10" id='ipDescEdit' defaultValue={edittedData.Description} /><br />
                     </ModalBody>
                     <ModalFooter>
-                        <Button className="custBtn" outline color="primary" onClick={() => (this.editFrr(edittedData.Id))}>Save</Button>{'  '}
+                        <Button className="custBtn" outline color="primary" onClick={() => (this.editIpRoute(edittedData.Id))}>Save</Button>{'  '}
                         <Button className="custBtn" outline color="primary" onClick={() => (this.toggleEditModal())}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
@@ -167,24 +167,24 @@ class Frr extends Component {
         }
     }
 
-    editFrr = (frrId) => {
+    editIpRoute = (ipRouteId) => {
         let self = this
 
         let params = {
-            'Id': frrId,
-            'Location': document.getElementById('frrLocEdit').value ? document.getElementById('frrLocEdit').value : "-",
-            'Description': document.getElementById('frrDescEdit').value ? document.getElementById('frrDescEdit').value : "-"
+            'Id': ipRouteId,
+            'Location': document.getElementById('ippLocEdit').value ? document.getElementById('ippLocEdit').value : "-",
+            'Description': document.getElementById('ipDescEdit').value ? document.getElementById('ipDescEdit').value : "-"
         }
 
-        let frrPromise = self.props.updateFrr(UPDATE_FRR, params)
+        let ipRoutePromise = self.props.updateIpRoute(UPDATE_IPROUTE, params)
 
-        frrPromise.then(function (value) {
-            NotificationManager.success("Frr updated successfully", "Frr") // "Success!"
+        ipRoutePromise.then(function (value) {
+            NotificationManager.success("IpRoute updated successfully", "IpRoute") // "Success!"
             self.setState({ displayEditModel: false, selectedRowIndexes: [] })
         }).catch(function (e) {
             console.warn(e)
             self.setState({ displayEditModel: false, selectedRowIndexes: [] })
-            NotificationManager.error("Something went wrong", "Frr") // "error!"
+            NotificationManager.error("Something went wrong", "IpRoute") // "error!"
         })
     }
 
@@ -198,8 +198,8 @@ class Frr extends Component {
                     <Button onClick={() => (this.showEditDialogBox())} className="custBtn animated fadeIn">Edit</Button>
                     {this.showDeleteButton()}
                 </div>
-                <Row className="tableTitle">FRR</Row>
-                <SummaryDataTable key={this.counter++} heading={this.state.frrHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
+                <Row className="tableTitle">IpRoute</Row>
+                <SummaryDataTable key={this.counter++} heading={this.state.ipRouteHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
                 {this.renderUpgradeModelDialog()}
                 {this.renderEditModelDialog()}
             </div>
@@ -212,16 +212,16 @@ class Frr extends Component {
 
 function mapStateToProps(state) {
     return {
-        data: state.frrReducer.get('frr')
+        data: state.ipRouteReducer.get('ipRoutes')
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-        getFrr: (url) => dispatch(getFrr(url)),
-        addFrr: (url, params) => dispatch(addFrr(url, params)),
-        updateFrr: (url, params) => dispatch(updateFrr(url, params))
+        getIpRoute: (url) => dispatch(getIpRoute(url)),
+        addIpRoutes: (url, params) => dispatch(addIpRoutes(url, params)),
+        updateIpRoute: (url, params) => dispatch(updateIpRoute(url, params))
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Frr);
+export default connect(mapStateToProps, mapDispatchToProps)(IpRoute);
