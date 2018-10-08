@@ -7,9 +7,8 @@ class ProvisionProgress extends Component {
         super(props);
         this.state = {
             openPro: true,
-            executionId: 0,
-            progress: 100,
-            status: 'NOT_PROVISIONED',
+            progress: 1,
+            status: 'Preparing...',
             color: 'warning'
         }
     }

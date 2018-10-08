@@ -119,8 +119,8 @@ class ProvisionCell extends React.PureComponent {
     constructor(props) {
         super(props);
         this.state = {
-            progress: 100,
-            status: 'NOT_PROVISIONED',
+            progress: 0,
+            status: 'NOT PROVISIONED',
             color: 'warning'
         }
     }
@@ -141,7 +141,7 @@ class ProvisionCell extends React.PureComponent {
         return (
             <Cell {...props}>
                 {status}
-                <Progress color={color} value={progress} className="mb-3" />
+                {progress != 0 && <Progress color={color} value={progress} className="mb-3" />}
             </Cell>
         );
     }

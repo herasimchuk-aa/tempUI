@@ -1,6 +1,6 @@
 
 import I from 'immutable'
-import { SET_NODES, SET_SELECTED_NODES, SET_ACTUAL_NODE_INFO } from '../actions/nodeAction';
+import { SET_NODES, SET_SELECTED_NODE_IDS, SET_ACTUAL_NODE_INFO } from '../actions/nodeAction';
 
 const inititalState = I.fromJS({
     'nodes': I.List(),
@@ -13,8 +13,8 @@ export default function nodeReducer(state = inititalState, action) {
         case SET_NODES:
             state = state.set('nodes', action.payload)
             return state
-        case SET_SELECTED_NODES:
-            state = state.set('selectedNodes', action.payload)
+        case SET_SELECTED_NODE_IDS:
+            state = state.set('selectedNodeIds', action.payload)
             return state
         case SET_ACTUAL_NODE_INFO:
             state = state.set('actualNode', action.payload)

@@ -1,6 +1,6 @@
 import { invaderServerAddress } from "../config";
 import I from 'immutable'
-import { setNodes, setSelectedNodes } from "../actions/nodeAction";
+import { setNodes } from "../actions/nodeAction";
 
 export default class Socket {
 
@@ -28,20 +28,6 @@ export default class Socket {
                     let state = self.store.getState()
                     let nodes = state.nodeReducer && state.nodeReducer.size ? state.nodeReducer.getIn(['nodes']) : I.List()
                     if (nodes && nodes.size) {
-                        let selectedNodes = state.nodeReducer.get('selectedNodes')
-                        if (selectedNodes && selectedNodes.size) {
-                            let showingSelectedNode = false
-                            selectedNodes = selectedNodes.map(function (selectedNode) {
-                                if (selectedNode.get('Id') === data.Content.NodeId) {
-                                    selectedNode = selectedNode.set('executionStatusObj', I.fromJS(data.Content))
-                                    showingSelectedNode = true
-                                }
-                                return selectedNode
-                            })
-                            if (showingSelectedNode) {
-                                self.store.dispatch(setSelectedNodes(selectedNodes))
-                            }
-                        }
                         nodes = nodes.map(function (node) {
                             if (node.get('Id') === data.Content.NodeId) {
                                 node = node.set('executionStatusObj', I.fromJS(data.Content))

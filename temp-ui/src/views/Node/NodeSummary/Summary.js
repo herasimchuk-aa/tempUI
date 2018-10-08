@@ -11,7 +11,7 @@ import SearchComponent from '../../../components/SearchComponent/SearchComponent
 import MultiselectDropDown from '../../../components/MultiselectDropdown/MultiselectDropDown';
 import { trimString, converter, validateIPaddress } from '../../../components/Utility/Utility';
 import { FETCH_ALL_NODES, ADD_NODE, DELETE_NODES } from '../../../apis/RestConfig';
-import { fetchNodes, setSelectedNodes, addNode, deleteNodes } from '../../../actions/nodeAction';
+import { fetchNodes, addNode, deleteNodes, setSelectedNodeIds } from '../../../actions/nodeAction';
 import { connect } from 'react-redux'
 import I from 'immutable'
 
@@ -88,14 +88,14 @@ class NodeSummary extends Component {
     checkBoxClick = (rowIndex, singleRowClick) => {
         if (singleRowClick) {
             let { nodes } = this.state
-            let selectedNodes = I.List()
-            selectedNodes = selectedNodes.push(I.fromJS(nodes[rowIndex]))
+            let selectedNodeIds = I.List()
+            selectedNodeIds = selectedNodeIds.push(I.fromJS(nodes[rowIndex].Id))
             let selectedRows = [nodes[rowIndex]]
             selectedRows[0].roles = converter(nodes[rowIndex].roles);
             this.setState({
                 selectedRows, redirect: true
             })
-            this.props.setSelectedNodes(selectedNodes)
+            this.props.setSelectedNodeIds(selectedNodeIds)
             return
         }
         let { selectedRowIndex } = this.state
@@ -364,7 +364,7 @@ function mapDispatchToProps(dispatch) {
         fetchNodes: (url) => dispatch(fetchNodes(url)),
         addNode: (url, params) => dispatch(addNode(url, params)),
         deleteNodes: (url, params) => dispatch(deleteNodes(url, params)),
-        setSelectedNodes: (nodes) => dispatch(setSelectedNodes(nodes))
+        setSelectedNodeIds: (nodes) => dispatch(setSelectedNodeIds(nodes))
     }
 }
 

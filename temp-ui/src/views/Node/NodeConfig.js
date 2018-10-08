@@ -541,9 +541,22 @@ class NodeConfig extends Component {
 }
 
 function mapStateToProps(state) {
+  let selectedNodeIds = state.nodeReducer.getIn(['selectedNodeIds'])
+  let nodes = state.nodeReducer.getIn(['nodes'])
+  let selectedNodes = I.List()
+  if (selectedNodeIds && selectedNodeIds.size && nodes && nodes.size) {
+    selectedNodeIds.map(function (id) {
+      for (let node of nodes) {
+        if (node.get('Id') === id) {
+          selectedNodes = selectedNodes.push(node)
+          break
+        }
+      }
+    })
+  }
   return {
     actualNode: state.nodeReducer.getIn(['actualNode']),
-    selectedNodes: state.nodeReducer.getIn(['selectedNodes']),
+    selectedNodes: selectedNodes,
     roleData: state.roleReducer.getIn(['roles']),
     isoData: state.baseISOReducer.getIn(['isos']),
     kernelData: state.kernelReducer.getIn(['kernels']),

@@ -41,8 +41,6 @@ export const updateNode = (url, params) => (dispatch, getState) => {
     return putRequest(url, params).then(function (updatedNodeData) {
         let store = getState()
         let storedNodes = store.nodeReducer.get('nodes')
-        let selectedNodes = store.nodeReducer.get('selectedNodes')
-        let showingSelectedNode = false
         storedNodes = storedNodes.map(function (node) {
             if (node.get('Id') === updatedNodeData.Data.Id) {
                 let types = store.systemTypeReducer.getIn(['types'])
@@ -52,24 +50,10 @@ export const updateNode = (url, params) => (dispatch, getState) => {
                 let roles = store.roleReducer.getIn(['roles'])
                 let updatedNode = convertNode(updatedNodeData.Data, types, kernels, isos, sites, roles)
                 node = I.fromJS(updatedNode)
-                if (selectedNodes && selectedNodes.size) {
-                    selectedNodes = selectedNodes.map(function (selectedNode) {
-                        if (selectedNode.get('Id') === node.get('Id')) {
-                            selectedNode = node
-                            showingSelectedNode = true
-                        }
-                        return selectedNode
-                    })
-                }
             }
             return node
         })
-        let p1
-        if (showingSelectedNode) {
-            p1 = dispatch(setSelectedNodes(selectedNodes))
-        }
-        let p2 = dispatch(setNodes(I.fromJS(storedNodes)))
-        return Promise.all([p1, p2])
+        return dispatch(setNodes(I.fromJS(storedNodes)))
     })
 }
 
@@ -150,10 +134,10 @@ export function setNodes(payload) {
     }
 }
 
-export const SET_SELECTED_NODES = 'SET_SELECTED_NODES'
-export function setSelectedNodes(payload) {
+export const SET_SELECTED_NODE_IDS = 'SET_SELECTED_NODE_IDS'
+export function setSelectedNodeIds(payload) {
     return {
-        type: SET_SELECTED_NODES,
+        type: SET_SELECTED_NODE_IDS,
         payload: payload
     }
 }
