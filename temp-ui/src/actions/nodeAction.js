@@ -1,5 +1,5 @@
 import I from 'immutable'
-import { getRequest } from '../apis/RestApi';
+import { getRequest, putRequest, postRequest } from '../apis/RestApi';
 import { FETCH_ALL_NODES, FETCH_ALL_SYSTEM_TYPES, FETCH_ALL_ROLES, FETCH_ALL_KERNELS, FETCH_ALL_ISOS, FETCH_ALL_SITES, GET_PROVISION } from '../apis/RestConfig';
 import { fetchTypes } from './systemTypeAction';
 import { fetchRoles } from './roleAction';
@@ -39,15 +39,54 @@ export const fetchNodes = (url) => (dispatch, getState) => {
 
 export const updateNode = (url, params) => (dispatch, getState) => {
     return putRequest(url, params).then(function (updatedNodeData) {
-        let storedNodes = getState().nodeSummary.get('nodes')
+        let store = getState()
+        let storedNodes = store.nodeReducer.get('nodes')
         storedNodes = storedNodes.map(function (node) {
             if (node.get('Id') === updatedNodeData.Data.Id) {
-                node = I.fromJS(updatedNodeData)
+                let types = store.systemTypeReducer.getIn(['types'])
+                let kernels = store.kernelReducer.getIn(['kernels'])
+                let isos = store.baseISOReducer.getIn(['isos'])
+                let sites = store.siteReducer.getIn(['sites'])
+                let roles = store.roleReducer.getIn(['roles'])
+                let updatedNode = convertNode(updatedNodeData.Data, types, kernels, isos, sites, roles)
+                node = I.fromJS(updatedNode)
             }
             return node
         })
-        dispatch(setNodes(I.fromJS(storedNodes)))
+        return dispatch(setNodes(I.fromJS(storedNodes)))
     })
+}
+
+export const provisionNode = (url, params) => (dispatch, getState) => {
+    return postRequest(url, params).then(function (provisionData) {
+        let store = getState()
+        let storedNodes = store.nodeReducer.get('nodes')
+        storedNodes = storedNodes.map(function (node) {
+            if (node.get('Id') === provisionData.Data.NodeId) {
+                node = node.set('executionStatusObj', I.fromJS(provisionData.Data))
+            }
+            return node
+        })
+        return dispatch(setNodes(storedNodes))
+    })
+}
+
+export const fetchActualNode = (url, nodeId) => (dispatch, getState) => {
+    let node = {
+        'Id': nodeId
+    }
+    return postRequest(url, node)
+        .then(function (data) {
+            return dispatch(setActualNodeInfo(I.fromJS(data.Data)))
+        });
+}
+
+export const SET_ACTUAL_NODE_INFO = 'SET_ACTUAL_NODE_INFO'
+export function setActualNodeInfo(payload) {
+    return {
+        type: SET_ACTUAL_NODE_INFO,
+        payload: payload
+    }
 }
 
 export const SET_NODES = 'SET_NODES'
@@ -75,42 +114,45 @@ function convertData(nodes, store) {
 
     if (nodes && nodes.length) {
         nodes.map((node) => {
-            types.map((item) => {
-                if (item.get('Id') == node.Type_Id) {
-                    node.Type = item.Name
-                }
-            })
-            kernels.map((item) => {
-                if (item.get('Id') == node.Kernel_Id) {
-                    node.Kernel = item.Name
-                }
-            })
-            isos.map((item) => {
-                if (item.get('Id') == node.Iso_Id) {
-                    node.BaseISO = item.Name
-                }
-            })
-            sites.map((item) => {
-                if (item.get('Id') == node.Site_Id) {
-                    node.site = item.Name
-                }
-            })
-            let roleIds = node.roles
-            let roleDetails = []
-
-            for (let roleId of roleIds) {
-                for (let role of roles) {
-                    if (role.get('Id') == roleId) {
-                        roleDetails.push(role.toJS())
-                        break
-                    }
-                }
-            }
-            node.roleDetails = roleDetails
+            return convertNode(node, types, kernels, isos, sites, roles)
         })
-
         return nodes
     }
     return []
 }
 
+function convertNode(node, types, kernels, isos, sites, roles) {
+    types.map((item) => {
+        if (item.get('Id') == node.Type_Id) {
+            node.Type = item.get('Name')
+        }
+    })
+    kernels.map((item) => {
+        if (item.get('Id') == node.Kernel_Id) {
+            node.Kernel = item.get('Name')
+        }
+    })
+    isos.map((item) => {
+        if (item.get('Id') == node.Iso_Id) {
+            node.BaseISO = item.get('Name')
+        }
+    })
+    sites.map((item) => {
+        if (item.get('Id') == node.Site_Id) {
+            node.site = item.get('Name')
+        }
+    })
+    let roleIds = node.roles
+    let roleDetails = []
+
+    for (let roleId of roleIds) {
+        for (let role of roles) {
+            if (role.get('Id') == roleId) {
+                roleDetails.push(role.toJS())
+                break
+            }
+        }
+    }
+    node.roleDetails = roleDetails
+    return node
+}

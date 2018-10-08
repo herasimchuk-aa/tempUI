@@ -4,7 +4,7 @@ import { FETCH_ALL_SPEEDS } from '../apis/RestConfig';
 
 export const fetchSpeeds = () => (dispatch) => {
     return getRequest(FETCH_ALL_SPEEDS).then(function (json) {
-        return dispatch(setKernelData(I.fromJS(json.Data)))
+        return dispatch(setSpeedData(I.fromJS(json.Data)))
     })
 }
 

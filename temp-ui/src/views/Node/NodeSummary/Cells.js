@@ -141,8 +141,7 @@ class ProvisionCell extends React.PureComponent {
         return (
             <Cell {...props}>
                 {status}
-                <Progress color={color} value={this.state.progress} className="mb-3" />
-
+                <Progress color={color} value={progress} className="mb-3" />
             </Cell>
         );
     }
