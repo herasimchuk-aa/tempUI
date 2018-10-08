@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
+import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert, Media } from 'reactstrap';
 import '../../views.css';
 import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
@@ -193,21 +193,26 @@ class IpRoute extends Component {
     render() {
         return (
             <div>
-                <div className='marginLeft10'>
-                    <Button onClick={() => (this.cancel())} className="custBtn animated fadeIn marginLeft13N">New</Button>
-                    <Button onClick={() => (this.showEditDialogBox())} className="custBtn animated fadeIn">Edit</Button>
-                    {this.showDeleteButton()}
+                <Media className="tableTitle">
+                    <Media body>
+                        <div className="padTop5">IpRoute</div>
+                    </Media>
+                    <Media right>
+                        <div className='marginLeft10'>
+                            <Button onClick={() => (this.cancel())} className="custBtn animated fadeIn marginLeft13N" outline color="secondary">New</Button>
+                            <Button onClick={() => (this.showEditDialogBox())} className="custBtn animated fadeIn">Edit</Button>
+                            {this.showDeleteButton()}
+                        </div>
+                    </Media>
+                </Media>
+                <div style={{ height: '200px', overflowY: 'scroll', overflowX: 'hidden' }}>
+                    <SummaryDataTable key={this.counter++} heading={this.state.ipRouteHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
                 </div>
-                <Row className="tableTitle">IpRoute</Row>
-                <SummaryDataTable key={this.counter++} heading={this.state.ipRouteHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
                 {this.renderUpgradeModelDialog()}
                 {this.renderEditModelDialog()}
             </div>
         );
     }
-
-
-
 }
 
 function mapStateToProps(state) {
