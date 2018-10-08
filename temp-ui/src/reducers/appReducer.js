@@ -11,6 +11,8 @@ import ethToolReducer from './ethToolReducer'
 import speedReducer from './speedReducer'
 import fecReducer from './fecReducer'
 import mediaReducer from './mediaReducer'
+import ipRouteReducer from './ipRouteReducer'
+import frrReducer from './frrReducer'
 
 export default combineReducers({
     nodeReducer,
@@ -25,4 +27,6 @@ export default combineReducers({
     speedReducer,
     fecReducer,
     mediaReducer,
+    ipRouteReducer,
+    frrReducer
 })

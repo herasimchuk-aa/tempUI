@@ -10,7 +10,7 @@ import 'react-notifications/lib/notifications.css';
 import MultiselectDropDown from '../../components/MultiselectDropdown/MultiselectDropDown';
 import ProvisionProgress from '../../components/ProvisionProgress/ProvisionProgress';
 import DiscoverModal from '../../components/DiscoverModal/DiscoverModal';
-import { UPDATE_NODES, DISCOVER, ADD_KERNEL, ADD_SYSTEM_TYPE, ADD_ISO, FETCH_ALL_GOES, FETCH_ALL_LLDP, FETCH_ALL_ETHTOOL, PROVISION } from '../../apis/RestConfig';
+import { UPDATE_NODES, DISCOVER, ADD_KERNEL, ADD_SYSTEM_TYPE, ADD_ISO, FETCH_ALL_GOES, FETCH_ALL_FRR, FETCH_ALL_IPROUTE, FETCH_ALL_LLDP, FETCH_ALL_ETHTOOL, PROVISION } from '../../apis/RestConfig';
 import Interfaces from './interfaces';
 import { connect } from 'react-redux';
 import I from 'immutable'
@@ -20,10 +20,12 @@ import { fetchSpeeds } from '../../actions/speedAction';
 import { getEthTool } from '../../actions/ethToolAction';
 import { getLLDP } from '../../actions/lldpAction';
 import { getGoes } from '../../actions/goesAction';
+import { getIpRoute } from '../../actions/ipRouteAction';
 import { updateNode, provisionNode, fetchActualNode } from '../../actions/nodeAction';
 import { addKernels } from '../../actions/kernelAction';
 import { addTypes } from '../../actions/systemTypeAction';
 import { addISOs } from '../../actions/baseIsoActions';
+import { getFrr } from '../../actions/frrAction';
 
 class NodeConfig extends Component {
 
@@ -46,7 +48,7 @@ class NodeConfig extends Component {
   }
 
   static getDerivedStateFromProps(props) {
-    let { selectedNodes, roleData, kernelData, typeData, siteData, goesData, lldpData, ethToolData, speedData, fecData, mediaData, isoData, actualNode } = props
+    let { selectedNodes, roleData, kernelData, typeData, siteData, goesData, ipRouteData, frrData, lldpData, ethToolData, speedData, fecData, mediaData, isoData, actualNode } = props
     return {
       nodes: selectedNodes ? selectedNodes.toJS() : [],
       actualNode: actualNode ? actualNode.toJS() : {},
@@ -57,6 +59,8 @@ class NodeConfig extends Component {
       selectedIsoId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'Iso_Id']) : '',
       selectedSiteId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'Site_Id']) : '',
       selectedGoesId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'Goes_Id']) : '',
+      selectedIpRouteId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'Iproute_Id']) : '',
+      selectedFrrId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'Frr_Id']) : '',
       selectedLldpId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'Lldp_Id']) : '',
       selectedEthToolId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'Ethtool_Id']) : '',
       roleData: roleData ? roleData.toJS() : [],
@@ -65,6 +69,8 @@ class NodeConfig extends Component {
       typeData: typeData ? typeData.toJS() : [],
       siteData: siteData ? siteData.toJS() : [],
       goesData: goesData ? goesData.toJS() : [],
+      ipRouteData: ipRouteData ? ipRouteData.toJS() : [],
+      frrData: frrData ? frrData.toJS() : [],
       lldpData: lldpData ? lldpData.toJS() : [],
       ethToolData: ethToolData ? ethToolData.toJS() : [],
       speedData: speedData ? speedData.toJS() : [],
@@ -177,11 +183,21 @@ class NodeConfig extends Component {
             <Col xs='3'><Label>Ethtool</Label><br />
               <DropDown options={this.state.ethToolData} getSelectedData={this.getSelectedData} identity={"EthTool"} default={this.state.selectedEthToolId} />
             </Col>
-            <Col><Label>Provision :</Label><br />
+            <Col xs='3'><Label>IpRoute</Label><br />
+              <DropDown options={this.state.ipRouteData} getSelectedData={this.getSelectedData} identity={'IpRoute'} default={this.state.selectedIpRouteId} />
+            </Col>
+          </Row>
+          <Row className="pad">
+            <Col xs='3'><Label>Frr</Label><br />
+              <DropDown options={this.state.frrData} getSelectedData={this.getSelectedData} identity={'Frr'} default={this.state.selectedFrrId} />
+            </Col>
+            <Col xs='9'><Label>Provision :</Label><br />
               <div className="equiSpace">
                 <div><input type="checkbox" id="provisionGoes" defaultChecked={true} /> Goes </div>
                 <div><input type="checkbox" id="provisionLldp" defaultChecked={true} /> LLDP </div>
                 <div><input type="checkbox" id="provisionEthtool" defaultChecked={true} /> Ethtool </div>
+                <div><input type="checkbox" id="provisionFrr" defaultChecked={true} /> Frr </div>
+                <div><input type="checkbox" id="provisionIpRoute" defaultChecked={true} /> Ip Route </div>
                 <div><input type="checkbox" id="provisionInterfaces" defaultChecked={true} /> Interfaces </div>
               </ div>
             </Col>
@@ -208,6 +224,8 @@ class NodeConfig extends Component {
   initRequests = () => {
     this.props.fetchEthTool(FETCH_ALL_ETHTOOL)
     this.props.fetchGoes(FETCH_ALL_GOES)
+    this.props.fetchFrr(FETCH_ALL_FRR)
+    this.props.fetchIpRoute(FETCH_ALL_IPROUTE)
     this.props.fetchLLDP(FETCH_ALL_LLDP)
     this.props.fetchFecs()
     this.props.fetchMedias()
@@ -230,6 +248,8 @@ class NodeConfig extends Component {
         datum.Kernel_Id = parseInt(self.state.selectedLinuxId),
         datum.Site_Id = parseInt(self.state.selectedSiteId),
         datum.Goes_Id = parseInt(self.state.selectedGoesId),
+        datum.Frr_Id = parseInt(self.state.selectedFrrId),
+        datum.Iproute_Id = parseInt(self.state.selectedIpRouteId),
         datum.Lldp_Id = parseInt(self.state.selectedLldpId),
         datum.Ethtool_Id = parseInt(self.state.selectedEthToolId),
         datum.interfaces = self.state.nodes[0].interfaces,
@@ -297,7 +317,9 @@ class NodeConfig extends Component {
         'goes': document.getElementById('provisionGoes').checked,
         'lldp': document.getElementById('provisionLldp').checked,
         'ethtool': document.getElementById('provisionEthtool').checked,
-        'interfaces': document.getElementById('provisionInterfaces').checked
+        'interfaces': document.getElementById('provisionInterfaces').checked,
+        'iproute': document.getElementById('provisionIpRoute').checked,
+        'frr': document.getElementById('provisionInterfaces').checked
       }
     })
 
@@ -417,6 +439,14 @@ class NodeConfig extends Component {
     }
     if (identity == 'Goes') {
       this.setState({ selectedGoesId: data, saveBtn: false })
+      return
+    }
+    if (identity == 'Frr') {
+      this.setState({ selectedFrrId: data, saveBtn: false })
+      return
+    }
+    if (identity == 'IpRoute') {
+      this.setState({ selectedIpRouteId: data, saveBtn: false })
       return
     }
     if (identity == 'Lldp') {
@@ -563,6 +593,8 @@ function mapStateToProps(state) {
     typeData: state.systemTypeReducer.getIn(['types']),
     siteData: state.siteReducer.getIn(['sites']),
     goesData: state.goesReducer.getIn(['goes']),
+    ipRouteData: state.ipRouteReducer.getIn(['ipRoutes']),
+    frrData: state.frrReducer.getIn(['frr']),
     lldpData: state.lldpReducer.getIn(['lldps']),
     ethToolData: state.ethToolReducer.getIn(['ethTools']),
     speedData: state.speedReducer.getIn(['speeds']),
@@ -579,6 +611,8 @@ function mapDispatchToProps(dispatch) {
     fetchEthTool: (url) => dispatch(getEthTool(url)),
     fetchLLDP: (url) => dispatch(getLLDP(url)),
     fetchGoes: (url) => dispatch(getGoes(url)),
+    fetchFrr: (url) => dispatch(getFrr(url)),
+    fetchIpRoute: (url) => dispatch(getIpRoute(url)),
     updateNode: (url, params) => dispatch(updateNode(url, params)),
     provisionNode: (url, params) => dispatch(provisionNode(url, params)),
     fetchActualNode: (url, params) => dispatch(fetchActualNode(url, params)),
