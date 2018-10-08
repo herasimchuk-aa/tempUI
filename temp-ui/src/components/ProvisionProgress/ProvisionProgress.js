@@ -14,12 +14,7 @@ class ProvisionProgress extends Component {
         }
     }
 
-    static getDerivedStateFromProps(props, state) {
-        return { openPro: props.openPro, }
-    }
-
-    cancel() {
-        this.setState({ openPro: false })
+    cancel = () => {
         this.props.cancelPro()
     }
 

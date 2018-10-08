@@ -41,6 +41,8 @@ export const updateNode = (url, params) => (dispatch, getState) => {
     return putRequest(url, params).then(function (updatedNodeData) {
         let store = getState()
         let storedNodes = store.nodeReducer.get('nodes')
+        let selectedNodes = store.nodeReducer.get('selectedNodes')
+        let showingSelectedNode = false
         storedNodes = storedNodes.map(function (node) {
             if (node.get('Id') === updatedNodeData.Data.Id) {
                 let types = store.systemTypeReducer.getIn(['types'])
@@ -50,10 +52,61 @@ export const updateNode = (url, params) => (dispatch, getState) => {
                 let roles = store.roleReducer.getIn(['roles'])
                 let updatedNode = convertNode(updatedNodeData.Data, types, kernels, isos, sites, roles)
                 node = I.fromJS(updatedNode)
+                if (selectedNodes && selectedNodes.size) {
+                    selectedNodes = selectedNodes.map(function (selectedNode) {
+                        if (selectedNode.get('Id') === node.get('Id')) {
+                            selectedNode = node
+                            showingSelectedNode = true
+                        }
+                        return selectedNode
+                    })
+                }
             }
             return node
         })
-        return dispatch(setNodes(I.fromJS(storedNodes)))
+        let p1
+        if (showingSelectedNode) {
+            p1 = dispatch(setSelectedNodes(selectedNodes))
+        }
+        let p2 = dispatch(setNodes(I.fromJS(storedNodes)))
+        return Promise.all([p1, p2])
+    })
+}
+
+export const addNode = (url, params) => (dispatch, getState) => {
+    return postRequest(url, params).then(function (json) {
+        if (json.StatusCode == 200) {
+            let store = getState()
+            let storedNodes = store.nodeReducer.get('nodes', I.List())
+            let types = store.systemTypeReducer.getIn(['types'])
+            let kernels = store.kernelReducer.getIn(['kernels'])
+            let isos = store.baseISOReducer.getIn(['isos'])
+            let sites = store.siteReducer.getIn(['sites'])
+            let roles = store.roleReducer.getIn(['roles'])
+            let convertedNode = convertNode(json.Data, types, kernels, isos, sites, roles)
+            storedNodes = storedNodes.push(I.fromJS(convertedNode))
+            return dispatch(setNodes(storedNodes))
+        }
+        throw new Error(json.Message)
+    })
+}
+
+
+export const deleteNodes = (url, params) => (dispatch, getState) => {
+    return postRequest(url, params).then(function (json) {
+        if (json.StatusCode == 200) {
+            let store = getState()
+            let storedNodes = store.nodeReducer.get('nodes')
+
+            for (let node of storedNodes) {
+                if (params.indexOf(node.get('Id')) > -1) {
+                    storedNodes = storedNodes.deleteIn([storedNodes.indexOf(node)])
+                    break
+                }
+            }
+            return dispatch(setNodes(storedNodes))
+        }
+        throw new Error(json.Message)
     })
 }
 

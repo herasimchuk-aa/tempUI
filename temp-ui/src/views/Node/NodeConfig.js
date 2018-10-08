@@ -11,7 +11,6 @@ import MultiselectDropDown from '../../components/MultiselectDropdown/Multiselec
 import ProvisionProgress from '../../components/ProvisionProgress/ProvisionProgress';
 import DiscoverModal from '../../components/DiscoverModal/DiscoverModal';
 import { UPDATE_NODES, DISCOVER, ADD_KERNEL, ADD_SYSTEM_TYPE, ADD_ISO, FETCH_ALL_GOES, FETCH_ALL_LLDP, FETCH_ALL_ETHTOOL, PROVISION } from '../../apis/RestConfig';
-import { postRequest, putRequest } from '../../apis/RestApi';
 import Interfaces from './interfaces';
 import { connect } from 'react-redux';
 import I from 'immutable'
@@ -22,6 +21,9 @@ import { getEthTool } from '../../actions/ethToolAction';
 import { getLLDP } from '../../actions/lldpAction';
 import { getGoes } from '../../actions/goesAction';
 import { updateNode, provisionNode, fetchActualNode } from '../../actions/nodeAction';
+import { addKernels } from '../../actions/kernelAction';
+import { addTypes } from '../../actions/systemTypeAction';
+import { addISOs } from '../../actions/baseIsoActions';
 
 class NodeConfig extends Component {
 
@@ -326,21 +328,21 @@ class NodeConfig extends Component {
 
   provisionModal() {
     if (this.state.displayProvisionModel) {
-      return <ProvisionProgress cancelPro={() => this.closeProvisionModal()} openPro={true} node={this.state.nodes[0]} ></ProvisionProgress>
+      return <ProvisionProgress cancelPro={() => this.closeProvisionModal()} node={this.state.nodes[0]} />
     }
   }
 
-  closeProvisionModal = (e) => {
+  closeProvisionModal = () => {
     this.setState({ displayProvisionModel: false })
   }
 
   openDiscoverModal = () => {
     if (this.state.openDiscoverModal) {
-      return (<DiscoverModal cancel={() => this.closeDiscoverModal()} node={this.state.nodes} actualNode={this.state.actualNode} action={(e) => { this.actualNode(e) }}></DiscoverModal>)
+      return (<DiscoverModal cancel={() => this.closeDiscoverModal()} node={this.state.nodes} actualNode={this.state.actualNode} action={(e) => { this.actualNode(e) }} />)
     }
   }
 
-  closeDiscoverModal = (e) => {
+  closeDiscoverModal = () => {
     this.setState({ openDiscoverModal: false })
   }
 
@@ -348,15 +350,12 @@ class NodeConfig extends Component {
     if (this.state.isLoading) {
       return (<Button className="custFillBtn" outline color="secondary" style={{ cursor: 'wait' }} > Discovering.... </Button >)
     }
-    if (!this.state.isLoading) {
-      return (<Button className='custBtn' outline color="secondary" onClick={() => (this.discoverModal())}> Discover </Button >)
-    }
+    return (<Button className='custBtn' outline color="secondary" onClick={() => (this.discoverModal())}> Discover </Button >)
   }
 
   discoverModal = () => {
     let self = this
-    self.toggleLoading()
-    self.setState({ saveBtn: true })
+    self.setState({ saveBtn: true, isLoading: true })
     let roles = [];
     self.state.selectedRoles.map((data) => (roles.push(data.Id)))
     let data = self.state.nodes
@@ -366,25 +365,18 @@ class NodeConfig extends Component {
         datum.Iso_Id = parseInt(self.state.selectedIsoId),
         datum.Kernel_Id = parseInt(self.state.selectedLinuxId),
         datum.Site_Id = parseInt(self.state.selectedSiteId),
-        datum.interfaces = self.state.nodes[0].interfaces,
+        datum.interfaces = datum.interfaces,
         datum.SN = self.state.selectedSerialNo
 
       self.props.updateNode(UPDATE_NODES, datum).then(function () {
-        self.props.fetchActualNode(DISCOVER, self.state.nodes[0].Id).then(function () {
-          self.toggleLoading()
-          self.setState({ openDiscoverModal: true })
+        self.props.fetchActualNode(DISCOVER, datum.Id).then(function () {
+          self.setState({ openDiscoverModal: true, isLoading: false })
         })
       }).catch(function (e) {
         console.log(e)
         NotificationManager.error("Something went wrong", "Node")
       })
     })
-  }
-
-  toggleLoading = () => {
-    this.setState((prevState, props) => ({
-      isLoading: !prevState.isLoading
-    }))
   }
 
   /*--------------------------------------------------------------------------------------------------------------------------------------*/
@@ -458,31 +450,18 @@ class NodeConfig extends Component {
         break
       }
     }
-    let kernelPro
-    if (!kernelExist) {
-      if (params.Kernel) {
-        let dataparams = {
-          'Name': params.Kernel
-        }
-        kernelPro = postRequest(ADD_KERNEL, dataparams).then(function (data) {
-          if (data.StatusCode == 200) {
-            let renderedData = self.state.kernelData;
-            if (!renderedData) {
-              renderedData = []
-            }
-            kernelId = data.Data.Id
-            renderedData.push(data.Data)
-            self.setState({ kernelData: renderedData })
-          }
-          else {
-            NotificationManager.error("Something went wrong", "Kernel")
-          }
-        })
-      } else {
-        kernelId = 0
+    let watingPromise = []
+    if (!kernelExist && params.Kernel) {
+      let dataparams = {
+        'Name': params.Kernel
       }
-    } else {
-      kernelPro = Promise.resolve()
+      let kernelPro = this.props.addKernels(ADD_KERNEL, dataparams).then(function (data) {
+        kernelId = data.Data.Id
+      }).catch(function (e) {
+        console.log(e)
+        NotificationManager.error("Something went wrong", "Kernel")
+      })
+      watingPromise.push(kernelPro)
     }
 
 
@@ -495,32 +474,17 @@ class NodeConfig extends Component {
         break
       }
     }
-    let typePro
-    if (!typeExist) {
-      if (params.Type) {
-        let dataparams = {
-          'Name': params.Type
-        }
-        typePro = postRequest(ADD_SYSTEM_TYPE, dataparams).then(function (data) {
-          if (data.StatusCode == 200) {
-            let renderedData = self.state.typeData;
-            if (!renderedData) {
-              renderedData = []
-            }
-            typeId = data.Data.Id
-            renderedData.push(data.Data)
-            self.setState({ typeData: renderedData })
-          }
-          else {
-            NotificationManager.error("Something went wrong", "type")
-          }
-        })
-      } else {
-        typeId = 0
+    if (!typeExist && params.Type) {
+      let dataparams = {
+        'Name': params.Type
       }
-
-    } else {
-      typePro = Promise.resolve()
+      typePro = this.props.addTypes(ADD_SYSTEM_TYPE, dataparams).then(function (data) {
+        typeId = data.Data.Id
+      }).catch(function (e) {
+        console.log(e)
+        NotificationManager.error("Something went wrong", "Type")
+      })
+      watingPromise.push(typePro)
     }
 
     let isos = self.state.isoData
@@ -532,35 +496,21 @@ class NodeConfig extends Component {
         break
       }
     }
-    let isoPro
-    if (!isoExist) {
-      if (params.BaseISO) {
-        let dataparams = {
-          'Name': params.BaseISO
-        }
-        isoPro = postRequest(ADD_ISO, dataparams).then(function (data) {
-          if (data.StatusCode == 200) {
-            let renderedData = self.state.isoData;
-            if (!renderedData) {
-              renderedData = []
-            }
-            isoId = data.Data.Id
-            renderedData.push(data.Data)
-            self.setState({ isoData: renderedData })
-          }
-          else {
-            NotificationManager.error("Something went wrong", "iso")
-          }
-        })
-      } else {
-        isoId = 0
-      }
 
-    } else {
-      isoPro = Promise.resolve()
+    if (!isoExist && params.BaseISO) {
+      let dataparams = {
+        'Name': params.BaseISO
+      }
+      isoPro = this.props.addISOs(ADD_ISO, dataparams).then(function (data) {
+        isoId = data.Data.Id
+      }).catch(function (e) {
+        console.log(e)
+        NotificationManager.error("Something went wrong", "Type")
+      })
+      watingPromise.push(isoPro)
     }
 
-    Promise.all([kernelPro, typePro, isoPro]).then(function () {
+    Promise.all(watingPromise).then(function () {
       params.interfaces.map((item) => {
         item.Node_Id = self.state.nodes[0].Id
       })
@@ -575,7 +525,6 @@ class NodeConfig extends Component {
           datum.Type_Id = parseInt(typeId),
           datum.Iso_Id = parseInt(isoId),
           datum.Kernel_Id = parseInt(kernelId),
-          datum.Site_Id = parseInt(self.state.selectedSiteId),
           datum.interfaces = params.interfaces,
           datum.SN = params.SerialNumber ? params.SerialNumber : params.SN ? params.SN : '',
 
@@ -619,7 +568,10 @@ function mapDispatchToProps(dispatch) {
     fetchGoes: (url) => dispatch(getGoes(url)),
     updateNode: (url, params) => dispatch(updateNode(url, params)),
     provisionNode: (url, params) => dispatch(provisionNode(url, params)),
-    fetchActualNode: (url, params) => dispatch(fetchActualNode(url, params))
+    fetchActualNode: (url, params) => dispatch(fetchActualNode(url, params)),
+    addKernels: (url, params) => dispatch(addKernels(url, params)),
+    addTypes: (url, params) => dispatch(addTypes(url, params)),
+    addISOs: (url, params) => dispatch(addISOs(url, params)),
   }
 }
 

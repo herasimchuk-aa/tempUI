@@ -10,9 +10,8 @@ import { NotificationManager } from 'react-notifications';
 import SearchComponent from '../../../components/SearchComponent/SearchComponent';
 import MultiselectDropDown from '../../../components/MultiselectDropdown/MultiselectDropDown';
 import { trimString, converter, validateIPaddress } from '../../../components/Utility/Utility';
-import { FETCH_ALL_SITES, FETCH_ALL_ROLES, FETCH_ALL_ISOS, FETCH_ALL_KERNELS, FETCH_ALL_SYSTEM_TYPES, FETCH_ALL_NODES, ADD_NODE, UPDATE_NODES, DELETE_NODES } from '../../../apis/RestConfig';
-import { getRequest, postRequest, putRequest } from '../../../apis/RestApi';
-import { fetchNodes, setSelectedNodes } from '../../../actions/nodeAction';
+import { FETCH_ALL_NODES, ADD_NODE, DELETE_NODES } from '../../../apis/RestConfig';
+import { fetchNodes, setSelectedNodes, addNode, deleteNodes } from '../../../actions/nodeAction';
 import { connect } from 'react-redux'
 import I from 'immutable'
 
@@ -49,8 +48,20 @@ class NodeSummary extends Component {
     }
 
     static getDerivedStateFromProps(props) {
+        let { roleData, kernelData, typeData, siteData, goesData, lldpData, ethToolData, speedData, fecData, mediaData, isoData } = props
         return {
-            nodes: props.nodes ? props.nodes.toJS() : []
+            nodes: props.nodes ? props.nodes.toJS() : [],
+            roleData: roleData ? roleData.toJS() : [],
+            isoData: isoData ? isoData.toJS() : [],
+            kernelData: kernelData ? kernelData.toJS() : [],
+            typeData: typeData ? typeData.toJS() : [],
+            siteData: siteData ? siteData.toJS() : [],
+            goesData: goesData ? goesData.toJS() : [],
+            lldpData: lldpData ? lldpData.toJS() : [],
+            ethToolData: ethToolData ? ethToolData.toJS() : [],
+            speedData: speedData ? speedData.toJS() : [],
+            fecData: fecData ? fecData.toJS() : [],
+            mediaData: mediaData ? mediaData.toJS() : [],
         }
     }
 
@@ -133,9 +144,10 @@ class NodeSummary extends Component {
         this.state.selectedRowIndex.map(function (item) {
             deleteIds.push(self.state.nodes[item].Id)
         })
-        postRequest(DELETE_NODES, deleteIds).then(function (data) {
+        this.props.deleteNodes(DELETE_NODES, deleteIds).then(function () {
             self.setState({ showDelete: false, selectedRowIndex: [] });
-            //self.getAllData();
+        }).catch(function (e) {
+            console.log(e)
         })
     }
 
@@ -266,24 +278,12 @@ class NodeSummary extends Component {
             'SN': document.getElementById('nodeSerialNumber').value,
             'Kernel_Id': parseInt(self.state.selectedLinuxId),
         }
-        postRequest(ADD_NODE, params).then(function (data) {
-            self.toggleLoading()
-            if (data.StatusCode == 200) {
-                let renderedData = self.state.nodes;
-                if (!renderedData) {
-                    renderedData = []
-                }
-                let addNupdateNode = data.Data
-                renderedData.push(data.Data)
-                let nodesData = self.convertData(renderedData, self.state.typedata, self.state.kernelData, self.state.isoData, self.state.siteData, self.state.roleData)
-                self.setState({ nodes: nodesData, displayModel: false, visible: false })
-
-            }
-            else {
-                NotificationManager.error("Something went wrong", "node")
-                self.setState({ displayModel: false, visible: false })
-
-            }
+        this.props.addNode(ADD_NODE, params).then(function () {
+            self.setState({ displayModel: false, visible: false, isSaveLoading: false })
+        }).catch(function (e) {
+            console.warn(e)
+            self.setState({ displayModel: false, visible: false, isSaveLoading: false })
+            NotificationManager.error("Something went wrong", "Node")
         })
     }
 
@@ -310,7 +310,7 @@ class NodeSummary extends Component {
     render() {
 
         if (this.state.redirect) {
-            return <Redirect push to={{ pathname: '/pcc/node/config'}} />
+            return <Redirect push to={{ pathname: '/pcc/node/config' }} />
         }
         return (
             <Container-fluid >
@@ -344,13 +344,26 @@ class NodeSummary extends Component {
 
 function mapStateToProps(state) {
     return {
-        nodes: state.nodeReducer.getIn(['nodes'])
+        nodes: state.nodeReducer.getIn(['nodes']),
+        roleData: state.roleReducer.getIn(['roles']),
+        isoData: state.baseISOReducer.getIn(['isos']),
+        kernelData: state.kernelReducer.getIn(['kernels']),
+        typeData: state.systemTypeReducer.getIn(['types']),
+        siteData: state.siteReducer.getIn(['sites']),
+        goesData: state.goesReducer.getIn(['goes']),
+        lldpData: state.lldpReducer.getIn(['lldps']),
+        ethToolData: state.ethToolReducer.getIn(['ethTools']),
+        speedData: state.speedReducer.getIn(['speeds']),
+        fecData: state.fecReducer.getIn(['fecs']),
+        mediaData: state.mediaReducer.getIn(['medias']),
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return {
         fetchNodes: (url) => dispatch(fetchNodes(url)),
+        addNode: (url, params) => dispatch(addNode(url, params)),
+        deleteNodes: (url, params) => dispatch(deleteNodes(url, params)),
         setSelectedNodes: (nodes) => dispatch(setSelectedNodes(nodes))
     }
 }

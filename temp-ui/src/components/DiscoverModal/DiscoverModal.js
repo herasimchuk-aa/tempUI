@@ -21,7 +21,6 @@ class DiscoverModal extends Component {
     }
 
     cancel = () => {
-        this.setState({ isOpen: false })
         this.props.cancel()
     }
 
