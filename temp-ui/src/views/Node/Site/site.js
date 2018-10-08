@@ -9,7 +9,7 @@ import { getRequest, postRequest, putRequest } from '../../../apis/RestApi';
 import { FETCH_ALL_SITES, ADD_SITE, UPDATE_SITE, DELETE_SITES } from '../../../apis/RestConfig';
 import { NotificationManager } from 'react-notifications';
 import { connect } from 'react-redux';
-import { getSites } from '../../../actions/siteAction';
+import { getSites, addSites, editSites } from '../../../actions/siteAction';
 
 class Site extends Component {
 
@@ -122,21 +122,14 @@ class Site extends Component {
             'Name': validSite,
             'Description': document.getElementById('siteDesc').value
         }
-        postRequest(ADD_SITE, params).then(function (data) {
-            if (data.StatusCode == 200) {
-                let renderedData = self.state.data;
-                if (!renderedData) {
-                    renderedData = []
-                }
-                renderedData.push(data.Data)
-                self.setState({ data: renderedData, displayModel: false, visible: false })
-            }
-            else {
-                NotificationManager.error("Something went wrong", "Site")
-                self.setState({ displayModel: false, visible: false })
-
-            }
+        let sitePromise = self.props.addSites(ADD_SITE, params)
+        sitePromise.then(function (value) {
+            NotificationManager.success("Site added successfully", "Site") // "Success!"
+        }).catch(function (e) {
+            console.warn(e)
+            NotificationManager.error("Something went wrong", "Site") // "error!"
         })
+        self.setState({ displayModel: false, visible: false })
     }
 
     showEditDialogBox() {
@@ -164,7 +157,7 @@ class Site extends Component {
                         Description <Input className="marTop10" id='siteDescEdit' defaultValue={edittedData.Description} /><br />
                     </ModalBody>
                     <ModalFooter>
-                        <Button className="custBtn" outline color="primary" onClick={() => (this.editSite())}>Save</Button>{'  '}
+                        <Button className="custBtn" outline color="primary" onClick={() => (this.editSite(edittedData.Id))}>Save</Button>{'  '}
                         <Button className="custBtn" outline color="primary" onClick={() => (this.toggleEditModal())}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
@@ -172,26 +165,29 @@ class Site extends Component {
         }
     }
 
-    editSite = () => {
+    editSite = (siteId) => {
         let self = this
-        let edittedData = this.state.data[this.state.selectedRowIndexes[0]]
+
         let params = {
-            'Id': edittedData.Id,
+            'Id': siteId,
             'Description': document.getElementById('siteDescEdit').value ? document.getElementById('siteDescEdit').value : "-"
         }
-        putRequest(UPDATE_SITE, params).then(function (data) {
-            console.log(data.Data)
-            if (data.StatusCode == 200) {
-                let existingData = self.state.data;
-                existingData[self.state.selectedRowIndexes[0]] = data.Data
-                self.setState({ data: existingData, displayEditModel: false, selectedRowIndexes: [] })
-            }
-            else {
-                NotificationManager.error("Something went wrong", "Site")
-                self.setState({ displayEditModel: false, selectedRowIndexes: [] })
 
-            }
-        })
+        self.props.editSites(UPDATE_SITE, params)
+
+        // putRequest(UPDATE_SITE, params).then(function (data) {
+        //     console.log(data.Data)
+        //     if (data.StatusCode == 200) {
+        //         let existingData = self.state.data;
+        //         existingData[self.state.selectedRowIndexes[0]] = data.Data
+        //         self.setState({ data: existingData, displayEditModel: false, selectedRowIndexes: [] })
+        //     }
+        //     else {
+        //         NotificationManager.error("Something went wrong", "Site")
+        //         self.setState({ displayEditModel: false, selectedRowIndexes: [] })
+
+        //     }
+        // })
     }
 
 
@@ -224,7 +220,9 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        getSites: (url) => dispatch(getSites(url))
+        getSites: (url) => dispatch(getSites(url)),
+        addSites: (url, params) => dispatch(addSites(url, params)),
+        editSites: (url, params) => dispatch(editSites(url, params))
     }
 }
 

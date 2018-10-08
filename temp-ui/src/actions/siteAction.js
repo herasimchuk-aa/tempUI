@@ -1,5 +1,5 @@
 import I from 'immutable'
-import { getRequest } from '../apis/RestApi';
+import { getRequest, postRequest, putRequest } from '../apis/RestApi';
 
 export const getSites = (url) => (dispatch) => {
     return getRequest(url).then(function (json) {
@@ -14,3 +14,30 @@ export function setSiteData(payload) {
         payload: payload
     }
 }
+
+export const addSites = (url, params) => (dispatch, getState) => {
+    return postRequest(url, params).then(function (json) {
+        if (json.StatusCode == 200) {
+            let storedSites = getState().siteReducer.getIn(['sites'], I.List())
+            console.log(storedSites)
+            storedSites = storedSites.push(I.fromJS(json.Data))
+            return dispatch(setSiteData(storedSites))
+        }
+        throw new Error(json.message)
+    })
+}
+
+export const editSites = (url, params) => (dispatch, getState) => {
+    return putRequest(url, params).then(function (json) {
+        if (json.StatusCode == 200) {
+            let storedSites = getState().siteReducer.getIn(['sites'], I.List())
+            // storedSites.map((site) => {
+            //     site.get('Id') == 
+            // })
+            console.log(storedSites)
+            // storedSites = storedSites.push(I.fromJS(json.Data))
+            dispatch(setSiteData(storedSites))
+        }
+    })
+}
+

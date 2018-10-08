@@ -210,6 +210,42 @@ export let kernelHead = [
     }
 ];
 
+export let ipRouteHead = [
+    {
+        id: 'Name',
+        displayName: 'Name',
+        colSize: 4
+    },
+    {
+        id: 'Location',
+        displayName: 'Location',
+        colSize: 4
+    },
+    {
+        id: 'Description',
+        displayName: 'Description',
+        colSize: 4
+    }
+];
+
+export let frrHead = [
+    {
+        id: 'Name',
+        displayName: 'Name',
+        colSize: 4
+    },
+    {
+        id: 'Location',
+        displayName: 'Location',
+        colSize: 4
+    },
+    {
+        id: 'Description',
+        displayName: 'Description',
+        colSize: 4
+    }
+];
+
 export let goesHead = [
     {
         id: 'Name',
