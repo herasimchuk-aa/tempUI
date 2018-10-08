@@ -10,7 +10,7 @@ import { FETCH_ALL_ISOS, ADD_ISO, UPDATE_ISO, DELETE_ISOS } from '../../../apis/
 import { NotificationManager } from 'react-notifications';
 import { subscribeToIsoSocket } from '../../../apis/Socket';
 import { connect } from 'react-redux';
-import { getISOs } from '../../../actions/baseIsoActions';
+import { getISOs, addISOs, updateISO } from '../../../actions/baseIsoActions';
 
 class BaseLinuxIso extends Component {
 
@@ -39,12 +39,12 @@ class BaseLinuxIso extends Component {
         }
     }
 
-    retrieveIsoData = () => {
-        let self = this
-        getRequest(FETCH_ALL_ISOS).then(function (json) {
-            self.setState({ data: json.Data, selectedRowIndexes: [] })
-        })
-    }
+    // retrieveIsoData = () => {
+    //     let self = this
+    //     getRequest(FETCH_ALL_ISOS).then(function (json) {
+    //         self.setState({ data: json.Data, selectedRowIndexes: [] })
+    //     })
+    // }
 
     checkBoxClick = (rowIndex) => {
         let { selectedRowIndexes } = this.state
@@ -88,7 +88,7 @@ class BaseLinuxIso extends Component {
                 NotificationManager.error(item + ' is in use', "Base ISO")
             })
             self.setState({ showDelete: false, selectedRowIndexes: [] });
-            self.retrieveIsoData();
+            self.props.getISOs(FETCH_ALL_ISOS);
         })
     }
 
@@ -133,21 +133,30 @@ class BaseLinuxIso extends Component {
             'Location': document.getElementById('isoLoc').value,
             'Description': document.getElementById('isoDesc').value
         }
-        postRequest(ADD_ISO, params).then(function (data) {
-            if (data.StatusCode == 200) {
-                let renderedData = self.state.data;
-                if (!renderedData) {
-                    renderedData = []
-                }
-                renderedData.push(data.Data)
-                self.setState({ data: renderedData, displayModel: false, visible: false })
-            }
-            else {
-                NotificationManager.error("Something went wrong", "Base ISO")
-                self.setState({ displayModel: false, visible: false })
 
-            }
+        let isoPromise = self.props.addISOs(ADD_ISO, params)
+        isoPromise.then(function (value) {
+            NotificationManager.success("ISO added successfully", "ISO") // "Success!"
+        }).catch(function (e) {
+            console.warn(e)
+            NotificationManager.error("Something went wrong", "ISO") // "error!"
         })
+        self.setState({ displayModel: false, visible: false })
+        // postRequest(ADD_ISO, params).then(function (data) {
+        //     if (data.StatusCode == 200) {
+        //         let renderedData = self.state.data;
+        //         if (!renderedData) {
+        //             renderedData = []
+        //         }
+        //         renderedData.push(data.Data)
+        //         self.setState({ data: renderedData, displayModel: false, visible: false })
+        //     }
+        //     else {
+        //         NotificationManager.error("Something went wrong", "Base ISO")
+        //         self.setState({ displayModel: false, visible: false })
+
+        //     }
+        // })
     }
 
     callback(instance, data) {
@@ -165,8 +174,6 @@ class BaseLinuxIso extends Component {
             return
         }
         this.setState({ displayEditModel: true })
-        console.log(this.state.data[this.state.selectedRowIndexes[0]])
-
     }
 
     toggleEditModal() {
@@ -185,7 +192,7 @@ class BaseLinuxIso extends Component {
                         Description <Input className="marTop10" id='isoDescEdit' defaultValue={edittedData.Description} /><br />
                     </ModalBody>
                     <ModalFooter>
-                        <Button className="custBtn" outline color="primary" onClick={() => (this.editIso())}>Save</Button>{'  '}
+                        <Button className="custBtn" outline color="primary" onClick={() => (this.editIso(edittedData.Id))}>Save</Button>{'  '}
                         <Button className="custBtn" outline color="primary" onClick={() => (this.toggleEditModal())}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
@@ -193,26 +200,23 @@ class BaseLinuxIso extends Component {
         }
     }
 
-    editIso = () => {
+    editIso = (isoID) => {
         let self = this
-        let edittedData = this.state.data[this.state.selectedRowIndexes[0]]
         let params = {
-            'Id': edittedData.Id,
+            'Id': isoID,
             'Location': document.getElementById('isoLocEdit').value ? document.getElementById('isoLocEdit').value : "-",
             'Description': document.getElementById('isoDescEdit').value ? document.getElementById('isoDescEdit').value : "-"
         }
-        putRequest(UPDATE_ISO, params).then(function (data) {
-            console.log(data.Data)
-            if (data.StatusCode == 200) {
-                let existingData = self.state.data;
-                existingData[self.state.selectedRowIndexes[0]] = data.Data
-                self.setState({ data: existingData, displayEditModel: false, selectedRowIndexes: [] })
-            }
-            else {
-                NotificationManager.error("Something went wrong", "Base ISO")
-                self.setState({ displayEditModel: false, selectedRowIndexes: [] })
 
-            }
+        let isoPromise = self.props.updateISO(UPDATE_ISO, params)
+
+        isoPromise.then(function (value) {
+            NotificationManager.success("ISO updated successfully", "ISO") // "Success!"
+            self.setState({ displayEditModel: false, selectedRowIndexes: [] })
+        }).catch(function (e) {
+            console.warn(e)
+            self.setState({ displayEditModel: false, selectedRowIndexes: [] })
+            NotificationManager.error("Something went wrong", "ISO") // "error!"
         })
     }
 
@@ -253,7 +257,9 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        getISOs: (url) => dispatch(getISOs(url))
+        getISOs: (url) => dispatch(getISOs(url)),
+        addISOs: (url, params) => dispatch(addISOs(url, params)),
+        updateISO: (url, params) => dispatch(updateISO(url, params))
     }
 }
 

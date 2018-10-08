@@ -9,7 +9,7 @@ import { getRequest, postRequest, putRequest } from '../../../apis/RestApi';
 import { FETCH_ALL_SYSTEM_TYPES, ADD_SYSTEM_TYPE, UPDATE_SYSTEM_TYPE, DELETE_SYSTEM_TYPES } from '../../../apis/RestConfig';
 import { NotificationManager } from 'react-notifications';
 import { connect } from 'react-redux'
-import { fetchTypes } from '../../../actions/systemTypeAction';
+import { fetchTypes, addTypes, updateType } from '../../../actions/systemTypeAction';
 
 class Types extends Component {
 
@@ -39,12 +39,12 @@ class Types extends Component {
         }
     }
 
-    retrieveTypeData() {
-        let self = this
-        getRequest(FETCH_ALL_SYSTEM_TYPES).then(function (json) {
-            self.setState({ data: json.Data, selectedRowIndexes: [] })
-        })
-    }
+    // retrieveTypeData() {
+    //     let self = this
+    //     getRequest(FETCH_ALL_SYSTEM_TYPES).then(function (json) {
+    //         self.setState({ data: json.Data, selectedRowIndexes: [] })
+    //     })
+    // }
 
     checkBoxClick = (rowIndex) => {
         let { selectedRowIndexes } = this.state
@@ -126,21 +126,30 @@ class Types extends Component {
             this.setState({ visible: true, errorMsg: 'Please enter a valid Management Interface' });
             return;
         }
-        postRequest(ADD_SYSTEM_TYPE, params).then(function (data) {
-            if (data.StatusCode == 200) {
-                let renderedData = self.state.data;
-                if (!renderedData) {
-                    renderedData = []
-                }
-                renderedData.push(data.Data)
-                self.setState({ data: renderedData, displayModel: false, visible: false })
-            }
-            else {
-                NotificationManager.error("Something went wrong", "System Type")
-                self.setState({ displayModel: false, visible: false })
-
-            }
+        let typePromise = self.props.addTypes(ADD_SYSTEM_TYPE, params)
+        typePromise.then(function (value) {
+            NotificationManager.success("Type added successfully", "Type") // "Success!"
+        }).catch(function (e) {
+            console.warn(e)
+            NotificationManager.error("Something went wrong", "Type") // "error!"
         })
+        self.setState({ displayModel: false, visible: false })
+
+        // postRequest(ADD_SYSTEM_TYPE, params).then(function (data) {
+        //     if (data.StatusCode == 200) {
+        //         let renderedData = self.state.data;
+        //         if (!renderedData) {
+        //             renderedData = []
+        //         }
+        //         renderedData.push(data.Data)
+        //         self.setState({ data: renderedData, displayModel: false, visible: false })
+        //     }
+        //     else {
+        //         NotificationManager.error("Something went wrong", "System Type")
+        //         self.setState({ displayModel: false, visible: false })
+
+        //     }
+        // })
 
     }
     showDeleteButton() {
@@ -166,7 +175,7 @@ class Types extends Component {
                 NotificationManager.error(item + ' is in use', "Type")
             })
             self.setState({ showDelete: false, selectedRowIndexes: [] });
-            self.retrieveTypeData();
+            self.props.fetchTypes(FETCH_ALL_SYSTEM_TYPES);
         })
     }
 
@@ -235,19 +244,31 @@ class Types extends Component {
             this.setState({ visible: true, errorMsg: 'Please enter a valid Management Interface' });
             return;
         }
-        putRequest(UPDATE_SYSTEM_TYPE, params).then(function (data) {
-            console.log(data.Data)
-            if (data.StatusCode == 200) {
-                let existingData = self.state.data;
-                existingData[self.state.selectedRowIndexes[0]] = data.Data
-                self.setState({ data: existingData, displayEditModel: false, selectedRowIndexes: [], visible: false })
-            }
-            else {
-                NotificationManager.error("Something went wrong", "System Type")
-                self.setState({ displayEditModel: false, selectedRowIndexes: [], visible: false })
 
-            }
+        let typePromise = self.props.updateType(UPDATE_SYSTEM_TYPE, params)
+
+        typePromise.then(function (value) {
+            NotificationManager.success("Type updated successfully", "Type") // "Success!"
+            self.setState({ displayEditModel: false, selectedRowIndexes: [] })
+        }).catch(function (e) {
+            console.warn(e)
+            self.setState({ displayEditModel: false, selectedRowIndexes: [] })
+            NotificationManager.error("Something went wrong", "Type") // "error!"
         })
+
+        // putRequest(UPDATE_SYSTEM_TYPE, params).then(function (data) {
+        //     console.log(data.Data)
+        //     if (data.StatusCode == 200) {
+        //         let existingData = self.state.data;
+        //         existingData[self.state.selectedRowIndexes[0]] = data.Data
+        //         self.setState({ data: existingData, displayEditModel: false, selectedRowIndexes: [], visible: false })
+        //     }
+        //     else {
+        //         NotificationManager.error("Something went wrong", "System Type")
+        //         self.setState({ displayEditModel: false, selectedRowIndexes: [], visible: false })
+
+        //     }
+        // })
     }
 
 
@@ -281,7 +302,9 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        fetchTypes: (url) => dispatch(fetchTypes(url))
+        fetchTypes: (url) => dispatch(fetchTypes(url)),
+        addTypes: (url, params) => dispatch(addTypes(url, params)),
+        updateType: (url, params) => dispatch(updateType(url, params))
     }
 }
 

@@ -9,7 +9,7 @@ import { getRequest, postRequest, putRequest } from '../../../apis/RestApi'
 import { FETCH_ALL_KERNELS, ADD_KERNEL, UPDATE_KERNEL, DELETE_KERNELS } from '../../../apis/RestConfig'
 import { NotificationManager } from 'react-notifications';
 import { connect } from 'react-redux'
-import { fetchKernels } from '../../../actions/kernelAction';
+import { fetchKernels, addKernels, updateKernel } from '../../../actions/kernelAction';
 
 class LinuxKernel extends Component {
 
@@ -161,20 +161,16 @@ class LinuxKernel extends Component {
             'Location': document.getElementById('kernelLoc').value,
             'Description': document.getElementById('kernelDesc').value
         }
-        postRequest(ADD_KERNEL, params).then(function (data) {
-            if (data.StatusCode == 200) {
-                let renderedData = self.state.data;
-                if (!renderedData) {
-                    renderedData = []
-                }
-                renderedData.push(data.Data)
-                self.setState({ data: renderedData, displayModel: false, visible: false })
-            }
-            else {
-                NotificationManager.error("Something went wrong", "Kernel")
-                self.setState({ displayModel: false, visible: false })
 
-            }
+        let kernelPromise = self.props.addKernels(ADD_KERNEL, params)
+
+        kernelPromise.then(function (value) {
+            NotificationManager.success("Kernel updated successfully", "Kernel") // "Success!"
+            self.setState({ displayModel: false, selectedRowIndexes: [] })
+        }).catch(function (e) {
+            console.warn(e)
+            self.setState({ displayModel: false })
+            NotificationManager.error("Something went wrong", "Kernel") // "error!"
         })
     }
 
@@ -184,8 +180,6 @@ class LinuxKernel extends Component {
             return
         }
         this.setState({ displayEditModel: true })
-        console.log(this.state.data[this.state.selectedRowIndexes[0]])
-
     }
 
     toggleEditModal() {
@@ -204,7 +198,7 @@ class LinuxKernel extends Component {
                         Description <Input className="marTop10" id='kernelDescEdit' defaultValue={edittedData.Description} /><br />
                     </ModalBody>
                     <ModalFooter>
-                        <Button className="custBtn" outline color="primary" onClick={() => (this.editKernel())}>Save</Button>{'  '}
+                        <Button className="custBtn" outline color="primary" onClick={() => (this.editKernel(edittedData.Id))}>Save</Button>{'  '}
                         <Button className="custBtn" outline color="primary" onClick={() => (this.toggleEditModal())}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
@@ -212,26 +206,23 @@ class LinuxKernel extends Component {
         }
     }
 
-    editKernel = () => {
+    editKernel = (kernelId) => {
         let self = this
-        let edittedData = this.state.data[this.state.selectedRowIndexes[0]]
         let params = {
-            'Id': edittedData.Id,
+            'Id': kernelId,
             'Location': document.getElementById('kernelLocEdit').value ? document.getElementById('kernelLocEdit').value : "-",
             'Description': document.getElementById('kernelDescEdit').value ? document.getElementById('kernelDescEdit').value : "-"
         }
-        putRequest(UPDATE_KERNEL, params).then(function (data) {
-            console.log(data.Data)
-            if (data.StatusCode == 200) {
-                let existingData = self.state.data;
-                existingData[self.state.selectedRowIndexes[0]] = data.Data
-                self.setState({ data: existingData, displayEditModel: false, selectedRowIndexes: [] })
-            }
-            else {
-                NotificationManager.error("Something went wrong", "Kernel")
-                self.setState({ displayEditModel: false, selectedRowIndexes: [] })
 
-            }
+        let kernelPromise = self.props.updateKernel(UPDATE_KERNEL, params)
+
+        kernelPromise.then(function (value) {
+            NotificationManager.success("Kernel updated successfully", "Kernel") // "Success!"
+            self.setState({ displayEditModel: false, selectedRowIndexes: [] })
+        }).catch(function (e) {
+            console.warn(e)
+            self.setState({ displayEditModel: false, selectedRowIndexes: [] })
+            NotificationManager.error("Something went wrong", "Kernel") // "error!"
         })
     }
 
@@ -269,7 +260,9 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        fetchKernels: (url) => dispatch(fetchKernels(url))
+        fetchKernels: (url) => dispatch(fetchKernels(url)),
+        addKernels: (url, params) => dispatch(addKernels(url, params)),
+        updateKernel: (url, params) => dispatch(updateKernel(url, params))
     }
 }
 

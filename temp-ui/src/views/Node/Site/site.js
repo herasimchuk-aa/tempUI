@@ -9,7 +9,7 @@ import { getRequest, postRequest, putRequest } from '../../../apis/RestApi';
 import { FETCH_ALL_SITES, ADD_SITE, UPDATE_SITE, DELETE_SITES } from '../../../apis/RestConfig';
 import { NotificationManager } from 'react-notifications';
 import { connect } from 'react-redux';
-import { getSites, addSites, editSites } from '../../../actions/siteAction';
+import { getSites, addSites, updateSite } from '../../../actions/siteAction';
 
 class Site extends Component {
 
@@ -138,8 +138,6 @@ class Site extends Component {
             return
         }
         this.setState({ displayEditModel: true })
-        console.log(this.state.data[this.state.selectedRowIndexes[0]])
-
     }
 
     toggleEditModal() {
@@ -173,21 +171,16 @@ class Site extends Component {
             'Description': document.getElementById('siteDescEdit').value ? document.getElementById('siteDescEdit').value : "-"
         }
 
-        self.props.editSites(UPDATE_SITE, params)
+        let sitePromise = self.props.updateSite(UPDATE_SITE, params)
 
-        // putRequest(UPDATE_SITE, params).then(function (data) {
-        //     console.log(data.Data)
-        //     if (data.StatusCode == 200) {
-        //         let existingData = self.state.data;
-        //         existingData[self.state.selectedRowIndexes[0]] = data.Data
-        //         self.setState({ data: existingData, displayEditModel: false, selectedRowIndexes: [] })
-        //     }
-        //     else {
-        //         NotificationManager.error("Something went wrong", "Site")
-        //         self.setState({ displayEditModel: false, selectedRowIndexes: [] })
-
-        //     }
-        // })
+        sitePromise.then(function (value) {
+            NotificationManager.success("Site updated successfully", "Site") // "Success!"
+            self.setState({ displayEditModel: false, selectedRowIndexes: [] })
+        }).catch(function (e) {
+            console.warn(e)
+            self.setState({ displayEditModel: false, selectedRowIndexes: [] })
+            NotificationManager.error("Something went wrong", "Site") // "error!"
+        })
     }
 
 
@@ -222,7 +215,7 @@ function mapDispatchToProps(dispatch) {
     return {
         getSites: (url) => dispatch(getSites(url)),
         addSites: (url, params) => dispatch(addSites(url, params)),
-        editSites: (url, params) => dispatch(editSites(url, params))
+        updateSite: (url, params) => dispatch(updateSite(url, params))
     }
 }
 

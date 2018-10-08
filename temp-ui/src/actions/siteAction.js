@@ -19,25 +19,29 @@ export const addSites = (url, params) => (dispatch, getState) => {
     return postRequest(url, params).then(function (json) {
         if (json.StatusCode == 200) {
             let storedSites = getState().siteReducer.getIn(['sites'], I.List())
-            console.log(storedSites)
             storedSites = storedSites.push(I.fromJS(json.Data))
             return dispatch(setSiteData(storedSites))
         }
-        throw new Error(json.message)
+        throw new Error(json.Message)
     })
 }
 
-export const editSites = (url, params) => (dispatch, getState) => {
+export const updateSite = (url, params) => (dispatch, getState) => {
     return putRequest(url, params).then(function (json) {
         if (json.StatusCode == 200) {
-            let storedSites = getState().siteReducer.getIn(['sites'], I.List())
-            // storedSites.map((site) => {
-            //     site.get('Id') == 
-            // })
-            console.log(storedSites)
-            // storedSites = storedSites.push(I.fromJS(json.Data))
-            dispatch(setSiteData(storedSites))
+            let siteData = json.Data
+            let storedSites = getState().siteReducer.get('sites')
+            storedSites = storedSites.map(function (site) {
+                if (site.get('Id') === siteData.Id) {
+                    site = I.fromJS(siteData)
+                }
+                return site
+            })
+            return dispatch(setSiteData(I.fromJS(storedSites)))
         }
+        throw new Error(json.Message)
     })
 }
+
+
 
