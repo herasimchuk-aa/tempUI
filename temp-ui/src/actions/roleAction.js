@@ -77,14 +77,19 @@ export const deleteRoles = (url, params) => (dispatch, getState) => {
         if (json.StatusCode == 200) {
             let store = getState()
             let storedRoles = store.roleReducer.get('roles')
+            let failure = json.Data.Failure ? json.Data.Failure : []
+            let changesMade = false
             /* code to be added to delete roles other than the failedDelete */
             for (let role of storedRoles) {
-                if (params.indexOf(role.get('Id')) > -1) {
+                if (params.indexOf(role.get('Id')) > -1 && failure.indexOf(role.get('Id')) < 0) {
                     storedRoles = storedRoles.deleteIn([storedRoles.indexOf(role)])
                     break
                 }
             }
-            return dispatch(setRoleData(storedRoles))
+            if (changesMade) {
+                dispatch(setRoleData(storedRoles))
+            }
+            return json.Data
         }
         throw new Error(json.Message)
     })

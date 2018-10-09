@@ -171,11 +171,27 @@ class Roles extends Component {
         this.state.selectedRowIndexes.map(function (item) {
             deleteIds.push(self.state.data[item].Id)
         })
-        this.props.deleteRoles(DELETE_ROLES, deleteIds).then(function () {
-            self.setState({ showDelete: false, selectedRowIndexes: [] })
+        this.props.deleteRoles(DELETE_ROLES, deleteIds).then(function (data) {
+            if (data.Failure && data.Failure.length) {
+                let nameArr = getNameById(data.Failure, self.state.data)
+                let str = ""
+                if (nameArr.length === 1) {
+                    str += nameArr[0] + " is in use."
+                } else {
+                    nameArr.map(function (name) {
+                        str += name + ","
+                    })
+                    str += " are in use."
+                }
+                NotificationManager.error(str)
+            } else {
+                NotificationManager.success("Role deleted successfully", "Role") // "Success!"
+            }
         }).catch(function (e) {
             console.error(e)
+            NotificationManager.error("Something went wrong", "Role") // "error!"
         })
+        this.setState({ showDelete: false, selectedRowIndexes: [] })
     }
 
     showEditDialogBox() {
@@ -184,7 +200,6 @@ class Roles extends Component {
             return
         }
         this.setState({ displayEditModel: true, selectedRole: this.state.data[this.state.selectedRowIndexes[0]].ParentId })
-        console.log(this.state.data[this.state.selectedRowIndexes[0]])
 
     }
 
