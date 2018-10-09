@@ -20,9 +20,7 @@ export const addKernels = (url, params) => (dispatch, getState) => {
         if (json.StatusCode == 200) {
             let storedkernels = getState().kernelReducer.getIn(['kernels'], I.List())
             storedkernels = storedkernels.push(I.fromJS(json.Data))
-            return dispatch(setKernelData(storedkernels)).then(function () {
-                return json.Data
-            })
+            return dispatch(setKernelData(storedkernels))
         }
         throw new Error(json.Message)
     })

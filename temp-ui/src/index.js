@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom';
 import { HashRouter, Route, Switch } from 'react-router-dom';
 
 
-import { invaderServerAddress } from "./config";
+import { invaderServerAddressIP } from "./config";
 
 import { Provider } from 'react-redux'
 import { createStore, applyMiddleware } from 'redux'
@@ -33,7 +33,7 @@ import Socket from './apis/Socket'
 
 
 
-Window.invaderServerAddress = invaderServerAddress
+Window.invaderServerAddress = "http://" + invaderServerAddressIP
 
 const store = createStore(appReducer, applyMiddleware(thunk))
 var socket = new Socket(store)

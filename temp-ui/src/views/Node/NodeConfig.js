@@ -193,12 +193,12 @@ class NodeConfig extends Component {
             </Col>
             <Col xs='9'><Label>Provision :</Label><br />
               <div className="equiSpace">
-                <div><input type="checkbox" id="provisionGoes" defaultChecked={true} /> Goes </div>
-                <div><input type="checkbox" id="provisionLldp" defaultChecked={true} /> LLDP </div>
-                <div><input type="checkbox" id="provisionEthtool" defaultChecked={true} /> Ethtool </div>
-                <div><input type="checkbox" id="provisionFrr" defaultChecked={true} /> Frr </div>
-                <div><input type="checkbox" id="provisionIpRoute" defaultChecked={true} /> Ip Route </div>
-                <div><input type="checkbox" id="provisionInterfaces" defaultChecked={true} /> Interfaces </div>
+                <div><input type="checkbox" id="provisionGoes" defaultChecked={false} /> Goes </div>
+                <div><input type="checkbox" id="provisionLldp" defaultChecked={false} /> LLDP </div>
+                <div><input type="checkbox" id="provisionEthtool" defaultChecked={false} /> Ethtool </div>
+                <div><input type="checkbox" id="provisionFrr" defaultChecked={false} /> Frr </div>
+                <div><input type="checkbox" id="provisionIpRoute" defaultChecked={false} /> Ip Route </div>
+                <div><input type="checkbox" id="provisionInterfaces" defaultChecked={false} /> Interfaces </div>
               </ div>
             </Col>
           </Row>
@@ -285,7 +285,7 @@ class NodeConfig extends Component {
           datum.SN = self.state.selectedSerialNo
 
 
-        self.props.update(UPDATE_NODES, datum).then(function () {
+        self.props.updateNode(UPDATE_NODES, datum).then(function () {
           NotificationManager.success("Node Updated Successfully", "node")
           self.setState({ saveBtn: false })
         }).catch(function (err) {
@@ -305,7 +305,8 @@ class NodeConfig extends Component {
 
   onProvisionClick() {
     if (!document.getElementById('provisionGoes').checked && !document.getElementById('provisionLldp').checked &&
-      !document.getElementById('provisionEthtool').checked && !document.getElementById('provisionInterfaces').checked) {
+      !document.getElementById('provisionEthtool').checked && !document.getElementById('provisionInterfaces').checked
+      && !document.getElementById('provisionFrr').checked) {
       alert("Please select an App to provision")
       return
     }
@@ -319,7 +320,7 @@ class NodeConfig extends Component {
         'ethtool': document.getElementById('provisionEthtool').checked,
         'interfaces': document.getElementById('provisionInterfaces').checked,
         'iproute': document.getElementById('provisionIpRoute').checked,
-        'frr': document.getElementById('provisionInterfaces').checked
+        'frr': document.getElementById('provisionFrr').checked
       }
     })
 
@@ -486,7 +487,14 @@ class NodeConfig extends Component {
         'Name': params.Kernel
       }
       let kernelPro = this.props.addKernels(ADD_KERNEL, dataparams).then(function (data) {
-        kernelId = data.Data.Id
+        let payload = data.payload
+        if (payload && payload.size) {
+          for (let kernel of payload) {
+            if (kernel.get('Name') === params.Kernel) {
+              kernelId = kernel.get('Id')
+            }
+          }
+        }
       }).catch(function (e) {
         console.log(e)
         NotificationManager.error("Something went wrong", "Kernel")
@@ -508,8 +516,15 @@ class NodeConfig extends Component {
       let dataparams = {
         'Name': params.Type
       }
-      typePro = this.props.addTypes(ADD_SYSTEM_TYPE, dataparams).then(function (data) {
-        typeId = data.Data.Id
+      let typePro = this.props.addTypes(ADD_SYSTEM_TYPE, dataparams).then(function (data) {
+        let payload = data.payload
+        if (payload && payload.size) {
+          for (let type of payload) {
+            if (type.get('Name') === params.Type) {
+              typeId = type.get('Id')
+            }
+          }
+        }
       }).catch(function (e) {
         console.log(e)
         NotificationManager.error("Something went wrong", "Type")
@@ -531,8 +546,15 @@ class NodeConfig extends Component {
       let dataparams = {
         'Name': params.BaseISO
       }
-      isoPro = this.props.addISOs(ADD_ISO, dataparams).then(function (data) {
-        isoId = data.Data.Id
+      let isoPro = this.props.addISOs(ADD_ISO, dataparams).then(function (data) {
+        let payload = data.payload
+        if (payload && payload.size) {
+          for (let iso of payload) {
+            if (iso.get('Name') === params.BaseISO) {
+              isoId = iso.get('Id')
+            }
+          }
+        }
       }).catch(function (e) {
         console.log(e)
         NotificationManager.error("Something went wrong", "Type")

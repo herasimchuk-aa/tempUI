@@ -1,4 +1,4 @@
-import { invaderServerAddress } from "../config";
+import { invaderServerAddressIP } from "../config";
 import I from 'immutable'
 import { setNodes } from "../actions/nodeAction";
 
@@ -10,7 +10,7 @@ export default class Socket {
 
     initWebSocket() {
         let channelName = "inventoryUpdate"
-        let wsuri = 'ws://' + "172.17.146.60:8080" + '/ws/join?uname=' + channelName;
+        let wsuri = 'ws://' + invaderServerAddressIP + '/ws/join?uname=' + channelName;
         let socket = new WebSocket(wsuri);
         let self = this
         socket.onmessage = function (event) {

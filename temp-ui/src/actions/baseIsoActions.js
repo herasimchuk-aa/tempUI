@@ -21,9 +21,7 @@ export const addISOs = (url, params) => (dispatch, getState) => {
         if (json.StatusCode == 200) {
             let storedISOs = getState().baseISOReducer.getIn(['isos'], I.List())
             storedISOs = storedISOs.push(I.fromJS(json.Data))
-            return dispatch(setISOs(storedISOs)).then(function () {
-                return json.Data
-            })
+            return dispatch(setISOs(storedISOs))
         }
         throw new Error(json.Message)
     })
