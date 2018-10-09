@@ -215,7 +215,6 @@ function convertNode(node, types, kernels, isos, sites, roles, goes, lldps, ethT
         if (item.get('Id') == node.Goes_Id) {
             // node.goesVersion = item.get('Version')
             node.goes = Object.assign({}, item.toJS())
-            console.log(node.goes)
         }
     })
     lldps.map((item) => {
