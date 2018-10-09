@@ -103,7 +103,7 @@ class IpRoute extends Component {
         if (this.state.displayModel) {
             return (
                 <Modal isOpen={this.state.displayModel} toggle={() => this.cancel()} size="sm" centered="true" >
-                    <ModalHeader toggle={() => this.cancel()}>Add IpRoute</ModalHeader>
+                    <ModalHeader toggle={() => this.cancel()}>Add IpRoute2</ModalHeader>
                     <ModalBody>
                         <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Name cannot be empty</Alert>
                         Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='ipRouteName' /><br />
@@ -166,7 +166,7 @@ class IpRoute extends Component {
             let edittedData = this.state.data[this.state.selectedRowIndexes[0]]
             return (
                 <Modal isOpen={this.state.displayEditModel} toggle={() => this.toggleEditModal()} size="sm" centered="true" >
-                    <ModalHeader toggle={() => this.toggleEditModal()}>Edit Ip Route</ModalHeader>
+                    <ModalHeader toggle={() => this.toggleEditModal()}>Edit IpRoute2</ModalHeader>
                     <ModalBody>
                         Name<font color="red"><sup>*</sup></font> <Input autoFocus disabled className="marTop10" value={edittedData.Name} /><br />
                         Location <Input className="marTop10" id='ippLocEdit' defaultValue={edittedData.Location} /><br />
@@ -210,7 +210,7 @@ class IpRoute extends Component {
             <div>
                 <Media className="tableTitle">
                     <Media body>
-                        <div className="padTop5">IpRoute</div>
+                        <div className="padTop5">IpRoute2</div>
                     </Media>
                     <Media right>
                         <div className='marginLeft10'>

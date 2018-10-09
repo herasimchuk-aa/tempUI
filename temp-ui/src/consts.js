@@ -95,7 +95,7 @@ export let nodeHead = [
     },
     {
         id: 'ipRouteVersion',
-        displayName: 'IP Route',
+        displayName: 'IpRoute2',
         colSize: 1,
         showDefault: false
     }

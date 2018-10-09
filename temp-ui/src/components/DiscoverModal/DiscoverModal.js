@@ -17,7 +17,7 @@ class DiscoverModal extends Component {
     }
 
     static getDerivedStateFromProps(props, state) {
-        return { existingNode: props.node, actualNode: props.actualNode }
+        return { existingNode: props.node, actualNode: props.actualNode, isOpen: props.isOpen }
     }
 
     cancel = () => {

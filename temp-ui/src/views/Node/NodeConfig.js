@@ -197,7 +197,7 @@ class NodeConfig extends Component {
                 <div><input type="checkbox" id="provisionLldp" defaultChecked={false} /> LLDP </div>
                 <div><input type="checkbox" id="provisionEthtool" defaultChecked={false} /> Ethtool </div>
                 <div><input type="checkbox" id="provisionFrr" defaultChecked={false} /> Frr </div>
-                <div><input type="checkbox" id="provisionIpRoute" defaultChecked={false} /> Ip Route </div>
+                <div><input type="checkbox" id="provisionIpRoute" defaultChecked={false} /> IpRoute2 </div>
                 <div><input type="checkbox" id="provisionInterfaces" defaultChecked={false} /> Interfaces </div>
                 <div><input type="checkbox" id="provisionKernel" defaultChecked={false} /> Kernel </div>
               </ div>
@@ -363,7 +363,7 @@ class NodeConfig extends Component {
 
   openDiscoverModal = () => {
     if (this.state.openDiscoverModal) {
-      return (<DiscoverModal cancel={() => this.closeDiscoverModal()} node={this.state.nodes} actualNode={this.state.actualNode} action={(e) => { this.actualNode(e) }} />)
+      return (<DiscoverModal cancel={() => this.closeDiscoverModal()} isOpen={true} node={this.state.nodes} actualNode={this.state.actualNode} action={(e) => { this.actualNode(e) }} />)
     }
   }
 
