@@ -74,16 +74,24 @@ class IpRoute extends Component {
         })
 
         this.props.deleteIpRoute(DELETE_IPROUTE, deleteIds).then(function (data) {
-            let failedIpRoute = []
-            failedIpRoute = getNameById(data.Data.Failure, self.state.data);
-            failedIpRoute.map((item) => {
-                NotificationManager.error(item + ' is in use', "IpRoute")
-            })
-            NotificationManager.error('IpRoute deleted successfully', "IpRoute")
-            self.setState({ showDelete: false, selectedRowIndexes: [] });
-            self.props.getFrr(FETCH_ALL_IPROUTE);
+            if (data.Failure && data.Failure.length) {
+                let nameArr = getNameById(data.Failure, self.state.data)
+                let str = ""
+                if (nameArr.length === 1) {
+                    str += nameArr[0] + " is in use."
+                } else {
+                    nameArr.map(function (name) {
+                        str += name + ","
+                    })
+                    str += " are in use."
+                }
+                NotificationManager.error(str)
+            } else {
+                NotificationManager.success("IPRoute deleted successfully", "IPRoute") // "Success!"
+            }
         }).catch(function (e) {
-            console.log(e)
+            console.log(E)
+            NotificationManager.error("Something went wrong", "IPRoute") // "error!"
         })
     }
 

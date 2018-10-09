@@ -5,10 +5,8 @@ import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import { isoHead } from '../../../consts';
 import { trimString, getNameById } from '../../../components/Utility/Utility';
-import { getRequest, postRequest, putRequest } from '../../../apis/RestApi'
 import { FETCH_ALL_ISOS, ADD_ISO, UPDATE_ISO, DELETE_ISOS } from '../../../apis/RestConfig'
 import { NotificationManager } from 'react-notifications';
-import { subscribeToIsoSocket } from '../../../apis/Socket';
 import { connect } from 'react-redux';
 import { getISOs, addISOs, updateISO, deleteISO } from '../../../actions/baseIsoActions';
 
@@ -75,9 +73,24 @@ class BaseLinuxIso extends Component {
         })
 
         this.props.deleteISO(DELETE_ISOS, deleteIds).then(function (data) {
-            self.props.getISOs(FETCH_ALL_ISOS);
+            if (data.Failure && data.Failure.length) {
+                let nameArr = getNameById(data.Failure, self.state.data)
+                let str = ""
+                if (nameArr.length === 1) {
+                    str += nameArr[0] + " is in use."
+                } else {
+                    nameArr.map(function (name) {
+                        str += name + ","
+                    })
+                    str += " are in use."
+                }
+                NotificationManager.error(str)
+            } else {
+                NotificationManager.success("Base Iso deleted successfully", "Base Iso") // "Success!"
+            }
         }).catch(function (e) {
-            console.log(e)
+            console.log(E)
+            NotificationManager.error("Something went wrong", "Base Iso") // "error!"
         })
         self.setState({ showDelete: false, selectedRowIndexes: [] });
     }

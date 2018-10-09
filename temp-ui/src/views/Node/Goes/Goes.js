@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert, Media } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert, Media } from 'reactstrap';
 import '../../views.css';
-import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import { goesHead } from '../../../consts';
 import { trimString, getNameById } from '../../../components/Utility/Utility';
-import { getRequest, postRequest, putRequest } from '../../../apis/RestApi'
 import { FETCH_ALL_GOES, ADD_GOES, UPDATE_GOES, DELETE_GOES } from '../../../apis/RestConfig'
 import { NotificationManager } from 'react-notifications';
 import { connect } from 'react-redux';
@@ -73,9 +71,24 @@ class Goes extends Component {
         })
 
         this.props.deleteGoes(DELETE_GOES, deleteIds).then(function (data) {
-            self.props.getFrr(FETCH_ALL_GOES);
+            if (data.Failure && data.Failure.length) {
+                let nameArr = getNameById(data.Failure, self.state.data)
+                let str = ""
+                if (nameArr.length === 1) {
+                    str += nameArr[0] + " is in use."
+                } else {
+                    nameArr.map(function (name) {
+                        str += name + ","
+                    })
+                    str += " are in use."
+                }
+                NotificationManager.error(str)
+            } else {
+                NotificationManager.success("Goes deleted successfully", "Goes") // "Success!"
+            }
         }).catch(function (e) {
-            console.log(e)
+            console.log(E)
+            NotificationManager.error("Something went wrong", "Goes") // "error!"
         })
         self.setState({ showDelete: false, selectedRowIndexes: [] });
     }

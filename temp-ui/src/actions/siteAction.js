@@ -49,14 +49,17 @@ export const deleteSite = (url, params) => (dispatch, getState) => {
             let store = getState()
             let storedSites = store.siteReducer.get('sites')
             let failure = json.Data.Failure ? json.Data.Failure : []
-
+            let changesMade = false
             for (let site of storedSites) {
                 if (params.indexOf(site.get('Id')) > -1 && failure.indexOf(site.get('Id')) < 0) {
                     storedSites = storedSites.deleteIn([storedSites.indexOf(site)])
                     break
                 }
             }
-            return dispatch(setSiteData(storedSites))
+            if (changesMade) {
+                dispatch(setSiteData(storedSites))
+            }
+            return json.Data
         }
         throw new Error(json.Message)
     })

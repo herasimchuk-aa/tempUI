@@ -49,14 +49,17 @@ export const deleteIpRoute = (url, params) => (dispatch, getState) => {
             let store = getState()
             let storedIpRoute = store.ipRouteReducer.get('ipRoutes')
             let failure = json.Data.Failure ? json.Data.Failure : []
-
+            let changesMade = false
             for (let ipRoute of storedIpRoute) {
                 if (params.indexOf(ipRoute.get('Id')) > -1 && failure.indexOf(iso.get('Id')) < 0) {
                     storedIpRoute = storedIpRoute.deleteIn([storedIpRoute.indexOf(ipRoute)])
                     break
                 }
             }
-            return dispatch(setIpRoutedata(storedIpRoute))
+            if (changesMade) {
+                dispatch(setIpRoutedata(storedIpRoute))
+            }
+            return json.Data
         }
         throw new Error(json.Message)
     })

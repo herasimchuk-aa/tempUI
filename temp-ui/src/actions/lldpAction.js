@@ -50,14 +50,17 @@ export const deleteLLDP = (url, params) => (dispatch, getState) => {
             let store = getState()
             let storedLLDP = store.lldpReducer.get('lldps')
             let failure = json.Data.Failure ? json.Data.Failure : []
-
+            let changesMade = false
             for (let LLDP of storedLLDP) {
                 if (params.indexOf(LLDP.get('Id')) > -1 && failure.indexOf(iso.get('Id')) < 0) {
                     storedLLDP = storedLLDP.deleteIn([storedLLDP.indexOf(LLDP)])
                     break
                 }
             }
-            return dispatch(setLLDPData(storedLLDP))
+            if (changesMade) {
+                dispatch(setLLDPData(storedLLDP))
+            }
+            return json.Data
         }
         throw new Error(json.Message)
     })

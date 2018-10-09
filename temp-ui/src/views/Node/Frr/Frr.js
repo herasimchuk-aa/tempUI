@@ -74,16 +74,24 @@ class Frr extends Component {
         })
 
         this.props.deleteFrrs(DELETE_FRR, deleteIds).then(function (data) {
-            let failedFrrs = []
-            failedFrrs = getNameById(data.Data.Failure, self.state.data);
-            failedFrrs.map((item) => {
-                NotificationManager.error(item + ' is in use', "Frr")
-            })
-            NotificationManager.error('Frr deleted successfully', "Frr")
-
-            self.props.getFrr(FETCH_ALL_FRR);
+            if (data.Failure && data.Failure.length) {
+                let nameArr = getNameById(data.Failure, self.state.data)
+                let str = ""
+                if (nameArr.length === 1) {
+                    str += nameArr[0] + " is in use."
+                } else {
+                    nameArr.map(function (name) {
+                        str += name + ","
+                    })
+                    str += " are in use."
+                }
+                NotificationManager.error(str)
+            } else {
+                NotificationManager.success("FRR deleted successfully", "FRR") // "Success!"
+            }
         }).catch(function (e) {
-            console.log(e)
+            console.log(E)
+            NotificationManager.error("Something went wrong", "FRR") // "error!FRR
         })
         self.setState({ showDelete: false, selectedRowIndexes: [] });
 

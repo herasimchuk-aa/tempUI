@@ -73,16 +73,24 @@ class EthTool extends Component {
         })
 
         this.props.deleteEthTools(DELETE_ETHTOOL, deleteIds).then(function (data) {
-            let failedFrrs = []
-            failedFrrs = getNameById(data.Data.Failure, self.state.data);
-            failedFrrs.map((item) => {
-                NotificationManager.error(item + ' is in use', "EthTool")
-            })
-            NotificationManager.error('Frr deleted successfully', "Frr")
-
-            self.props.getEthTool(FETCH_ALL_ETHTOOL);
+            if (data.Failure && data.Failure.length) {
+                let nameArr = getNameById(data.Failure, self.state.data)
+                let str = ""
+                if (nameArr.length === 1) {
+                    str += nameArr[0] + " is in use."
+                } else {
+                    nameArr.map(function (name) {
+                        str += name + ","
+                    })
+                    str += " are in use."
+                }
+                NotificationManager.error(str)
+            } else {
+                NotificationManager.success("EthTool deleted successfully", "EthTool") // "Success!"
+            }
         }).catch(function (e) {
-            console.log(e)
+            console.log(E)
+            NotificationManager.error("Something went wrong", "EthTool") // "error!"
         })
         self.setState({ showDelete: false, selectedRowIndexes: [] });
     }

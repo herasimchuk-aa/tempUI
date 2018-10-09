@@ -74,9 +74,24 @@ class Site extends Component {
         })
 
         this.props.deleteSite(DELETE_SITES, deleteIds).then(function (data) {
-            self.props.getSites(FETCH_ALL_SITES);
+            if (data.Failure && data.Failure.length) {
+                let nameArr = getNameById(data.Failure, self.state.data)
+                let str = ""
+                if (nameArr.length === 1) {
+                    str += nameArr[0] + " is in use."
+                } else {
+                    nameArr.map(function (name) {
+                        str += name + ","
+                    })
+                    str += " are in use."
+                }
+                NotificationManager.error(str)
+            } else {
+                NotificationManager.success("Site deleted successfully", "Site") // "Success!"
+            }
         }).catch(function (e) {
-            console.log(e)
+            console.log(E)
+            NotificationManager.error("Something went wrong", "Site") // "error!"
         })
         self.setState({ showDelete: false, selectedRowIndexes: [] });
     }

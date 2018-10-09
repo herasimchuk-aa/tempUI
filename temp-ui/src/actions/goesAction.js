@@ -50,14 +50,18 @@ export const deleteGoes = (url, params) => (dispatch, getState) => {
             let store = getState()
             let storedGoes = store.goesReducer.get('goes')
             let failure = json.Data.Failure ? json.Data.Failure : []
-
+            let changesMade = false
             for (let goes of storedGoes) {
                 if (params.indexOf(goes.get('Id')) > -1 && failure.indexOf(goes.get('Id')) < 0) {
                     storedGoes = storedGoes.deleteIn([storedGoes.indexOf(goes)])
+                    changesMade = true
                     break
                 }
             }
-            return dispatch(setGoesData(storedGoes))
+            if (changesMade) {
+                dispatch(setGoesData(storedGoes))
+            }
+            return json.Data
         }
         throw new Error(json.Message)
     })

@@ -49,14 +49,18 @@ export const deleteType = (url, params) => (dispatch, getState) => {
             let store = getState()
             let storedTypes = store.systemTypeReducer.get('types')
             let failure = json.Data.Failure ? json.Data.Failure : []
-
+            let changesMade = false
             for (let type of storedTypes) {
                 if (params.indexOf(type.get('Id')) > -1 && failure.indexOf(type.get('Id')) < 0) {
                     storedTypes = storedTypes.deleteIn([storedTypes.indexOf(type)])
                     break
                 }
             }
-            return dispatch(setSystemTypeData(storedTypes))
+            if (changesMade) {
+                dispatch(setSystemTypeData(storedTypes))
+            }
+            return json.Data
+
         }
         throw new Error(json.Message)
     })

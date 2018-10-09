@@ -50,14 +50,17 @@ export const deleteFrrs = (url, params) => (dispatch, getState) => {
             let store = getState()
             let storedFrr = store.frrReducer.get('frr')
             let failure = json.Data.Failure ? json.Data.Failure : []
-
+            let changesMade = false
             for (let frr of storedFrr) {
                 if (params.indexOf(frr.get('Id')) > -1 && failure.indexOf(iso.get('Id')) < 0) {
                     storedFrr = storedFrr.deleteIn([storedFrr.indexOf(frr)])
                     break
                 }
             }
-            return dispatch(setFrrData(storedFrr))
+            if (changesMade) {
+                dispatch(setFrrData(storedFrr))
+            }
+            return json.Data
         }
         throw new Error(json.Message)
     })

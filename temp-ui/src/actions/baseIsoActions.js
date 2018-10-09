@@ -50,14 +50,17 @@ export const deleteISO = (url, params) => (dispatch, getState) => {
             let store = getState()
             let storedISOs = store.baseISOReducer.get('isos')
             let failure = json.Data.Failure ? json.Data.Failure : []
-
+            let changesMade = false
             for (let iso of storedISOs) {
                 if (params.indexOf(iso.get('Id')) > -1 && failure.indexOf(iso.get('Id')) < 0) {
                     storedISOs = storedISOs.deleteIn([storedISOs.indexOf(iso)])
                     break
                 }
             }
-            return dispatch(setISOs(storedISOs))
+            if (changesMade) {
+                dispatch(setISOs(storedISOs))
+            }
+            return json.Data
         }
         throw new Error(json.Message)
     })
