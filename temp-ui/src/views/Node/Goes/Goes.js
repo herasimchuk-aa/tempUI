@@ -200,7 +200,7 @@ class Goes extends Component {
             console.warn(e)
             NotificationManager.error("Something went wrong", "Goes") // "error!"
         })
-        self.setState({ displayEditModel: false, selectedRowIndexes: [] })
+        this.setState({ displayEditModel: false, selectedRowIndexes: [], showDelete: false })
     }
 
 

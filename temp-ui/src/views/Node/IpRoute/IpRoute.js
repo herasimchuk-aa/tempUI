@@ -195,13 +195,12 @@ class IpRoute extends Component {
         let ipRoutePromise = self.props.updateIpRoute(UPDATE_IPROUTE, params)
 
         ipRoutePromise.then(function (value) {
-            NotificationManager.success("IpRoute updated successfully", "IpRoute") // "Success!"
-            self.setState({ displayEditModel: false, selectedRowIndexes: [] })
+            NotificationManager.success("IP Route updated successfully", "IP Route") // "Success!"
         }).catch(function (e) {
             console.warn(e)
-            self.setState({ displayEditModel: false, selectedRowIndexes: [] })
-            NotificationManager.error("Something went wrong", "IpRoute") // "error!"
+            NotificationManager.error("Something went wrong", "IP Route") // "error!"
         })
+        this.setState({ displayEditModel: false, selectedRowIndexes: [], showDelete: false })
     }
 
 

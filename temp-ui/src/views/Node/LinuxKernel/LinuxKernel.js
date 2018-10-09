@@ -177,12 +177,11 @@ class LinuxKernel extends Component {
 
         kernelPromise.then(function (value) {
             NotificationManager.success("Kernel updated successfully", "Kernel") // "Success!"
-            self.setState({ displayEditModel: false, selectedRowIndexes: [] })
         }).catch(function (e) {
             console.warn(e)
-            self.setState({ displayEditModel: false, selectedRowIndexes: [] })
             NotificationManager.error("Something went wrong", "Kernel") // "error!"
         })
+        this.setState({ displayEditModel: false, selectedRowIndexes: [], showDelete: false })
     }
 
 

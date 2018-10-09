@@ -197,12 +197,12 @@ class LLDP extends Component {
         let lldpPromise = self.props.updateLLDP(UPDATE_LLDP, params)
 
         lldpPromise.then(function (value) {
-            NotificationManager.success("lldp updated successfully", "lldp") // "Success!"
+            NotificationManager.success("LLDP updated successfully", "LLDP") // "Success!"
         }).catch(function (e) {
             console.warn(e)
-            NotificationManager.error("Something went wrong", "lldp") // "error!"
+            NotificationManager.error("Something went wrong", "LLDP") // "error!"
         })
-        self.setState({ displayEditModel: false, selectedRowIndexes: [] })
+        this.setState({ displayEditModel: false, selectedRowIndexes: [], showDelete: false })
     }
 
 

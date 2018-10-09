@@ -192,12 +192,11 @@ class BaseLinuxIso extends Component {
 
         isoPromise.then(function (value) {
             NotificationManager.success("ISO updated successfully", "ISO") // "Success!"
-            self.setState({ displayEditModel: false, selectedRowIndexes: [] })
         }).catch(function (e) {
             console.warn(e)
-            self.setState({ displayEditModel: false, selectedRowIndexes: [] })
             NotificationManager.error("Something went wrong", "ISO") // "error!"
         })
+        this.setState({ displayEditModel: false, selectedRowIndexes: [], showDelete: false })
     }
 
 

@@ -197,12 +197,12 @@ class Frr extends Component {
         let frrPromise = self.props.updateFrr(UPDATE_FRR, params)
 
         frrPromise.then(function (value) {
-            NotificationManager.success("Frr updated successfully", "Frr") // "Success!"
+            NotificationManager.success("FRR updated successfully", "FRR") // "Success!"
         }).catch(function (e) {
             console.warn(e)
-            NotificationManager.error("Something went wrong", "Frr") // "error!"
+            NotificationManager.error("Something went wrong", "FRR") // "error!"
         })
-        self.setState({ displayEditModel: false, selectedRowIndexes: [] })
+        this.setState({ displayEditModel: false, selectedRowIndexes: [], showDelete: false })
     }
 
 

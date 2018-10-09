@@ -167,7 +167,7 @@ class Types extends Component {
             console.log(E)
             NotificationManager.error("Something went wrong", "System Type") // "error!"
         })
-        self.setState({ showDelete: false, selectedRowIndexes: [] });
+        this.setState({ showDelete: false, selectedRowIndexes: [] });
     }
 
     showEditDialogBox() {
@@ -239,14 +239,12 @@ class Types extends Component {
         let typePromise = self.props.updateType(UPDATE_SYSTEM_TYPE, params)
 
         typePromise.then(function (value) {
-            NotificationManager.success("Type updated successfully", "Type") // "Success!"
-            self.setState({ displayEditModel: false, selectedRowIndexes: [] })
+            NotificationManager.success("Type updated successfully", "System Type") // "Success!"
         }).catch(function (e) {
             console.warn(e)
-            self.setState({ displayEditModel: false, selectedRowIndexes: [] })
-            NotificationManager.error("Something went wrong", "Type") // "error!"
+            NotificationManager.error("Something went wrong", "System Type") // "error!"
         })
-
+        this.setState({ displayEditModel: false, selectedRowIndexes: [], showDelete: false })
     }
 
     render() {
