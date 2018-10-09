@@ -49,7 +49,7 @@ class Kubernetes extends Component {
             }
         }
         if (counter < 1) {
-            NotificationManager.error("k8-master or kube-master is necessary to be in roles in order to redirect to dashboard", "node")
+            NotificationManager.error("node should be k8-master or kube-master", "node")
         }
     }
 

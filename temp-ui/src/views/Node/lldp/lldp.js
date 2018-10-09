@@ -107,10 +107,10 @@ class LLDP extends Component {
                     <ModalHeader toggle={() => this.cancel()}>Add LLDP</ModalHeader>
                     <ModalBody>
                         <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Name cannot be empty</Alert>
-                        Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='lldpName' /><br />
-                        Location <Input className="marTop10" id='lldpLoc' /><br />
-                        Version <Input className="marTop10" id='lldpVersion' /><br />
-                        Description <Input className="marTop10" id='lldpDesc' /><br />
+                        Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='lldpName' />
+                        Location <Input className="marTop10" id='lldpLoc' />
+                        Version <Input className="marTop10" id='lldpVersion' />
+                        Description <Input className="marTop10" id='lldpDesc' />
                     </ModalBody>
                     <ModalFooter>
                         <Button className="custBtn" outline color="primary" onClick={() => (this.addLLDP())}>Add</Button>{'  '}

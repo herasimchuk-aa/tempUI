@@ -33,7 +33,7 @@ class ProvisionProgress extends Component {
             <Modal isOpen={this.state.openPro} toggle={() => this.cancel()} size="sm" centered="true" >
                 <ModalHeader toggle={() => this.cancel()}> Provision </ModalHeader>
                 <ModalBody>
-                    <Progress animated color={color} value={progress} className="mb-3" />
+                    <Progress color={color} value={progress} className="mb-3" />
                     {status}
                 </ModalBody>
             </Modal>
