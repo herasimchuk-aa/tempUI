@@ -186,6 +186,7 @@ function convertNode(node, types, kernels, isos, sites, roles, goes, lldps, ethT
     kernels.map((item) => {
         if (item.get('Id') == node.Kernel_Id) {
             node.Kernel = item.get('Name')
+            node.kernelVersion = item.get('Version')
         }
     })
     isos.map((item) => {

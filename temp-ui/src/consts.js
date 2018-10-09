@@ -59,6 +59,11 @@ export let nodeHead = [
         colSize: 2
     },
     {
+        id: 'kernelVersion',
+        displayName: 'platina-mk1',
+        colSize: 1
+    },
+    {
         id: 'goes',
         displayName: 'Goes',
         operation: 'list',
