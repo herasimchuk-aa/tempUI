@@ -3,6 +3,7 @@ import React from 'react';
 import { UncontrolledTooltip, Badge, Row, Col, ListGroup, ListGroupItem, Progress, Label } from 'reactstrap';
 import { GET_PROVISION } from '../../../apis/RestConfig';
 import { getRequest } from '../../../apis/RestApi';
+import '../../views.css'
 
 
 class CollapseCell extends React.PureComponent {
@@ -105,7 +106,7 @@ class TextCell extends React.PureComponent {
         const { data, rowIndex, columnKey, ...props } = this.props;
 
         return (
-            <Cell {...props}>
+            <Cell className="visibleOnHover" {...props}>
 
                 {data[rowIndex][columnKey]}
             </Cell>
