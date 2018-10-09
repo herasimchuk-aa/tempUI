@@ -199,6 +199,7 @@ class NodeConfig extends Component {
                 <div><input type="checkbox" id="provisionFrr" defaultChecked={false} /> Frr </div>
                 <div><input type="checkbox" id="provisionIpRoute" defaultChecked={false} /> Ip Route </div>
                 <div><input type="checkbox" id="provisionInterfaces" defaultChecked={false} /> Interfaces </div>
+                <div><input type="checkbox" id="provisionKernel" defaultChecked={false} /> Kernel </div>
               </ div>
             </Col>
           </Row>
@@ -306,7 +307,7 @@ class NodeConfig extends Component {
   onProvisionClick() {
     if (!document.getElementById('provisionGoes').checked && !document.getElementById('provisionLldp').checked &&
       !document.getElementById('provisionEthtool').checked && !document.getElementById('provisionInterfaces').checked
-      && !document.getElementById('provisionFrr').checked) {
+      && !document.getElementById('provisionFrr').checked && !document.getElementById('provisionKernel').checked) {
       alert("Please select an App to provision")
       return
     }
@@ -319,6 +320,7 @@ class NodeConfig extends Component {
         'lldp': document.getElementById('provisionLldp').checked,
         'ethtool': document.getElementById('provisionEthtool').checked,
         'interfaces': document.getElementById('provisionInterfaces').checked,
+        'kernel': document.getElementById('provisionKernel').checked,
         'iproute': document.getElementById('provisionIpRoute').checked,
         'frr': document.getElementById('provisionFrr').checked
       }
