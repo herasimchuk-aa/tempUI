@@ -1,5 +1,5 @@
 import I from 'immutable'
-import { getRequest } from '../apis/RestApi';
+import { getRequest, putRequest, postRequest } from '../apis/RestApi';
 
 export const getEthTool = (url) => (dispatch) => {
     getRequest(url).then(function (json) {
@@ -13,4 +13,51 @@ export function setEthToolData(payload) {
         type: SET_ETHTOOL_DATA,
         payload: payload
     }
+}
+
+export const addEthTool = (url, params) => (dispatch, getState) => {
+    return postRequest(url, params).then(function (json) {
+        if (json.StatusCode == 200) {
+            let storedEthtool = getState().ethToolReducer.getIn(['ethTools'], I.List())
+            storedEthtool = storedEthtool.push(I.fromJS(json.Data))
+            return dispatch(setEthToolData(storedEthtool))
+        }
+        throw new Error(json.Message)
+    })
+}
+
+export const updateEthTool = (url, params) => (dispatch, getState) => {
+    return putRequest(url, params).then(function (json) {
+        if (json.StatusCode == 200) {
+            let EthToolData = json.Data
+            let storedEthtool = getState().ethToolReducer.get('ethTools')
+            storedEthtool = storedEthtool.map(function (ethTool) {
+                if (ethTool.get('Id') === EthToolData.Id) {
+                    ethTool = I.fromJS(EthToolData)
+                }
+                return ethTool
+            })
+            return dispatch(setEthToolData(I.fromJS(storedEthtool)))
+        }
+        throw new Error(json.Message)
+    })
+}
+
+
+export const deleteEthTools = (url, params) => (dispatch, getState) => {
+    return postRequest(url, params).then(function (json) {
+        if (json.StatusCode == 200) {
+            let store = getState()
+            let storedEthtool = store.ethToolReducer.get('ethTools')
+
+            for (let ethTool of storedEthtool) {
+                if (params.indexOf(ethTool.get('Id')) > -1) {
+                    storedEthtool = storedEthtool.deleteIn([storedEthtool.indexOf(ethTool)])
+                    break
+                }
+            }
+            return dispatch(setEthToolData(storedEthtool))
+        }
+        throw new Error(json.Message)
+    })
 }

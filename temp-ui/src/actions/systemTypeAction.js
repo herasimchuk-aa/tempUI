@@ -42,3 +42,22 @@ export const updateType = (url, params) => (dispatch, getState) => {
         throw new Error(json.Message)
     })
 }
+
+export const deleteType = (url, params) => (dispatch, getState) => {
+    return postRequest(url, params).then(function (json) {
+        if (json.StatusCode == 200) {
+            let store = getState()
+            let storedTypes = store.systemTypeReducer.get('types')
+            let failure = json.Data.Failure ? json.Data.Failure : []
+
+            for (let type of storedTypes) {
+                if (params.indexOf(type.get('Id')) > -1 && failure.indexOf(type.get('Id')) < 0) {
+                    storedTypes = storedTypes.deleteIn([storedTypes.indexOf(type)])
+                    break
+                }
+            }
+            return dispatch(setSystemTypeData(storedTypes))
+        }
+        throw new Error(json.Message)
+    })
+}

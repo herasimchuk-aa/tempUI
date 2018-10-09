@@ -9,7 +9,7 @@ import { getRequest, postRequest, putRequest } from '../../../apis/RestApi';
 import { FETCH_ALL_IPROUTE, ADD_IPROUTE, UPDATE_IPROUTE, DELETE_IPROUTE } from '../../../apis/RestConfig';
 import { NotificationManager } from 'react-notifications';
 import { connect } from 'react-redux';
-import { getIpRoute, addIpRoutes, updateIpRoute } from '../../../actions/ipRouteAction';
+import { getIpRoute, addIpRoutes, updateIpRoute, deleteIpRoute } from '../../../actions/ipRouteAction';
 
 class IpRoute extends Component {
 
@@ -72,14 +72,18 @@ class IpRoute extends Component {
         this.state.selectedRowIndexes.map(function (item) {
             deleteIds.push(self.state.data[item].Id)
         })
-        postRequest(DELETE_IPROUTE, deleteIds).then(function (data) {
-            let failedSites = []
-            failedSites = getNameById(data.Data.Failure, self.state.data);
-            failedSites.map((item) => {
-                NotificationManager.error(item + ' is in use', "Site")
+
+        this.props.deleteIpRoute(DELETE_IPROUTE, deleteIds).then(function (data) {
+            let failedIpRoute = []
+            failedIpRoute = getNameById(data.Data.Failure, self.state.data);
+            failedIpRoute.map((item) => {
+                NotificationManager.error(item + ' is in use', "IpRoute")
             })
+            NotificationManager.error('IpRoute deleted successfully', "IpRoute")
             self.setState({ showDelete: false, selectedRowIndexes: [] });
-            self.props.getIpRoute(FETCH_ALL_IPROUTE);
+            self.props.getFrr(FETCH_ALL_IPROUTE);
+        }).catch(function (e) {
+            console.log(e)
         })
     }
 
@@ -96,6 +100,7 @@ class IpRoute extends Component {
                         <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Name cannot be empty</Alert>
                         Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='ipRouteName' /><br />
                         Location <Input className="marTop10" id='ipRouteLoc' /><br />
+                        Version <Input className="marTop10" id='ipRouteVersion' /><br />
                         Description <Input className="marTop10" id='ipRouteDesc' /><br />
                     </ModalBody>
                     <ModalFooter>
@@ -122,6 +127,7 @@ class IpRoute extends Component {
         let params = {
             'Name': validIpRoute,
             'Location': document.getElementById('ipRouteLoc').value,
+            'Version': document.getElementById('ipRouteVersion').value,
             'Description': document.getElementById('ipRouteDesc').value
         }
         let itPromise = self.props.addIpRoutes(ADD_IPROUTE, params)
@@ -156,6 +162,7 @@ class IpRoute extends Component {
                     <ModalBody>
                         Name<font color="red"><sup>*</sup></font> <Input autoFocus disabled className="marTop10" value={edittedData.Name} /><br />
                         Location <Input className="marTop10" id='ippLocEdit' defaultValue={edittedData.Location} /><br />
+                        Version <Input className="marTop10" id='ippVersionEdit' defaultValue={edittedData.Version} /><br />
                         Description <Input className="marTop10" id='ipDescEdit' defaultValue={edittedData.Description} /><br />
                     </ModalBody>
                     <ModalFooter>
@@ -173,6 +180,7 @@ class IpRoute extends Component {
         let params = {
             'Id': ipRouteId,
             'Location': document.getElementById('ippLocEdit').value ? document.getElementById('ippLocEdit').value : "-",
+            'Version': document.getElementById('ippVersionEdit').value ? document.getElementById('ippVersionEdit').value : "-",
             'Description': document.getElementById('ipDescEdit').value ? document.getElementById('ipDescEdit').value : "-"
         }
 
@@ -225,7 +233,8 @@ function mapDispatchToProps(dispatch) {
     return {
         getIpRoute: (url) => dispatch(getIpRoute(url)),
         addIpRoutes: (url, params) => dispatch(addIpRoutes(url, params)),
-        updateIpRoute: (url, params) => dispatch(updateIpRoute(url, params))
+        updateIpRoute: (url, params) => dispatch(updateIpRoute(url, params)),
+        deleteIpRoute: (url, params) => dispatch(deleteIpRoute(url, params))
     }
 }
 

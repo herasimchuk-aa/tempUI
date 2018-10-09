@@ -1,5 +1,5 @@
 import I from 'immutable'
-import { getRequest } from '../apis/RestApi';
+import { getRequest, postRequest, putRequest } from '../apis/RestApi';
 
 export const getGoes = (url) => (dispatch) => {
     getRequest(url).then(function (json) {
@@ -13,4 +13,52 @@ export function setGoesData(payload) {
         type: SET_GOES_DATA,
         payload: payload
     }
+}
+
+export const addGoes = (url, params) => (dispatch, getState) => {
+    return postRequest(url, params).then(function (json) {
+        if (json.StatusCode == 200) {
+            let storedGoes = getState().goesReducer.getIn(['goes'], I.List())
+            storedGoes = storedGoes.push(I.fromJS(json.Data))
+            return dispatch(setGoesData(storedGoes))
+        }
+        throw new Error(json.Message)
+    })
+}
+
+export const updateGoes = (url, params) => (dispatch, getState) => {
+    return putRequest(url, params).then(function (json) {
+        if (json.StatusCode == 200) {
+            let goesData = json.Data
+            let storedGoes = getState().goesReducer.get('goes')
+            storedGoes = storedGoes.map(function (goes) {
+                if (goes.get('Id') === goesData.Id) {
+                    goes = I.fromJS(goesData)
+                }
+                return goes
+            })
+            return dispatch(setGoesData(I.fromJS(storedGoes)))
+        }
+        throw new Error(json.Message)
+    })
+}
+
+
+export const deleteGoes = (url, params) => (dispatch, getState) => {
+    return postRequest(url, params).then(function (json) {
+        if (json.StatusCode == 200) {
+            let store = getState()
+            let storedGoes = store.goesReducer.get('goes')
+            let failure = json.Data.Failure ? json.Data.Failure : []
+
+            for (let goes of storedGoes) {
+                if (params.indexOf(goes.get('Id')) > -1 && failure.indexOf(goes.get('Id')) < 0) {
+                    storedGoes = storedGoes.deleteIn([storedGoes.indexOf(goes)])
+                    break
+                }
+            }
+            return dispatch(setGoesData(storedGoes))
+        }
+        throw new Error(json.Message)
+    })
 }

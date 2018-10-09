@@ -9,7 +9,7 @@ import { getRequest, postRequest, putRequest } from '../../../apis/RestApi';
 import { FETCH_ALL_SYSTEM_TYPES, ADD_SYSTEM_TYPE, UPDATE_SYSTEM_TYPE, DELETE_SYSTEM_TYPES } from '../../../apis/RestConfig';
 import { NotificationManager } from 'react-notifications';
 import { connect } from 'react-redux'
-import { fetchTypes, addTypes, updateType } from '../../../actions/systemTypeAction';
+import { fetchTypes, addTypes, updateType, deleteType } from '../../../actions/systemTypeAction';
 
 class Types extends Component {
 
@@ -39,13 +39,6 @@ class Types extends Component {
         }
     }
 
-    // retrieveTypeData() {
-    //     let self = this
-    //     getRequest(FETCH_ALL_SYSTEM_TYPES).then(function (json) {
-    //         self.setState({ data: json.Data, selectedRowIndexes: [] })
-    //     })
-    // }
-
     checkBoxClick = (rowIndex) => {
         let { selectedRowIndexes } = this.state
         let arrayIndex = selectedRowIndexes.indexOf(rowIndex)
@@ -66,7 +59,7 @@ class Types extends Component {
         this.setState({ visible: false })
     }
 
-    renderUpgradeModelDialog() {
+    addTypeModal() {
         if (this.state.displayModel) {
             return (
                 <Modal isOpen={this.state.displayModel} toggle={() => this.click()} size="lg" centered="true" >
@@ -135,23 +128,8 @@ class Types extends Component {
         })
         self.setState({ displayModel: false, visible: false })
 
-        // postRequest(ADD_SYSTEM_TYPE, params).then(function (data) {
-        //     if (data.StatusCode == 200) {
-        //         let renderedData = self.state.data;
-        //         if (!renderedData) {
-        //             renderedData = []
-        //         }
-        //         renderedData.push(data.Data)
-        //         self.setState({ data: renderedData, displayModel: false, visible: false })
-        //     }
-        //     else {
-        //         NotificationManager.error("Something went wrong", "System Type")
-        //         self.setState({ displayModel: false, visible: false })
-
-        //     }
-        // })
-
     }
+
     showDeleteButton() {
         let a = [];
         if (this.state.showDelete == true) {
@@ -168,15 +146,13 @@ class Types extends Component {
         this.state.selectedRowIndexes.map(function (item) {
             deleteIds.push(self.state.data[item].Id)
         })
-        postRequest(DELETE_SYSTEM_TYPES, deleteIds).then(function (data) {
-            let failedTypes = []
-            failedTypes = getNameById(data.Data.Failure, self.state.data);
-            failedTypes.map((item) => {
-                NotificationManager.error(item + ' is in use', "Type")
-            })
-            self.setState({ showDelete: false, selectedRowIndexes: [] });
+
+        this.props.deleteType(DELETE_SYSTEM_TYPES, deleteIds).then(function (data) {
             self.props.fetchTypes(FETCH_ALL_SYSTEM_TYPES);
+        }).catch(function (e) {
+            console.log(e)
         })
+        self.setState({ showDelete: false, selectedRowIndexes: [] });
     }
 
     showEditDialogBox() {
@@ -193,7 +169,7 @@ class Types extends Component {
         this.setState({ displayEditModel: !this.state.displayEditModel })
     }
 
-    renderEditModelDialog() {
+    editTypeModal() {
         if (this.state.displayEditModel) {
             let edittedData = this.state.data[this.state.selectedRowIndexes[0]]
             return (
@@ -256,25 +232,9 @@ class Types extends Component {
             NotificationManager.error("Something went wrong", "Type") // "error!"
         })
 
-        // putRequest(UPDATE_SYSTEM_TYPE, params).then(function (data) {
-        //     console.log(data.Data)
-        //     if (data.StatusCode == 200) {
-        //         let existingData = self.state.data;
-        //         existingData[self.state.selectedRowIndexes[0]] = data.Data
-        //         self.setState({ data: existingData, displayEditModel: false, selectedRowIndexes: [], visible: false })
-        //     }
-        //     else {
-        //         NotificationManager.error("Something went wrong", "System Type")
-        //         self.setState({ displayEditModel: false, selectedRowIndexes: [], visible: false })
-
-        //     }
-        // })
     }
 
-
-
     render() {
-
         return (
             <div>
                 <div className='marginLeft10'>
@@ -284,14 +244,11 @@ class Types extends Component {
                 </div>
                 <Row className="tableTitle">System Types</Row>
                 <SummaryDataTable key={this.counter++} heading={this.state.typeHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
-                {this.renderUpgradeModelDialog()}
-                {this.renderEditModelDialog()}
+                {this.addTypeModal()}
+                {this.editTypeModal()}
             </div>
         );
     }
-
-
-
 }
 
 function mapStateToProps(state) {
@@ -304,7 +261,8 @@ function mapDispatchToProps(dispatch) {
     return {
         fetchTypes: (url) => dispatch(fetchTypes(url)),
         addTypes: (url, params) => dispatch(addTypes(url, params)),
-        updateType: (url, params) => dispatch(updateType(url, params))
+        updateType: (url, params) => dispatch(updateType(url, params)),
+        deleteType: (url, params) => dispatch(deleteType(url, params))
     }
 }
 

@@ -9,7 +9,7 @@ import { getRequest, postRequest, putRequest } from '../../../apis/RestApi'
 import { FETCH_ALL_LLDP, ADD_LLDP, UPDATE_LLDP, DELETE_LLDP } from '../../../apis/RestConfig'
 import { NotificationManager } from 'react-notifications';
 import { connect } from 'react-redux';
-import { getLLDP } from '../../../actions/lldpAction';
+import { getLLDP, addLLDP, updateLLDP, deleteLLDP } from '../../../actions/lldpAction';
 
 class LLDP extends Component {
 
@@ -36,15 +36,6 @@ class LLDP extends Component {
         return {
             data: props.data ? props.data.toJS() : []
         }
-    }
-
-    drawHeader() {
-        return (<Row className="headerRow">
-            <Col sm="1" className="head-name">  </Col>
-            <Col sm="4" className="head-name">Name</Col>
-            <Col sm="4" className="head-name">Description</Col>
-            {/* <Col sm="4" className="head-name">Applicable Type</Col> */}
-        </Row>)
     }
 
     checkBoxClick = (rowIndex) => {
@@ -80,15 +71,20 @@ class LLDP extends Component {
         this.state.selectedRowIndexes.map(function (item) {
             deleteIds.push(self.state.data[item].Id)
         })
-        postRequest(DELETE_LLDP, deleteIds).then(function (data) {
+
+        this.props.deleteLLDP(DELETE_LLDP, deleteIds).then(function (data) {
             let failedLLDP = []
             failedLLDP = getNameById(data.Data.Failure, self.state.data);
             failedLLDP.map((item) => {
-                NotificationManager.error(item + ' is in use', "LLDP")
+                NotificationManager.error(item + ' is in use', "lldp")
             })
-            self.setState({ showDelete: false, selectedRowIndexes: [] });
+            NotificationManager.error('lldp deleted successfully', "lldp")
+
             self.props.getLLDP(FETCH_ALL_LLDP);
+        }).catch(function (e) {
+            console.log(e)
         })
+        self.setState({ showDelete: false, selectedRowIndexes: [] });
     }
 
 
@@ -96,7 +92,7 @@ class LLDP extends Component {
         this.setState({ visible: false });
     }
 
-    renderUpgradeModelDialog() {
+    addLLDPModal() {
         if (this.state.displayModel) {
             return (
                 <Modal isOpen={this.state.displayModel} toggle={() => this.cancel()} size="sm" centered="true" >
@@ -105,6 +101,7 @@ class LLDP extends Component {
                         <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Name cannot be empty</Alert>
                         Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='lldpName' /><br />
                         Location <Input className="marTop10" id='lldpLoc' /><br />
+                        Version <Input className="marTop10" id='lldpVersion' /><br />
                         Description <Input className="marTop10" id='lldpDesc' /><br />
                     </ModalBody>
                     <ModalFooter>
@@ -131,23 +128,20 @@ class LLDP extends Component {
         let params = {
             'Name': validlldp,
             'Location': document.getElementById('lldpLoc').value,
+            'Version': document.getElementById('lldpVersion').value,
             'Description': document.getElementById('lldpDesc').value
         }
-        postRequest(ADD_LLDP, params).then(function (data) {
-            if (data.StatusCode == 200) {
-                let renderedData = self.state.data;
-                if (!renderedData) {
-                    renderedData = []
-                }
-                renderedData.push(data.Data)
-                self.setState({ data: renderedData, displayModel: false, visible: false })
-            }
-            else {
-                NotificationManager.error("Something went wrong", "LLDP")
-                self.setState({ displayModel: false, visible: false })
 
-            }
+        let lldpPromise = self.props.addLLDP(ADD_LLDP, params)
+
+        lldpPromise.then(function (value) {
+            NotificationManager.success("lldp added successfully", "lldp") // "Success!"
+        }).catch(function (e) {
+            console.warn(e)
+            NotificationManager.error("Something went wrong", "lldp") // "error!"
         })
+        self.setState({ displayModel: false, visible: false })
+
     }
 
     showEditDialogBox() {
@@ -156,15 +150,13 @@ class LLDP extends Component {
             return
         }
         this.setState({ displayEditModel: true })
-        console.log(this.state.data[this.state.selectedRowIndexes[0]])
-
     }
 
     toggleEditModal() {
         this.setState({ displayEditModel: !this.state.displayEditModel })
     }
 
-    renderEditModelDialog() {
+    editLLDPModal() {
         if (this.state.displayEditModel) {
             let edittedData = this.state.data[this.state.selectedRowIndexes[0]]
             return (
@@ -173,10 +165,11 @@ class LLDP extends Component {
                     <ModalBody>
                         Name<font color="red"><sup>*</sup></font> <Input autoFocus disabled className="marTop10" id='lldpNameEdit' value={edittedData.Name} /><br />
                         Location <Input className="marTop10" id='lldpLocEdit' defaultValue={edittedData.Location} /><br />
+                        Version <Input className="marTop10" id='lldpVersionEdit' defaultValue={edittedData.Version} /><br />
                         Description <Input className="marTop10" id='lldpDescEdit' defaultValue={edittedData.Description} /><br />
                     </ModalBody>
                     <ModalFooter>
-                        <Button className="custBtn" outline color="primary" onClick={() => (this.editLldp())}>Save</Button>{'  '}
+                        <Button className="custBtn" outline color="primary" onClick={() => (this.editLldp(edittedData.Id))}>Save</Button>{'  '}
                         <Button className="custBtn" outline color="primary" onClick={() => (this.toggleEditModal())}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
@@ -184,27 +177,24 @@ class LLDP extends Component {
         }
     }
 
-    editLldp = () => {
+    editLldp = (lldpId) => {
         let self = this
-        let edittedData = this.state.data[this.state.selectedRowIndexes[0]]
         let params = {
-            'Id': edittedData.Id,
+            'Id': lldpId,
             'Location': document.getElementById('lldpLocEdit').value ? document.getElementById('lldpLocEdit').value : "-",
+            'Version': document.getElementById('lldpVersionEdit').value ? document.getElementById('lldpVersionEdit').value : "-",
             'Description': document.getElementById('lldpDescEdit').value ? document.getElementById('lldpDescEdit').value : "-"
         }
-        putRequest(UPDATE_LLDP, params).then(function (data) {
-            console.log(data.Data)
-            if (data.StatusCode == 200) {
-                let existingData = self.state.data;
-                existingData[self.state.selectedRowIndexes[0]] = data.Data
-                self.setState({ data: existingData, displayEditModel: false, selectedRowIndexes: [] })
-            }
-            else {
-                NotificationManager.error("Something went wrong", "LLDP")
-                self.setState({ displayEditModel: false, selectedRowIndexes: [] })
 
-            }
+        let lldpPromise = self.props.updateLLDP(UPDATE_LLDP, params)
+
+        lldpPromise.then(function (value) {
+            NotificationManager.success("lldp updated successfully", "lldp") // "Success!"
+        }).catch(function (e) {
+            console.warn(e)
+            NotificationManager.error("Something went wrong", "lldp") // "error!"
         })
+        self.setState({ displayEditModel: false, selectedRowIndexes: [] })
     }
 
 
@@ -225,8 +215,8 @@ class LLDP extends Component {
             <div style={{ height: '200px', overflowY: 'scroll', overflowX: 'hidden' }}>
                 <SummaryDataTable key={this.counter++} heading={this.state.lldpHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
             </div>
-            {this.renderUpgradeModelDialog()}
-            {this.renderEditModelDialog()}
+            {this.addLLDPModal()}
+            {this.editLLDPModal()}
         </div>
         );
     }
@@ -240,7 +230,10 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        getLLDP: (url) => dispatch(getLLDP(url))
+        getLLDP: (url) => dispatch(getLLDP(url)),
+        addLLDP: (url, params) => dispatch(addLLDP(url, params)),
+        updateLLDP: (url, params) => dispatch(updateLLDP(url, params)),
+        deleteLLDP: (url, params) => dispatch(deleteLLDP(url, params))
     }
 }
 

@@ -214,17 +214,22 @@ export let ipRouteHead = [
     {
         id: 'Name',
         displayName: 'Name',
-        colSize: 4
+        colSize: 3
     },
     {
         id: 'Location',
         displayName: 'Location',
-        colSize: 4
+        colSize: 3
     },
     {
         id: 'Description',
         displayName: 'Description',
-        colSize: 4
+        colSize: 3
+    },
+    {
+        id: 'Version',
+        displayName: 'Version',
+        colSize: 3
     }
 ];
 
@@ -232,17 +237,22 @@ export let frrHead = [
     {
         id: 'Name',
         displayName: 'Name',
-        colSize: 4
+        colSize: 3
     },
     {
         id: 'Location',
         displayName: 'Location',
-        colSize: 4
+        colSize: 3
     },
     {
         id: 'Description',
         displayName: 'Description',
-        colSize: 4
+        colSize: 3
+    },
+    {
+        id: 'Version',
+        displayName: 'Version',
+        colSize: 3
     }
 ];
 
@@ -250,17 +260,22 @@ export let goesHead = [
     {
         id: 'Name',
         displayName: 'Name',
-        colSize: 4
+        colSize: 3
     },
     {
         id: 'Location',
         displayName: 'Location',
-        colSize: 4
+        colSize: 3
     },
     {
         id: 'Description',
         displayName: 'Description',
-        colSize: 4
+        colSize: 3
+    },
+    {
+        id: 'Version',
+        displayName: 'Version',
+        colSize: 3
     }
 ];
 
@@ -268,17 +283,22 @@ export let lldpHead = [
     {
         id: 'Name',
         displayName: 'Name',
-        colSize: 4
+        colSize: 3
     },
     {
         id: 'Location',
         displayName: 'Location',
-        colSize: 4
+        colSize: 3
     },
     {
         id: 'Description',
         displayName: 'Description',
-        colSize: 4
+        colSize: 3
+    },
+    {
+        id: 'Version',
+        displayName: 'Version',
+        colSize: 3
     }
 ];
 
@@ -286,17 +306,22 @@ export let ethHead = [
     {
         id: 'Name',
         displayName: 'Name',
-        colSize: 4
+        colSize: 3
     },
     {
         id: 'Location',
         displayName: 'Location',
-        colSize: 4
+        colSize: 3
     },
     {
         id: 'Description',
         displayName: 'Description',
-        colSize: 4
+        colSize: 3
+    },
+    {
+        id: 'Version',
+        displayName: 'Version',
+        colSize: 3
     }
 ];
 

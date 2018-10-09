@@ -9,7 +9,7 @@ import { getRequest, postRequest, putRequest } from '../../../apis/RestApi'
 import { FETCH_ALL_KERNELS, ADD_KERNEL, UPDATE_KERNEL, DELETE_KERNELS } from '../../../apis/RestConfig'
 import { NotificationManager } from 'react-notifications';
 import { connect } from 'react-redux'
-import { fetchKernels, addKernels, updateKernel } from '../../../actions/kernelAction';
+import { fetchKernels, addKernels, updateKernel, deleteKernel } from '../../../actions/kernelAction';
 
 class LinuxKernel extends Component {
 
@@ -38,15 +38,6 @@ class LinuxKernel extends Component {
         }
     }
 
-    drawHeader() {
-        return (<Row className="headerRow">
-            <Col sm="1" className="head-name">  </Col>
-            <Col sm="4" className="head-name">Name</Col>
-            <Col sm="4" className="head-name">Description</Col>
-            {/* <Col sm="4" className="head-name">Applicable Type</Col> */}
-        </Row>)
-    }
-
     checkBoxClick = (rowIndex) => {
         let { selectedRowIndexes } = this.state
         let arrayIndex = selectedRowIndexes.indexOf(rowIndex)
@@ -62,7 +53,6 @@ class LinuxKernel extends Component {
             this.setState({ showDelete: false });
         }
     }
-
 
     showDeleteButton() {
         let a = [];
@@ -80,51 +70,20 @@ class LinuxKernel extends Component {
         this.state.selectedRowIndexes.map(function (item) {
             deleteIds.push(self.state.data[item].Id)
         })
-        postRequest(DELETE_KERNELS, deleteIds).then(function (data) {
-            let failedKernels = []
-            failedKernels = getNameById(data.Data.Failure, self.state.data);
-            failedKernels.map((item) => {
-                NotificationManager.error(item + ' is in use', "Kernel")
-            })
-            self.setState({ showDelete: false, selectedRowIndexes: [] });
-            self.props.fetchKernels(FETCH_ALL_KERNELS);
+
+        this.props.deleteKernel(DELETE_KERNELS, deleteIds).then(function (data) {
+            self.props.getISOs(FETCH_ALL_KERNELS);
+        }).catch(function (e) {
+            console.log(e)
         })
-    }
-
-
-    drawtable() {
-        let { data } = this.state
-        let rows = []
-        let header = this.drawHeader()
-        rows.push(header)
-        if (data && data.length) {
-            let kernel = data;
-            kernel.map((linuxKernel, i) => {
-                let row1 = 'headerRow2'
-
-                if (i % 2 === 0) {
-                    row1 = 'headerRow1'
-                }
-                if (i == kernel.length - 1) {
-                    row1 = row1 + ' headerRow3 '
-                }
-                let row = (<Row className={row1}>
-                    <Col sm="1" className="pad"><Input className="marLeft40" type="checkbox" onChange={() => (this.checkBoxClick(i))}></Input></Col>
-                    <Col sm="4" className="pad">{linuxKernel.label}</Col>
-                    <Col sm="4" className="pad">{linuxKernel.description}</Col>
-                    {/* <Col sm="4" className="pad">{linuxKernel.value}</Col> */}
-                </Row>)
-                rows.push(row)
-            })
-        }
-        return rows
+        self.setState({ showDelete: false, selectedRowIndexes: [] });
     }
 
     onDismiss() {
         this.setState({ visible: false });
     }
 
-    renderUpgradeModelDialog() {
+    addKernelModal() {
         if (this.state.displayModel) {
             return (
                 <Modal isOpen={this.state.displayModel} toggle={() => this.cancel()} size="sm" centered="true" >
@@ -186,7 +145,7 @@ class LinuxKernel extends Component {
         this.setState({ displayEditModel: !this.state.displayEditModel })
     }
 
-    renderEditModelDialog() {
+    editKernelModal() {
         if (this.state.displayEditModel) {
             let edittedData = this.state.data[this.state.selectedRowIndexes[0]]
             return (
@@ -245,8 +204,8 @@ class LinuxKernel extends Component {
             <div style={{ height: '250px', overflowY: 'scroll', marginBottom: '20px' }}>
                 <SummaryDataTable key={this.counter++} heading={this.state.kernelHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
             </div>
-            {this.renderUpgradeModelDialog()}
-            {this.renderEditModelDialog()}
+            {this.addKernelModal()}
+            {this.editKernelModal()}
         </div>
         );
     }
@@ -262,7 +221,8 @@ function mapDispatchToProps(dispatch) {
     return {
         fetchKernels: (url) => dispatch(fetchKernels(url)),
         addKernels: (url, params) => dispatch(addKernels(url, params)),
-        updateKernel: (url, params) => dispatch(updateKernel(url, params))
+        updateKernel: (url, params) => dispatch(updateKernel(url, params)),
+        deleteKernel: (url, params) => dispatch(deleteKernel(url, params))
     }
 }
 

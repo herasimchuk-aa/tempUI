@@ -9,7 +9,7 @@ import { getRequest, postRequest, putRequest } from '../../../apis/RestApi';
 import { FETCH_ALL_SITES, ADD_SITE, UPDATE_SITE, DELETE_SITES } from '../../../apis/RestConfig';
 import { NotificationManager } from 'react-notifications';
 import { connect } from 'react-redux';
-import { getSites, addSites, updateSite } from '../../../actions/siteAction';
+import { getSites, addSites, updateSite, deleteSite } from '../../../actions/siteAction';
 
 class Site extends Component {
 
@@ -72,22 +72,20 @@ class Site extends Component {
         this.state.selectedRowIndexes.map(function (item) {
             deleteIds.push(self.state.data[item].Id)
         })
-        postRequest(DELETE_SITES, deleteIds).then(function (data) {
-            let failedSites = []
-            failedSites = getNameById(data.Data.Failure, self.state.data);
-            failedSites.map((item) => {
-                NotificationManager.error(item + ' is in use', "Site")
-            })
-            self.setState({ showDelete: false, selectedRowIndexes: [] });
+
+        this.props.deleteSite(DELETE_SITES, deleteIds).then(function (data) {
             self.props.getSites(FETCH_ALL_SITES);
+        }).catch(function (e) {
+            console.log(e)
         })
+        self.setState({ showDelete: false, selectedRowIndexes: [] });
     }
 
     onDismiss() {
         this.setState({ visible: false });
     }
 
-    renderUpgradeModelDialog() {
+    addSiteModal() {
         if (this.state.displayModel) {
             return (
                 <Modal isOpen={this.state.displayModel} toggle={() => this.cancel()} size="sm" centered="true" >
@@ -144,7 +142,7 @@ class Site extends Component {
         this.setState({ displayEditModel: !this.state.displayEditModel })
     }
 
-    renderEditModelDialog() {
+    editSiteModal() {
         if (this.state.displayEditModel) {
             let edittedData = this.state.data[this.state.selectedRowIndexes[0]]
             return (
@@ -195,8 +193,8 @@ class Site extends Component {
                 </div>
                 <Row className="tableTitle">Site</Row>
                 <SummaryDataTable key={this.counter++} heading={this.state.siteHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
-                {this.renderUpgradeModelDialog()}
-                {this.renderEditModelDialog()}
+                {this.addSiteModal()}
+                {this.editSiteModal()}
             </div>
         );
     }
@@ -215,7 +213,8 @@ function mapDispatchToProps(dispatch) {
     return {
         getSites: (url) => dispatch(getSites(url)),
         addSites: (url, params) => dispatch(addSites(url, params)),
-        updateSite: (url, params) => dispatch(updateSite(url, params))
+        updateSite: (url, params) => dispatch(updateSite(url, params)),
+        deleteSite: (url, params) => dispatch(deleteSite(url, params))
     }
 }
 

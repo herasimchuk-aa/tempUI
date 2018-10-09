@@ -43,3 +43,22 @@ export const updateISO = (url, params) => (dispatch, getState) => {
         throw new Error(json.Message)
     })
 }
+
+export const deleteISO = (url, params) => (dispatch, getState) => {
+    return postRequest(url, params).then(function (json) {
+        if (json.StatusCode == 200) {
+            let store = getState()
+            let storedISOs = store.baseISOReducer.get('isos')
+            let failure = json.Data.Failure ? json.Data.Failure : []
+
+            for (let iso of storedISOs) {
+                if (params.indexOf(iso.get('Id')) > -1 && failure.indexOf(iso.get('Id')) < 0) {
+                    storedISOs = storedISOs.deleteIn([storedISOs.indexOf(iso)])
+                    break
+                }
+            }
+            return dispatch(setISOs(storedISOs))
+        }
+        throw new Error(json.Message)
+    })
+}

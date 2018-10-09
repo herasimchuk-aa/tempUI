@@ -43,5 +43,24 @@ export const updateSite = (url, params) => (dispatch, getState) => {
     })
 }
 
+export const deleteSite = (url, params) => (dispatch, getState) => {
+    return postRequest(url, params).then(function (json) {
+        if (json.StatusCode == 200) {
+            let store = getState()
+            let storedSites = store.siteReducer.get('sites')
+            let failure = json.Data.Failure ? json.Data.Failure : []
+
+            for (let site of storedSites) {
+                if (params.indexOf(site.get('Id')) > -1 && failure.indexOf(site.get('Id')) < 0) {
+                    storedSites = storedSites.deleteIn([storedSites.indexOf(site)])
+                    break
+                }
+            }
+            return dispatch(setSiteData(storedSites))
+        }
+        throw new Error(json.Message)
+    })
+}
+
 
 

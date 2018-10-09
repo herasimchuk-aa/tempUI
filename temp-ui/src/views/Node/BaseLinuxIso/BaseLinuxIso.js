@@ -10,7 +10,7 @@ import { FETCH_ALL_ISOS, ADD_ISO, UPDATE_ISO, DELETE_ISOS } from '../../../apis/
 import { NotificationManager } from 'react-notifications';
 import { subscribeToIsoSocket } from '../../../apis/Socket';
 import { connect } from 'react-redux';
-import { getISOs, addISOs, updateISO } from '../../../actions/baseIsoActions';
+import { getISOs, addISOs, updateISO,deleteISO } from '../../../actions/baseIsoActions';
 
 class BaseLinuxIso extends Component {
 
@@ -38,13 +38,6 @@ class BaseLinuxIso extends Component {
             data: props.data ? props.data.toJS() : []
         }
     }
-
-    // retrieveIsoData = () => {
-    //     let self = this
-    //     getRequest(FETCH_ALL_ISOS).then(function (json) {
-    //         self.setState({ data: json.Data, selectedRowIndexes: [] })
-    //     })
-    // }
 
     checkBoxClick = (rowIndex) => {
         let { selectedRowIndexes } = this.state
@@ -80,16 +73,13 @@ class BaseLinuxIso extends Component {
         this.state.selectedRowIndexes.map(function (item) {
             deleteIds.push(self.state.data[item].Id)
         })
-        console.log(deleteIds)
-        postRequest(DELETE_ISOS, deleteIds).then(function (data) {
-            let failedISOs = []
-            failedISOs = getNameById(data.Data.Failure, self.state.data);
-            failedISOs.map((item) => {
-                NotificationManager.error(item + ' is in use', "Base ISO")
-            })
-            self.setState({ showDelete: false, selectedRowIndexes: [] });
+
+        this.props.deleteISO(DELETE_ISOS, deleteIds).then(function (data) {
             self.props.getISOs(FETCH_ALL_ISOS);
+        }).catch(function (e) {
+            console.log(e)
         })
+        self.setState({ showDelete: false, selectedRowIndexes: [] });
     }
 
     onDismiss() {
@@ -142,30 +132,7 @@ class BaseLinuxIso extends Component {
             NotificationManager.error("Something went wrong", "ISO") // "error!"
         })
         self.setState({ displayModel: false, visible: false })
-        // postRequest(ADD_ISO, params).then(function (data) {
-        //     if (data.StatusCode == 200) {
-        //         let renderedData = self.state.data;
-        //         if (!renderedData) {
-        //             renderedData = []
-        //         }
-        //         renderedData.push(data.Data)
-        //         self.setState({ data: renderedData, displayModel: false, visible: false })
-        //     }
-        //     else {
-        //         NotificationManager.error("Something went wrong", "Base ISO")
-        //         self.setState({ displayModel: false, visible: false })
 
-        //     }
-        // })
-    }
-
-    callback(instance, data) {
-        let a = instance.state.data
-        if (!a) {
-            a = []
-        }
-        a.push(data)
-        instance.setState({ data: a, displayModel: !instance.state.displayModel, visible: false })
     }
 
     showEditDialogBox() {
@@ -259,7 +226,8 @@ function mapDispatchToProps(dispatch) {
     return {
         getISOs: (url) => dispatch(getISOs(url)),
         addISOs: (url, params) => dispatch(addISOs(url, params)),
-        updateISO: (url, params) => dispatch(updateISO(url, params))
+        updateISO: (url, params) => dispatch(updateISO(url, params)),
+        deleteISO: (url, params) => dispatch(deleteISO(url, params))
     }
 }
 

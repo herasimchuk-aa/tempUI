@@ -9,7 +9,7 @@ import { getRequest, postRequest, putRequest } from '../../../apis/RestApi'
 import { FETCH_ALL_ETHTOOL, ADD_ETHTOOL, UPDATE_ETHTOOL, DELETE_ETHTOOL } from '../../../apis/RestConfig'
 import { NotificationManager } from 'react-notifications';
 import { connect } from 'react-redux';
-import { getEthTool } from '../../../actions/ethToolAction';
+import { getEthTool, addEthTool, updateEthTool, deleteEthTools } from '../../../actions/ethToolAction';
 
 class EthTool extends Component {
 
@@ -36,15 +36,6 @@ class EthTool extends Component {
         return {
             data: props.data ? props.data.toJS() : []
         }
-    }
-
-    drawHeader() {
-        return (<Row className="headerRow">
-            <Col sm="1" className="head-name">  </Col>
-            <Col sm="4" className="head-name">Name</Col>
-            <Col sm="4" className="head-name">Description</Col>
-            {/* <Col sm="4" className="head-name">Applicable Type</Col> */}
-        </Row>)
     }
 
     checkBoxClick = (rowIndex) => {
@@ -80,51 +71,28 @@ class EthTool extends Component {
         this.state.selectedRowIndexes.map(function (item) {
             deleteIds.push(self.state.data[item].Id)
         })
-        postRequest(DELETE_ETHTOOL, deleteIds).then(function (data) {
-            let failedEth = []
-            failedEth = getNameById(data.Data.Failure, self.state.data);
-            failedEth.map((item) => {
-                NotificationManager.error(item + ' is in use', "ETHTOOL")
+
+        this.props.deleteEthTools(DELETE_ETHTOOL, deleteIds).then(function (data) {
+            let failedFrrs = []
+            failedFrrs = getNameById(data.Data.Failure, self.state.data);
+            failedFrrs.map((item) => {
+                NotificationManager.error(item + ' is in use', "EthTool")
             })
-            self.setState({ showDelete: false, selectedRowIndexes: [] });
+            NotificationManager.error('Frr deleted successfully', "Frr")
+
             self.props.getEthTool(FETCH_ALL_ETHTOOL);
+        }).catch(function (e) {
+            console.log(e)
         })
+        self.setState({ showDelete: false, selectedRowIndexes: [] });
     }
 
-
-    // drawtable() {
-    //     let { data } = this.state
-    //     let rows = []
-    //     let header = this.drawHeader()
-    //     rows.push(header)
-    //     if (data && data.length) {
-    //         let kernel = data;
-    //         kernel.map((linuxKernel, i) => {
-    //             let row1 = 'headerRow2'
-
-    //             if (i % 2 === 0) {
-    //                 row1 = 'headerRow1'
-    //             }
-    //             if (i == kernel.length - 1) {
-    //                 row1 = row1 + ' headerRow3 '
-    //             }
-    //             let row = (<Row className={row1}>
-    //                 <Col sm="1" className="pad"><Input className="marLeft40" type="checkbox" onChange={() => (this.checkBoxClick(i))}></Input></Col>
-    //                 <Col sm="4" className="pad">{linuxKernel.label}</Col>
-    //                 <Col sm="4" className="pad">{linuxKernel.description}</Col>
-    //                 {/* <Col sm="4" className="pad">{linuxKernel.value}</Col> */}
-    //             </Row>)
-    //             rows.push(row)
-    //         })
-    //     }
-    //     return rows
-    // }
 
     onDismiss() {
         this.setState({ visible: false });
     }
 
-    renderUpgradeModelDialog() {
+    addEthToolModal() {
         if (this.state.displayModel) {
             return (
                 <Modal isOpen={this.state.displayModel} toggle={() => this.cancel()} size="sm" centered="true" >
@@ -133,6 +101,7 @@ class EthTool extends Component {
                         <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Name cannot be empty</Alert>
                         Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='ethName' /><br />
                         Location <Input className="marTop10" id='ethLoc' /><br />
+                        Version <Input className="marTop10" id='ethVersion' /><br />
                         Description <Input className="marTop10" id='ethDesc' /><br />
                     </ModalBody>
                     <ModalFooter>
@@ -159,23 +128,18 @@ class EthTool extends Component {
         let params = {
             'Name': validEthTool,
             'Location': document.getElementById('ethLoc').value,
+            'Version': document.getElementById('ethVersion').value,
             'Description': document.getElementById('ethDesc').value
         }
-        postRequest(ADD_ETHTOOL, params).then(function (data) {
-            if (data.StatusCode == 200) {
-                let renderedData = self.state.data;
-                if (!renderedData) {
-                    renderedData = []
-                }
-                renderedData.push(data.Data)
-                self.setState({ data: renderedData, displayModel: false, visible: false })
-            }
-            else {
-                NotificationManager.error("Something went wrong", "EthTool")
-                self.setState({ displayModel: false, visible: false })
+        let ethPromise = self.props.addEthTool(ADD_ETHTOOL, params)
 
-            }
+        ethPromise.then(function (value) {
+            NotificationManager.success("EthTool added successfully", "EthTool") // "Success!"
+        }).catch(function (e) {
+            console.warn(e)
+            NotificationManager.error("Something went wrong", "EthTool") // "error!"
         })
+        self.setState({ displayModel: false, visible: false })
     }
 
     showEditDialogBox() {
@@ -192,7 +156,7 @@ class EthTool extends Component {
         this.setState({ displayEditModel: !this.state.displayEditModel })
     }
 
-    renderEditModelDialog() {
+    editEthToolModal() {
         if (this.state.displayEditModel) {
             let edittedData = this.state.data[this.state.selectedRowIndexes[0]]
             return (
@@ -201,10 +165,11 @@ class EthTool extends Component {
                     <ModalBody>
                         Name<font color="red"><sup>*</sup></font> <Input autoFocus disabled className="marTop10" id='ethNameEdit' value={edittedData.Name} /><br />
                         Location <Input className="marTop10" id='ethLocEdit' defaultValue={edittedData.Location} /><br />
+                        Version <Input className="marTop10" id='ethVersionEdit' defaultValue={edittedData.Version} /><br />
                         Description <Input className="marTop10" id='ethDescEdit' defaultValue={edittedData.Description} /><br />
                     </ModalBody>
                     <ModalFooter>
-                        <Button className="custBtn" outline color="primary" onClick={() => (this.editEth())}>Save</Button>{'  '}
+                        <Button className="custBtn" outline color="primary" onClick={() => (this.editEth(edittedData.Id))}>Save</Button>{'  '}
                         <Button className="custBtn" outline color="primary" onClick={() => (this.toggleEditModal())}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
@@ -212,27 +177,25 @@ class EthTool extends Component {
         }
     }
 
-    editEth = () => {
+    editEth = (ethId) => {
         let self = this
-        let edittedData = this.state.data[this.state.selectedRowIndexes[0]]
         let params = {
-            'Id': edittedData.Id,
+            'Id': ethId,
             'Location': document.getElementById('ethLocEdit').value ? document.getElementById('ethLocEdit').value : "-",
+            'Version': document.getElementById('ethVersionEdit').value ? document.getElementById('ethVersionEdit').value : "-",
             'Description': document.getElementById('ethDescEdit').value ? document.getElementById('ethDescEdit').value : "-"
         }
-        putRequest(UPDATE_ETHTOOL, params).then(function (data) {
-            console.log(data.Data)
-            if (data.StatusCode == 200) {
-                let existingData = self.state.data;
-                existingData[self.state.selectedRowIndexes[0]] = data.Data
-                self.setState({ data: existingData, displayEditModel: false, selectedRowIndexes: [] })
-            }
-            else {
-                NotificationManager.error("Something went wrong", "Eth tool")
-                self.setState({ displayEditModel: false, selectedRowIndexes: [] })
 
-            }
+        let ethPromise = self.props.updateEthTool(UPDATE_ETHTOOL, params)
+
+        ethPromise.then(function (value) {
+            NotificationManager.success("EthTool updated successfully", "EthTool") // "Success!"
+
+        }).catch(function (e) {
+            console.warn(e)
+            NotificationManager.error("Something went wrong", "EthTool") // "error!"
         })
+        self.setState({ displayEditModel: false, selectedRowIndexes: [] })
     }
 
 
@@ -253,8 +216,8 @@ class EthTool extends Component {
             <div style={{ height: '200px', overflowY: 'scroll', overflowX: 'hidden' }}>
                 <SummaryDataTable key={this.counter++} heading={this.state.ethHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
             </div>
-            {this.renderUpgradeModelDialog()}
-            {this.renderEditModelDialog()}
+            {this.addEthToolModal()}
+            {this.editEthToolModal()}
         </div>
         );
     }
@@ -271,7 +234,10 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        getEthTool: (url) => dispatch(getEthTool(url))
+        getEthTool: (url) => dispatch(getEthTool(url)),
+        addEthTool: (url, params) => dispatch(addEthTool(url, params)),
+        updateEthTool: (url, params) => dispatch(updateEthTool(url, params)),
+        deleteEthTools: (url, params) => dispatch(deleteEthTools(url, params))
     }
 }
 

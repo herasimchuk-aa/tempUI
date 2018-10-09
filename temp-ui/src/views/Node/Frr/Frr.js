@@ -9,7 +9,7 @@ import { FETCH_ALL_FRR, ADD_FRR, UPDATE_FRR, DELETE_FRR } from '../../../apis/Re
 import { postRequest } from '../../../apis/RestApi';
 import { NotificationManager } from 'react-notifications';
 import { connect } from 'react-redux';
-import { getFrr, addFrr, updateFrr } from '../../../actions/frrAction';
+import { getFrr, addFrr, updateFrr, deleteFrrs } from '../../../actions/frrAction';
 
 class Frr extends Component {
 
@@ -72,22 +72,28 @@ class Frr extends Component {
         this.state.selectedRowIndexes.map(function (item) {
             deleteIds.push(self.state.data[item].Id)
         })
-        postRequest(DELETE_FRR, deleteIds).then(function (data) {
-            let failedSites = []
-            failedSites = getNameById(data.Data.Failure, self.state.data);
-            failedSites.map((item) => {
-                NotificationManager.error(item + ' is in use', "Site")
+
+        this.props.deleteFrrs(DELETE_FRR, deleteIds).then(function (data) {
+            let failedFrrs = []
+            failedFrrs = getNameById(data.Data.Failure, self.state.data);
+            failedFrrs.map((item) => {
+                NotificationManager.error(item + ' is in use', "Frr")
             })
-            self.setState({ showDelete: false, selectedRowIndexes: [] });
+            NotificationManager.error('Frr deleted successfully', "Frr")
+
             self.props.getFrr(FETCH_ALL_FRR);
+        }).catch(function (e) {
+            console.log(e)
         })
+        self.setState({ showDelete: false, selectedRowIndexes: [] });
+
     }
 
     onDismiss() {
         this.setState({ visible: false });
     }
 
-    renderUpgradeModelDialog() {
+    addFrrModal() {
         if (this.state.displayModel) {
             return (
                 <Modal isOpen={this.state.displayModel} toggle={() => this.cancel()} size="sm" centered="true" >
@@ -96,6 +102,7 @@ class Frr extends Component {
                         <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Name cannot be empty</Alert>
                         Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='frrName' /><br />
                         Location <Input className="marTop10" id='frrLoc' /><br />
+                        Version <Input className="marTop10" id='frrVersion' /><br />
                         Description <Input className="marTop10" id='frrDesc' /><br />
                     </ModalBody>
                     <ModalFooter>
@@ -122,6 +129,7 @@ class Frr extends Component {
         let params = {
             'Name': validFrr,
             'Location': document.getElementById('frrLoc').value,
+            'Version': document.getElementById('frrVersion').value,
             'Description': document.getElementById('frrDesc').value
         }
         let frrPromise = self.props.addFrr(ADD_FRR, params)
@@ -147,7 +155,7 @@ class Frr extends Component {
         this.setState({ displayEditModel: !this.state.displayEditModel })
     }
 
-    renderEditModelDialog() {
+    editFrrModal() {
         if (this.state.displayEditModel) {
             let edittedData = this.state.data[this.state.selectedRowIndexes[0]]
             return (
@@ -156,6 +164,7 @@ class Frr extends Component {
                     <ModalBody>
                         Name<font color="red"><sup>*</sup></font> <Input autoFocus disabled className="marTop10" value={edittedData.Name} /><br />
                         Location <Input className="marTop10" id='frrLocEdit' defaultValue={edittedData.Location} /><br />
+                        Version <Input className="marTop10" id='frrVersionEdit' defaultValue={edittedData.Version} /><br />
                         Description <Input className="marTop10" id='frrDescEdit' defaultValue={edittedData.Description} /><br />
                     </ModalBody>
                     <ModalFooter>
@@ -173,6 +182,7 @@ class Frr extends Component {
         let params = {
             'Id': frrId,
             'Location': document.getElementById('frrLocEdit').value ? document.getElementById('frrLocEdit').value : "-",
+            'Version': document.getElementById('frrVersionEdit').value ? document.getElementById('frrVersionEdit').value : "-",
             'Description': document.getElementById('frrDescEdit').value ? document.getElementById('frrDescEdit').value : "-"
         }
 
@@ -180,12 +190,11 @@ class Frr extends Component {
 
         frrPromise.then(function (value) {
             NotificationManager.success("Frr updated successfully", "Frr") // "Success!"
-            self.setState({ displayEditModel: false, selectedRowIndexes: [] })
         }).catch(function (e) {
             console.warn(e)
-            self.setState({ displayEditModel: false, selectedRowIndexes: [] })
             NotificationManager.error("Something went wrong", "Frr") // "error!"
         })
+        self.setState({ displayEditModel: false, selectedRowIndexes: [] })
     }
 
 
@@ -208,8 +217,8 @@ class Frr extends Component {
                 <div style={{ height: '200px', overflowY: 'scroll', overflowX: 'hidden' }}>
                     <SummaryDataTable key={this.counter++} heading={this.state.frrHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
                 </div>
-                {this.renderUpgradeModelDialog()}
-                {this.renderEditModelDialog()}
+                {this.addFrrModal()}
+                {this.editFrrModal()}
             </div>
         );
     }
@@ -225,7 +234,8 @@ function mapDispatchToProps(dispatch) {
     return {
         getFrr: (url) => dispatch(getFrr(url)),
         addFrr: (url, params) => dispatch(addFrr(url, params)),
-        updateFrr: (url, params) => dispatch(updateFrr(url, params))
+        updateFrr: (url, params) => dispatch(updateFrr(url, params)),
+        deleteFrrs: (url, params) => dispatch(deleteFrrs(url, params))
     }
 }
 

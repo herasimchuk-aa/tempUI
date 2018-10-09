@@ -42,3 +42,21 @@ export const updateIpRoute = (url, params) => (dispatch, getState) => {
         throw new Error(json.Message)
     })
 }
+
+export const deleteIpRoute = (url, params) => (dispatch, getState) => {
+    return postRequest(url, params).then(function (json) {
+        if (json.StatusCode == 200) {
+            let store = getState()
+            let storedIpRoute = store.ipRouteReducer.get('ipRoutes')
+
+            for (let ipRoute of storedIpRoute) {
+                if (params.indexOf(ipRoute.get('Id')) > -1) {
+                    storedIpRoute = storedIpRoute.deleteIn([storedIpRoute.indexOf(ipRoute)])
+                    break
+                }
+            }
+            return dispatch(setIpRoutedata(storedIpRoute))
+        }
+        throw new Error(json.Message)
+    })
+}

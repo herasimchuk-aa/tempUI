@@ -42,3 +42,22 @@ export const updateFrr = (url, params) => (dispatch, getState) => {
         throw new Error(json.Message)
     })
 }
+
+
+export const deleteFrrs = (url, params) => (dispatch, getState) => {
+    return postRequest(url, params).then(function (json) {
+        if (json.StatusCode == 200) {
+            let store = getState()
+            let storedFrr = store.frrReducer.get('frr')
+
+            for (let frr of storedFrr) {
+                if (params.indexOf(frr.get('Id')) > -1) {
+                    storedFrr = storedFrr.deleteIn([storedFrr.indexOf(frr)])
+                    break
+                }
+            }
+            return dispatch(setFrrData(storedFrr))
+        }
+        throw new Error(json.Message)
+    })
+}

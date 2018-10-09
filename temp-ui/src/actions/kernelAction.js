@@ -43,3 +43,23 @@ export const updateKernel = (url, params) => (dispatch, getState) => {
     })
 }
 
+
+export const deleteKernel = (url, params) => (dispatch, getState) => {
+    return postRequest(url, params).then(function (json) {
+        if (json.StatusCode == 200) {
+            let store = getState()
+            let storedkernels = store.kernelReducer.get('kernels')
+            let failure = json.Data.Failure ? json.Data.Failure : []
+
+            for (let kernel of storedkernels) {
+                if (params.indexOf(kernel.get('Id')) > -1 && failure.indexOf(kernel.get('Id')) < 0) {
+                    storedkernels = storedkernels.deleteIn([storedkernels.indexOf(kernel)])
+                    break
+                }
+            }
+            return dispatch(setKernelData(storedkernels))
+        }
+        throw new Error(json.Message)
+    })
+}
+
