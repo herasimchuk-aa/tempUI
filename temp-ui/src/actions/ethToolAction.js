@@ -43,15 +43,15 @@ export const updateEthTool = (url, params) => (dispatch, getState) => {
     })
 }
 
-
 export const deleteEthTools = (url, params) => (dispatch, getState) => {
     return postRequest(url, params).then(function (json) {
         if (json.StatusCode == 200) {
             let store = getState()
             let storedEthtool = store.ethToolReducer.get('ethTools')
+            let failure = json.Data.Failure ? json.Data.Failure : []
 
             for (let ethTool of storedEthtool) {
-                if (params.indexOf(ethTool.get('Id')) > -1) {
+                if (params.indexOf(ethTool.get('Id')) > -1 && failure.indexOf(iso.get('Id')) < 0) {
                     storedEthtool = storedEthtool.deleteIn([storedEthtool.indexOf(ethTool)])
                     break
                 }

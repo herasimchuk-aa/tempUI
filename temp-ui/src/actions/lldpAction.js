@@ -49,9 +49,10 @@ export const deleteLLDP = (url, params) => (dispatch, getState) => {
         if (json.StatusCode == 200) {
             let store = getState()
             let storedLLDP = store.lldpReducer.get('lldps')
+            let failure = json.Data.Failure ? json.Data.Failure : []
 
             for (let LLDP of storedLLDP) {
-                if (params.indexOf(LLDP.get('Id')) > -1) {
+                if (params.indexOf(LLDP.get('Id')) > -1 && failure.indexOf(iso.get('Id')) < 0) {
                     storedLLDP = storedLLDP.deleteIn([storedLLDP.indexOf(LLDP)])
                     break
                 }

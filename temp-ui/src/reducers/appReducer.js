@@ -13,6 +13,7 @@ import fecReducer from './fecReducer'
 import mediaReducer from './mediaReducer'
 import ipRouteReducer from './ipRouteReducer'
 import frrReducer from './frrReducer'
+import kubernetesReducer from './kubernetesReducer'
 
 export default combineReducers({
     nodeReducer,
@@ -28,5 +29,6 @@ export default combineReducers({
     fecReducer,
     mediaReducer,
     ipRouteReducer,
-    frrReducer
+    frrReducer,
+    kubernetesReducer
 })

@@ -10,7 +10,7 @@ import { FETCH_ALL_ISOS, ADD_ISO, UPDATE_ISO, DELETE_ISOS } from '../../../apis/
 import { NotificationManager } from 'react-notifications';
 import { subscribeToIsoSocket } from '../../../apis/Socket';
 import { connect } from 'react-redux';
-import { getISOs, addISOs, updateISO,deleteISO } from '../../../actions/baseIsoActions';
+import { getISOs, addISOs, updateISO, deleteISO } from '../../../actions/baseIsoActions';
 
 class BaseLinuxIso extends Component {
 
@@ -86,7 +86,7 @@ class BaseLinuxIso extends Component {
         this.setState({ visible: false });
     }
 
-    renderAddModelDialog() {
+    addISOModal() {
         if (this.state.displayModel) {
             return (
                 <Modal isOpen={this.state.displayModel} toggle={() => this.cancel()} size="sm" centered="true" >
@@ -147,7 +147,7 @@ class BaseLinuxIso extends Component {
         this.setState({ displayEditModel: !this.state.displayEditModel })
     }
 
-    renderEditModelDialog() {
+    editISOModal() {
         if (this.state.displayEditModel) {
             let edittedData = this.state.data[this.state.selectedRowIndexes[0]]
             return (
@@ -206,8 +206,8 @@ class BaseLinuxIso extends Component {
                 <div style={{ height: '250px', overflowY: 'scroll' }}>
                     <SummaryDataTable key={this.counter++} heading={this.state.isoHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
                 </div>
-                {this.renderAddModelDialog()}
-                {this.renderEditModelDialog()}
+                {this.addISOModal()}
+                {this.editISOModal()}
             </div>
         );
     }
