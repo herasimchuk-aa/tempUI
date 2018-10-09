@@ -279,6 +279,7 @@ class NodeSummary extends Component {
             'Kernel_Id': parseInt(self.state.selectedLinuxId),
         }
         this.props.addNode(ADD_NODE, params).then(function () {
+            NotificationManager.success("Node added successfully", "Node")
             self.setState({ displayModel: false, visible: false, isSaveLoading: false })
         }).catch(function (e) {
             console.warn(e)

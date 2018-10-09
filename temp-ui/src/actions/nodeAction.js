@@ -82,7 +82,11 @@ export const addNode = (url, params) => (dispatch, getState) => {
             let isos = store.baseISOReducer.getIn(['isos'])
             let sites = store.siteReducer.getIn(['sites'])
             let roles = store.roleReducer.getIn(['roles'])
-            let convertedNode = convertNode(json.Data, types, kernels, isos, sites, roles)
+            let goesList = store.goesReducer.getIn(['goes'])
+            let lldps = store.lldpReducer.getIn(['lldps'])
+            let ethTools = store.ethToolReducer.getIn(['ethTools'])
+            let ipRoutes = store.ipRouteReducer.getIn(['ipRoutes'])
+            let convertedNode = convertNode(json.Data, types, kernels, isos, sites, roles, goesList, lldps, ethTools, ipRoutes)
             storedNodes = storedNodes.push(I.fromJS(convertedNode))
             return dispatch(setNodes(storedNodes))
         }
