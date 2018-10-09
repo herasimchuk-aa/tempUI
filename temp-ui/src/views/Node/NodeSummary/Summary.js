@@ -116,15 +116,15 @@ class NodeSummary extends Component {
 
     onConfigureClick = () => {
         let { nodes, selectedRowIndex } = this.state
-        let selectedRows = []
         if (selectedRowIndex.length) {
+            let selectedNodeIds = I.List()
             selectedRowIndex.map(function (rowIndex) {
-                selectedRows.push(nodes[rowIndex])
-                selectedRows[0].roles = converter(nodes[rowIndex].roles);
+                selectedNodeIds = selectedNodeIds.push(nodes[rowIndex].Id)
             })
             this.setState({
-                selectedRows, redirect: true
+                redirect: true
             })
+            this.props.setSelectedNodeIds(selectedNodeIds)
         }
     }
 

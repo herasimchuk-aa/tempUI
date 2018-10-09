@@ -237,7 +237,7 @@ class SummaryDataTable extends Component {
     }
 
     drawColumns = (props = this.props) => {
-        let { heading } = this.props
+        let { heading } = this.state
         let { collapsedRows, data } = this.state
         if (!heading || !heading.length)
             return []
@@ -267,21 +267,23 @@ class SummaryDataTable extends Component {
             />)
         }
         heading.map(function (header) {
-            let headName = header.displayName
-            let id = header.id
-            let operation = header.operation;
-            let connectivityRow = self.state.showCollapse
-            let cellValue = self.getCellValue(operation, connectivityRow)
-            columns.push(
-                <Column
-                    columnKey={id}
-                    header={<Cell style={{ cursor: 'pointer' }} key={headName} id={id} onContextMenu={self.contextMenu} onClick={self.closePopover}>{headName}</Cell>}
-                    cell={cellValue}
-                    flexGrow={1}
-                    width={columnWidths[id] ? columnWidths[id] : 50}
-                    isResizable={header.isResizable}
-                />
-            )
+            if (header.showDefault !== false) {
+                let headName = header.displayName
+                let id = header.id
+                let operation = header.operation;
+                let connectivityRow = self.state.showCollapse
+                let cellValue = self.getCellValue(operation, connectivityRow)
+                columns.push(
+                    <Column
+                        columnKey={id}
+                        header={<Cell style={{ cursor: 'pointer' }} key={headName} id={id} onContextMenu={self.contextMenu} onClick={self.closePopover}>{headName}</Cell>}
+                        cell={cellValue}
+                        flexGrow={1}
+                        width={columnWidths[id] ? columnWidths[id] : 50}
+                        isResizable={header.isResizable}
+                    />
+                )
+            }
         })
         return columns
 
@@ -300,7 +302,7 @@ class SummaryDataTable extends Component {
                     constHeading.map(function (item) {
                         let showTick = false
                         for (let i in heading) {
-                            if (heading[i] && heading[i].id === item.id) {
+                            if (heading[i] && heading[i].id === item.id && heading[i].showDefault !== false) {
                                 showTick = true
                                 break
                             }
@@ -317,6 +319,9 @@ class SummaryDataTable extends Component {
 
     columnSelectionClick = (e, col) => {
         let { heading } = this.state
+        heading = heading.filter(function (a) {
+            return a.showDefault !== false
+        })
         let selectedIndex = -1
         if (!heading) {
             heading = []
@@ -333,6 +338,7 @@ class SummaryDataTable extends Component {
             let { constHeading } = this
             for (let j in constHeading) {
                 if (constHeading[j] && constHeading[j].id === col.id) {
+                    col.showDefault = true
                     heading.splice(j, 0, col)
                     break
                 }

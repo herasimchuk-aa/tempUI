@@ -4,85 +4,100 @@ export let nodeHead = [
     {
         id: 'Name',
         displayName: 'Name',
-        colSize: 1
+        colSize: 1,
+        showDefault: true
     },
     {
         id: 'Host',
         displayName: 'Host',
-        colSize: 1
+        colSize: 1,
+        showDefault: true
     },
     {
         id: 'site',
         displayName: 'Site',
-        colSize: 1
+        colSize: 1,
+        showDefault: true
     },
     {
         id: 'Status',
         displayName: 'Status',
         operation: 'badge',
-        colSize: 1
+        colSize: 1,
+        showDefault: true
     },
     {
         id: 'roleDetails',
         displayName: 'Roles',
         operation: 'array',
-        colSize: 2
+        colSize: 2,
+        showDefault: true
     },
     {
         id: 'Type',
         displayName: 'Type',
         operation: 'validateType',
-        colSize: 1
+        colSize: 1,
+        showDefault: true
     },
     {
         id: 'SN',
         displayName: 'Serial Number',
         operation: 'validateSN',
-        colSize: 2
+        colSize: 2,
+        showDefault: true
     },
     {
         id: 'Kernel',
         displayName: 'Linux Kernel',
         operation: 'validateKernel',
-        colSize: 1
+        colSize: 1,
+        showDefault: true
     },
     {
         id: 'BaseISO',
         displayName: 'Base Linux ISO',
         operation: 'validateISO',
-        colSize: 2
+        colSize: 2,
+        showDefault: true
     },
     {
         id: 'ExecId',
         displayName: 'Provision status',
         operation: 'provision',
-        colSize: 2
+        colSize: 2,
+        showDefault: true
     },
     {
         id: 'kernelVersion',
         displayName: 'platina-mk1',
-        colSize: 1
+        colSize: 1,
+        showDefault: false
     },
     {
         id: 'goes',
         displayName: 'Goes',
         operation: 'list',
-        colSize: 1
+        colSize: 1,
+        showDefault: false
     },
     {
         id: 'lldpVersion',
         displayName: 'LLDP',
-        colSize: 1
+        colSize: 1,
+        showDefault: false
     },
     {
         id: 'ethToolVersion',
         displayName: 'Ethtool',
-        colSize: 1
+        colSize: 1,
+        showDefault: false
     },
     {
         id: 'ipRouteVersion',
         displayName: 'IP Route',
-        colSize: 1
+        colSize: 1,
+        showDefault: false
     }
 ];
 
