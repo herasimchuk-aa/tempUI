@@ -10,7 +10,7 @@ import { getRequest, postRequest, putRequest } from '../../../apis/RestApi';
 import { FETCH_ALL_ROLES, ADD_ROLE, UPDATE_ROLE, DELETE_ROLES } from '../../../apis/RestConfig';
 import { NotificationManager } from 'react-notifications';
 import { connect } from 'react-redux';
-import { fetchRoles } from '../../../actions/roleAction';
+import { fetchRoles, addRole } from '../../../actions/roleAction';
 
 
 // import $ from 'jquery';
@@ -161,31 +161,8 @@ class Roles extends Component {
                 'Description': document.getElementById('roleDesc').value
             }
         }
-        postRequest(ADD_ROLE, params).then(function (data) {
-            if (data.StatusCode == 200) {
-
-                let renderedData = self.state.data;
-                if (!renderedData) {
-                    renderedData = []
-                }
-                data.Data.ParentName = "-"
-                if (data.Data.ParentId) {
-                    self.state.data.find(function (element, index) {
-                        if (data.Data.ParentId == element.Id) {
-                            data.Data.ParentName = element.Name
-                            return;
-                        }
-                    })
-                }
-                renderedData.push(data.Data)
-                self.setState({ data: renderedData, displayModel: false, selectedRole: '', alertVisible: false })
-            }
-            else {
-                NotificationManager.error("Something went wrong", "Role")
-                self.setState({ displayModel: false, selectedRole: '', alertVisible: false })
-
-            }
-        })
+        this.props.addRole(ADD_ROLE, params)
+        this.setState({ displayModel: false, selectedRole: '', alertVisible: false })
     }
 
     deleteRole() {
@@ -313,7 +290,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        fetchRoles: (url) => dispatch(fetchRoles(url))
+        fetchRoles: (url) => dispatch(fetchRoles(url)),
+        addRole: (url, params) => dispatch(addRole(url, params))
     }
 }
 
