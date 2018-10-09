@@ -413,3 +413,16 @@ class ValidationCell extends React.PureComponent {
     }
 }
 module.exports.ValidationCell = ValidationCell;
+
+class List extends React.PureComponent {
+    render() {
+        const { data, rowIndex, columnKey, ...props } = this.props;
+        if (!data[rowIndex][columnKey])
+            return (<Cell />)
+        let tooltip = (<UncontrolledTooltip placement="top" target={columnKey + rowIndex} style={{ textAlign: 'left' }}>VersionFe1 : {data[rowIndex][columnKey].VersionFe1} <br /> VersionFe1a : {data[rowIndex][columnKey].VersionFe1a}</UncontrolledTooltip>)
+        return (
+            <Cell {...props} id={columnKey + rowIndex} > <span key={columnKey + rowIndex}> {data[rowIndex][columnKey].Version} </span> {tooltip} </Cell>
+        );
+    }
+};
+module.exports.List = List;

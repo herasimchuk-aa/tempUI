@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Table, Column, Cell } from 'fixed-data-table-2'
-import { TextCell, TextCellForArray, BadgeCell, ValidationCell, CollapseCell, GetFirstValueCell, ProvisionCell } from './Cells';
+import { TextCell, TextCellForArray, BadgeCell, ValidationCell, CollapseCell, GetFirstValueCell, ProvisionCell, List } from './Cells';
 import 'fixed-data-table-2/dist/fixed-data-table.css';
 import {
     Input, Popover, PopoverBody, Row, Col, ListGroup,
@@ -448,6 +448,9 @@ class SummaryDataTable extends Component {
                 break
             case "provision":
                 value = <ProvisionCell data={data} />
+                break
+            case "list":
+                value = <List data={data} />
                 break
 
             default:

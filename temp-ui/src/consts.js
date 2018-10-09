@@ -57,6 +57,27 @@ export let nodeHead = [
         displayName: 'Provision status',
         operation: 'provision',
         colSize: 2
+    },
+    {
+        id: 'goes',
+        displayName: 'Goes',
+        operation: 'list',
+        colSize: 1
+    },
+    {
+        id: 'lldpVersion',
+        displayName: 'LLDP',
+        colSize: 1
+    },
+    {
+        id: 'ethToolVersion',
+        displayName: 'Ethtool',
+        colSize: 1
+    },
+    {
+        id: 'ipRouteVersion',
+        displayName: 'IP Route',
+        colSize: 1
     }
 ];
 

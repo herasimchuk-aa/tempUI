@@ -1,11 +1,18 @@
 import I from 'immutable'
 import { getRequest, putRequest, postRequest } from '../apis/RestApi';
-import { FETCH_ALL_NODES, FETCH_ALL_SYSTEM_TYPES, FETCH_ALL_ROLES, FETCH_ALL_KERNELS, FETCH_ALL_ISOS, FETCH_ALL_SITES, GET_PROVISION } from '../apis/RestConfig';
+import {
+    FETCH_ALL_SYSTEM_TYPES, FETCH_ALL_ROLES, FETCH_ALL_KERNELS, FETCH_ALL_ISOS, FETCH_ALL_SITES,
+    GET_PROVISION, FETCH_ALL_GOES, FETCH_ALL_LLDP, FETCH_ALL_ETHTOOL, FETCH_ALL_IPROUTE
+} from '../apis/RestConfig';
 import { fetchTypes } from './systemTypeAction';
 import { fetchRoles } from './roleAction';
 import { fetchKernels } from './kernelAction';
 import { getISOs } from './baseIsoActions';
 import { getSites } from './siteAction';
+import { getGoes } from './goesAction';
+import { getLLDP } from './lldpAction';
+import { getEthTool } from './ethToolAction';
+import { getIpRoute } from './ipRouteAction';
 export const fetchNodes = (url) => (dispatch, getState) => {
     getRequest(url).then(function (nodeData) {
         let typePromise = dispatch(fetchTypes(FETCH_ALL_SYSTEM_TYPES))
@@ -13,7 +20,11 @@ export const fetchNodes = (url) => (dispatch, getState) => {
         let kernelPromise = dispatch(fetchKernels(FETCH_ALL_KERNELS))
         let isoPromise = dispatch(getISOs(FETCH_ALL_ISOS))
         let sitePromise = dispatch(getSites(FETCH_ALL_SITES))
-        Promise.all([typePromise, rolePromise, kernelPromise, isoPromise, sitePromise]).then(function () {
+        let goesPromise = dispatch(getGoes(FETCH_ALL_GOES))
+        let lldpPromise = dispatch(getLLDP(FETCH_ALL_LLDP))
+        let ethToolPromise = dispatch(getEthTool(FETCH_ALL_ETHTOOL))
+        let ipRoutePromise = dispatch(getIpRoute(FETCH_ALL_IPROUTE))
+        Promise.all([typePromise, rolePromise, kernelPromise, isoPromise, sitePromise, goesPromise, lldpPromise, ethToolPromise, ipRoutePromise]).then(function () {
             let store = getState()
             let nodes = convertData(nodeData.Data, store)
             //temp code . remove it 
@@ -48,7 +59,11 @@ export const updateNode = (url, params) => (dispatch, getState) => {
                 let isos = store.baseISOReducer.getIn(['isos'])
                 let sites = store.siteReducer.getIn(['sites'])
                 let roles = store.roleReducer.getIn(['roles'])
-                let updatedNode = convertNode(updatedNodeData.Data, types, kernels, isos, sites, roles)
+                let goesList = store.goesReducer.getIn(['goes'])
+                let lldps = store.lldpReducer.getIn(['lldps'])
+                let ethTools = store.ethToolReducer.getIn(['ethTools'])
+                let ipRoutes = store.ipRouteReducer.getIn(['ipRoutes'])
+                let updatedNode = convertNode(updatedNodeData.Data, types, kernels, isos, sites, roles, goesList, lldps, ethTools, ipRoutes)
                 node = I.fromJS(updatedNode)
             }
             return node
@@ -148,17 +163,21 @@ function convertData(nodes, store) {
     let isos = store.baseISOReducer.getIn(['isos'])
     let sites = store.siteReducer.getIn(['sites'])
     let roles = store.roleReducer.getIn(['roles'])
+    let goesList = store.goesReducer.getIn(['goes'])
+    let lldps = store.lldpReducer.getIn(['lldps'])
+    let ethTools = store.ethToolReducer.getIn(['ethTools'])
+    let ipRoutes = store.ipRouteReducer.getIn(['ipRoutes'])
 
     if (nodes && nodes.length) {
         nodes.map((node) => {
-            return convertNode(node, types, kernels, isos, sites, roles)
+            return convertNode(node, types, kernels, isos, sites, roles, goesList, lldps, ethTools, ipRoutes)
         })
         return nodes
     }
     return []
 }
 
-function convertNode(node, types, kernels, isos, sites, roles) {
+function convertNode(node, types, kernels, isos, sites, roles, goes, lldps, ethTools, ipRoutes) {
     types.map((item) => {
         if (item.get('Id') == node.Type_Id) {
             node.Type = item.get('Name')
@@ -191,5 +210,28 @@ function convertNode(node, types, kernels, isos, sites, roles) {
         }
     }
     node.roleDetails = roleDetails
+
+    goes.map((item) => {
+        if (item.get('Id') == node.Goes_Id) {
+            // node.goesVersion = item.get('Version')
+            node.goes = Object.assign({}, item.toJS())
+            console.log(node.goes)
+        }
+    })
+    lldps.map((item) => {
+        if (item.get('Id') == node.Lldp_Id) {
+            node.lldpVersion = item.get('Version')
+        }
+    })
+    ethTools.map((item) => {
+        if (item.get('Id') == node.Ethtool_Id) {
+            node.ethToolVersion = item.get('Version')
+        }
+    })
+    ipRoutes.map((item) => {
+        if (item.get('Id') == node.Iproute_Id) {
+            node.ipRouteVersion = item.get('Version')
+        }
+    })
     return node
 }

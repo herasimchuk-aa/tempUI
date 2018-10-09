@@ -10,7 +10,7 @@ import { getRequest, postRequest, putRequest } from '../../../apis/RestApi';
 import { FETCH_ALL_ROLES, ADD_ROLE, UPDATE_ROLE, DELETE_ROLES } from '../../../apis/RestConfig';
 import { NotificationManager } from 'react-notifications';
 import { connect } from 'react-redux';
-import { fetchRoles, addRole } from '../../../actions/roleAction';
+import { fetchRoles, addRole, updateRole, deleteRoles } from '../../../actions/roleAction';
 
 
 // import $ from 'jquery';
@@ -171,14 +171,10 @@ class Roles extends Component {
         this.state.selectedRowIndexes.map(function (item) {
             deleteIds.push(self.state.data[item].Id)
         })
-        postRequest(DELETE_ROLES, deleteIds).then(function (data) {
-            let failedRoles = []
-            failedRoles = getNameById(data.Data.Failure, self.state.data);
-            failedRoles.map((item) => {
-                NotificationManager.error(item + ' is in use', "Role")
-            })
-            self.setState({ showDelete: false, selectedRowIndexes: [] });
-            self.retrieveRoleData();
+        this.props.deleteRoles(DELETE_ROLES, deleteIds).then(function () {
+            self.setState({ showDelete: false, selectedRowIndexes: [] })
+        }).catch(function (e) {
+            console.error(e)
         })
     }
 
@@ -210,7 +206,7 @@ class Roles extends Component {
                         Description <Input className="marTop10" id='roleDescEdit' defaultValue={edittedData.Description} /><br />
                     </ModalBody>
                     <ModalFooter>
-                        <Button className="custBtn" outline color="primary" onClick={() => (this.editRole())}>Save</Button>
+                        <Button className="custBtn" outline color="primary" onClick={() => (this.editRole(edittedData.Id))}>Save</Button>
                         <Button className="custBtn" outline color="primary" onClick={() => (this.toggleEditModal())}>Cancel</Button>
 
                     </ModalFooter>
@@ -219,44 +215,32 @@ class Roles extends Component {
         }
     }
 
-    editRole = () => {
+    editRole = (roleId) => {
         let self = this
-        let edittedData = this.state.data[this.state.selectedRowIndexes[0]]
         let params = {}
         if (this.state.selectedRole) {
             params = {
-                'Id': edittedData.Id,
+                'Id': roleId,
                 'ParentId': parseInt(this.state.selectedRole),
                 'Description': document.getElementById('roleDescEdit').value ? document.getElementById('roleDescEdit').value : "-"
             }
         }
         else {
             params = {
-                'Id': edittedData.Id,
+                'Id': roleId,
                 'ParentId': null,
                 'Description': document.getElementById('roleDescEdit').value ? document.getElementById('roleDescEdit').value : "-"
             }
         }
-        putRequest(UPDATE_ROLE, params).then(function (data) {
-            if (data.StatusCode == 200) {
-                let existingData = self.state.data;
-                existingData[self.state.selectedRowIndexes[0]] = data.Data
-                self.state.data.find((item) => {
-                    if (data.Data.ParentId == item.Id) {
-                        existingData[self.state.selectedRowIndexes[0]].ParentName = item.Name
-                        return
-                    }
-                })
-                if (data.Data.ParentId == 0) {
-                    existingData[self.state.selectedRowIndexes[0]].ParentName = '-'
-                }
-                self.setState({ data: existingData, displayEditModel: false, selectedRowIndexes: [], selectedRole: '' })
-            }
-            else {
-                NotificationManager.error("Something went wrong", "Site")
-                self.setState({ displayEditModel: false, selectedRowIndexes: [], selectedRole: '' })
 
-            }
+        let rolePromise = this.props.updateRole(UPDATE_ROLE, params)
+        rolePromise.then(function () {
+            NotificationManager.success("Role updated successfully", "Role")
+            self.setState({ displayEditModel: false, selectedRowIndexes: [], selectedRole: '' })
+        }).catch(function (e) {
+            console.error(e)
+            self.setState({ displayEditModel: false, selectedRowIndexes: [], selectedRole: '' })
+            NotificationManager.error("Something went wrong", "Role")
         })
     }
 
@@ -291,7 +275,9 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         fetchRoles: (url) => dispatch(fetchRoles(url)),
-        addRole: (url, params) => dispatch(addRole(url, params))
+        addRole: (url, params) => dispatch(addRole(url, params)),
+        updateRole: (url, params) => dispatch(updateRole(url, params)),
+        deleteRoles: (url, params) => dispatch(deleteRoles(url, params))
     }
 }
 
