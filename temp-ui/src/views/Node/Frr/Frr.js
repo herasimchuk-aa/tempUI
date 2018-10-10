@@ -18,7 +18,6 @@ class Frr extends Component {
         super(props)
         this.state = {
             data: [],
-            frrHead: frrHead,
             showDelete: false,
             selectedRowIndexes: [],
             displayModel: false,
@@ -34,7 +33,8 @@ class Frr extends Component {
 
     static getDerivedStateFromProps(props) {
         return {
-            data: props.data ? props.data.toJS() : []
+            data: props.data ? props.data.toJS() : [],
+            frrHead: props.frrHeadings ? props.frrHeadings.toJS() : frrHead
         }
     }
 
@@ -205,7 +205,9 @@ class Frr extends Component {
         this.setState({ displayEditModel: false, selectedRowIndexes: [], showDelete: false })
     }
 
-
+    setFrrHeadings = (headings) => {
+        this.props.setFrrHeadings(I.fromJS(headings))
+    }
 
     render() {
         return (
@@ -223,7 +225,8 @@ class Frr extends Component {
                     </Media>
                 </Media>
                 <div style={{ height: '200px', overflowY: 'scroll', overflowX: 'hidden' }}>
-                    <SummaryDataTable key={this.counter++} heading={this.state.frrHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
+                    <SummaryDataTable key={this.counter++} heading={this.state.frrHead} data={this.state.data} checkBoxClick={this.checkBoxClick}
+                        constHeading={frrHead} setHeadings={this.setFrrHeadings} selectedRowIndexes={this.state.selectedRowIndexes} />
                 </div>
                 {this.addFrrModal()}
                 {this.editFrrModal()}
@@ -234,7 +237,8 @@ class Frr extends Component {
 
 function mapStateToProps(state) {
     return {
-        data: state.frrReducer.get('frr')
+        data: state.frrReducer.get('frr'),
+        frrHeadings: state.frrReducer.getIn(['frrHeadings'])
     }
 }
 
@@ -243,7 +247,8 @@ function mapDispatchToProps(dispatch) {
         getFrr: (url) => dispatch(getFrr(url)),
         addFrr: (url, params) => dispatch(addFrr(url, params)),
         updateFrr: (url, params) => dispatch(updateFrr(url, params)),
-        deleteFrrs: (url, params) => dispatch(deleteFrrs(url, params))
+        deleteFrrs: (url, params) => dispatch(deleteFrrs(url, params)),
+        setFrrHeadings: (params) => dispatch(setFrrHeadings(params))
     }
 }
 

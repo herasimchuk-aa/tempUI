@@ -64,3 +64,11 @@ export const deleteIpRoute = (url, params) => (dispatch, getState) => {
         throw new Error(json.Message)
     })
 }
+
+export const SET_IP_ROUTE_HEADING = 'SET_IP_ROUTE_HEADING'
+export function setIpRouteHeadings(payload) {
+    return {
+        type: SET_IP_ROUTE_HEADING,
+        payload: payload
+    }
+}

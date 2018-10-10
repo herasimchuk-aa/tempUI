@@ -18,7 +18,6 @@ class EthTool extends Component {
         super(props)
         this.state = {
             data: [],
-            ethHead: ethHead,
             showDelete: false,
             selectedRowIndexes: [],
             displayModel: false,
@@ -34,7 +33,8 @@ class EthTool extends Component {
 
     static getDerivedStateFromProps(props) {
         return {
-            data: props.data ? props.data.toJS() : []
+            data: props.data ? props.data.toJS() : [],
+            ethHead: props.ethtoolHeadings ? props.ethtoolHeadings.toJS() : ethHead
         }
     }
 
@@ -206,6 +206,10 @@ class EthTool extends Component {
         this.setState({ displayEditModel: false, selectedRowIndexes: [], showDelete: false })
     }
 
+    setEthtoolHeadings = (headings) => {
+        this.props.setEthtoolHeadings(I.fromJS(headings))
+    }
+
 
     render() {
         return (<div>
@@ -222,7 +226,9 @@ class EthTool extends Component {
                 </Media>
             </Media>
             <div style={{ height: '200px', overflowY: 'scroll', overflowX: 'hidden' }}>
-                <SummaryDataTable key={this.counter++} heading={this.state.ethHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
+                <SummaryDataTable key={this.counter++} heading={this.state.ethHead} data={this.state.data} checkBoxClick={this.checkBoxClick}
+                    constHeading={ethHead} setHeadings={this.setEthtoolHeadings}
+                    selectedRowIndexes={this.state.selectedRowIndexes} />
             </div>
             {this.addEthToolModal()}
             {this.editEthToolModal()}
@@ -230,13 +236,12 @@ class EthTool extends Component {
         );
     }
 
-
-
 }
 
 function mapStateToProps(state) {
     return {
-        data: state.ethToolReducer.get('ethTools')
+        data: state.ethToolReducer.get('ethTools'),
+        ethtoolHeadings: state.ethToolReducer.getIn(['ethToolHeadings'])
     }
 }
 
@@ -245,7 +250,8 @@ function mapDispatchToProps(dispatch) {
         getEthTool: (url) => dispatch(getEthTool(url)),
         addEthTool: (url, params) => dispatch(addEthTool(url, params)),
         updateEthTool: (url, params) => dispatch(updateEthTool(url, params)),
-        deleteEthTools: (url, params) => dispatch(deleteEthTools(url, params))
+        deleteEthTools: (url, params) => dispatch(deleteEthTools(url, params)),
+        setEthtoolHeadings: (params) => dispatch(setEthtoolHeadings(params))
     }
 }
 

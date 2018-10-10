@@ -18,7 +18,6 @@ class LLDP extends Component {
         super(props)
         this.state = {
             data: [],
-            lldpHead: lldpHead,
             showDelete: false,
             selectedRowIndexes: [],
             displayModel: false,
@@ -34,7 +33,8 @@ class LLDP extends Component {
 
     static getDerivedStateFromProps(props) {
         return {
-            data: props.data ? props.data.toJS() : []
+            data: props.data ? props.data.toJS() : [],
+            lldpHead: props.lldpHeadings ? props.lldpHeadings.toJS() : lldpHead
         }
     }
 
@@ -205,6 +205,10 @@ class LLDP extends Component {
         this.setState({ displayEditModel: false, selectedRowIndexes: [], showDelete: false })
     }
 
+    setLLDPHeadings = (headings) => {
+        this.props.setLLDPHeadings(I.fromJS(headings))
+    }
+
 
     render() {
         return (<div>
@@ -221,7 +225,9 @@ class LLDP extends Component {
                 </Media>
             </Media>
             <div style={{ height: '200px', overflowY: 'scroll', overflowX: 'hidden' }}>
-                <SummaryDataTable key={this.counter++} heading={this.state.lldpHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
+                <SummaryDataTable key={this.counter++} heading={this.state.lldpHead} data={this.state.data} checkBoxClick={this.checkBoxClick}
+                    constHeading={lldpHead} setHeadings={this.setLLDPHeadings}
+                    selectedRowIndexes={this.state.selectedRowIndexes} />
             </div>
             {this.addLLDPModal()}
             {this.editLLDPModal()}
@@ -232,7 +238,8 @@ class LLDP extends Component {
 
 function mapStateToProps(state) {
     return {
-        data: state.lldpReducer.get('lldps')
+        data: state.lldpReducer.get('lldps'),
+        lldpHeadings: state.lldpReducer.getIn(['lldpHeadings'])
     }
 }
 
@@ -241,7 +248,8 @@ function mapDispatchToProps(dispatch) {
         getLLDP: (url) => dispatch(getLLDP(url)),
         addLLDP: (url, params) => dispatch(addLLDP(url, params)),
         updateLLDP: (url, params) => dispatch(updateLLDP(url, params)),
-        deleteLLDP: (url, params) => dispatch(deleteLLDP(url, params))
+        deleteLLDP: (url, params) => dispatch(deleteLLDP(url, params)),
+        setLLDPHeadings: (params) => dispatch(setLLDPHeadings(params))
     }
 }
 

@@ -65,3 +65,11 @@ export const deleteFrrs = (url, params) => (dispatch, getState) => {
         throw new Error(json.Message)
     })
 }
+
+export const SET_FRR_HEADING = 'SET_FRR_HEADING'
+export function setFrrHeadings(payload) {
+    return {
+        type: SET_FRR_HEADING,
+        payload: payload
+    }
+}

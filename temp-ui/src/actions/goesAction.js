@@ -66,3 +66,11 @@ export const deleteGoes = (url, params) => (dispatch, getState) => {
         throw new Error(json.Message)
     })
 }
+
+export const SET_GOES_HEADING = 'SET_GOES_HEADING'
+export function setGoesHeadings(payload) {
+    return {
+        type: SET_GOES_HEADING,
+        payload: payload
+    }
+}

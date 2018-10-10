@@ -16,7 +16,6 @@ class Goes extends Component {
         super(props)
         this.state = {
             data: [],
-            goesHead: goesHead,
             showDelete: false,
             selectedRowIndexes: [],
             displayModel: false,
@@ -32,7 +31,8 @@ class Goes extends Component {
 
     static getDerivedStateFromProps(props) {
         return {
-            data: props.data ? props.data.toJS() : []
+            data: props.data ? props.data.toJS() : [],
+            goesHead: props.goesHeadings ? props.goesHeadings.toJS() : goesHead
         }
     }
 
@@ -203,6 +203,10 @@ class Goes extends Component {
         this.setState({ displayEditModel: false, selectedRowIndexes: [], showDelete: false })
     }
 
+    setGoesHeadings = (headings) => {
+        this.props.setGoesHeadings(I.fromJS(headings))
+    }
+
 
     render() {
         return (<div>
@@ -219,7 +223,8 @@ class Goes extends Component {
                 </Media>
             </Media>
             <div style={{ height: '200px', overflowY: 'scroll', overflowX: 'hidden' }}>
-                <SummaryDataTable key={this.counter++} heading={this.state.goesHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
+                <SummaryDataTable key={this.counter++} heading={this.state.goesHead} data={this.state.data} checkBoxClick={this.checkBoxClick}
+                    constHeading={goesHead} setHeadings={this.setGoesHeadings} selectedRowIndexes={this.state.selectedRowIndexes} />
             </div>
             {this.addGoesModal()}
             {this.editGoesModal()}
@@ -233,7 +238,8 @@ class Goes extends Component {
 
 function mapStateToProps(state) {
     return {
-        data: state.goesReducer.get('goes')
+        data: state.goesReducer.get('goes'),
+        goesHeadings: state.goesReducer.getIn(['goesHeadings'])
     }
 }
 
@@ -242,7 +248,8 @@ function mapDispatchToProps(dispatch) {
         getGoes: (url) => dispatch(getGoes(url)),
         addGoes: (url, params) => dispatch(addGoes(url, params)),
         updateGoes: (url, params) => dispatch(updateGoes(url, params)),
-        deleteGoes: (url, params) => dispatch(deleteGoes(url, params))
+        deleteGoes: (url, params) => dispatch(deleteGoes(url, params)),
+        setGoesHeadings: (params) => dispatch(setGoesHeadings(params))
     }
 }
 

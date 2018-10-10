@@ -18,7 +18,6 @@ class IpRoute extends Component {
         super(props)
         this.state = {
             data: [],
-            ipRouteHead: ipRouteHead,
             showDelete: false,
             selectedRowIndexes: [],
             displayModel: false,
@@ -34,7 +33,8 @@ class IpRoute extends Component {
 
     static getDerivedStateFromProps(props) {
         return {
-            data: props.data ? props.data.toJS() : []
+            data: props.data ? props.data.toJS() : [],
+            ipRouteHead: props.ipRouteHeadings ? props.ipRouteHeadings.toJS() : ipRouteHead
         }
     }
 
@@ -203,7 +203,9 @@ class IpRoute extends Component {
         this.setState({ displayEditModel: false, selectedRowIndexes: [], showDelete: false })
     }
 
-
+    setIpRouteHeadings = (headings) => {
+        this.props.setIpRouteHeadings(I.fromJS(headings))
+    }
 
     render() {
         return (
@@ -221,7 +223,9 @@ class IpRoute extends Component {
                     </Media>
                 </Media>
                 <div style={{ height: '200px', overflowY: 'scroll', overflowX: 'hidden' }}>
-                    <SummaryDataTable key={this.counter++} heading={this.state.ipRouteHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
+                    <SummaryDataTable key={this.counter++} heading={this.state.ipRouteHead} data={this.state.data} checkBoxClick={this.checkBoxClick}
+                        constHeading={ipRouteHead} setHeadings={this.setIpRouteHeadings}
+                        selectedRowIndexes={this.state.selectedRowIndexes} />
                 </div>
                 {this.renderUpgradeModelDialog()}
                 {this.renderEditModelDialog()}
@@ -232,7 +236,8 @@ class IpRoute extends Component {
 
 function mapStateToProps(state) {
     return {
-        data: state.ipRouteReducer.get('ipRoutes')
+        data: state.ipRouteReducer.get('ipRoutes'),
+        ipRouteHeadings: state.ipRouteReducer.get('ipRouteHeadings')
     }
 }
 
@@ -241,7 +246,8 @@ function mapDispatchToProps(dispatch) {
         getIpRoute: (url) => dispatch(getIpRoute(url)),
         addIpRoutes: (url, params) => dispatch(addIpRoutes(url, params)),
         updateIpRoute: (url, params) => dispatch(updateIpRoute(url, params)),
-        deleteIpRoute: (url, params) => dispatch(deleteIpRoute(url, params))
+        deleteIpRoute: (url, params) => dispatch(deleteIpRoute(url, params)),
+        setIpRouteHeadings: (params) => dispatch(setIpRouteHeadings(params))
     }
 }
 

@@ -65,3 +65,13 @@ export const deleteLLDP = (url, params) => (dispatch, getState) => {
         throw new Error(json.Message)
     })
 }
+
+
+
+export const SET_LLDP_HEADING = 'SET_LLDP_HEADING'
+export function setLLDPHeadings(payload) {
+    return {
+        type: SET_LLDP_HEADING,
+        payload: payload
+    }
+}

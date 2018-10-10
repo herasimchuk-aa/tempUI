@@ -64,3 +64,11 @@ export const deleteEthTools = (url, params) => (dispatch, getState) => {
         throw new Error(json.Message)
     })
 }
+
+export const SET_ETHTOOL_HEADING = 'SET_ETHTOOL_HEADING'
+export function setEthtoolHeadings(payload) {
+    return {
+        type: SET_ETHTOOL_HEADING,
+        payload: payload
+    }
+}
