@@ -4,8 +4,9 @@ import { connectivityHead } from '../../../consts';
 import '../../views.css';
 import { FETCH_ALL_NODES } from '../../../apis/RestConfig';
 import SummaryDataTable from '../../Node/NodeSummary/SummaryDataTable';
-import { fetchNodes } from '../../../actions/nodeAction';
+import { fetchNodes, setConnectivityHeadings } from '../../../actions/nodeAction';
 import { connect } from 'react-redux'
+import I from 'immutable'
 
 class ConnectivitySummary extends React.Component {
 
@@ -24,15 +25,20 @@ class ConnectivitySummary extends React.Component {
     static getDerivedStateFromProps(props) {
 
         return {
-            nodes: props.nodes ? props.nodes.toJS() : []
+            nodes: props.nodes ? props.nodes.toJS() : [],
+            connectivityHead: props.headings ? props.headings.toJS() : connectivityHead,
         }
+    }
+
+    setConnectivityHeadings = (headings) => {
+        this.props.setConnectivityHeadings(I.fromJS(headings))
     }
 
     render() {
         return (
             <div>
                 <Row className="tableTitle">Connectivity Summary</Row>
-                <SummaryDataTable heading={this.state.connectivityHead} data={this.state.nodes} showCheckBox={false} showCollapse={true}></SummaryDataTable>
+                <SummaryDataTable heading={this.state.connectivityHead} setHeadings={this.setConnectivityHeadings} constHeading={connectivityHead} data={this.state.nodes} showCheckBox={false} showCollapse={true}></SummaryDataTable>
             </div>
         );
     }
@@ -42,12 +48,14 @@ class ConnectivitySummary extends React.Component {
 function mapStateToProps(state) {
     return {
         nodes: state.nodeReducer.getIn(['nodes']),
+        headings: state.nodeReducer.getIn(['connectivityHeadings'])
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return {
         fetchNodes: (url) => dispatch(fetchNodes(url)),
+        setConnectivityHeadings: (headings) => dispatch(setConnectivityHeadings(headings))
     }
 }
 

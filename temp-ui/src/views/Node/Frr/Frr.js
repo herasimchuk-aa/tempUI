@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert, Media } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert, Media } from 'reactstrap';
 import '../../views.css';
-import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import { frrHead } from '../../../consts';
 import { trimString, getNameById } from '../../../components/Utility/Utility';
 import { FETCH_ALL_FRR, ADD_FRR, UPDATE_FRR, DELETE_FRR } from '../../../apis/RestConfig';
-import { postRequest } from '../../../apis/RestApi';
 import { NotificationManager } from 'react-notifications';
 import { connect } from 'react-redux';
-import { getFrr, addFrr, updateFrr, deleteFrrs } from '../../../actions/frrAction';
+import { getFrr, addFrr, updateFrr, deleteFrrs, setFrrHeadings } from '../../../actions/frrAction';
+import I from 'immutable'
 
 class Frr extends Component {
 
@@ -225,7 +224,7 @@ class Frr extends Component {
                     </Media>
                 </Media>
                 <div style={{ height: '200px', overflowY: 'scroll', overflowX: 'hidden' }}>
-                    <SummaryDataTable key={this.counter++} heading={this.state.frrHead} data={this.state.data} checkBoxClick={this.checkBoxClick}
+                    <SummaryDataTable heading={this.state.frrHead} data={this.state.data} checkBoxClick={this.checkBoxClick}
                         constHeading={frrHead} setHeadings={this.setFrrHeadings} selectedRowIndexes={this.state.selectedRowIndexes} />
                 </div>
                 {this.addFrrModal()}

@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert, Media } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert, Media } from 'reactstrap';
 import '../../views.css';
-import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import { ipRouteHead } from '../../../consts';
 import { trimString, getNameById } from '../../../components/Utility/Utility';
-import { getRequest, postRequest, putRequest } from '../../../apis/RestApi';
 import { FETCH_ALL_IPROUTE, ADD_IPROUTE, UPDATE_IPROUTE, DELETE_IPROUTE } from '../../../apis/RestConfig';
 import { NotificationManager } from 'react-notifications';
 import { connect } from 'react-redux';
-import { getIpRoute, addIpRoutes, updateIpRoute, deleteIpRoute } from '../../../actions/ipRouteAction';
+import { getIpRoute, addIpRoutes, updateIpRoute, deleteIpRoute, setIpRouteHeadings } from '../../../actions/ipRouteAction';
+import I from 'immutable'
 
 class IpRoute extends Component {
 
@@ -223,7 +222,7 @@ class IpRoute extends Component {
                     </Media>
                 </Media>
                 <div style={{ height: '200px', overflowY: 'scroll', overflowX: 'hidden' }}>
-                    <SummaryDataTable key={this.counter++} heading={this.state.ipRouteHead} data={this.state.data} checkBoxClick={this.checkBoxClick}
+                    <SummaryDataTable heading={this.state.ipRouteHead} data={this.state.data} checkBoxClick={this.checkBoxClick}
                         constHeading={ipRouteHead} setHeadings={this.setIpRouteHeadings}
                         selectedRowIndexes={this.state.selectedRowIndexes} />
                 </div>

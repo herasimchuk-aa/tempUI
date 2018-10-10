@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert, Media } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert, Media } from 'reactstrap';
 import '../../views.css';
-import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import { ethHead } from '../../../consts';
 import { trimString, getNameById } from '../../../components/Utility/Utility';
-import { getRequest, postRequest, putRequest } from '../../../apis/RestApi'
 import { FETCH_ALL_ETHTOOL, ADD_ETHTOOL, UPDATE_ETHTOOL, DELETE_ETHTOOL } from '../../../apis/RestConfig'
 import { NotificationManager } from 'react-notifications';
 import { connect } from 'react-redux';
-import { getEthTool, addEthTool, updateEthTool, deleteEthTools } from '../../../actions/ethToolAction';
+import { getEthTool, addEthTool, updateEthTool, deleteEthTools, setEthtoolHeadings } from '../../../actions/ethToolAction';
+import I from 'immutable'
 
 class EthTool extends Component {
 
@@ -226,7 +225,7 @@ class EthTool extends Component {
                 </Media>
             </Media>
             <div style={{ height: '200px', overflowY: 'scroll', overflowX: 'hidden' }}>
-                <SummaryDataTable key={this.counter++} heading={this.state.ethHead} data={this.state.data} checkBoxClick={this.checkBoxClick}
+                <SummaryDataTable heading={this.state.ethHead} data={this.state.data} checkBoxClick={this.checkBoxClick}
                     constHeading={ethHead} setHeadings={this.setEthtoolHeadings}
                     selectedRowIndexes={this.state.selectedRowIndexes} />
             </div>

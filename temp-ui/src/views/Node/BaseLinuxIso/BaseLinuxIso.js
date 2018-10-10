@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert, Media } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert, Media } from 'reactstrap';
 import '../../views.css';
-import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import { isoHead } from '../../../consts';
 import { trimString, getNameById } from '../../../components/Utility/Utility';
 import { FETCH_ALL_ISOS, ADD_ISO, UPDATE_ISO, DELETE_ISOS } from '../../../apis/RestConfig'
 import { NotificationManager } from 'react-notifications';
 import { connect } from 'react-redux';
-import { getISOs, addISOs, updateISO, deleteISO } from '../../../actions/baseIsoActions';
+import { getISOs, addISOs, updateISO, deleteISO, setISOHeadings } from '../../../actions/baseIsoActions';
+import I from 'immutable'
 
 class BaseLinuxIso extends Component {
 
@@ -17,7 +17,6 @@ class BaseLinuxIso extends Component {
         super(props)
         this.state = {
             data: [],
-            isoHead: isoHead,
             showDelete: false,
             selectedRowIndexes: [],
             displayModel: false,
@@ -33,7 +32,8 @@ class BaseLinuxIso extends Component {
 
     static getDerivedStateFromProps(props) {
         return {
-            data: props.data ? props.data.toJS() : []
+            data: props.data ? props.data.toJS() : [],
+            isoHead: props.isoHead ? props.isoHead.toJS() : isoHead
         }
     }
 
@@ -216,7 +216,7 @@ class BaseLinuxIso extends Component {
                     </Media>
                 </Media>
                 <div style={{ height: '250px', overflowY: 'scroll' }}>
-                    <SummaryDataTable key={this.counter++} heading={this.state.isoHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
+                    <SummaryDataTable heading={this.state.isoHead} setHeadings={(headings) => this.props.setISOHeadings(I.fromJS(headings))} constHeading={isoHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
                 </div>
                 {this.addISOModal()}
                 {this.editISOModal()}
@@ -230,7 +230,8 @@ class BaseLinuxIso extends Component {
 
 function mapStateToProps(state) {
     return {
-        data: state.baseISOReducer.get('isos')
+        data: state.baseISOReducer.get('isos'),
+        isoHead: state.baseISOReducer.get('isoHeadings'),
     }
 }
 
@@ -239,7 +240,9 @@ function mapDispatchToProps(dispatch) {
         getISOs: (url) => dispatch(getISOs(url)),
         addISOs: (url, params) => dispatch(addISOs(url, params)),
         updateISO: (url, params) => dispatch(updateISO(url, params)),
-        deleteISO: (url, params) => dispatch(deleteISO(url, params))
+        deleteISO: (url, params) => dispatch(deleteISO(url, params)),
+        setISOHeadings: (headings) => dispatch(setISOHeadings(headings)),
+
     }
 }
 

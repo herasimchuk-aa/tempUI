@@ -207,7 +207,7 @@ class Site extends Component {
                     {this.showDeleteButton()}
                 </div>
                 <Row className="tableTitle">Site</Row>
-                <SummaryDataTable key={this.counter++} heading={this.state.siteHead} data={this.state.data}
+                <SummaryDataTable heading={this.state.siteHead} data={this.state.data}
                     setHeadings={(headings) => this.props.setSiteHeadings(I.fromJS(headings))} constHeading={siteHead}
                     checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
                 {this.addSiteModal()}

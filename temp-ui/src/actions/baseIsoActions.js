@@ -16,6 +16,14 @@ export function setISOs(payload) {
     }
 }
 
+export const SET_ISO_HEADING = 'SET_ISO_HEADING'
+export function setISOHeadings(payload) {
+    return {
+        type: SET_ISO_HEADING,
+        payload: payload
+    }
+}
+
 export const addISOs = (url, params) => (dispatch, getState) => {
     return postRequest(url, params).then(function (json) {
         if (json.StatusCode == 200) {

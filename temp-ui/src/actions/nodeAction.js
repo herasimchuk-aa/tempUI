@@ -153,6 +153,14 @@ export function setNodeHeadings(payload) {
     }
 }
 
+export const SET_CONNECTIVITY_HEADING = 'SET_CONNECTIVITY_HEADING'
+export function setConnectivityHeadings(payload) {
+    return {
+        type: SET_CONNECTIVITY_HEADING,
+        payload: payload
+    }
+}
+
 export const SET_NODES = 'SET_NODES'
 export function setNodes(payload) {
     return {

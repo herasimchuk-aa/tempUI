@@ -7,7 +7,8 @@ import { trimString, getNameById } from '../../../components/Utility/Utility';
 import { FETCH_ALL_GOES, ADD_GOES, UPDATE_GOES, DELETE_GOES } from '../../../apis/RestConfig'
 import { NotificationManager } from 'react-notifications';
 import { connect } from 'react-redux';
-import { getGoes, addGoes, updateGoes, deleteGoes } from '../../../actions/goesAction';
+import { getGoes, addGoes, updateGoes, deleteGoes, setGoesHeadings } from '../../../actions/goesAction';
+import I from 'immutable'
 
 class Goes extends Component {
 
@@ -223,7 +224,7 @@ class Goes extends Component {
                 </Media>
             </Media>
             <div style={{ height: '200px', overflowY: 'scroll', overflowX: 'hidden' }}>
-                <SummaryDataTable key={this.counter++} heading={this.state.goesHead} data={this.state.data} checkBoxClick={this.checkBoxClick}
+                <SummaryDataTable heading={this.state.goesHead} data={this.state.data} checkBoxClick={this.checkBoxClick}
                     constHeading={goesHead} setHeadings={this.setGoesHeadings} selectedRowIndexes={this.state.selectedRowIndexes} />
             </div>
             {this.addGoesModal()}

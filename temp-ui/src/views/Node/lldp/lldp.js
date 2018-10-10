@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert, Media } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert, Media } from 'reactstrap';
 import '../../views.css';
-import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import { lldpHead } from '../../../consts';
 import { trimString, getNameById } from '../../../components/Utility/Utility';
-import { getRequest, postRequest, putRequest } from '../../../apis/RestApi'
 import { FETCH_ALL_LLDP, ADD_LLDP, UPDATE_LLDP, DELETE_LLDP } from '../../../apis/RestConfig'
 import { NotificationManager } from 'react-notifications';
 import { connect } from 'react-redux';
-import { getLLDP, addLLDP, updateLLDP, deleteLLDP } from '../../../actions/lldpAction';
+import { getLLDP, addLLDP, updateLLDP, deleteLLDP, setLLDPHeadings } from '../../../actions/lldpAction';
+import I from 'immutable'
 
 class LLDP extends Component {
 
@@ -225,7 +224,7 @@ class LLDP extends Component {
                 </Media>
             </Media>
             <div style={{ height: '200px', overflowY: 'scroll', overflowX: 'hidden' }}>
-                <SummaryDataTable key={this.counter++} heading={this.state.lldpHead} data={this.state.data} checkBoxClick={this.checkBoxClick}
+                <SummaryDataTable heading={this.state.lldpHead} data={this.state.data} checkBoxClick={this.checkBoxClick}
                     constHeading={lldpHead} setHeadings={this.setLLDPHeadings}
                     selectedRowIndexes={this.state.selectedRowIndexes} />
             </div>

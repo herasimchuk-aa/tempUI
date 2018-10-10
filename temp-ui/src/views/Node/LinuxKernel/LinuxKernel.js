@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert, Media } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert, Media } from 'reactstrap';
 import '../../views.css';
-import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import { kernelHead } from '../../../consts';
-import { trimString, getNameById } from '../../../components/Utility/Utility';
-import { getRequest, postRequest, putRequest } from '../../../apis/RestApi'
+import { trimString } from '../../../components/Utility/Utility';
 import { FETCH_ALL_KERNELS, ADD_KERNEL, UPDATE_KERNEL, DELETE_KERNELS } from '../../../apis/RestConfig'
 import { NotificationManager } from 'react-notifications';
 import { connect } from 'react-redux'
-import { fetchKernels, addKernels, updateKernel, deleteKernel } from '../../../actions/kernelAction';
+import { fetchKernels, addKernels, updateKernel, deleteKernel, setKernelHeadings } from '../../../actions/kernelAction';
+import I from 'immutable'
 
 class LinuxKernel extends Component {
 
@@ -34,7 +33,8 @@ class LinuxKernel extends Component {
 
     static getDerivedStateFromProps(props) {
         return {
-            data: props.data ? props.data.toJS() : []
+            data: props.data ? props.data.toJS() : [],
+            kernelHead: props.headings ? props.headings.toJS() : kernelHead,
         }
     }
 
@@ -184,6 +184,10 @@ class LinuxKernel extends Component {
         this.setState({ displayEditModel: false, selectedRowIndexes: [], showDelete: false })
     }
 
+    setKernelHeadings = (headings) => {
+        this.props.setKernelHeadings(I.fromJS(headings))
+    }
+
 
     render() {
         return (<div>
@@ -201,7 +205,7 @@ class LinuxKernel extends Component {
                 </Media>
             </Media>
             <div style={{ height: '250px', overflowY: 'scroll', marginBottom: '20px' }}>
-                <SummaryDataTable key={this.counter++} heading={this.state.kernelHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
+                <SummaryDataTable heading={this.state.kernelHead} constHeading={kernelHead} setHeadings={this.setKernelHeadings} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
             </div>
             {this.addKernelModal()}
             {this.editKernelModal()}
@@ -212,7 +216,8 @@ class LinuxKernel extends Component {
 
 function mapStateToProps(state) {
     return {
-        data: state.kernelReducer.getIn(['kernels'])
+        data: state.kernelReducer.getIn(['kernels']),
+        headings: state.kernelReducer.getIn(['kernelHeadings'])
     }
 }
 
@@ -221,7 +226,8 @@ function mapDispatchToProps(dispatch) {
         fetchKernels: (url) => dispatch(fetchKernels(url)),
         addKernels: (url, params) => dispatch(addKernels(url, params)),
         updateKernel: (url, params) => dispatch(updateKernel(url, params)),
-        deleteKernel: (url, params) => dispatch(deleteKernel(url, params))
+        deleteKernel: (url, params) => dispatch(deleteKernel(url, params)),
+        setKernelHeadings: (headings) => dispatch(setKernelHeadings(headings))
     }
 }
 

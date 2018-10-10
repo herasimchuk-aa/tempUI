@@ -15,6 +15,14 @@ export function setKernelData(payload) {
     }
 }
 
+export const SET_KERNEL_HEADING = 'SET_KERNEL_HEADING'
+export function setKernelHeadings(payload) {
+    return {
+        type: SET_KERNEL_HEADING,
+        payload: payload
+    }
+}
+
 export const addKernels = (url, params) => (dispatch, getState) => {
     return postRequest(url, params).then(function (json) {
         if (json.StatusCode == 200) {
