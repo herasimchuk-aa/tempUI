@@ -145,6 +145,14 @@ export function setActualNodeInfo(payload) {
     }
 }
 
+export const SET_NODE_HEADING = 'SET_NODE_HEADING'
+export function setNodeHeadings(payload) {
+    return {
+        type: SET_NODE_HEADING,
+        payload: payload
+    }
+}
+
 export const SET_NODES = 'SET_NODES'
 export function setNodes(payload) {
     return {

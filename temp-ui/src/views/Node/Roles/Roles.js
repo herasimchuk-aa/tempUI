@@ -269,7 +269,7 @@ class Roles extends Component {
                     {this.showDeleteButton()}
                 </Row>
                 <Row className="tableTitle">Roles</Row>
-                <SummaryDataTable key={this.counter++} heading={this.state.roleHead} data={this.state.data} toggleModel={this.toggleModel} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} showEditButton={true} />
+                <SummaryDataTable key={this.counter++} heading={this.state.roleHead} constHeading={roleHead} data={this.state.data} toggleModel={this.toggleModel} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} showEditButton={true} />
                 {this.renderUpgradeModelDialog()}
                 {this.renderEditModelDialog()}
 

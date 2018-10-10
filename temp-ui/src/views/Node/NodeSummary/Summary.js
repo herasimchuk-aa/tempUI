@@ -11,7 +11,7 @@ import SearchComponent from '../../../components/SearchComponent/SearchComponent
 import MultiselectDropDown from '../../../components/MultiselectDropdown/MultiselectDropDown';
 import { trimString, converter, validateIPaddress } from '../../../components/Utility/Utility';
 import { FETCH_ALL_NODES, ADD_NODE, DELETE_NODES } from '../../../apis/RestConfig';
-import { fetchNodes, addNode, deleteNodes, setSelectedNodeIds } from '../../../actions/nodeAction';
+import { fetchNodes, addNode, deleteNodes, setSelectedNodeIds, setNodeHeadings } from '../../../actions/nodeAction';
 import { connect } from 'react-redux'
 import I from 'immutable'
 
@@ -21,12 +21,6 @@ class NodeSummary extends Component {
         this.state = {
             nodes: [],
             constNodes: [],
-            roleData: [],
-            isoData: [],
-            siteData: [],
-            kernelData: [],
-            typedata: [],
-            nodeHead: JSON.parse(JSON.stringify(nodeHead)),
             selectedRowIndex: [],
             selectedRows: [],
             displayModel: false,
@@ -48,7 +42,7 @@ class NodeSummary extends Component {
     }
 
     static getDerivedStateFromProps(props) {
-        let { roleData, kernelData, typeData, siteData, goesData, lldpData, ethToolData, speedData, fecData, mediaData, isoData } = props
+        let { roleData, kernelData, typeData, siteData, goesData, lldpData, ethToolData, speedData, fecData, mediaData, isoData, headings } = props
         return {
             nodes: props.nodes ? props.nodes.toJS() : [],
             roleData: roleData ? roleData.toJS() : [],
@@ -62,6 +56,7 @@ class NodeSummary extends Component {
             speedData: speedData ? speedData.toJS() : [],
             fecData: fecData ? fecData.toJS() : [],
             mediaData: mediaData ? mediaData.toJS() : [],
+            nodeHead: headings ? headings.toJS() : [],
         }
     }
 
@@ -308,6 +303,10 @@ class NodeSummary extends Component {
         })
     }
 
+    setNodeHeadings = (headings) => {
+        this.props.setNodeHeadings(I.fromJS(headings))
+    }
+
     render() {
 
         if (this.state.redirect) {
@@ -331,7 +330,8 @@ class NodeSummary extends Component {
                                 </Media>
                             </Media>
                             <Row className="tableTitle">Node Config Summary</Row>
-                            <SummaryDataTable heading={this.state.nodeHead} data={this.state.nodes} checkBoxClick={this.checkBoxClick} selectEntireRow={true} selectedRowIndexes={this.state.selectedRowIndex} />
+                            <SummaryDataTable heading={this.state.nodeHead} data={this.state.nodes} setNodeHeadings={this.setNodeHeadings} constHeading={nodeHead}
+                                checkBoxClick={this.checkBoxClick} selectEntireRow={true} selectedRowIndexes={this.state.selectedRowIndex} />
                         </div>
 
                     </Col>
@@ -357,6 +357,7 @@ function mapStateToProps(state) {
         speedData: state.speedReducer.getIn(['speeds']),
         fecData: state.fecReducer.getIn(['fecs']),
         mediaData: state.mediaReducer.getIn(['medias']),
+        headings: state.nodeReducer.getIn(['nodeHeadings'])
     }
 }
 
@@ -365,7 +366,8 @@ function mapDispatchToProps(dispatch) {
         fetchNodes: (url) => dispatch(fetchNodes(url)),
         addNode: (url, params) => dispatch(addNode(url, params)),
         deleteNodes: (url, params) => dispatch(deleteNodes(url, params)),
-        setSelectedNodeIds: (nodes) => dispatch(setSelectedNodeIds(nodes))
+        setSelectedNodeIds: (nodes) => dispatch(setSelectedNodeIds(nodes)),
+        setNodeHeadings: (headings) => dispatch(setNodeHeadings(headings))
     }
 }
 

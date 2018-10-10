@@ -35,7 +35,7 @@ class SummaryDataTable extends Component {
             height: 0
         };
         this.counter = 0;
-        this.constHeading = JSON.parse(JSON.stringify(props.heading))
+        this.constHeading = props.constHeading
 
     }
 
@@ -344,9 +344,11 @@ class SummaryDataTable extends Component {
                 }
             }
         }
-        this.setState({
-            heading: heading
-        })
+
+        this.props.setNodeHeadings(heading)
+        // this.setState({
+        //     heading: heading
+        // })
     }
 
     checkBoxClick = (rowIndex, singleRowClick) => {
