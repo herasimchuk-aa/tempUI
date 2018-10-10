@@ -51,6 +51,7 @@ class NodeSummary extends Component {
         let { roleData, kernelData, typeData, siteData, goesData, lldpData, ethToolData, speedData, fecData, mediaData, isoData } = props
         return {
             nodes: props.nodes ? props.nodes.toJS() : [],
+            constNodes: props.nodes ? props.nodes.toJS() : [],
             roleData: roleData ? roleData.toJS() : [],
             isoData: isoData ? isoData.toJS() : [],
             kernelData: kernelData ? kernelData.toJS() : [],

@@ -25,7 +25,10 @@ class NodeOpSummary extends React.Component {
     }
 
     static getDerivedStateFromProps(props) {
-        return { nodes: props.nodes ? props.nodes.toJS() : [] }
+        return {
+            nodes: props.nodes ? props.nodes.toJS() : [],
+            constNodes: props.nodes ? props.nodes.toJS() : []
+        }
     }
 
     getFilteredData = (data) => {
