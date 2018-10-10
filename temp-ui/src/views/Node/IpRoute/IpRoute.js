@@ -86,11 +86,11 @@ class IpRoute extends Component {
                 }
                 NotificationManager.error(str)
             } else {
-                NotificationManager.success("IPRoute deleted successfully", "IPRoute") // "Success!"
+                NotificationManager.success("IpRoute2 deleted successfully", "IpRoute2") // "Success!"
             }
         }).catch(function (e) {
             console.log(E)
-            NotificationManager.error("Something went wrong", "IPRoute") // "error!"
+            NotificationManager.error("Something went wrong", "IpRoute2") // "error!"
         })
     }
 
@@ -140,17 +140,17 @@ class IpRoute extends Component {
         let itPromise = self.props.addIpRoutes(ADD_IPROUTE, params)
 
         itPromise.then(function (value) {
-            NotificationManager.success("IpRoute added successfully", "IpRoute") // "Success!"
+            NotificationManager.success("IpRoute2 added successfully", "IpRoute2") // "Success!"
         }).catch(function (e) {
             console.warn(e)
-            NotificationManager.error("Something went wrong", "IpRoute") // "error!"
+            NotificationManager.error("Something went wrong", "IpRoute2") // "error!"
         })
         self.setState({ displayModel: false, visible: false })
     }
 
     showEditDialogBox() {
         if (!this.state.selectedRowIndexes.length || this.state.selectedRowIndexes.length > 1) {
-            alert("Please select one IpRoute to edit")
+            alert("Please select one IpRoute2 to edit")
             return
         }
         this.setState({ displayEditModel: true })

@@ -142,17 +142,17 @@ class Frr extends Component {
         let frrPromise = self.props.addFrr(ADD_FRR, params)
 
         frrPromise.then(function (value) {
-            NotificationManager.success("Frr added successfully", "Frr") // "Success!"
+            NotificationManager.success("FRR added successfully", "FRR") // "Success!"
         }).catch(function (e) {
             console.warn(e)
-            NotificationManager.error("Something went wrong", "Frr") // "error!"
+            NotificationManager.error("Something went wrong", "FRR") // "error!"
         })
         self.setState({ displayModel: false, visible: false })
     }
 
     showEditDialogBox() {
         if (!this.state.selectedRowIndexes.length || this.state.selectedRowIndexes.length > 1) {
-            alert("Please select one Frr to edit")
+            alert("Please select one FRR to edit")
             return
         }
         this.setState({ displayEditModel: true })
@@ -167,7 +167,7 @@ class Frr extends Component {
             let edittedData = this.state.data[this.state.selectedRowIndexes[0]]
             return (
                 <Modal isOpen={this.state.displayEditModel} toggle={() => this.toggleEditModal()} size="sm" centered="true" >
-                    <ModalHeader toggle={() => this.toggleEditModal()}>Edit Frr</ModalHeader>
+                    <ModalHeader toggle={() => this.toggleEditModal()}>Edit FRR</ModalHeader>
                     <ModalBody>
                         Name<font color="red"><sup>*</sup></font> <Input autoFocus disabled className="marTop10" value={edittedData.Name} /><br />
                         Location <Input className="marTop10" id='frrLocEdit' defaultValue={edittedData.Location} /><br />

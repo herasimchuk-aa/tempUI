@@ -185,12 +185,12 @@ class NodeConfig extends Component {
             <Col xs='3'><Label>Ethtool</Label><br />
               <DropDown options={this.state.ethToolData} getSelectedData={this.getSelectedData} identity={"EthTool"} default={this.state.selectedEthToolId} />
             </Col>
-            <Col xs='3'><Label>IpRoute</Label><br />
+            <Col xs='3'><Label>IpRoute2</Label><br />
               <DropDown options={this.state.ipRouteData} getSelectedData={this.getSelectedData} identity={'IpRoute'} default={this.state.selectedIpRouteId} />
             </Col>
           </Row>
           <Row className="pad">
-            <Col xs='3'><Label>Frr</Label><br />
+            <Col xs='3'><Label>FRR</Label><br />
               <DropDown options={this.state.frrData} getSelectedData={this.getSelectedData} identity={'Frr'} default={this.state.selectedFrrId} />
             </Col>
             <Col xs='9'><Label>Provision :</Label><br />
