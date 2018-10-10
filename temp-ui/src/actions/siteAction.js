@@ -43,6 +43,15 @@ export const updateSite = (url, params) => (dispatch, getState) => {
     })
 }
 
+export const SET_SITE_HEADING = 'SET_SITE_HEADING'
+export function setSiteHeadings(payload) {
+    return {
+        type: SET_SITE_HEADING,
+        payload: payload
+    }
+}
+
+
 export const deleteSite = (url, params) => (dispatch, getState) => {
     return postRequest(url, params).then(function (json) {
         if (json.StatusCode == 200) {

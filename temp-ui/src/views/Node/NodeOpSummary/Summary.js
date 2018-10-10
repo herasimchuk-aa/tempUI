@@ -5,8 +5,9 @@ import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import SearchComponent from '../../../components/SearchComponent/SearchComponent';
 import '../../views.css';
 import { FETCH_ALL_NODES } from '../../../apis/RestConfig';
-import { fetchNodes } from '../../../actions/nodeAction';
+import { fetchNodes, setNodeHeadings } from '../../../actions/nodeAction';
 import { connect } from 'react-redux'
+import I from 'immutable'
 
 class NodeOpSummary extends React.Component {
 
@@ -15,9 +16,7 @@ class NodeOpSummary extends React.Component {
         this.state = {
             data: {},
             nodes: [],
-            constNodes: [],
-            nodeSummaryHead: nodeHead,
-            //  JSON.parse(JSON.stringify(nodeHead))
+            constNodes: []
         }
     }
 
@@ -28,7 +27,8 @@ class NodeOpSummary extends React.Component {
     static getDerivedStateFromProps(props) {
         return {
             nodes: props.nodes ? props.nodes.toJS() : [],
-            constNodes: props.nodes ? props.nodes.toJS() : []
+            constNodes: props.nodes ? props.nodes.toJS() : [],
+            nodeSummaryHead: props.headings ? props.headings.toJS() : nodeHead,
         }
     }
 
@@ -44,7 +44,8 @@ class NodeOpSummary extends React.Component {
                 </div>
                 <div style={{ clear: 'both' }}></div>
                 <Row className="tableTitle">Node Summary</Row>
-                <SummaryDataTable heading={this.state.nodeSummaryHead} data={this.state.nodes} showCheckBox={false} />
+                <SummaryDataTable heading={this.state.nodeSummaryHead} data={this.state.nodes} showCheckBox={false}
+                    setHeadings={(headings) => this.props.setNodeHeadings(I.fromJS(headings))} constHeading={nodeHead} />
             </div>
         );
     }
@@ -53,12 +54,14 @@ class NodeOpSummary extends React.Component {
 function mapStateToProps(state) {
     return {
         nodes: state.nodeReducer.getIn(['nodes']),
+        headings: state.nodeReducer.getIn(['nodeHeadings'])
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return {
         fetchNodes: (url) => dispatch(fetchNodes(url)),
+        setNodeHeadings: (params) => dispatch(setNodeHeadings(params))
     }
 }
 

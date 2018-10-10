@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
 import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 import '../../views.css';
-import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import { siteHead } from '../../../consts';
 import { trimString, getNameById } from '../../../components/Utility/Utility';
-import { getRequest, postRequest, putRequest } from '../../../apis/RestApi';
+import I from 'immutable'
 import { FETCH_ALL_SITES, ADD_SITE, UPDATE_SITE, DELETE_SITES } from '../../../apis/RestConfig';
 import { NotificationManager } from 'react-notifications';
 import { connect } from 'react-redux';
-import { getSites, addSites, updateSite, deleteSite } from '../../../actions/siteAction';
+import { getSites, addSites, updateSite, deleteSite, setSiteHeadings } from '../../../actions/siteAction';
 
 class Site extends Component {
 
@@ -34,7 +33,8 @@ class Site extends Component {
 
     static getDerivedStateFromProps(props) {
         return {
-            data: props.data ? props.data.toJS() : []
+            data: props.data ? props.data.toJS() : [],
+            siteHead: props.siteHead ? props.siteHead.toJS() : siteHead
         }
     }
 
@@ -207,7 +207,9 @@ class Site extends Component {
                     {this.showDeleteButton()}
                 </div>
                 <Row className="tableTitle">Site</Row>
-                <SummaryDataTable key={this.counter++} heading={this.state.siteHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
+                <SummaryDataTable key={this.counter++} heading={this.state.siteHead} data={this.state.data}
+                    setHeadings={(headings) => this.props.setSiteHeadings(I.fromJS(headings))} constHeading={siteHead}
+                    checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
                 {this.addSiteModal()}
                 {this.editSiteModal()}
             </div>
@@ -220,7 +222,8 @@ class Site extends Component {
 
 function mapStateToProps(state) {
     return {
-        data: state.siteReducer.get('sites')
+        data: state.siteReducer.get('sites'),
+        siteHead: state.siteReducer.get('siteHeadings')
     }
 }
 
@@ -229,7 +232,8 @@ function mapDispatchToProps(dispatch) {
         getSites: (url) => dispatch(getSites(url)),
         addSites: (url, params) => dispatch(addSites(url, params)),
         updateSite: (url, params) => dispatch(updateSite(url, params)),
-        deleteSite: (url, params) => dispatch(deleteSite(url, params))
+        deleteSite: (url, params) => dispatch(deleteSite(url, params)),
+        setSiteHeadings: (params) => dispatch(setSiteHeadings(params))
     }
 }
 

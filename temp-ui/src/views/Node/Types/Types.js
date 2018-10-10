@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 import '../../views.css';
-import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import { typeHead } from '../../../consts';
 import { trimString, getNameById } from '../../../components/Utility/Utility';
-import { getRequest, postRequest, putRequest } from '../../../apis/RestApi';
+import I from 'immutable'
 import { FETCH_ALL_SYSTEM_TYPES, ADD_SYSTEM_TYPE, UPDATE_SYSTEM_TYPE, DELETE_SYSTEM_TYPES } from '../../../apis/RestConfig';
 import { NotificationManager } from 'react-notifications';
 import { connect } from 'react-redux'
