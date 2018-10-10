@@ -105,7 +105,7 @@ class Frr extends Component {
         if (this.state.displayModel) {
             return (
                 <Modal isOpen={this.state.displayModel} toggle={() => this.cancel()} size="sm" centered="true" >
-                    <ModalHeader toggle={() => this.cancel()}>Add Frr</ModalHeader>
+                    <ModalHeader toggle={() => this.cancel()}>Add FRR</ModalHeader>
                     <ModalBody>
                         <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Name cannot be empty</Alert>
                         Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='frrName' /><br />
@@ -212,7 +212,7 @@ class Frr extends Component {
             <div>
                 <Media className="tableTitle">
                     <Media body>
-                        <div className="padTop5">Frr</div>
+                        <div className="padTop5">FRR</div>
                     </Media>
                     <Media right>
                         <div className='marginLeft10'>

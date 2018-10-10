@@ -10,6 +10,7 @@ import 'react-notifications/lib/notifications.css';
 import MultiselectDropDown from '../../components/MultiselectDropdown/MultiselectDropDown';
 import ProvisionProgress from '../../components/ProvisionProgress/ProvisionProgress';
 import DiscoverModal from '../../components/DiscoverModal/DiscoverModal';
+import ConfirmationModal from '../../components/ConfirmationModal/ConfirmationModal';
 import { UPDATE_NODES, DISCOVER, ADD_KERNEL, ADD_SYSTEM_TYPE, ADD_ISO, FETCH_ALL_GOES, FETCH_ALL_FRR, FETCH_ALL_IPROUTE, FETCH_ALL_LLDP, FETCH_ALL_ETHTOOL, PROVISION } from '../../apis/RestConfig';
 import Interfaces from './interfaces';
 import { connect } from 'react-redux';
@@ -37,6 +38,7 @@ class NodeConfig extends Component {
     this.state = {
       nodeHead: nodeHead,
       displayProvisionModel: false,
+      displayConfirmationModel: false,
       wipeBtn: true,
       rebootBtn: true,
       saveBtn: true,
@@ -211,6 +213,7 @@ class NodeConfig extends Component {
           {summaryDataTable}
         </div>
         {this.provisionModal()}
+        {this.confirmationModal()}
         {this.openDiscoverModal()}
       </div>
 
@@ -327,7 +330,7 @@ class NodeConfig extends Component {
     })
 
     self.props.provisionNode(PROVISION, provisiondata).then(function (data) {
-      self.setState({ displayProvisionModel: true })
+      self.setState({ displayConfirmationModel: true })
     }).catch(function (e) {
       console.log(e)
       NotificationManager.error("Something went wrong", "Provision")
@@ -355,6 +358,22 @@ class NodeConfig extends Component {
     if (this.state.displayProvisionModel) {
       return <ProvisionProgress cancelPro={() => this.closeProvisionModal()} node={this.state.nodes[0]} />
     }
+  }
+
+  confirmationModal() {
+    if (this.state.displayConfirmationModel) {
+      return <ConfirmationModal open={true} actionName={'Provision'} cancel={() => this.closeConfirmationModal()} action={() => this.startProvision()} />
+    }
+  }
+
+  startProvision() {
+    console.log('start ')
+    this.setState({ displayConfirmationModel: false, displayProvisionModel: true })
+  }
+
+  closeConfirmationModal = () => {
+    console.log('closeConfirmationModal ')
+    this.setState({ displayConfirmationModel: false })
   }
 
   closeProvisionModal = () => {
