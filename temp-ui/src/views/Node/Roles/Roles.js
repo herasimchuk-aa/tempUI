@@ -11,7 +11,7 @@ import { FETCH_ALL_ROLES, ADD_ROLE, UPDATE_ROLE, DELETE_ROLES } from '../../../a
 import { NotificationManager } from 'react-notifications';
 import { connect } from 'react-redux';
 import { fetchRoles, addRole, updateRole, deleteRoles, setRoleHeadings } from '../../../actions/roleAction';
-
+import I from 'immutable'
 
 // import $ from 'jquery';
 
@@ -41,7 +41,7 @@ class Roles extends Component {
     static getDerivedStateFromProps(props) {
         return {
             data: props.data ? props.data.toJS() : [],
-            roleHead: props.headings ? props.headings : roleHead
+            roleHead: props.headings ? props.headings.toJS() : roleHead
         }
     }
 
@@ -270,7 +270,8 @@ class Roles extends Component {
                     {this.showDeleteButton()}
                 </Row>
                 <Row className="tableTitle">Roles</Row>
-                <SummaryDataTable key={this.counter++} heading={this.state.roleHead} constHeading={roleHead} data={this.state.data} toggleModel={this.toggleModel} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} showEditButton={true} />
+                <SummaryDataTable key={this.counter++} heading={this.state.roleHead} constHeading={roleHead} setHeadings={(headings) => this.props.setRoleHeadings(I.fromJS(headings))}
+                    data={this.state.data} toggleModel={this.toggleModel} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} showEditButton={true} />
                 {this.renderUpgradeModelDialog()}
                 {this.renderEditModelDialog()}
 
@@ -285,7 +286,7 @@ class Roles extends Component {
 function mapStateToProps(state) {
     return {
         data: state.roleReducer.get('roles'),
-        headings: state.nodeReducer.getIn(['roleHeadings'])
+        headings: state.roleReducer.getIn(['roleHeadings'])
     }
 }
 
