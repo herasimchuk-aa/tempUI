@@ -65,3 +65,11 @@ export const deleteType = (url, params) => (dispatch, getState) => {
         throw new Error(json.Message)
     })
 }
+
+export const SET_TYPE_HEADING = 'SET_TYPE_HEADING'
+export function setTypeHeadings(payload) {
+    return {
+        type: SET_TYPE_HEADING,
+        payload: payload
+    }
+}

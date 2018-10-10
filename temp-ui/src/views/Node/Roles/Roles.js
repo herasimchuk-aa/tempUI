@@ -10,7 +10,7 @@ import { getRequest, postRequest, putRequest } from '../../../apis/RestApi';
 import { FETCH_ALL_ROLES, ADD_ROLE, UPDATE_ROLE, DELETE_ROLES } from '../../../apis/RestConfig';
 import { NotificationManager } from 'react-notifications';
 import { connect } from 'react-redux';
-import { fetchRoles, addRole, updateRole, deleteRoles } from '../../../actions/roleAction';
+import { fetchRoles, addRole, updateRole, deleteRoles, setRoleHeadings } from '../../../actions/roleAction';
 
 
 // import $ from 'jquery';
@@ -40,7 +40,8 @@ class Roles extends Component {
 
     static getDerivedStateFromProps(props) {
         return {
-            data: props.data ? props.data.toJS() : []
+            data: props.data ? props.data.toJS() : [],
+            roleHead: props.headings ? props.headings : roleHead
         }
     }
 
@@ -283,7 +284,8 @@ class Roles extends Component {
 
 function mapStateToProps(state) {
     return {
-        data: state.roleReducer.get('roles')
+        data: state.roleReducer.get('roles'),
+        headings: state.nodeReducer.getIn(['roleHeadings'])
     }
 }
 
@@ -292,7 +294,8 @@ function mapDispatchToProps(dispatch) {
         fetchRoles: (url) => dispatch(fetchRoles(url)),
         addRole: (url, params) => dispatch(addRole(url, params)),
         updateRole: (url, params) => dispatch(updateRole(url, params)),
-        deleteRoles: (url, params) => dispatch(deleteRoles(url, params))
+        deleteRoles: (url, params) => dispatch(deleteRoles(url, params)),
+        setRoleHeadings: (params) => dispatch(setRoleHeadings(params))
     }
 }
 

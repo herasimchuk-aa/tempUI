@@ -57,7 +57,7 @@ class NodeSummary extends Component {
             speedData: speedData ? speedData.toJS() : [],
             fecData: fecData ? fecData.toJS() : [],
             mediaData: mediaData ? mediaData.toJS() : [],
-            nodeHead: headings ? headings.toJS() : [],
+            nodeHead: headings ? headings.toJS() : nodeHead,
         }
     }
 
@@ -331,7 +331,7 @@ class NodeSummary extends Component {
                                 </Media>
                             </Media>
                             <Row className="tableTitle">Node Config Summary</Row>
-                            <SummaryDataTable heading={this.state.nodeHead} data={this.state.nodes} setNodeHeadings={this.setNodeHeadings} constHeading={nodeHead}
+                            <SummaryDataTable heading={this.state.nodeHead} data={this.state.nodes} setHeadings={this.setNodeHeadings} constHeading={nodeHead}
                                 checkBoxClick={this.checkBoxClick} selectEntireRow={true} selectedRowIndexes={this.state.selectedRowIndex} />
                         </div>
 

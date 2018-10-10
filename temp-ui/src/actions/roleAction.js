@@ -72,6 +72,14 @@ export const updateRole = (url, params) => (dispatch, getState) => {
     })
 }
 
+export const SET_ROLE_HEADING = 'SET_ROLE_HEADING'
+export function setRoleHeadings(payload) {
+    return {
+        type: SET_ROLE_HEADING,
+        payload: payload
+    }
+}
+
 export const deleteRoles = (url, params) => (dispatch, getState) => {
     return postRequest(url, params).then(function (json) {
         if (json.StatusCode == 200) {

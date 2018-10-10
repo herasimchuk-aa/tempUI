@@ -9,7 +9,7 @@ import { getRequest, postRequest, putRequest } from '../../../apis/RestApi';
 import { FETCH_ALL_SYSTEM_TYPES, ADD_SYSTEM_TYPE, UPDATE_SYSTEM_TYPE, DELETE_SYSTEM_TYPES } from '../../../apis/RestConfig';
 import { NotificationManager } from 'react-notifications';
 import { connect } from 'react-redux'
-import { fetchTypes, addTypes, updateType, deleteType } from '../../../actions/systemTypeAction';
+import { fetchTypes, addTypes, updateType, deleteType, setTypeHeadings } from '../../../actions/systemTypeAction';
 
 class Types extends Component {
 
@@ -18,7 +18,6 @@ class Types extends Component {
         super(props)
         this.state = {
             data: [],
-            typeHead: typeHead,
             showDelete: false,
             selectedRowIndexes: [],
             displayModel: false,
@@ -35,7 +34,8 @@ class Types extends Component {
 
     static getDerivedStateFromProps(props) {
         return {
-            data: props.data ? props.data.toJS() : []
+            data: props.data ? props.data.toJS() : [],
+            typeHead: props.typeHeadings ? props.typeHeadings.toJS() : typeHead
         }
     }
 
@@ -247,6 +247,10 @@ class Types extends Component {
         this.setState({ displayEditModel: false, selectedRowIndexes: [], showDelete: false })
     }
 
+    setTypeHeadings = (headings) => {
+        this.props.setTypeHeadings(I.fromJS(headings))
+    }
+
     render() {
         return (
             <div>
@@ -256,7 +260,9 @@ class Types extends Component {
                     {this.showDeleteButton()}
                 </div>
                 <Row className="tableTitle">System Types</Row>
-                <SummaryDataTable key={this.counter++} heading={this.state.typeHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
+                <SummaryDataTable key={this.counter++} heading={this.state.typeHead} data={this.state.data} checkBoxClick={this.checkBoxClick}
+                    constHeading={typeHead} setHeadings={this.setTypeHeadings}
+                    selectedRowIndexes={this.state.selectedRowIndexes} />
                 {this.addTypeModal()}
                 {this.editTypeModal()}
             </div>
@@ -266,7 +272,8 @@ class Types extends Component {
 
 function mapStateToProps(state) {
     return {
-        data: state.systemTypeReducer.getIn(['types'])
+        data: state.systemTypeReducer.getIn(['types']),
+        typeHeadings: state.systemTypeReducer.getIn(['typeHeadings'])
     }
 }
 
@@ -275,7 +282,8 @@ function mapDispatchToProps(dispatch) {
         fetchTypes: (url) => dispatch(fetchTypes(url)),
         addTypes: (url, params) => dispatch(addTypes(url, params)),
         updateType: (url, params) => dispatch(updateType(url, params)),
-        deleteType: (url, params) => dispatch(deleteType(url, params))
+        deleteType: (url, params) => dispatch(deleteType(url, params)),
+        setTypeHeadings: (params) => dispatch(setTypeHeadings(params))
     }
 }
 

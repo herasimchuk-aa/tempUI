@@ -345,7 +345,7 @@ class SummaryDataTable extends Component {
             }
         }
 
-        this.props.setNodeHeadings(heading)
+        this.props.setHeadings(heading)
         // this.setState({
         //     heading: heading
         // })
