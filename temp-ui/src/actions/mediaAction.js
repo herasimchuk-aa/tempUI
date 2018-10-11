@@ -3,8 +3,8 @@ import { getRequest } from '../apis/RestApi';
 import { FETCH_ALL_MEDIAS } from '../apis/RestConfig';
 
 export const fetchMedias = () => (dispatch) => {
-    getRequest(FETCH_ALL_MEDIAS).then(function (json) {
-        dispatch(setMediaData(I.fromJS(json.Data)))
+    return getRequest(FETCH_ALL_MEDIAS).then(function (json) {
+        return dispatch(setMediaData(I.fromJS(json.Data)))
     })
 }
 

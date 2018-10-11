@@ -2,8 +2,8 @@ import I from 'immutable'
 import { getRequest, putRequest, postRequest } from '../apis/RestApi';
 
 export const getLLDP = (url) => (dispatch) => {
-    getRequest(url).then(function (json) {
-        dispatch(setLLDPData(I.fromJS(json.Data)))
+    return getRequest(url).then(function (json) {
+        return dispatch(setLLDPData(I.fromJS(json.Data)))
     })
 }
 
@@ -52,7 +52,7 @@ export const deleteLLDP = (url, params) => (dispatch, getState) => {
             let failure = json.Data.Failure ? json.Data.Failure : []
             let changesMade = false
             for (let LLDP of storedLLDP) {
-                if (params.indexOf(LLDP.get('Id')) > -1 && failure.indexOf(iso.get('Id')) < 0) {
+                if (params.indexOf(LLDP.get('Id')) > -1 && failure.indexOf(LLDP.get('Id')) < 0) {
                     storedLLDP = storedLLDP.deleteIn([storedLLDP.indexOf(LLDP)])
                     changesMade = true
                 }

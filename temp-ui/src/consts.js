@@ -94,6 +94,12 @@ export let nodeHead = [
         showDefault: false
     },
     {
+        id: 'frrVersion',
+        displayName: 'FRR',
+        colSize: 1,
+        showDefault: false
+    },
+    {
         id: 'ipRouteVersion',
         displayName: 'IpRoute2',
         colSize: 1,

@@ -2,8 +2,8 @@ import I from 'immutable'
 import { getRequest, putRequest, postRequest } from '../apis/RestApi';
 
 export const getEthTool = (url) => (dispatch) => {
-    getRequest(url).then(function (json) {
-        dispatch(setEthToolData(I.fromJS(json.Data)))
+    return getRequest(url).then(function (json) {
+        return dispatch(setEthToolData(I.fromJS(json.Data)))
     })
 }
 
@@ -51,7 +51,7 @@ export const deleteEthTools = (url, params) => (dispatch, getState) => {
             let changesMade = false
             let failure = json.Data.Failure ? json.Data.Failure : []
             for (let ethTool of storedEthtool) {
-                if (params.indexOf(ethTool.get('Id')) > -1 && failure.indexOf(iso.get('Id')) < 0) {
+                if (params.indexOf(ethTool.get('Id')) > -1 && failure.indexOf(ethTool.get('Id')) < 0) {
                     storedEthtool = storedEthtool.deleteIn([storedEthtool.indexOf(ethTool)])
                     changesMade = true
                 }

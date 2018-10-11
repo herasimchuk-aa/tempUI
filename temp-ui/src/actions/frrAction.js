@@ -52,7 +52,7 @@ export const deleteFrrs = (url, params) => (dispatch, getState) => {
             let failure = json.Data.Failure ? json.Data.Failure : []
             let changesMade = false
             for (let frr of storedFrr) {
-                if (params.indexOf(frr.get('Id')) > -1 && failure.indexOf(iso.get('Id')) < 0) {
+                if (params.indexOf(frr.get('Id')) > -1 && failure.indexOf(frr.get('Id')) < 0) {
                     storedFrr = storedFrr.deleteIn([storedFrr.indexOf(frr)])
                     changesMade = true
                 }

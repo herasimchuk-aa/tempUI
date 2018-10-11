@@ -3,8 +3,8 @@ import { getRequest } from '../apis/RestApi';
 import { FETCH_ALL_FECS } from '../apis/RestConfig';
 
 export const fetchFecs = () => (dispatch) => {
-    getRequest(FETCH_ALL_FECS).then(function (json) {
-        dispatch(setFecData(I.fromJS(json.Data)))
+    return getRequest(FETCH_ALL_FECS).then(function (json) {
+        return dispatch(setFecData(I.fromJS(json.Data)))
     })
 }
 
