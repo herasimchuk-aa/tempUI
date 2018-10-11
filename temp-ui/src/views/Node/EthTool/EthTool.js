@@ -214,7 +214,7 @@ class EthTool extends Component {
         return (<div>
             <Media className="tableTitle">
                 <Media body>
-                    <div className="padTop5">EthTool</div>
+                    <div className="padTop5">Ethtool</div>
                 </Media>
                 <Media right>
                     <div className='marginLeft10'>

@@ -211,7 +211,7 @@ class IpRoute extends Component {
             <div>
                 <Media className="tableTitle">
                     <Media body>
-                        <div className="padTop5">IpRoute2</div>
+                        <div className="padTop5">Iproute2</div>
                     </Media>
                     <Media right>
                         <div className='marginLeft10'>

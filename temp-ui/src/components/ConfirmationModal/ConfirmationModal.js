@@ -15,7 +15,6 @@ class ConfirmationModal extends Component {
     }
 
     action = () => {
-        console.log('inside action')
         if (this.props.action) {
             this.props.action()
         }
@@ -24,7 +23,6 @@ class ConfirmationModal extends Component {
     }
 
     cancel() {
-        console.log('inside cancel')
         this.setState({ open: false })
         this.props.cancel()
     }

@@ -148,7 +148,7 @@ class NodeConfig extends Component {
                 <DropDown options={this.state.kernelData} getSelectedData={this.getSelectedData} identity={"Linux"} default={this.state.selectedLinuxId} />
               </Media>
               <Media right>
-                <Button className="custBtn marTop40 marLeft10 " disabled={this.state.rebootBtn} outline color="secondary" > Reboot </Button>
+                <Button className="custBtn marTop40 marLeft10 " disabled={this.state.rebootBtn} outline color="secondary" onClick={() => { this.onRebootClick() }}> Reboot </Button>
               </Media>
             </Media>
           </div>
@@ -198,10 +198,9 @@ class NodeConfig extends Component {
                 <div><input type="checkbox" id="provisionGoes" defaultChecked={false} /> Goes </div>
                 <div><input type="checkbox" id="provisionLldp" defaultChecked={false} /> LLDP </div>
                 <div><input type="checkbox" id="provisionEthtool" defaultChecked={false} /> Ethtool </div>
-                <div><input type="checkbox" id="provisionFrr" defaultChecked={false} /> Frr </div>
-                <div><input type="checkbox" id="provisionIpRoute" defaultChecked={false} /> IpRoute2 </div>
+                <div><input type="checkbox" id="provisionFrr" defaultChecked={false} /> FRR </div>
+                <div><input type="checkbox" id="provisionIpRoute" defaultChecked={false} /> Iproute2 </div>
                 <div><input type="checkbox" id="provisionInterfaces" defaultChecked={false} /> Interfaces </div>
-                <div><input type="checkbox" id="provisionKernel" defaultChecked={false} /> Kernel </div>
               </ div>
             </Col>
           </Row>
@@ -215,6 +214,7 @@ class NodeConfig extends Component {
         {this.provisionModal()}
         {this.confirmationModal()}
         {this.openDiscoverModal()}
+        {this.confirmationModalWipe()}
       </div>
 
     )
@@ -310,7 +310,7 @@ class NodeConfig extends Component {
   onProvisionClick() {
     if (!document.getElementById('provisionGoes').checked && !document.getElementById('provisionLldp').checked &&
       !document.getElementById('provisionEthtool').checked && !document.getElementById('provisionInterfaces').checked
-      && !document.getElementById('provisionFrr').checked && !document.getElementById('provisionKernel').checked) {
+      && !document.getElementById('provisionFrr').checked) {
       alert("Please select an App to provision")
       return
     }
@@ -323,7 +323,6 @@ class NodeConfig extends Component {
         'lldp': document.getElementById('provisionLldp').checked,
         'ethtool': document.getElementById('provisionEthtool').checked,
         'interfaces': document.getElementById('provisionInterfaces').checked,
-        'kernel': document.getElementById('provisionKernel').checked,
         'iproute': document.getElementById('provisionIpRoute').checked,
         'frr': document.getElementById('provisionFrr').checked
       }
@@ -337,8 +336,42 @@ class NodeConfig extends Component {
     })
   }
 
+  onRebootClick() {
+    let self = this
+    let provisiondata = Object.assign({}, {
+      'NodeId': self.state.nodes[0].Id,
+      'role': 'cloud-node',
+      'items': {
+        'goes': false,
+        'lldp': false,
+        'ethtool': false,
+        'kernel': true,
+        'interfaces': false,
+        'iproute': false,
+        'frr': false
+      }
+    })
+
+    self.props.provisionNode(PROVISION, provisiondata).then(function (data) {
+      self.setState({ displayConfirmationModel: true })
+    }).catch(function (e) {
+      console.log(e)
+      NotificationManager.error("Something went wrong", "Provision")
+    })
+  }
+
   wipeISO = () => {
-    console.log("wipeISO callback");
+    this.setState({ displayConfirmationModelForWipe: true })
+  }
+
+  confirmationModalWipe() {
+    if (this.state.displayConfirmationModelForWipe) {
+      return <ConfirmationModal open={true} actionName={'Wipe'} cancel={() => this.closeConfirmationModalWipe()} />
+    }
+  }
+
+  closeConfirmationModalWipe = () => {
+    this.setState({ displayConfirmationModelForWipe: fale })
   }
 
   handleChanges = (selectedOption) => {
@@ -367,12 +400,10 @@ class NodeConfig extends Component {
   }
 
   startProvision() {
-    console.log('start ')
     this.setState({ displayConfirmationModel: false, displayProvisionModel: true })
   }
 
   closeConfirmationModal = () => {
-    console.log('closeConfirmationModal ')
     this.setState({ displayConfirmationModel: false })
   }
 
