@@ -224,8 +224,14 @@ class Frr extends Component {
                     </Media>
                 </Media>
                 <div style={{ height: '200px', overflowY: 'scroll', overflowX: 'hidden' }}>
-                    <SummaryDataTable heading={this.state.frrHead} data={this.state.data} checkBoxClick={this.checkBoxClick}
-                        constHeading={frrHead} setHeadings={this.setFrrHeadings} selectedRowIndexes={this.state.selectedRowIndexes} />
+                    <SummaryDataTable
+                        heading={this.state.frrHead}
+                        data={this.state.data}
+                        checkBoxClick={this.checkBoxClick}
+                        constHeading={frrHead}
+                        setHeadings={this.setFrrHeadings}
+                        selectedRowIndexes={this.state.selectedRowIndexes}
+                        tableName={"frrTable"} />
                 </div>
                 {this.addFrrModal()}
                 {this.editFrrModal()}

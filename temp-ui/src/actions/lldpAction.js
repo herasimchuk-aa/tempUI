@@ -54,7 +54,7 @@ export const deleteLLDP = (url, params) => (dispatch, getState) => {
             for (let LLDP of storedLLDP) {
                 if (params.indexOf(LLDP.get('Id')) > -1 && failure.indexOf(iso.get('Id')) < 0) {
                     storedLLDP = storedLLDP.deleteIn([storedLLDP.indexOf(LLDP)])
-                    break
+                    changesMade = true
                 }
             }
             if (changesMade) {

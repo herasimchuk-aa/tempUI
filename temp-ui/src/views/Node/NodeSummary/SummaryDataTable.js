@@ -2,10 +2,7 @@ import React, { Component } from 'react';
 import { Table, Column, Cell } from 'fixed-data-table-2'
 import { TextCell, TextCellForArray, BadgeCell, ValidationCell, CollapseCell, GetFirstValueCell, ProvisionCell, List } from './Cells';
 import 'fixed-data-table-2/dist/fixed-data-table.css';
-import {
-    Input, Popover, PopoverBody, Row, Col, ListGroup,
-    ListGroupItem
-} from 'reactstrap';
+import { Input, Popover, PopoverBody } from 'reactstrap';
 import Dimensions from 'react-dimensions'
 import '../../views.css'
 
@@ -14,7 +11,7 @@ const containerWidth = window.innerWidth - widthOffset;
 const containerHeight = window.innerHeight - 300;
 const rowHeight = 50
 const headerHeight = 50
-const POPOVER_PLACEMENT = "top"
+const POPOVER_PLACEMENT = "bottom-end"
 
 
 
@@ -49,8 +46,8 @@ class SummaryDataTable extends Component {
             heading: props.heading,
             selectedRowIndexes: props.selectedRowIndexes,
             selectEntireRow: props.selectEntireRow,
-            // showEditButton: props.showEditButton
-            showCollapse: props.showCollapse
+            showCollapse: props.showCollapse,
+            tableName: props.tableName
         }
     }
 
@@ -205,7 +202,7 @@ class SummaryDataTable extends Component {
         let totalheight = Math.min(containerHeight, tableHeight)
         return (
             <div>
-                <div style={{ float: "right" }} id={'popoverPlacementDiv'}></div>
+                <div style={{ float: "right" }} id={props.tableName}></div>
                 <Table
                     className="tableOutlineNone"
                     scrollToRow={scrollToRow}
@@ -369,14 +366,14 @@ class SummaryDataTable extends Component {
         this.setState({ popoverOpen: false })
     }
 
-    drawPopOver = () => {
+    drawPopOver = (props = this.props) => {
         if (!this.state.popoverOpen)
             return null
         return (
             <div ref={this.wrapperRef}>
-                <Popover placement={'top-end'}
-                    container={document.getElementById('popoverPlacementDiv')}
-                    isOpen={this.state.popoverOpen} target={'popoverPlacementDiv'} toggle={this.contextMenu}>
+                <Popover placement={POPOVER_PLACEMENT}
+                    container={document.getElementById(props.tableName)}
+                    isOpen={this.state.popoverOpen} target={props.tableName} toggle={this.contextMenu}>
                     <PopoverBody>
                         {this.drawColumnSelection()}
                     </PopoverBody>

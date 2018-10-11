@@ -331,8 +331,15 @@ class NodeSummary extends Component {
                                 </Media>
                             </Media>
                             <Row className="tableTitle">Node Config Summary</Row>
-                            <SummaryDataTable heading={this.state.nodeHead} data={this.state.nodes} setHeadings={this.setNodeHeadings} constHeading={nodeHead}
-                                checkBoxClick={this.checkBoxClick} selectEntireRow={true} selectedRowIndexes={this.state.selectedRowIndex} />
+                            <SummaryDataTable
+                                heading={this.state.nodeHead}
+                                data={this.state.nodes}
+                                setHeadings={this.setNodeHeadings}
+                                constHeading={nodeHead}
+                                checkBoxClick={this.checkBoxClick}
+                                selectEntireRow={true}
+                                selectedRowIndexes={this.state.selectedRowIndex}
+                                tableName={"nodeConfigSummaryTable"} />
                         </div>
 
                     </Col>

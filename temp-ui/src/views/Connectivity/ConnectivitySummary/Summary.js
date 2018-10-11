@@ -38,7 +38,13 @@ class ConnectivitySummary extends React.Component {
         return (
             <div>
                 <Row className="tableTitle">Connectivity Summary</Row>
-                <SummaryDataTable heading={this.state.connectivityHead} setHeadings={this.setConnectivityHeadings} constHeading={connectivityHead} data={this.state.nodes} showCheckBox={false} showCollapse={true}></SummaryDataTable>
+                <SummaryDataTable
+                    heading={this.state.connectivityHead}
+                    setHeadings={this.setConnectivityHeadings}
+                    constHeading={connectivityHead} data={this.state.nodes}
+                    showCheckBox={false}
+                    showCollapse={true}
+                    tableName={"connectivityTable"} />
             </div>
         );
     }

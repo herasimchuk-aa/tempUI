@@ -53,7 +53,7 @@ export const deleteIpRoute = (url, params) => (dispatch, getState) => {
             for (let ipRoute of storedIpRoute) {
                 if (params.indexOf(ipRoute.get('Id')) > -1 && failure.indexOf(iso.get('Id')) < 0) {
                     storedIpRoute = storedIpRoute.deleteIn([storedIpRoute.indexOf(ipRoute)])
-                    break
+                    changesMade = true
                 }
             }
             if (changesMade) {

@@ -216,7 +216,14 @@ class BaseLinuxIso extends Component {
                     </Media>
                 </Media>
                 <div style={{ height: '250px', overflowY: 'scroll' }}>
-                    <SummaryDataTable heading={this.state.isoHead} setHeadings={(headings) => this.props.setISOHeadings(I.fromJS(headings))} constHeading={isoHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
+                    <SummaryDataTable
+                        heading={this.state.isoHead}
+                        setHeadings={(headings) => this.props.setISOHeadings(I.fromJS(headings))}
+                        constHeading={isoHead}
+                        data={this.state.data}
+                        checkBoxClick={this.checkBoxClick}
+                        selectedRowIndexes={this.state.selectedRowIndexes}
+                        tableName={"isoTable"} />
                 </div>
                 {this.addISOModal()}
                 {this.editISOModal()}

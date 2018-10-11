@@ -91,7 +91,7 @@ export const deleteRoles = (url, params) => (dispatch, getState) => {
             for (let role of storedRoles) {
                 if (params.indexOf(role.get('Id')) > -1 && failure.indexOf(role.get('Id')) < 0) {
                     storedRoles = storedRoles.deleteIn([storedRoles.indexOf(role)])
-                    break
+                    changesMade = true
                 }
             }
             if (changesMade) {

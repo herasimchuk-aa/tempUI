@@ -54,7 +54,7 @@ export const deleteFrrs = (url, params) => (dispatch, getState) => {
             for (let frr of storedFrr) {
                 if (params.indexOf(frr.get('Id')) > -1 && failure.indexOf(iso.get('Id')) < 0) {
                     storedFrr = storedFrr.deleteIn([storedFrr.indexOf(frr)])
-                    break
+                    changesMade = true
                 }
             }
             if (changesMade) {

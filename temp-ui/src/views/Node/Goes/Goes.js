@@ -223,9 +223,15 @@ class Goes extends Component {
                     </div>
                 </Media>
             </Media>
-            <div >
-                <SummaryDataTable heading={this.state.goesHead} data={this.state.data} checkBoxClick={this.checkBoxClick}
-                    constHeading={goesHead} setHeadings={this.setGoesHeadings} selectedRowIndexes={this.state.selectedRowIndexes} />
+            <div style={{ height: '200px', overflowY: 'scroll', overflowX: 'hidden' }}>
+                <SummaryDataTable
+                    heading={this.state.goesHead}
+                    data={this.state.data}
+                    checkBoxClick={this.checkBoxClick}
+                    constHeading={goesHead}
+                    setHeadings={this.setGoesHeadings}
+                    selectedRowIndexes={this.state.selectedRowIndexes}
+                    tableName={"goesTable"} />
             </div>
             {this.addGoesModal()}
             {this.editGoesModal()}

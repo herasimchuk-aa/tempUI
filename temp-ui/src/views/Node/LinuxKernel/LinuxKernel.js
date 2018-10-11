@@ -205,7 +205,14 @@ class LinuxKernel extends Component {
                 </Media>
             </Media>
             <div style={{ height: '250px', overflowY: 'scroll', marginBottom: '20px' }}>
-                <SummaryDataTable heading={this.state.kernelHead} constHeading={kernelHead} setHeadings={this.setKernelHeadings} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
+                <SummaryDataTable
+                    heading={this.state.kernelHead}
+                    constHeading={kernelHead}
+                    setHeadings={this.setKernelHeadings}
+                    data={this.state.data}
+                    checkBoxClick={this.checkBoxClick}
+                    selectedRowIndexes={this.state.selectedRowIndexes}
+                    tableName={"kernelTable"} />
             </div>
             {this.addKernelModal()}
             {this.editKernelModal()}

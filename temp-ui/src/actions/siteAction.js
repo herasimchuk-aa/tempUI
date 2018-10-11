@@ -62,7 +62,7 @@ export const deleteSite = (url, params) => (dispatch, getState) => {
             for (let site of storedSites) {
                 if (params.indexOf(site.get('Id')) > -1 && failure.indexOf(site.get('Id')) < 0) {
                     storedSites = storedSites.deleteIn([storedSites.indexOf(site)])
-                    break
+                    changesMade = true
                 }
             }
             if (changesMade) {

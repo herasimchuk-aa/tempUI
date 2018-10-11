@@ -58,14 +58,17 @@ export const deleteKernel = (url, params) => (dispatch, getState) => {
             let store = getState()
             let storedkernels = store.kernelReducer.get('kernels')
             let failure = json.Data.Failure ? json.Data.Failure : []
-
+            let changesMade = false
             for (let kernel of storedkernels) {
                 if (params.indexOf(kernel.get('Id')) > -1 && failure.indexOf(kernel.get('Id')) < 0) {
                     storedkernels = storedkernels.deleteIn([storedkernels.indexOf(kernel)])
-                    break
+                    changesMade = true
                 }
             }
-            return dispatch(setKernelData(storedkernels))
+            if (changesMade) {
+                dispatch(setKernelData(storedkernels))
+            }
+            return json.Data
         }
         throw new Error(json.Message)
     })

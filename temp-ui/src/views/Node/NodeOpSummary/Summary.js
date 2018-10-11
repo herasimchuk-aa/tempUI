@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Row, Col, ListGroup, ListGroupItem } from 'reactstrap';
+import React from 'react';
+import { Row } from 'reactstrap';
 import { nodeHead } from '../../../consts';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import SearchComponent from '../../../components/SearchComponent/SearchComponent';
@@ -44,8 +44,13 @@ class NodeOpSummary extends React.Component {
                 </div>
                 <div style={{ clear: 'both' }}></div>
                 <Row className="tableTitle">Node Summary</Row>
-                <SummaryDataTable heading={this.state.nodeSummaryHead} data={this.state.nodes} showCheckBox={false}
-                    setHeadings={(headings) => this.props.setNodeHeadings(I.fromJS(headings))} constHeading={nodeHead} />
+                <SummaryDataTable
+                    heading={this.state.nodeSummaryHead}
+                    data={this.state.nodes}
+                    showCheckBox={false}
+                    setHeadings={(headings) => this.props.setNodeHeadings(I.fromJS(headings))}
+                    constHeading={nodeHead}
+                    tableName={"nodeSummaryTable"} />
             </div>
         );
     }

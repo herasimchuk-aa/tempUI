@@ -259,9 +259,14 @@ class Types extends Component {
                     {this.showDeleteButton()}
                 </div>
                 <Row className="tableTitle">System Types</Row>
-                <SummaryDataTable heading={this.state.typeHead} data={this.state.data} checkBoxClick={this.checkBoxClick}
-                    constHeading={typeHead} setHeadings={this.setTypeHeadings}
-                    selectedRowIndexes={this.state.selectedRowIndexes} />
+                <SummaryDataTable
+                    heading={this.state.typeHead}
+                    data={this.state.data}
+                    checkBoxClick={this.checkBoxClick}
+                    constHeading={typeHead}
+                    setHeadings={this.setTypeHeadings}
+                    selectedRowIndexes={this.state.selectedRowIndexes}
+                    tableName={"systemTypeTable"} />
                 {this.addTypeModal()}
                 {this.editTypeModal()}
             </div>

@@ -225,9 +225,14 @@ class EthTool extends Component {
                 </Media>
             </Media>
             <div style={{ height: '200px', overflowY: 'scroll', overflowX: 'hidden' }}>
-                <SummaryDataTable heading={this.state.ethHead} data={this.state.data} checkBoxClick={this.checkBoxClick}
-                    constHeading={ethHead} setHeadings={this.setEthtoolHeadings}
-                    selectedRowIndexes={this.state.selectedRowIndexes} />
+                <SummaryDataTable
+                    heading={this.state.ethHead}
+                    data={this.state.data}
+                    checkBoxClick={this.checkBoxClick}
+                    constHeading={ethHead}
+                    setHeadings={this.setEthtoolHeadings}
+                    selectedRowIndexes={this.state.selectedRowIndexes}
+                    tableName={"ethtoolTable"} />
             </div>
             {this.addEthToolModal()}
             {this.editEthToolModal()}

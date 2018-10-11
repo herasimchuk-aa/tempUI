@@ -224,9 +224,14 @@ class LLDP extends Component {
                 </Media>
             </Media>
             <div style={{ height: '200px', overflowY: 'scroll', overflowX: 'hidden' }}>
-                <SummaryDataTable heading={this.state.lldpHead} data={this.state.data} checkBoxClick={this.checkBoxClick}
-                    constHeading={lldpHead} setHeadings={this.setLLDPHeadings}
-                    selectedRowIndexes={this.state.selectedRowIndexes} />
+                <SummaryDataTable
+                    heading={this.state.lldpHead}
+                    data={this.state.data}
+                    checkBoxClick={this.checkBoxClick}
+                    constHeading={lldpHead}
+                    setHeadings={this.setLLDPHeadings}
+                    selectedRowIndexes={this.state.selectedRowIndexes}
+                    tableName={"lldpTable"} />
             </div>
             {this.addLLDPModal()}
             {this.editLLDPModal()}

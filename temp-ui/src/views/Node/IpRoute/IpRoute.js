@@ -222,9 +222,14 @@ class IpRoute extends Component {
                     </Media>
                 </Media>
                 <div style={{ height: '200px', overflowY: 'scroll', overflowX: 'hidden' }}>
-                    <SummaryDataTable heading={this.state.ipRouteHead} data={this.state.data} checkBoxClick={this.checkBoxClick}
-                        constHeading={ipRouteHead} setHeadings={this.setIpRouteHeadings}
-                        selectedRowIndexes={this.state.selectedRowIndexes} />
+                    <SummaryDataTable
+                        heading={this.state.ipRouteHead}
+                        data={this.state.data}
+                        checkBoxClick={this.checkBoxClick}
+                        constHeading={ipRouteHead}
+                        setHeadings={this.setIpRouteHeadings}
+                        selectedRowIndexes={this.state.selectedRowIndexes}
+                        tableName={"ipRouteTable"} />
                 </div>
                 {this.renderUpgradeModelDialog()}
                 {this.renderEditModelDialog()}

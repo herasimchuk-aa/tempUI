@@ -55,7 +55,6 @@ export const deleteGoes = (url, params) => (dispatch, getState) => {
                 if (params.indexOf(goes.get('Id')) > -1 && failure.indexOf(goes.get('Id')) < 0) {
                     storedGoes = storedGoes.deleteIn([storedGoes.indexOf(goes)])
                     changesMade = true
-                    break
                 }
             }
             if (changesMade) {

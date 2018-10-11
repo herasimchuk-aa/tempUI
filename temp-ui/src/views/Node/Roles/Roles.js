@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
+import { Row, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 import '../../views.css';
-import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import { roleHead } from '../../../consts'
 import DropDown from '../../../components/dropdown/DropDown';
@@ -28,8 +27,6 @@ class Roles extends Component {
             showDelete: false,
             alertVisible: false,
             selectedRole: '',
-            displayRoleUpdateModel: false,
-            updateRowIndex: null,
         }
         this.counter = 0;
     }
@@ -42,33 +39,6 @@ class Roles extends Component {
         return {
             data: props.data ? props.data.toJS() : [],
             roleHead: props.headings ? props.headings.toJS() : roleHead
-        }
-    }
-
-    retrieveRoleData() {
-        let self = this
-        getRequest(FETCH_ALL_ROLES).then(function (json) {
-            json.Data.map(function (item, index) {
-                let parentId = json.Data[index].ParentId
-                json.Data[index].ParentName = '-'
-                if (parentId) {
-                    json.Data.find(function (element) {
-                        if (parentId == element.Id) {
-                            json.Data[index].ParentName = element.Name
-                        }
-                    })
-                }
-            })
-            self.setState({ data: json.Data, selectedRowIndexes: [] })
-        })
-    }
-
-    retrieveData(instance, data) {
-        if (data === undefined) {
-            alert("No data received");
-        }
-        else {
-            instance.setState({ data: data, selectedRowIndexes: [] });
         }
     }
 
@@ -86,11 +56,6 @@ class Roles extends Component {
         else {
             this.setState({ showDelete: false });
         }
-    }
-
-
-    toggleModel = (rowIndex) => {
-        this.setState({ updateRowIndex: rowIndex, displayRoleUpdateModel: !this.state.displayRoleUpdateModel })
     }
 
 
@@ -117,7 +82,7 @@ class Roles extends Component {
                 <Modal isOpen={this.state.displayModel} toggle={() => this.cancel()} size="sm" centered="true" >
                     <ModalHeader toggle={() => this.cancel()}>Add Role</ModalHeader>
                     <ModalBody>
-                        <Alert color="danger" isOpen={this.state.alertVisible} toggle={() => this.onDismiss()} >Role Name cannot be empty</Alert>
+                        <Alert color="danger" isOpen={this.state.alertVisible} toggle={() => this.closeAlert()} >Role Name cannot be empty</Alert>
                         Parent Role <DropDown className="marTop10" options={this.state.data} getSelectedData={this.getSelectedData} identity={"Role"} /><br />
                         Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='roleName' /><br />
                         Description <Input className="marTop10" id='roleDesc' /><br />
@@ -135,7 +100,8 @@ class Roles extends Component {
     cancel() {
         this.setState({ displayModel: !this.state.displayModel, alertVisible: false })
     }
-    onDismiss() {
+
+    closeAlert() {
         this.setState({ alertVisible: false });
     }
 
@@ -162,7 +128,13 @@ class Roles extends Component {
                 'Description': document.getElementById('roleDesc').value
             }
         }
-        this.props.addRole(ADD_ROLE, params)
+        let rolePromise = this.props.addRole(ADD_ROLE, params)
+        rolePromise.then(function () {
+            NotificationManager.success("Role added successfully", "Role")
+        }).catch(function (e) {
+            console.warn(e)
+            NotificationManager.error("Something went wrong", "Role")
+        })
         this.setState({ displayModel: false, selectedRole: '', alertVisible: false })
     }
 
@@ -270,8 +242,14 @@ class Roles extends Component {
                     {this.showDeleteButton()}
                 </Row>
                 <Row className="tableTitle">Roles</Row>
-                <SummaryDataTable heading={this.state.roleHead} constHeading={roleHead} setHeadings={(headings) => this.props.setRoleHeadings(I.fromJS(headings))}
-                    data={this.state.data} toggleModel={this.toggleModel} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} showEditButton={true} />
+                <SummaryDataTable
+                    heading={this.state.roleHead}
+                    constHeading={roleHead} setHeadings
+                    ={(headings) => this.props.setRoleHeadings(I.fromJS(headings))}
+                    data={this.state.data}
+                    checkBoxClick={this.checkBoxClick}
+                    selectedRowIndexes={this.state.selectedRowIndexes}
+                    tableName={"roleTable"} />
                 {this.renderUpgradeModelDialog()}
                 {this.renderEditModelDialog()}
 

@@ -62,7 +62,7 @@ export const deleteISO = (url, params) => (dispatch, getState) => {
             for (let iso of storedISOs) {
                 if (params.indexOf(iso.get('Id')) > -1 && failure.indexOf(iso.get('Id')) < 0) {
                     storedISOs = storedISOs.deleteIn([storedISOs.indexOf(iso)])
-                    break
+                    changesMade = true
                 }
             }
             if (changesMade) {

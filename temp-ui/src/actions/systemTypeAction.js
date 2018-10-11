@@ -53,7 +53,7 @@ export const deleteType = (url, params) => (dispatch, getState) => {
             for (let type of storedTypes) {
                 if (params.indexOf(type.get('Id')) > -1 && failure.indexOf(type.get('Id')) < 0) {
                     storedTypes = storedTypes.deleteIn([storedTypes.indexOf(type)])
-                    break
+                    changesMade = true
                 }
             }
             if (changesMade) {

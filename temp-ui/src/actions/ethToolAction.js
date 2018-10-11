@@ -53,7 +53,7 @@ export const deleteEthTools = (url, params) => (dispatch, getState) => {
             for (let ethTool of storedEthtool) {
                 if (params.indexOf(ethTool.get('Id')) > -1 && failure.indexOf(iso.get('Id')) < 0) {
                     storedEthtool = storedEthtool.deleteIn([storedEthtool.indexOf(ethTool)])
-                    break
+                    changesMade = true
                 }
             }
             if (changesMade) {
