@@ -180,7 +180,7 @@ class NodeSummary extends Component {
                         </Row>
                         <Row>
                             <Col sm="6" className="marTop10">Type
-                                <DropDown options={this.state.typedata} getSelectedData={this.getSelectedData} identity={"Type"} default={this.state.selectedTypeId} />
+                                <DropDown options={this.state.typeData} getSelectedData={this.getSelectedData} identity={"Type"} default={this.state.selectedTypeId} />
                             </Col>
                             <Col sm="6" className="marTop10"> Site
                                 <DropDown options={this.state.siteData} getSelectedData={this.getSelectedData} identity={"Site"} default={this.state.selectedSiteId} />
@@ -240,7 +240,6 @@ class NodeSummary extends Component {
         }
 
         let self = this
-        self.toggleLoading()
         let validateUnique = true
         let nodesList = self.state.nodes
         nodesList.map((datum) => {
@@ -274,6 +273,7 @@ class NodeSummary extends Component {
             'SN': document.getElementById('nodeSerialNumber').value,
             'Kernel_Id': parseInt(self.state.selectedLinuxId),
         }
+        self.toggleLoading()
         this.props.addNode(ADD_NODE, params).then(function () {
             NotificationManager.success("Node added successfully", "Node")
             self.setState({ displayModel: false, visible: false, isSaveLoading: false })

@@ -366,12 +366,12 @@ class NodeConfig extends Component {
 
   confirmationModalWipe() {
     if (this.state.displayConfirmationModelForWipe) {
-      return <ConfirmationModal open={true} actionName={'Wipe'} cancel={() => this.closeConfirmationModalWipe()} />
+      return <ConfirmationModal open={true} actionName={'Wipe'} cancel={() => this.closeConfirmationModalWipe()} action={() => this.startProvision()} />
     }
   }
 
   closeConfirmationModalWipe = () => {
-    this.setState({ displayConfirmationModelForWipe: fale })
+    this.setState({ displayConfirmationModelForWipe: false })
   }
 
   handleChanges = (selectedOption) => {
@@ -400,7 +400,7 @@ class NodeConfig extends Component {
   }
 
   startProvision() {
-    this.setState({ displayConfirmationModel: false, displayProvisionModel: true })
+    this.setState({ displayConfirmationModel: false, displayConfirmationModelForWipe: false, displayProvisionModel: true })
   }
 
   closeConfirmationModal = () => {

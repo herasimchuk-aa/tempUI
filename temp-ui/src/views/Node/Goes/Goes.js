@@ -223,7 +223,7 @@ class Goes extends Component {
                     </div>
                 </Media>
             </Media>
-            <div style={{ height: '200px', overflowY: 'scroll', overflowX: 'hidden' }}>
+            <div >
                 <SummaryDataTable heading={this.state.goesHead} data={this.state.data} checkBoxClick={this.checkBoxClick}
                     constHeading={goesHead} setHeadings={this.setGoesHeadings} selectedRowIndexes={this.state.selectedRowIndexes} />
             </div>
