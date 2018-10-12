@@ -1,29 +1,6 @@
 import React, { Component } from 'react';
-import { ServerAPI } from '../../ServerAPI';
-import {
-    Row,
-    Col,
-    Badge,
-    Button,
-    ButtonDropdown,
-    DropdownToggle,
-    DropdownMenu,
-    DropdownItem,
-    Card,
-    CardHeader,
-    CardFooter,
-    CardBody,
-    Collapse,
-    Form,
-    FormGroup,
-    FormText,
-    Label,
-    Input,
-    InputGroup,
-    InputGroupAddon,
-    InputGroupText,
-    Table
-} from 'reactstrap';
+import { Button, CardHeader, CardBody, Input } from 'reactstrap';
+import '../../views/views.css'
 
 
 class Dashboard extends Component {
@@ -42,7 +19,7 @@ class Dashboard extends Component {
     }
 
     onIPSubmit() {
-        if(!this.state.ipAddress) {
+        if (!this.state.ipAddress) {
             alert("Enter an IP")
             return
         }
@@ -66,7 +43,7 @@ class Dashboard extends Component {
         retHTML.push(
             <CardBody id="invader_ip_text" key="invader_ip_text">
                 <Input type="text" placeholder="Key" required defaultValue={this.state.ipAddress} onChange={(event) => this.onIPChange(event)} />
-                <Button className="floatRight" color="link" size="lg" onClick={() => this.onIPSubmit()}> Save </Button>
+                <Button className="custBtn animated fadeIn floatRight marTop10" outline color="secondary" onClick={() => this.onIPSubmit()}>Save</Button>
             </CardBody>
         );
         return retHTML;

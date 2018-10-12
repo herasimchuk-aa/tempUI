@@ -208,7 +208,7 @@ class NodeConfig extends Component {
             {interfaceDiv}
           </div>
         </div>
-        <div className="padTop20">
+        <div className="padTop50">
           {summaryDataTable}
         </div>
         {this.provisionModal()}

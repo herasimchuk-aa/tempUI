@@ -1,8 +1,9 @@
 import React from 'react';
-import { Row } from 'reactstrap';
+import { Row, Media } from 'reactstrap';
 import { connectivityHead } from '../../../consts';
 import '../../views.css';
 import { FETCH_ALL_NODES } from '../../../apis/RestConfig';
+import SearchComponent from '../../../components/SearchComponent/SearchComponent';
 import SummaryDataTable from '../../Node/NodeSummary/SummaryDataTable';
 import { fetchNodes, setConnectivityHeadings } from '../../../actions/nodeAction';
 import { connect } from 'react-redux'
@@ -26,6 +27,7 @@ class ConnectivitySummary extends React.Component {
 
         return {
             nodes: props.nodes ? props.nodes.toJS() : [],
+            constNodes: props.nodes ? props.nodes.toJS() : [],
             connectivityHead: props.headings ? props.headings.toJS() : connectivityHead,
         }
     }
@@ -34,10 +36,23 @@ class ConnectivitySummary extends React.Component {
         this.props.setConnectivityHeadings(I.fromJS(headings))
     }
 
+    getFilteredData = (data) => {
+        this.setState({
+            nodes: data
+        })
+    }
+
     render() {
         return (
             <div>
-                <Row className="tableTitle">Connectivity Summary</Row>
+                <Media>
+                    <Media left />
+                    <Media body />
+                    <Media right>
+                        <SearchComponent data={this.state.constNodes} getFilteredData={this.getFilteredData} />
+                    </ Media>
+                </Media>
+                <Row className="tableTitle marTop10">Connectivity Summary</Row>
                 <SummaryDataTable
                     heading={this.state.connectivityHead}
                     setHeadings={this.setConnectivityHeadings}
