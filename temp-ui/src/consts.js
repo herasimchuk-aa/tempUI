@@ -418,7 +418,9 @@ export let permissionHead = [
     {
         id: 'Name',
         displayName: 'Name'
+
     }
+
 ];
 
 export let userHead = [
@@ -430,6 +432,21 @@ export let userHead = [
     {
         id: 'UserRoles',
         displayName: 'Roles',
+        operation: 'array',
+        colSize: 6,
+        showDefault: true
+    }
+];
+
+export let userRoleHead = [
+    {
+        id: 'Name',
+        displayName: 'Name',
+        colSize: 6
+    },
+    {
+        id: 'Permissions',
+        displayName: 'Permission',
         operation: 'array',
         colSize: 6,
         showDefault: true

@@ -295,8 +295,6 @@ class DiscoverModal extends Component {
         let tempCommonActInterface = []
         let existingInterfaces = this.state.existingNode[0].interfaces
         let actualInterfaces = this.state.actualNode.interfaces
-        console.log('existingInterfaces', existingInterfaces)
-        console.log('actualInterfaces', actualInterfaces)
         //to get common interfaces from existing and actual interfaces
         if (existingInterfaces && existingInterfaces.length) {
             existingInterfaces.map((exitem, index) => {
@@ -311,8 +309,8 @@ class DiscoverModal extends Component {
 
             })
         }
-        console.log('tempCommonExistInterface', tempCommonExistInterface)
-        console.log('tempCommonExistInterface', tempCommonExistInterface)
+
+
         let stringTemp = []
 
         if (tempCommonExistInterface && tempCommonExistInterface.length) {
@@ -391,9 +389,6 @@ class DiscoverModal extends Component {
             })
         }
 
-        console.log('unCommonActualInterfaces', unCommonActualInterfaces)
-        console.log('unCommonExistingInterface', unCommonExistingInterface)
-
         let bothInterfaceSame = false
         if ((tempCommonExistInterface.length == tempCommonActInterface.length) && (unCommonExistingInterfaces.length == 0) && (unCommonActualInterfaces.length == 0)) {
             bothInterfaceSame = true
@@ -428,10 +423,6 @@ class DiscoverModal extends Component {
         }
 
         let totalCheckBoxLength = finalActualList.length
-        console.log('finalActualList', finalActualList)
-        console.log('finalExistingList', finalExistingList)
-
-        console.log('totalCheckBoxLength', totalCheckBoxLength)
         let interfaceTable = []
 
 
@@ -505,7 +496,6 @@ class DiscoverModal extends Component {
         else {
             actualInterfaces = []
         }
-        console.log(this.state.Open)
         return (
             <Modal isOpen={this.state.Open} toggle={() => this.cancel()} size="lg" centered="true" >
                 <ModalHeader toggle={() => this.cancel()}> Discover Node </ModalHeader>

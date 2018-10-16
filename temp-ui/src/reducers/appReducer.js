@@ -16,6 +16,8 @@ import frrReducer from './frrReducer'
 import kubernetesReducer from './kubernetesReducer'
 import entityReducer from './entityReducer'
 import permissionReducer from './permissionReducer'
+import userRoleReducer from './userRoleReducer'
+import userReducer from './userReducer'
 
 export default combineReducers({
     nodeReducer,
@@ -34,5 +36,7 @@ export default combineReducers({
     frrReducer,
     kubernetesReducer,
     entityReducer,
-    permissionReducer
+    permissionReducer,
+    userRoleReducer,
+    userReducer
 })

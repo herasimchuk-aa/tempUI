@@ -31,7 +31,6 @@ export default class MultiselectDropDown extends Component {
     }
 
     render() {
-
         let options = this.state.options
         if (options && options.length) {
             options.map((item) => {

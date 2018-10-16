@@ -301,9 +301,13 @@ class TextCellForArray extends React.PureComponent {
                     </Cell >
                 );
             }
-
+            UserRoles
         } else {
             if (columnKey == 'roleDetails') {
+                arr = data[rowIndex][columnKey]
+            } else if (columnKey == 'Permissions') {
+                arr = data[rowIndex][columnKey]
+            } else if (columnKey == 'UserRoles') {
                 arr = data[rowIndex][columnKey]
             } else {
                 arr = data[rowIndex]['interfaces']
