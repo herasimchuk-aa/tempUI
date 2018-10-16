@@ -22,7 +22,11 @@ const routes = {
   '/pcc/monitoring/BmcMonitor': 'BMC Monitor',
   '/pcc/monitoring/TilesApp': 'TileApp',
   '/pcc/monitoring/ipvs': 'IPVS',
-  '/pcc/kubernetes': 'Kubernetes'
+  '/pcc/kubernetes': 'Kubernetes',
+  '/pcc/management/user' : 'Users',
+  '/pcc/management/role' : 'User Roles',
+  '/pcc/management/permission': 'Permissions',
+  '/pcc/management/entity' : 'Entities'
 
 };
 export default routes;

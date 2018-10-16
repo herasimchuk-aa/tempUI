@@ -21,11 +21,11 @@ class Login extends Component {
         let username = document.getElementById('user').value
         let validatename = validateName(username)
         if (!username) {
-            error.push('Name field is mandatory ')
+            error.push('Username is mandatory ')
         }
         let psw = document.getElementById('psw').value
         if (!psw) {
-            error.push('password field is mandatory')
+            error.push('Password is mandatory')
         }
         if (error.length) {
             this.setState({ error: error, showAlert: true })
@@ -39,13 +39,13 @@ class Login extends Component {
         let psw1 = document.getElementById('password').value
         let psw2 = document.getElementById('confirmPassword').value
         if (!psw1) {
-            error.push('password field is mandatory')
+            error.push('Password is mandatory')
         }
         if (!psw2) {
-            error.push('confirm password field is mandatory')
+            error.push('Please confirm the password')
         }
         if (psw1 != psw2) {
-            error.push('password does not match')
+            error.push('Passwords do not match')
         }
 
         if (error.length) {
@@ -60,16 +60,16 @@ class Login extends Component {
         document.getElementById('forgotpassword').style.display = 'none'
         document.getElementById('logInBtn').style.display = 'none'
         document.getElementById('forgotpasswordBtn').style.display = 'block'
-       
+
     }
     showForgotPsw = () => {
         document.getElementById('logIn').style.display = 'none'
         document.getElementById('forgotpassword').style.display = 'block'
         document.getElementById('logInBtn').style.display = 'block'
         document.getElementById('forgotpasswordBtn').style.display = 'none'
-        
+
     }
-   
+
 
     cancelAlert = () => {
         this.setState({ showAlert: false });

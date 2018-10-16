@@ -15,7 +15,7 @@ import { getEthTool } from './ethToolAction';
 import { getIpRoute } from './ipRouteAction';
 import { getFrr } from './frrAction';
 export const fetchNodes = (url) => (dispatch, getState) => {
-    getRequest(url).then(function (nodeData) {
+    return getRequest(url).then(function (nodeData) {
         let typePromise = dispatch(fetchTypes(FETCH_ALL_SYSTEM_TYPES))
         let rolePromise = dispatch(fetchRoles(FETCH_ALL_ROLES))
         let kernelPromise = dispatch(fetchKernels(FETCH_ALL_KERNELS))
@@ -26,7 +26,7 @@ export const fetchNodes = (url) => (dispatch, getState) => {
         let ethToolPromise = dispatch(getEthTool(FETCH_ALL_ETHTOOL))
         let ipRoutePromise = dispatch(getIpRoute(FETCH_ALL_IPROUTE))
         let frrPromise = dispatch(getFrr(FETCH_ALL_FRR))
-        Promise.all([typePromise, rolePromise, kernelPromise, isoPromise, sitePromise, goesPromise, lldpPromise, ethToolPromise, ipRoutePromise, frrPromise]).then(function () {
+        return Promise.all([typePromise, rolePromise, kernelPromise, isoPromise, sitePromise, goesPromise, lldpPromise, ethToolPromise, ipRoutePromise, frrPromise]).then(function () {
             let store = getState()
             let nodes = convertData(nodeData.Data, store)
             //temp code . remove it 
@@ -42,8 +42,8 @@ export const fetchNodes = (url) => (dispatch, getState) => {
                     }
                 })
             }
-            Promise.all(provisionPromises).then(function () {
-                dispatch(setNodes(I.fromJS(nodes)))
+            return Promise.all(provisionPromises).then(function () {
+                return dispatch(setNodes(I.fromJS(nodes)))
             })
         })
     })

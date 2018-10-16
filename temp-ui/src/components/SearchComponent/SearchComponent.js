@@ -9,13 +9,13 @@ class SearchComponent extends Component {
             //      <CardHeader>Search</CardHeader>
             //      <CardBody>
             //         <InputGroup >
-                        
+
             //             <InputGroupAddon addonType="append" className="borRadRight"></InputGroupAddon>
             //         </InputGroup>
             //  </CardBody>
             // </Card> 
 
-            <Input placeholder="search" onChange={(e) => this.onInputChange(e)} style={{width:'400px',marginRight:'-15px',borderRadius:'6px'}}/>
+            <Input placeholder="search" onChange={(e) => this.onInputChange(e)} style={{ width: '400px', marginRight: '-15px', borderRadius: '6px' }} />
         );
     }
 
@@ -42,6 +42,11 @@ class SearchComponent extends Component {
                                 if (arrayVal.indexOf(searchVal) > -1) {
                                     return true
                                 }
+                            }
+                            else if (typeof arrayVal === "object" && arrayVal && arrayVal.Name) {
+                                arrayVal = arrayVal.Name.toLowerCase()
+                                if (arrayVal.indexOf(searchVal) > -1)
+                                    return true
                             }
                         }
 

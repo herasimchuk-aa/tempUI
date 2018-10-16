@@ -29,6 +29,10 @@ import Goes from '../../views/Node/Goes/Goes';
 import EthTool from '../../views/Node/EthTool/EthTool';
 import Linux from '../../views/Node/Linux';
 import App from '../../views/Node/App';
+import User from '../../views/Management/User';
+import UserRole from '../../views/Management/UserRole';
+import Permission from '../../views/Management/Permission';
+import Entity from '../../views/Management/Entity';
 
 
 class Full extends Component {
@@ -68,6 +72,10 @@ class Full extends Component {
                                 <Route path="/pcc/node/config" name="Monitor" component={NodeConfig} />
                                 <Route path="/pcc/kubernetes" name="Kubernetes" component={Kubernetes} />
                                 <Route path="/pcc/node" name="Node" component={NodeSummary} />
+                                <Route path="/pcc/management/user" name="User" component={User} />
+                                <Route path="/pcc/management/role" name="UserRole" component={UserRole} />
+                                <Route path="/pcc/management/permission" name="Permission" component={Permission} />
+                                <Route path="/pcc/management/entity" name="Entity" component={Entity} />
                                 <Redirect from="/pcc" to="/pcc/dashboard"></Redirect>
                             </Switch>
                         </Container>

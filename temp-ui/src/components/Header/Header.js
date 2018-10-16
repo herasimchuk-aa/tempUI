@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
 import {
-  Nav,
-  NavItem,
   NavbarToggler,
-  NavbarBrand, Button
+  Button,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem
+
+
 } from 'reactstrap';
-import Styles from './Header.css';
 import '../../views/views.css';
 import { Redirect } from 'react-router-dom';
 
@@ -57,7 +60,17 @@ class Header extends Component {
         <NavbarToggler className="d-md-down-none mr-auto" onClick={this.sidebarMinimize}>
           <span className="navbar-toggler-icon"></span>
         </NavbarToggler>
-        <Button className="custBtn" onClick={() => (this.logOut())}><span>Log Out</span></Button>
+        {/* <Button className="custBtn" onClick={() => (this.logOut())}><span>Log Out</span></Button> */}
+        <UncontrolledDropdown setActiveFromChild>
+          <DropdownToggle tag="a" className="nav-link cursor-pointer " caret>
+            Account
+          </DropdownToggle>
+          <DropdownMenu>
+            <DropdownItem > Profile</DropdownItem>
+            <DropdownItem > Settings</DropdownItem>
+            <DropdownItem onClick={() => (this.logOut())}> Log Out</DropdownItem>
+          </DropdownMenu>
+        </UncontrolledDropdown>
 
         {/* <NavbarToggler className="d-md-down-none" onClick={this.asideToggle}>
           <span className="navbar-toggler-icon"></span>

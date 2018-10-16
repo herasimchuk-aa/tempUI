@@ -40,26 +40,26 @@ export default {
           url: '/pcc/node/Types',
           icon: 'icon-notebook',
         },
-/*         {
-          name: 'Linux Kernel',
-          url: '/pcc/node/Linuxkernel',
-          icon: 'icon-map',
-        },
-        {
-          name: 'Goes',
-          url: '/pcc/node/Goes',
-          icon: 'icon-map',
-        },
-        {
-          name: 'LLDP',
-          url: '/pcc/node/Lldp',
-          icon: 'icon-map',
-        },
-        {
-          name: 'EthTool',
-          url: '/pcc/node/EthTool',
-          icon: 'icon-map',
-        },*/
+        /*         {
+                  name: 'Linux Kernel',
+                  url: '/pcc/node/Linuxkernel',
+                  icon: 'icon-map',
+                },
+                {
+                  name: 'Goes',
+                  url: '/pcc/node/Goes',
+                  icon: 'icon-map',
+                },
+                {
+                  name: 'LLDP',
+                  url: '/pcc/node/Lldp',
+                  icon: 'icon-map',
+                },
+                {
+                  name: 'EthTool',
+                  url: '/pcc/node/EthTool',
+                  icon: 'icon-map',
+                },*/
         {
           name: 'Site',
           url: '/pcc/node/Site',
@@ -69,7 +69,7 @@ export default {
           name: 'Base Linux ISO',
           url: '/pcc/node/BaseLinuxIso',
           icon: 'icon-bell',
-        },*/ 
+        },*/
         {
           name: 'Linux',
           url: '/pcc/node/linux',
@@ -120,6 +120,30 @@ export default {
       url: '/pcc/kubernetes',
       icon: 'icon-vector',
     },
+    {
+      title: true,
+      name: 'Management',
+    },
+    {
+      name: 'User',
+      url: '/pcc/management/user',
+      icon: 'icon-vector',
+    },
+    {
+      name: 'Role',
+      url: '/pcc/management/role',
+      icon: 'icon-vector',
+    },
+    {
+      name: 'Permission',
+      url: '/pcc/management/permission',
+      icon: 'icon-vector',
+    },
+    {
+      name: 'Entity',
+      url: '/pcc/management/entity',
+      icon: 'icon-vector',
+    }
     // {
     //   title: true,
     //   name: 'Operations',
