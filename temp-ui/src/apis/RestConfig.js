@@ -99,11 +99,11 @@ export const ADD_USER = "/rbac/user/add"
 export const UPDATE_USER = "/rbac/user/update"
 export const DELETE_USERS = "/rbac/user/delete"
 
-//apis for role
-export const FETCH_ALL_ROLES = "/rbac/role"
-export const ADD_ROLE = "/rbac/role/add"
-export const UPDATE_ROLE = "/rbac/role/update"
-export const DELETE_ROLES = "/rbac/role/delete"
+//apis for rbac role
+export const FETCH_ALL_RBAC_ROLES = "/rbac/role"
+export const ADD_RBAC_ROLE = "/rbac/role/add"
+export const UPDATE_RBAC_ROLE = "/rbac/role/update"
+export const DELETE_RBAC_ROLES = "/rbac/role/delete"
 
 //apis for permission
 export const FETCH_ALL_PERMISSIONS = "/rbac/permission"
