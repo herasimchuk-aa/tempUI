@@ -86,3 +86,27 @@ export const GET_PROVISION = "/provision/status/"
 export const FETCH_ALL_SPEEDS = "/speed"
 export const FETCH_ALL_FECS = "/fec"
 export const FETCH_ALL_MEDIAS = "/media"
+
+//apis for entity
+export const FETCH_ALL_ENTITIES = "/rbac/entity"
+export const ADD_ENTITY = "/rbac/entity/add"
+export const UPDATE_ENTITY = "/rbac/entity/update"
+export const DELETE_ENTITIES = "/rbac/entity/delete"
+
+//apis for user
+export const FETCH_ALL_USERS = "/rbac/user"
+export const ADD_USER = "/rbac/user/add"
+export const UPDATE_USER = "/rbac/user/update"
+export const DELETE_USERS = "/rbac/user/delete"
+
+//apis for role
+export const FETCH_ALL_ROLES = "/rbac/role"
+export const ADD_ROLE = "/rbac/role/add"
+export const UPDATE_ROLE = "/rbac/role/update"
+export const DELETE_ROLES = "/rbac/role/delete"
+
+//apis for permission
+export const FETCH_ALL_PERMISSIONS = "/rbac/permission"
+export const ADD_PERMISSION = "/rbac/permission/add"
+export const UPDATE_PERMISSION = "/rbac/permission/update"
+export const DELETE_PERMISSIONS = "/rbac/permission/delete"

@@ -402,3 +402,14 @@ export let siteHead = [
         colSize: 6
     }
 ];
+
+export let entityHead = [
+    {
+        id: 'Name',
+        displayName: 'Name',
+    },
+    {
+        id: 'Description',
+        displayName: 'Description',
+    }
+];
