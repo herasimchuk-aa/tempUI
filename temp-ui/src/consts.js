@@ -418,7 +418,10 @@ export let permissionHead = [
     {
         id: 'Name',
         displayName: 'Name'
-
+    },
+    {
+        id: 'EntityName',
+        displayName: 'Entity'
     }
 
 ];

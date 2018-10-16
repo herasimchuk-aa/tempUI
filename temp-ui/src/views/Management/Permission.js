@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Row, Col, Modal, ModalHeader, ModalBody, ModalFooter, Media, Button } from 'reactstrap'
+import { Row, Col, Modal, ModalHeader, ModalBody, ModalFooter, Media, Button, Input } from 'reactstrap'
 import { getPermissions, addPermission, updatePermission, deletePermission, setPermissionHeadings } from '../../actions/permissionActions';
 import DropDown from '../../components/dropdown/DropDown';
-import { FETCH_ALL_PERMISSIONS, FETCH_ALL_ENTITIES } from '../../apis/RestConfig';
+import SummaryDataTable from '../Node/NodeSummary/SummaryDataTable';
+import '../views.css';
+import { FETCH_ALL_PERMISSIONS, FETCH_ALL_ENTITIES, ADD_PERMISSION } from '../../apis/RestConfig';
 import { fetchAllEntities } from '../../actions/entityAction';
+import { permissionHead } from '../../consts';
 
 class Permission extends Component {
     constructor(props) {
@@ -12,8 +15,9 @@ class Permission extends Component {
         this.state = {
             displayModel: false,
             displayEditModal: false,
-            selectedEntity: ''
-            // entityData: [{ 'Id': 1, 'Name': 'e1' }, { 'Id': 2, 'Name': 'e2' }, { 'Id': 3, 'Name': 'e3' }]
+            selectedEntity: '',
+            showDelete: false,
+            selectedRowIndexes: []
         }
     }
 
@@ -34,49 +38,45 @@ class Permission extends Component {
         this.setState({ displayModel: !this.state.displayModel })
     }
 
+    toggleEdit() {
+        this.setState({ displayEditModal: !this.state.displayEditModal })
+    }
+
     getSelectedData = (data, identity) => {
         if (identity == 'Entity') {
             this.setState({ selectedEntity: data })
         }
     }
 
+    checkBoxClick = (rowIndex) => {
+        let { selectedRowIndexes } = this.state
+        let arrayIndex = selectedRowIndexes.indexOf(rowIndex)
+        if (arrayIndex > -1) {
+            selectedRowIndexes.splice(arrayIndex, 1)
+        } else {
+            selectedRowIndexes.push(rowIndex)
+        }
+        if (this.state.selectedRowIndexes.length > 0) {
+            this.setState({ showDelete: true });
+        }
+        else {
+            this.setState({ showDelete: false });
+        }
+    }
+
     addPermissionModal() {
         if (this.state.displayModel) {
-            let header = (
-                <Row>
-                    <Col md="8" className="pad">Entities</Col>
-                    <Col md="1" className="pad">C</Col>
-                    <Col md="1" className="pad">R</Col>
-                    <Col md="1" className="pad">U</Col>
-                    <Col md="1" className="pad">D</Col>
-                </Row>
-            )
-            let data = []
-            data.push(
-                <Row>
-                    <Col md="8" className="pad"><DropDown className="marTop10" options={this.state.entityData} getSelectedData={this.getSelectedData} identity={"Entity"} default={this.state.selectedEntity} /></Col>
-                    <Col md="1" className="pad"><input type="checkbox" id={"_C"} defaultChecked={false} /></Col>
-                    <Col md="1" className="pad"><input type="checkbox" id={"_R"} defaultChecked={false} /></Col>
-                    <Col md="1" className="pad"><input type="checkbox" id={"_U"} defaultChecked={false} /></Col>
-                    <Col md="1" className="pad"><input type="checkbox" id={"_D"} defaultChecked={false} /></Col>
-                </Row>)
-            // for (let i = 0; i < this.state.entityData.length; i++) {
-            //     let key = this.state.entityData[i].Id
-            //     data.push(<Row>
-            //         <Col md="4" className="pad"><font>{this.state.entityData[i].Name}</font></Col>
-            //         <Col md="2" className="pad"><input type="checkbox" id={key + "_C"} defaultChecked={false} /></Col>
-            //         <Col md="2" className="pad"><input type="checkbox" id={key + "_R"} defaultChecked={false} /></Col>
-            //         <Col md="2" className="pad"><input type="checkbox" id={key + "_U"} defaultChecked={false} /></Col>
-            //         <Col md="2" className="pad"><input type="checkbox" id={key + "_D"} defaultChecked={false} /></Col>
-            //     </Row>)
-            // }
-
             return (
-                <Modal isOpen={this.state.displayModel} toggle={() => this.toggle()} size="md" centered="true" >
+                <Modal isOpen={this.state.displayModel} toggle={() => this.toggle()} size="sm" centered="true" >
                     <ModalHeader autoFocus toggle={() => this.toggle()}>Add Permission</ModalHeader>
                     <ModalBody>
-                        {header}
-                        {data}
+                        Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='permissionName' /><br />
+                        Entity <DropDown className="marTop10" options={this.state.entityData} getSelectedData={this.getSelectedData} identity={"Entity"} default={this.state.selectedEntity} /><br />
+                        Permissions <br />
+                        <input type="checkbox" className="marTop10" id={"_C"} defaultChecked={false} />Create<br />
+                        <input type="checkbox" className="marTop10" id={"_R"} defaultChecked={false} />Read<br />
+                        <input type="checkbox" className="marTop10" id={"_U"} defaultChecked={false} />Update<br />
+                        <input type="checkbox" className="marTop10" id={"_D"} defaultChecked={false} />Delete
                     </ModalBody>
                     <ModalFooter>
                         <Button className="custBtn" outline color="primary" onClick={() => (this.addPermission())}>Add</Button>{'  '}
@@ -88,26 +88,56 @@ class Permission extends Component {
 
     }
 
-    addPermission() {
-        let data = document.querySelectorAll("input[type='checkbox']:checked")
-        let d = []
-        let b = []
-        for (let i = 0; i < data.length; i++) {
-            // d.push(data[i].id.split('_'))
-            let a = data[i].id.split('_')
-            this.state.entityData.find(item => {
-                if (item.Id == a[0]) {
-                    let obj = {
-                        'entity': item.Name,
-                        'role': a[1]
-                    }
-                    b.push(obj)
-                }
 
-            })
+    addPermission() {
+        let entityId = parseInt(this.state.selectedEntity)
+        let entityName = ''
+        this.state.entityData.find(item => {
+            if (entityId == item.Id) {
+                entityName = item.Name
+                return
+            }
+
+        })
+
+        let params = {
+            'Name': document.getElementById('permissionName').value,
+            'Entity': {
+                'Id': entityId,
+                // 'Name': entityName
+            },
+            'Operation': {
+                'Create': document.getElementById('_C').checked,
+                'Update': document.getElementById('_R').checked,
+                'Read': document.getElementById('_U').checked,
+                'Delete': document.getElementById('_D').checked
+            }
         }
-        console.log(d)
-        console.log(b)
+        this.props.addPermission(ADD_PERMISSION, params).then().catch()
+        this.toggle()
+    }
+
+    editPermissionModal() {
+        if (this.state.displayEditModal) {
+            return (
+                <Modal isOpen={this.state.displayEditModal} toggle={() => this.toggleEdit()} size="sm" centered="true" >
+                    <ModalHeader autoFocus toggle={() => this.toggleEdit()}>Edit Permission</ModalHeader>
+                    <ModalBody>
+                        Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='permissionName' /><br />
+                        Entity <DropDown className="marTop10" options={this.state.entityData} getSelectedData={this.getSelectedData} identity={"Entity"} default={this.state.selectedEntity} /><br />
+                        Permissions <br />
+                        <input type="checkbox" className="marTop10" id={"_C"} defaultChecked={false} />Create<br />
+                        <input type="checkbox" className="marTop10" id={"_R"} defaultChecked={false} />Read<br />
+                        <input type="checkbox" className="marTop10" id={"_U"} defaultChecked={false} />Update<br />
+                        <input type="checkbox" className="marTop10" id={"_D"} defaultChecked={false} />Delete
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button className="custBtn" outline color="primary" onClick={() => (this.editPermission())}>Add</Button>{'  '}
+                        <Button className="custBtn" outline color="primary" onClick={() => (this.toggleEdit())}>Cancel</Button>
+                    </ModalFooter>
+                </Modal>)
+
+        }
     }
 
     render() {
@@ -120,11 +150,20 @@ class Permission extends Component {
                     <Media right>
                         <div className='marginLeft10'>
                             <Button onClick={() => (this.toggle())} className="custBtn animated fadeIn marginLeft13N">New</Button>
-                            <Button onClick={() => (this.showEditDialogBox())} className="custBtn animated fadeIn">Edit</Button>
+                            {/* <Button onClick={() => (this.toggleEdit())} className="custBtn animated fadeIn">Edit</Button> */}
                         </div>
                     </Media>
                 </Media>
+                <SummaryDataTable
+                    heading={this.state.permissionHead}
+                    data={this.state.data}
+                    setHeadings={(headings) => this.props.setPermissionHeadings(I.fromJS(headings))}
+                    constHeading={permissionHead}
+                    checkBoxClick={this.checkBoxClick}
+                    selectedRowIndexes={this.state.selectedRowIndexes}
+                    tableName={"permissionTable"} />
                 {this.addPermissionModal()}
+                {this.editPermissionModal()}
             </div>
         );
     }

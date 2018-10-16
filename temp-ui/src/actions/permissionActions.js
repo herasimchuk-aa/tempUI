@@ -3,8 +3,19 @@ import { getRequest, postRequest, putRequest } from '../apis/RestApi';
 
 export const getPermissions = (url) => (dispatch) => {
     return getRequest(url).then(function (json) {
-        return dispatch(setPermissionData(I.fromJS(json.Data)))
+        if (json.StatusCode == 200) {
+            let permissionData = convertData(I.fromJS(json.Data))
+            return dispatch(setPermissionData(permissionData))
+        }
     })
+}
+
+function convertData(permissions) {
+    permissions = permissions.map(function (item) {
+        item = item.set('EntityName', item.getIn(['Entity', 'Name'], ''))
+        return item
+    })
+    return permissions
 }
 
 export const SET_PERMISSION_DATA = 'SET_PERMISSION_DATA'
@@ -28,6 +39,7 @@ export const addPermission = (url, params) => (dispatch, getState) => {
         if (json.StatusCode == 200) {
             let storedPermissions = getState().permissionReducer.getIn(['permissions'], I.List())
             storedPermissions = storedPermissions.push(I.fromJS(json.Data))
+            storedPermissions = convertData(storedPermissions)
             return dispatch(setPermissionData(storedPermissions))
         }
         throw new Error(json.Message)
@@ -45,7 +57,8 @@ export const updatePermission = (url, params) => (dispatch, getState) => {
                 }
                 return permission
             })
-            return dispatch(setPermissionData(I.fromJS(storedPermissions)))
+            storedPermissions = convertData(storedPermissions)
+            return dispatch(setPermissionData(storedPermissions))
         }
         throw new Error(json.Message)
     })
