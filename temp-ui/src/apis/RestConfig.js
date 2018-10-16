@@ -81,6 +81,7 @@ export const DISCOVER = "/node/discover"
 //apis for provision
 export const PROVISION = "/provision/"
 export const GET_PROVISION = "/provision/status/"
+export const ROLLBACK_PROVISION = "/provision/rollback/"
 
 //apis for constants
 export const FETCH_ALL_SPEEDS = "/speed"

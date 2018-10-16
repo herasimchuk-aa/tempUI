@@ -131,6 +131,20 @@ export const provisionNode = (url, params) => (dispatch, getState) => {
     })
 }
 
+export const rollbackProvision = (url, params) => (dispatch, getState) => {
+    return postRequest(url, params).then(function (provisionData) {
+        let store = getState()
+        let storedNodes = store.nodeReducer.get('nodes')
+        storedNodes = storedNodes.map(function (node) {
+            if (node.get('Id') === provisionData.Data.NodeId) {
+                // node = node.set('executionStatusObj', I.fromJS(provisionData.Data))
+            }
+            return node
+        })
+        return dispatch(setNodes(storedNodes))
+    })
+}
+
 export const fetchActualNode = (url, nodeId) => (dispatch, getState) => {
     let node = {
         'Id': nodeId
@@ -245,17 +259,17 @@ function convertNode(node, types, kernels, isos, sites, roles, goes, lldps, ethT
     })
     lldps.map((item) => {
         if (item.get('Id') == node.Lldp_Id) {
-            node.lldpVersion = item.get('Version')
+            node.lldp = Object.assign({}, item.toJS())
         }
     })
     ethTools.map((item) => {
         if (item.get('Id') == node.Ethtool_Id) {
-            node.ethToolVersion = item.get('Version')
+            node.ethTool = Object.assign({}, item.toJS())
         }
     })
     ipRoutes.map((item) => {
         if (item.get('Id') == node.Iproute_Id) {
-            node.ipRouteVersion = item.get('Version')
+            node.ipRoute = Object.assign({}, item.toJS())
         }
     })
     frr.map((item) => {

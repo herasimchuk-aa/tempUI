@@ -7,7 +7,7 @@ class DiscoverModal extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            isOpen: true,
+            Open: false,
             showAlert: true,
             existingNode: [],
             blankChkCount: 0,
@@ -17,7 +17,7 @@ class DiscoverModal extends Component {
     }
 
     static getDerivedStateFromProps(props, state) {
-        return { existingNode: props.node, actualNode: props.actualNode, isOpen: props.isOpen }
+        return { existingNode: props.node, actualNode: props.actualNode, Open: props.isOpen }
     }
 
     cancel = () => {
@@ -84,7 +84,8 @@ class DiscoverModal extends Component {
                 actNode.interfaces = interfaces
             }
             this.props.action(actNode)
-            this.setState({ isOpen: false })
+            this.setState({ Open: false })
+            this.props.cancel()
         }
         else {
             let typeChecked = document.getElementById('type').checked
@@ -116,6 +117,37 @@ class DiscoverModal extends Component {
             } else {
                 updatedNode.BaseISO = actNode.BaseISO
             }
+
+            let lldpChecked = document.getElementById('lldp').checked
+            if (!lldpChecked) {
+                blankChkCount++
+                updatedNode.lldp = updatedNode.lldp ? updatedNode.lldp : {}
+            } else {
+                updatedNode.lldp.Version == actNode.LldpVersion ? updatedNode.lldp = updatedNode.lldp : updatedNode.LldpVersion = actNode.LldpVersion
+            }
+            let goesChecked = document.getElementById('goes').checked
+            if (!goesChecked) {
+                blankChkCount++
+                updatedNode.goes = updatedNode.goes ? updatedNode.goes : {}
+            } else {
+                updatedNode.goes.Version == actNode.GoesVersion ? updatedNode.goes = updatedNode.goes : updatedNode.GoesVersion = actNode.GoesVersion
+            }
+            let ethtoolChecked = document.getElementById('ethtool').checked
+            if (!ethtoolChecked) {
+                blankChkCount++
+                updatedNode.ethTool = updatedNode.ethTool ? updatedNode.ethTool : {}
+            } else {
+                updatedNode.ethTool.Version == actNode.EthtoolVersion ? updatedNode.ethTool = updatedNode.ethTool : updatedNode.EthtoolVersion = actNode.EthtoolVersion
+            }
+            let iprouteChecked = document.getElementById('iproute').checked
+            if (!iprouteChecked) {
+                blankChkCount++
+                updatedNode.ipRoute = updatedNode.ipRoute ? updatedNode.ipRoute : {}
+            } else {
+                updatedNode.ipRoute.Version == actNode.IprouteVersion ? updatedNode.ipRoute = updatedNode.ipRoute : updatedNode.IprouteVersion = actNode.IprouteVersion
+            }
+
+
             let interfaceChecked = document.getElementById('interface').checked
             let updateInterfaces = updatedNode.interfaces ? updatedNode.interfaces : []
             if (!interfaceChecked) {
@@ -164,26 +196,9 @@ class DiscoverModal extends Component {
                     }
                 })
 
-
-
                 blankInterfaceChkCount == interfaceCheckboxes.length ? (updatedNode.interfaces = updatedNode.interfaces) : (updatedNode.interfaces = updateInterfaces)
 
             } else {
-
-                // updatedNode.interfaces.map((mngt, mnindex) => {
-
-                //     if (mngt.Is_management_interface) {
-                //         let mngmtInterface = {}
-                //         mngmtInterface.Name = mngt.Name ? mngt.Name : '',
-                //             mngmtInterface.Ip_address = mngt.Ip_address ? mngt.Ip_address : '',
-                //             mngmtInterface.Admin_state = mngt.Admin_state ? mngt.Admin_state : '',
-                //             mngmtInterface.Remote_node_name = mngt.Remote_node_name ? mngt.Remote_node_name : '',
-                //             mngmtInterface.Remote_interface = mngt.Remote_interface ? mngt.Remote_interface : '',
-                //             mngmtInterface.Is_management_interface = mngt.Is_management_interface
-                //         actNode.interfaces.push(mngmtInterface)
-                //     }
-                // })
-
                 updatedNode.interfaces = actNode.interfaces
             }
 
@@ -192,7 +207,8 @@ class DiscoverModal extends Component {
                 return this.setState({ blankChkCount: true })
             } else {
                 this.props.action(updatedNode)
-                this.setState({ isOpen: false })
+                this.setState({ Open: false })
+                this.props.cancel()
             }
 
         }
@@ -279,7 +295,8 @@ class DiscoverModal extends Component {
         let tempCommonActInterface = []
         let existingInterfaces = this.state.existingNode[0].interfaces
         let actualInterfaces = this.state.actualNode.interfaces
-
+        console.log('existingInterfaces', existingInterfaces)
+        console.log('actualInterfaces', actualInterfaces)
         //to get common interfaces from existing and actual interfaces
         if (existingInterfaces && existingInterfaces.length) {
             existingInterfaces.map((exitem, index) => {
@@ -294,7 +311,8 @@ class DiscoverModal extends Component {
 
             })
         }
-
+        console.log('tempCommonExistInterface', tempCommonExistInterface)
+        console.log('tempCommonExistInterface', tempCommonExistInterface)
         let stringTemp = []
 
         if (tempCommonExistInterface && tempCommonExistInterface.length) {
@@ -373,6 +391,9 @@ class DiscoverModal extends Component {
             })
         }
 
+        console.log('unCommonActualInterfaces', unCommonActualInterfaces)
+        console.log('unCommonExistingInterface', unCommonExistingInterface)
+
         let bothInterfaceSame = false
         if ((tempCommonExistInterface.length == tempCommonActInterface.length) && (unCommonExistingInterfaces.length == 0) && (unCommonActualInterfaces.length == 0)) {
             bothInterfaceSame = true
@@ -407,8 +428,10 @@ class DiscoverModal extends Component {
         }
 
         let totalCheckBoxLength = finalActualList.length
+        console.log('finalActualList', finalActualList)
+        console.log('finalExistingList', finalExistingList)
 
-
+        console.log('totalCheckBoxLength', totalCheckBoxLength)
         let interfaceTable = []
 
 
@@ -482,8 +505,9 @@ class DiscoverModal extends Component {
         else {
             actualInterfaces = []
         }
+        console.log(this.state.Open)
         return (
-            <Modal isOpen={this.state.isOpen} toggle={() => this.cancel()} size="lg" centered="true" >
+            <Modal isOpen={this.state.Open} toggle={() => this.cancel()} size="lg" centered="true" >
                 <ModalHeader toggle={() => this.cancel()}> Discover Node </ModalHeader>
                 {err}
                 <ModalBody style={{ margin: '15px' }} id="form1">
@@ -521,11 +545,33 @@ class DiscoverModal extends Component {
                         <Col sm="4" className="head-name-light">{existingNode.BaseISO}</Col>
                         <Col sm="4" className="head-name-light">{actualNode.BaseISO}</Col>
                     </Row>
+                    <Row className="headerRow1 borderBottom" >
+                        <Col sm="1" className="head-check"><input className="form-check-input" onChange={(e) => { this.chk(e) }} type="checkbox" id="lldp" name="iso" /></Col>
+                        <Col sm="3" className="head-name-light">LLDP</Col>
+                        <Col sm="4" className="head-name-light">{existingNode.lldp.Version ? 'lldp-' + existingNode.lldp.Version : ''}</Col>
+                        <Col sm="4" className="head-name-light">{actualNode.LldpVersion ? 'lldp-' + actualNode.LldpVersion : ''}</Col>
+                    </Row>
+                    <Row className="headerRow1 borderBottom" >
+                        <Col sm="1" className="head-check"><input className="form-check-input" onChange={(e) => { this.chk(e) }} type="checkbox" id="goes" name="iso" /></Col>
+                        <Col sm="3" className="head-name-light">Goes</Col>
+                        <Col sm="4" className="head-name-light">{existingNode.goes.Version ? 'Goes-' + existingNode.goes.Version : ''}</Col>
+                        <Col sm="4" className="head-name-light">{actualNode.GoesVersion ? 'Goes-' + actualNode.GoesVersion : ''}</Col>
+                    </Row>
+                    <Row className="headerRow1 borderBottom" >
+                        <Col sm="1" className="head-check"><input className="form-check-input" onChange={(e) => { this.chk(e) }} type="checkbox" id="ethtool" name="iso" /></Col>
+                        <Col sm="3" className="head-name-light">Ethtool</Col>
+                        <Col sm="4" className="head-name-light">{existingNode.ethTool.Version ? 'Ethtool-' + existingNode.ethTool.Version : ''}</Col>
+                        <Col sm="4" className="head-name-light">{actualNode.EthtoolVersion ? 'Ethtool-' + actualNode.EthtoolVersion : ''}</Col>
+                    </Row>
+                    <Row className="headerRow1 borderBottom" >
+                        <Col sm="1" className="head-check"><input className="form-check-input" onChange={(e) => { this.chk(e) }} type="checkbox" id="iproute" name="iso" /></Col>
+                        <Col sm="3" className="head-name-light">Iproute2</Col>
+                        <Col sm="4" className="head-name-light">{existingNode.ipRoute.Version ? existingNode.ipRoute.Version : ''}</Col>
+                        < Col sm="4" className="head-name-light">{actualNode.IprouteVersion ? actualNode.IprouteVersion : ''}</Col>
+                    </Row>
                     <Row className="headerRow1 headerRow3" style={{ marginBottom: '20px' }}>
-
                         <Col sm="1" className="head-check"><input className="form-check-input" type="checkbox" id="interface" onChange={(e) => { this.chk(e) }} name="interface" /></Col>
                         <Col sm="3" className="head-name-light">Interfaces</Col>
-
                         <Col sm="8" className="head-name-light" >
                             <div id="interfaceList" >
                                 {this.interfaceList()}

@@ -403,6 +403,7 @@ export let siteHead = [
     }
 ];
 
+<<<<<<< Updated upstream
 export let entityHead = [
     {
         id: 'Name',
@@ -411,5 +412,19 @@ export let entityHead = [
     {
         id: 'Description',
         displayName: 'Description',
+=======
+export let userHead = [
+    {
+        id: 'Name',
+        displayName: 'Name',
+        colSize: 6
+    },
+    {
+        id: 'UserRoles',
+        displayName: 'Roles',
+        operation: 'array',
+        colSize: 6,
+        showDefault: true
+>>>>>>> Stashed changes
     }
 ];

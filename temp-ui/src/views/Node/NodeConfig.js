@@ -11,18 +11,18 @@ import MultiselectDropDown from '../../components/MultiselectDropdown/Multiselec
 import ProvisionProgress from '../../components/ProvisionProgress/ProvisionProgress';
 import DiscoverModal from '../../components/DiscoverModal/DiscoverModal';
 import ConfirmationModal from '../../components/ConfirmationModal/ConfirmationModal';
-import { UPDATE_NODES, DISCOVER, ADD_KERNEL, ADD_SYSTEM_TYPE, ADD_ISO, FETCH_ALL_GOES, FETCH_ALL_FRR, FETCH_ALL_IPROUTE, FETCH_ALL_LLDP, FETCH_ALL_ETHTOOL, PROVISION } from '../../apis/RestConfig';
+import { ROLLBACK_PROVISION, UPDATE_NODES, DISCOVER, ADD_KERNEL, ADD_SYSTEM_TYPE, ADD_ISO, ADD_GOES, ADD_IPROUTE, ADD_LLDP, ADD_ETHTOOL, FETCH_ALL_GOES, FETCH_ALL_FRR, FETCH_ALL_IPROUTE, FETCH_ALL_LLDP, FETCH_ALL_ETHTOOL, PROVISION } from '../../apis/RestConfig';
 import Interfaces from './interfaces';
 import { connect } from 'react-redux';
 import I from 'immutable'
 import { fetchFecs } from '../../actions/fecAction';
 import { fetchMedias } from '../../actions/mediaAction';
 import { fetchSpeeds } from '../../actions/speedAction';
-import { getEthTool } from '../../actions/ethToolAction';
-import { getLLDP } from '../../actions/lldpAction';
-import { getGoes } from '../../actions/goesAction';
-import { getIpRoute } from '../../actions/ipRouteAction';
-import { updateNode, provisionNode, fetchActualNode } from '../../actions/nodeAction';
+import { getEthTool, addEthTool } from '../../actions/ethToolAction';
+import { getLLDP, addLLDP } from '../../actions/lldpAction';
+import { getGoes, addGoes } from '../../actions/goesAction';
+import { getIpRoute, addIpRoutes } from '../../actions/ipRouteAction';
+import { updateNode, provisionNode, fetchActualNode, rollbackProvision } from '../../actions/nodeAction';
 import { addKernels } from '../../actions/kernelAction';
 import { addTypes } from '../../actions/systemTypeAction';
 import { addISOs } from '../../actions/baseIsoActions';
@@ -97,6 +97,7 @@ class NodeConfig extends Component {
     let nodeNameDiv = null
     let summaryDataTable = null
     let showDiscoverButton = null
+    let showProvisionRollback = null
     let selectedRowIndexes = []
     let interfaceDiv = null
     if (isSingleNode) {
@@ -109,6 +110,7 @@ class NodeConfig extends Component {
           </Media>
         </div>
       showDiscoverButton = this.showDiscoverButton()
+      showProvisionRollback = this.showProvisionRollback()
       interfaceDiv = <Interfaces data={this.state.nodes} speedData={this.state.speedData} fecData={this.state.fecData} mediaData={this.state.mediaData} update={this.updateInterfaces} ></Interfaces>
     } else {
       this.state.nodes.map(function (node, i) {
@@ -124,6 +126,7 @@ class NodeConfig extends Component {
           </Media>
           <Media body><NotificationContainer /></Media>
           <Media right>
+            {showProvisionRollback}
             {showDiscoverButton}
             <Button className="custBtn" outline color="secondary" onClick={() => { this.cancelNodeConfig() }}> Cancel </Button>
             <Button className="custBtn" outline color="secondary" disabled={this.state.saveBtn} onClick={() => (this.updateNode())}> Save </Button>
@@ -215,6 +218,7 @@ class NodeConfig extends Component {
         {this.confirmationModal()}
         {this.openDiscoverModal()}
         {this.confirmationModalWipe()}
+        {this.rollbackConfirmationModal()}
       </div>
 
     )
@@ -336,6 +340,38 @@ class NodeConfig extends Component {
     })
   }
 
+  rollbackProvion() {
+    let self = this
+    self.setState({ displayRollbackConfirmationModel: true })
+  }
+
+  rollbackConfirmationModal() {
+    if (this.state.displayRollbackConfirmationModel) {
+      return <ConfirmationModal open={true} actionName={'Rollback'} cancel={() => this.closeRollbackConfirmationModel()} action={() => this.rollbackProvisionCall()} />
+    }
+  }
+
+  closeRollbackConfirmationModel() {
+    this.setState({ displayRollbackConfirmationModel: false })
+  }
+
+  rollbackProvisionCall() {
+    let self = this
+    let provisiondata = Object.assign({}, {
+      'NodeId': self.state.nodes[0].Id,
+      'role': 'cloud-node',
+    })
+
+    self.props.rollbackProvision(ROLLBACK_PROVISION, provisiondata).then(function (data) {
+      console.log(data)
+      self.setState({ displayRollbackConfirmationModel: false })
+      NotificationManager.success("Provision Reverted successfully", "Provision Rollback")
+    }).catch(function (e) {
+      console.log(e)
+      NotificationManager.error("Something went wrong", "Provision Rollback")
+    })
+  }
+
   onRebootClick() {
     let self = this
     let provisiondata = Object.assign({}, {
@@ -418,6 +454,7 @@ class NodeConfig extends Component {
   }
 
   closeDiscoverModal = () => {
+    console.log('close openDiscoverModal')
     this.setState({ openDiscoverModal: false })
   }
 
@@ -426,6 +463,15 @@ class NodeConfig extends Component {
       return (<Button className="custFillBtn" outline color="secondary" style={{ cursor: 'wait' }} > Discovering.... </Button >)
     }
     return (<Button className='custBtn' outline color="secondary" onClick={() => (this.discoverModal())}> Discover </Button >)
+  }
+
+  showProvisionRollback = () => {
+    if(this.state.nodes[0].executionStatusObj){
+      return (<Button className="custBtn" outline color="secondary" onClick={() => (this.rollbackProvion())} > Rollback Provision </Button >)
+    }else{
+      return (<Button className="custBtn" outline color="secondary" disabled > Rollback Provision </Button >)
+    }
+   
   }
 
   discoverModal = () => {
@@ -524,6 +570,11 @@ class NodeConfig extends Component {
     let typeId = 0
     let isoId = 0
 
+    let goesId = 0
+    let lldpId = 0
+    let iprouteId = 0
+    let ethtoolId = 0
+
     let kernels = self.state.kernelData
     let kernelExist = false
     for (let kernel of kernels) {
@@ -593,7 +644,6 @@ class NodeConfig extends Component {
         break
       }
     }
-
     if (!isoExist && params.BaseISO) {
       let dataparams = {
         'Name': params.BaseISO
@@ -613,6 +663,125 @@ class NodeConfig extends Component {
       })
       watingPromise.push(isoPro)
     }
+    let goes = self.state.goesData
+    let goesExist = false
+    for (let go of goes) {
+      if (go.Version == params.GoesVersion) {
+        goesId = go.Id
+        goesExist = true
+        break
+      }
+    }
+    if (!goesExist && params.GoesVersion) {
+      let dataparams = {
+        'Name': 'Goes-' + params.GoesVersion,
+        'Version': params.GoesVersion
+      }
+      let goPro = this.props.addGoes(ADD_GOES, dataparams).then(function (data) {
+        let payload = data.payload
+        if (payload && payload.size) {
+          for (let go of payload) {
+            if (go.get('Version') === params.GoesVersion) {
+              goesId = go.get('Id')
+            }
+          }
+        }
+      }).catch(function (e) {
+        console.log(e)
+        NotificationManager.error("Something went wrong", "Goes")
+      })
+      watingPromise.push(goPro)
+    }
+
+    let lldps = self.state.lldpData
+    let lldpExist = false
+    for (let lldp of lldps) {
+      if (lldp.Version == params.LldpVersion) {
+        lldpId = lldp.Id
+        lldpExist = true
+        break
+      }
+    }
+    if (!lldpExist && params.LldpVersion) {
+      let dataparams = {
+        'Name': 'lldp-' + params.LldpVersion,
+        'Version': params.LldpVersion
+      }
+      let lldpPro = this.props.addLLDP(ADD_LLDP, dataparams).then(function (data) {
+        let payload = data.payload
+        if (payload && payload.size) {
+          for (let lldp of payload) {
+            if (lldp.get('Version') === params.LldpVersion) {
+              lldpId = lldp.get('Id')
+            }
+          }
+        }
+      }).catch(function (e) {
+        console.log(e)
+        NotificationManager.error("Something went wrong", "LLDP")
+      })
+      watingPromise.push(lldpPro)
+    }
+
+    let ethtools = self.state.ethToolData
+    let ethtoolExist = false
+    for (let ethtool of ethtools) {
+      if (ethtool.Version == params.EthtoolVersion) {
+        ethtoolId = lldp.Id
+        ethtoolExist = true
+        break
+      }
+    }
+    if (!ethtoolExist && params.EthtoolVersion) {
+      let dataparams = {
+        'Name': 'lldp-' + params.EthtoolVersion,
+        'Version': params.EthtoolVersion
+      }
+      let ethtoolPro = this.props.addEthTool(ADD_ETHTOOL, dataparams).then(function (data) {
+        let payload = data.payload
+        if (payload && payload.size) {
+          for (let ethtool of payload) {
+            if (ethtool.get('Version') === params.EthtoolVersion) {
+              ethtoolId = lldp.get('Id')
+            }
+          }
+        }
+      }).catch(function (e) {
+        console.log(e)
+        NotificationManager.error("Something went wrong", "Ethtool")
+      })
+      watingPromise.push(ethtoolPro)
+    }
+
+    let ipRoutes = self.state.ipRouteData
+    let ipRouteExist = false
+    for (let iproute of ipRoutes) {
+      if (iproute.Version == params.IprouteVersion) {
+        iprouteId = iproute.Id
+        ipRouteExist = true
+        break
+      }
+    }
+    if (!ipRouteExist && params.IprouteVersion) {
+      let dataparams = {
+        'Name': params.IprouteVersion,
+        'Version': params.IprouteVersion
+      }
+      let iproutePro = this.props.addIpRoutes(ADD_IPROUTE, dataparams).then(function (data) {
+        let payload = data.payload
+        if (payload && payload.size) {
+          for (let iproute of payload) {
+            if (iproute.get('Version') === params.IprouteVersion) {
+              iprouteId = iproute.get('Id')
+            }
+          }
+        }
+      }).catch(function (e) {
+        console.log(e)
+        NotificationManager.error("Something went wrong", "IpRoute")
+      })
+      watingPromise.push(iproutePro)
+    }
 
     Promise.all(watingPromise).then(function () {
       params.interfaces.map((item) => {
@@ -624,12 +793,17 @@ class NodeConfig extends Component {
       if (self.state.selectedRoles && self.state.selectedRoles.length) {
         self.state.selectedRoles.map((data) => (roles.push(data.Id)))
       }
+
       data.map((datum) => {
         datum.roles = roles,
           datum.Type_Id = parseInt(typeId),
           datum.Iso_Id = parseInt(isoId),
           datum.Kernel_Id = parseInt(kernelId),
           datum.interfaces = params.interfaces,
+          datum.Goes_Id = parseInt(goesId),
+          datum.Lldp_Id = parseInt(lldpId),
+          datum.Ethtool_Id = parseInt(ethtoolId),
+          datum.Iproute_Id = parseInt(iprouteId),
           datum.SN = params.SerialNumber ? params.SerialNumber : params.SN ? params.SN : '',
 
           self.props.updateNode(UPDATE_NODES, datum).then(function () {
@@ -689,10 +863,15 @@ function mapDispatchToProps(dispatch) {
     fetchIpRoute: (url) => dispatch(getIpRoute(url)),
     updateNode: (url, params) => dispatch(updateNode(url, params)),
     provisionNode: (url, params) => dispatch(provisionNode(url, params)),
+    rollbackProvision: (url, params) => dispatch(rollbackProvision(url, params)),
     fetchActualNode: (url, params) => dispatch(fetchActualNode(url, params)),
     addKernels: (url, params) => dispatch(addKernels(url, params)),
     addTypes: (url, params) => dispatch(addTypes(url, params)),
     addISOs: (url, params) => dispatch(addISOs(url, params)),
+    addGoes: (url, params) => dispatch(addGoes(url, params)),
+    addLLDP: (url, params) => dispatch(addLLDP(url, params)),
+    addEthTool: (url, params) => dispatch(addEthTool(url, params)),
+    addIpRoutes: (url, params) => dispatch(addIpRoutes(url, params)),
   }
 }
 
