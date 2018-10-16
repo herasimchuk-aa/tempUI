@@ -15,6 +15,7 @@ import ipRouteReducer from './ipRouteReducer'
 import frrReducer from './frrReducer'
 import kubernetesReducer from './kubernetesReducer'
 import entityReducer from './entityReducer'
+import permissionReducer from './permissionReducer'
 
 export default combineReducers({
     nodeReducer,
@@ -32,5 +33,6 @@ export default combineReducers({
     ipRouteReducer,
     frrReducer,
     kubernetesReducer,
-    entityReducer
+    entityReducer,
+    permissionReducer
 })
