@@ -19,7 +19,7 @@ export function setEntityData(payload) {
 export const addEntity = (url, params) => (dispatch, getState) => {
     return postRequest(url, params).then(function (json) {
         if (json.StatusCode == 200) {
-            let storedEntities = getState().entityReducer.getIn(['sites'], I.List())
+            let storedEntities = getState().entityReducer.getIn(['entities'], I.List())
             storedEntities = storedEntities.push(I.fromJS(json.Data))
             return dispatch(setEntityData(storedEntities))
         }
