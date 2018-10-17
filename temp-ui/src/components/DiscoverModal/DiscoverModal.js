@@ -123,28 +123,28 @@ class DiscoverModal extends Component {
                 blankChkCount++
                 updatedNode.lldp = updatedNode.lldp ? updatedNode.lldp : {}
             } else {
-                updatedNode.lldp.Version == actNode.LldpVersion ? updatedNode.lldp = updatedNode.lldp : updatedNode.LldpVersion = actNode.LldpVersion
+                updatedNode.lldp ? updatedNode.lldp.Version == actNode.LldpVersion ? updatedNode.lldp = updatedNode.lldp : updatedNode.LldpVersion = actNode.LldpVersion : updatedNode.LldpVersion = actNode.LldpVersion
             }
             let goesChecked = document.getElementById('goes').checked
             if (!goesChecked) {
                 blankChkCount++
                 updatedNode.goes = updatedNode.goes ? updatedNode.goes : {}
             } else {
-                updatedNode.goes.Version == actNode.GoesVersion ? updatedNode.goes = updatedNode.goes : updatedNode.GoesVersion = actNode.GoesVersion
+                updatedNode.goes ? updatedNode.goes.Version == actNode.GoesVersion ? updatedNode.goes = updatedNode.goes : updatedNode.GoesVersion = actNode.GoesVersion : updatedNode.GoesVersion = actNode.GoesVersion
             }
             let ethtoolChecked = document.getElementById('ethtool').checked
             if (!ethtoolChecked) {
                 blankChkCount++
                 updatedNode.ethTool = updatedNode.ethTool ? updatedNode.ethTool : {}
             } else {
-                updatedNode.ethTool.Version == actNode.EthtoolVersion ? updatedNode.ethTool = updatedNode.ethTool : updatedNode.EthtoolVersion = actNode.EthtoolVersion
+                updatedNode.ethTool ? updatedNode.ethTool.Version == actNode.EthtoolVersion ? updatedNode.ethTool = updatedNode.ethTool : updatedNode.EthtoolVersion = actNode.EthtoolVersion : updatedNode.EthtoolVersion = actNode.EthtoolVersion
             }
             let iprouteChecked = document.getElementById('iproute').checked
             if (!iprouteChecked) {
                 blankChkCount++
                 updatedNode.ipRoute = updatedNode.ipRoute ? updatedNode.ipRoute : {}
             } else {
-                updatedNode.ipRoute.Version == actNode.IprouteVersion ? updatedNode.ipRoute = updatedNode.ipRoute : updatedNode.IprouteVersion = actNode.IprouteVersion
+                updatedNode.ipRoute ? updatedNode.ipRoute.Version == actNode.IprouteVersion ? updatedNode.ipRoute = updatedNode.ipRoute : updatedNode.IprouteVersion = actNode.IprouteVersion : updatedNode.IprouteVersion = actNode.IprouteVersion
             }
 
 
@@ -538,25 +538,25 @@ class DiscoverModal extends Component {
                     <Row className="headerRow1 borderBottom" >
                         <Col sm="1" className="head-check"><input className="form-check-input" onChange={(e) => { this.chk(e) }} type="checkbox" id="lldp" name="iso" /></Col>
                         <Col sm="3" className="head-name-light">LLDP</Col>
-                        <Col sm="4" className="head-name-light">{existingNode.lldp.Version ? 'lldp-' + existingNode.lldp.Version : ''}</Col>
+                        <Col sm="4" className="head-name-light">{existingNode.lldp ? existingNode.lldp.Version ? 'lldp-' + existingNode.lldp.Version : '' : ''}</Col>
                         <Col sm="4" className="head-name-light">{actualNode.LldpVersion ? 'lldp-' + actualNode.LldpVersion : ''}</Col>
                     </Row>
                     <Row className="headerRow1 borderBottom" >
                         <Col sm="1" className="head-check"><input className="form-check-input" onChange={(e) => { this.chk(e) }} type="checkbox" id="goes" name="iso" /></Col>
                         <Col sm="3" className="head-name-light">Goes</Col>
-                        <Col sm="4" className="head-name-light">{existingNode.goes.Version ? 'Goes-' + existingNode.goes.Version : ''}</Col>
+                        <Col sm="4" className="head-name-light">{existingNode.goes ? existingNode.goes.Version ? 'Goes-' + existingNode.goes.Version : '' : ''}</Col>
                         <Col sm="4" className="head-name-light">{actualNode.GoesVersion ? 'Goes-' + actualNode.GoesVersion : ''}</Col>
                     </Row>
                     <Row className="headerRow1 borderBottom" >
                         <Col sm="1" className="head-check"><input className="form-check-input" onChange={(e) => { this.chk(e) }} type="checkbox" id="ethtool" name="iso" /></Col>
                         <Col sm="3" className="head-name-light">Ethtool</Col>
-                        <Col sm="4" className="head-name-light">{existingNode.ethTool.Version ? 'Ethtool-' + existingNode.ethTool.Version : ''}</Col>
+                        <Col sm="4" className="head-name-light">{existingNode.ethTool ? existingNode.ethTool.Version ? 'Ethtool-' + existingNode.ethTool.Version : '' : ''}</Col>
                         <Col sm="4" className="head-name-light">{actualNode.EthtoolVersion ? 'Ethtool-' + actualNode.EthtoolVersion : ''}</Col>
                     </Row>
                     <Row className="headerRow1 borderBottom" >
                         <Col sm="1" className="head-check"><input className="form-check-input" onChange={(e) => { this.chk(e) }} type="checkbox" id="iproute" name="iso" /></Col>
                         <Col sm="3" className="head-name-light">Iproute2</Col>
-                        <Col sm="4" className="head-name-light">{existingNode.ipRoute.Version ? existingNode.ipRoute.Version : ''}</Col>
+                        <Col sm="4" className="head-name-light">{existingNode.ipRoute ? existingNode.ipRoute.Version ? existingNode.ipRoute.Version : '' : ''}</Col>
                         < Col sm="4" className="head-name-light">{actualNode.IprouteVersion ? actualNode.IprouteVersion : ''}</Col>
                     </Row>
                     <Row className="headerRow1 headerRow3" style={{ marginBottom: '20px' }}>

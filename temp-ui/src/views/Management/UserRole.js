@@ -90,21 +90,32 @@ class UserRole extends Component {
     }
 
     addUserRoleModal() {
-        console.log(this.state.permissionData)
+        let externalCloseBtn = React.createElement('button', 'close');
         if (this.state.displayModel) {
             return (
-                <Modal isOpen={this.state.displayModel} toggle={() => this.cancel()} size="sm" centered="true" >
-                    <ModalHeader toggle={() => this.cancel()}>Add User Role</ModalHeader>
-                    <ModalBody>
-                        <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Name cannot be empty</Alert>
-                        Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='userRoleName' /><br />
-                        Permissions<MultiselectDropDown value={this.state.selectedPermissions} getSelectedData={this.handleChanges} options={this.state.permissionData}></MultiselectDropDown>
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button className="custBtn" outline color="primary" onClick={() => (this.addUserRole())}>Add</Button>{'  '}
-                        <Button className="custBtn" outline color="primary" onClick={() => (this.cancel())}>Cancel</Button>
-                    </ModalFooter>
-                </Modal>
+                <div>
+                    <Modal isOpen={this.state.displayModel} external="afsdagfasdhgfasdhgfrweu" size="sm" centered="true" external={<button toggle={() => this.cancel()}>close</button>} >
+                        <ModalHeader style={{ textAlign: 'center', fontSize: '20px' }}>
+                            Add User Role
+                        </ModalHeader>
+                        <ModalBody>
+                            <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Name cannot be empty</Alert>
+
+                            <div class="group">
+                                <input type="text" required />
+                                <span autoFocus className="highlight marTop10" id='userRoleName'></span>
+                                <span class="bar"></span>
+                                <label>Name</label>
+                            </div>
+                            {/* Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='userRoleName' /><br /> */}
+                            Permissions<MultiselectDropDown value={this.state.selectedPermissions} getSelectedData={this.handleChanges} options={this.state.permissionData}></MultiselectDropDown>
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button className="custBtn" outline color="primary" onClick={() => (this.addUserRole())}>Add</Button>
+                            <Button className="custBtn" outline color="primary" onClick={() => (this.cancel())}>Cancel</Button>
+                        </ModalFooter>
+                    </Modal>
+                </div>
             );
         }
     }

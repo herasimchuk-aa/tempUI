@@ -727,7 +727,7 @@ class NodeConfig extends Component {
     let ethtoolExist = false
     for (let ethtool of ethtools) {
       if (ethtool.Version == params.EthtoolVersion) {
-        ethtoolId = lldp.Id
+        ethtoolId = ethtool.Id
         ethtoolExist = true
         break
       }
@@ -742,7 +742,7 @@ class NodeConfig extends Component {
         if (payload && payload.size) {
           for (let ethtool of payload) {
             if (ethtool.get('Version') === params.EthtoolVersion) {
-              ethtoolId = lldp.get('Id')
+              ethtoolId = ethtool.get('Id')
             }
           }
         }
