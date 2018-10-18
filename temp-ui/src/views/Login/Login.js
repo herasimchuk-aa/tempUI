@@ -19,6 +19,7 @@ class Login extends Component {
 
 
     logIn = () => {
+        let self = this
         let error = []
         let username = document.getElementById('user').value
         let validatename = validateName(username)
@@ -38,8 +39,17 @@ class Login extends Component {
             "Username": username,
             "Password": psw
         }
-        this.props.login(params)
-        this.setState({ signUp: true })
+        this.props.login(params).then(function (json) {
+            if (json.payload) {
+                self.setState({ signUp: true })
+            }
+        }).catch(function (e) {
+            console.error(e)
+            let error = []
+            error.push('Incorrect Credentials')
+            self.setState({ error: error })
+        }
+        )
     }
 
     forgotPsw = () => {
