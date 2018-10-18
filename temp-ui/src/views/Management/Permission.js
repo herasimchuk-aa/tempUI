@@ -175,7 +175,7 @@ class Permission extends Component {
                         <input type="checkbox" className="marTop10" id={"_DE"} defaultChecked={edittedData.Operation.Delete} />Delete
                     </ModalBody>
                     <ModalFooter>
-                        <Button className="custBtn" outline color="primary" onClick={() => (this.editPermission())}>Edit</Button>{'  '}
+                        <Button className="custBtn" outline color="primary" onClick={() => (this.editPermission())}>Save</Button>{'  '}
                         <Button className="custBtn" outline color="primary" onClick={() => (this.toggleEdit())}>Cancel</Button>
                     </ModalFooter>
                 </Modal>)
@@ -257,7 +257,7 @@ class Permission extends Component {
                     <Media right>
                         <div className='marginLeft10'>
                             <Button onClick={() => (this.toggle())} className="custBtn animated fadeIn marginLeft13N">New</Button>
-                            <Button onClick={() => (this.showEditDialogBox())} className="custBtn animated fadeIn">Save</Button>
+                            <Button onClick={() => (this.showEditDialogBox())} className="custBtn animated fadeIn">Edit</Button>
                             {this.showDeleteButton()}
                         </div>
                     </Media>

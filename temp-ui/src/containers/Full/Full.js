@@ -71,10 +71,11 @@ class Full extends Component {
                                 <Route path="/pcc/node/config" name="Monitor" component={NodeConfig} />
                                 <Route path="/pcc/kubernetes" name="Kubernetes" component={Kubernetes} />
                                 <Route path="/pcc/node" name="Node" component={NodeSummary} />
-                                <Route path="/pcc/management/user" name="User" component={User} />
-                                <Route path="/pcc/management/role" name="UserRole" component={UserRole} />
-                                <Route path="/pcc/management/permission" name="Permission" component={Permission} />
-                                <Route path="/pcc/management/entity" name="Entity" component={Entity} />
+                                <Route path="/pcc/userManagement/user" name="User" component={User} />
+                                <Route path="/pcc/userManagement/role" name="UserRole" component={UserRole} />
+                                <Route path="/pcc/userManagement/permission" name="Permission" component={Permission} />
+                                <Route path="/pcc/userManagement/entity" name="Entity" component={Entity} />
+                                <Route path="/pcc/userManagement" name="UserManagement" component={User} />
                                 <Redirect from="/pcc" to="/pcc/dashboard"></Redirect>
                             </Switch>
                         </Container>

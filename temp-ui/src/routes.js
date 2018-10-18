@@ -24,10 +24,11 @@ const routes = {
   '/pcc/monitoring/TilesApp': 'TileApp',
   '/pcc/monitoring/ipvs': 'IPVS',
   '/pcc/kubernetes': 'Kubernetes',
-  '/pcc/management/user' : 'Users',
-  '/pcc/management/role' : 'User Roles',
-  '/pcc/management/permission': 'Permissions',
-  '/pcc/management/entity' : 'Entities'
+  '/pcc/userManagement': 'User Management',
+  '/pcc/userManagement/user': 'Users',
+  '/pcc/userManagement/role': 'User Roles',
+  '/pcc/userManagement/permission': 'Permissions',
+  '/pcc/userManagement/entity': 'Entities'
 
 };
 export default routes;

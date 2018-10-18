@@ -43,6 +43,7 @@ class Header extends Component {
 
   logOut = () => {
     this.setState({ logout: true })
+    window.sessionStorage.accessToken = ''
   }
 
   render() {
@@ -67,7 +68,6 @@ class Header extends Component {
           </DropdownToggle>
           <DropdownMenu>
             <DropdownItem > Profile</DropdownItem>
-            <DropdownItem > Settings</DropdownItem>
             <DropdownItem onClick={() => (this.logOut())}> Log Out</DropdownItem>
           </DropdownMenu>
         </UncontrolledDropdown>
