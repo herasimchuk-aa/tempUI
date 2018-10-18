@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Button, Card, CardBody, CardFooter, Col, Container, Form, Input, FormGroup, Label, InputGroup, InputGroupAddon, InputGroupText, Row, Alert, ListGroup, ListGroupItem } from 'reactstrap';
 import { Redirect } from 'react-router-dom';
 import { validateName, validateEmail } from '../../components/Utility/Utility';
+import { login } from '../../actions/loginAction';
+import { connect } from 'react-redux'
 
 
 class Login extends Component {
@@ -31,6 +33,12 @@ class Login extends Component {
             this.setState({ error: error, showAlert: true })
             return
         }
+
+        let params = {
+            "Username": username,
+            "Password": psw
+        }
+        this.props.login(params)
         this.setState({ signUp: true })
     }
 
@@ -170,4 +178,11 @@ class Login extends Component {
     }
 }
 
-export default Login
+function mapDispatchToProps(dispatch) {
+    return { login: (params) => dispatch(login(params)) }
+}
+function mapStateToProps(state) {
+    return {}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login)

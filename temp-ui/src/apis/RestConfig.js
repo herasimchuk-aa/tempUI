@@ -111,3 +111,6 @@ export const FETCH_ALL_PERMISSIONS = "/rbac/permission"
 export const ADD_PERMISSION = "/rbac/permission/add"
 export const UPDATE_PERMISSION = "/rbac/permission/update"
 export const DELETE_PERMISSIONS = "/rbac/permission/delete"
+
+//apis for login
+export const FETCH_LOGIN_DATA = "/rbac/login"

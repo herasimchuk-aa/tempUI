@@ -5,6 +5,7 @@ export function getRequest(url) {
         headers: {
             //"Content-Type": "application/json; charset=utf-8",
             "Content-Type": "application/x-www-form-urlencoded",
+            "Authorization": "Bearer " + window.sessionStorage.accessToken
         }
     })
         .then(function (response) {
@@ -21,6 +22,7 @@ export function postRequest(url, params) {
         headers: {
             //"Content-Type": "application/json; charset=utf-8",
             "Content-Type": "application/x-www-form-urlencoded",
+            "Authorization": "Bearer " + window.sessionStorage.accessToken
         },
         body: JSON.stringify(params), // body data type must match "Content-Type" header
     })
@@ -35,6 +37,7 @@ export function putRequest(url, params) {
         headers: {
             //"Content-Type": "application/json; charset=utf-8",
             "Content-Type": "application/x-www-form-urlencoded",
+            "Authorization": "Bearer " + window.sessionStorage.accessToken
         },
         body: JSON.stringify(params), // body data type must match "Content-Type" header
     })
