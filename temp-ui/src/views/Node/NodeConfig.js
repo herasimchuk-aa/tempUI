@@ -45,7 +45,8 @@ class NodeConfig extends Component {
       saveBtn: true,
       openDiscoverModal: false,
       cancelNodeConfig: false,
-      isLoading: false
+      isLoading: false,
+      siteSelection: false,
     }
     this.counter = 0
   }
@@ -179,7 +180,7 @@ class NodeConfig extends Component {
               <Input className="marTop10" type="text" value={this.state.selectedSerialNo} onChange={(e) => { this.serialNo(e) }} />
             </Col>
             <Col xs='3' ><Label>Site</Label><br />
-              <DropDown options={this.state.siteData} getSelectedData={this.getSelectedData} identity={"Site"} default={this.state.selectedSiteId} />
+              <DropDown options={this.state.siteData} disabled={!this.state.siteSelection} getSelectedData={this.getSelectedData} identity={"Site"} default={this.state.selectedSiteId} />
             </Col>
           </Row>
           <Row className="pad">
@@ -579,7 +580,17 @@ class NodeConfig extends Component {
       return
     }
     if (identity == 'Cluster') {
-      this.setState({ selectedClusterId: data, saveBtn: false })
+      let { clusterData } = this.state
+      for (let i in clusterData) {
+        let item = clusterData[i]
+        if (item.Id == data) {
+          this.setState({ selectedClusterId: data, selectedSiteId: item.Site.Id, siteSelection: false, saveBtn: false })
+          return
+        }
+      }
+      if (!data) {
+        this.setState({ selectedClusterId: 0, selectedSiteId: 0, siteSelection: true, saveBtn: false })
+      }
       return
     }
   }

@@ -34,7 +34,8 @@ class NodeSummary extends Component {
             selectedIsoId: '',
             selectedSiteId: '',
             selectedRoles: [],
-            isSaveLoading: false
+            isSaveLoading: false,
+            siteSelection: true,
         }
     }
 
@@ -81,7 +82,17 @@ class NodeSummary extends Component {
             return
         }
         if (identity == 'Cluster') {
-            this.setState({ selectedClusterId: data })
+            let { clusterData } = this.state
+            for (let i in clusterData) {
+                let item = clusterData[i]
+                if (item.Id == data) {
+                    this.setState({ selectedClusterId: data, selectedSiteId: item.Site.Id, siteSelection: false })
+                    return
+                }
+            }
+            if (!data) {
+                this.setState({ selectedClusterId: 0, selectedSiteId: 0, siteSelection: true })
+            }
             return
         }
     }
@@ -188,7 +199,7 @@ class NodeSummary extends Component {
                                 <DropDown options={this.state.clusterData} getSelectedData={this.getSelectedData} identity={"Cluster"} default={this.state.selectedClusterId} />
                             </Col>
                             <Col sm="6" className="marTop10"> Site
-                                <DropDown options={this.state.siteData} getSelectedData={this.getSelectedData} identity={"Site"} default={this.state.selectedSiteId} />
+                                <DropDown options={this.state.siteData} disabled={!this.state.siteSelection} getSelectedData={this.getSelectedData} identity={"Site"} default={this.state.selectedSiteId} />
                             </Col>
                         </Row>
                         <Row>

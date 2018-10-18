@@ -6,14 +6,16 @@ export default class DropDown extends React.Component {
     this.state = {
       value: '',
       identity: '',
-      default: ''
+      default: '',
+      disabled: false
     };
   }
 
   static getDerivedStateFromProps(props, state) {
     return {
       identity: props.identity,
-      value: props.default
+      value: props.default,
+      disabled: props.disabled != undefined ? props.disabled : false
     }
   }
 
@@ -40,7 +42,7 @@ export default class DropDown extends React.Component {
 
   render() {
     return (
-      <select className="form-control marTop10" id={this.props.identity} value={this.state.value} onChange={(e) => this.getSelectedData(e, this.state.value)}>
+      <select disabled={this.state.disabled} className="form-control marTop10" id={this.props.identity} value={this.state.value} onChange={(e) => this.getSelectedData(e, this.state.value)}>
         {this.getOptions(this.props.options)}
       </select>
     );
