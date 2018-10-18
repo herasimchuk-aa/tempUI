@@ -3,7 +3,11 @@ import { getRequest, postRequest, putRequest } from '../apis/RestApi';
 
 export const getClusters = (url) => (dispatch) => {
     return getRequest(url).then(function (json) {
-        return dispatch(setClusterData(I.fromJS(json.Data)))
+        let data = I.fromJS(json.Data)
+        data = data.map(function (item) {
+            return convertCluster(item)
+        })
+        return dispatch(setClusterData(data))
     })
 }
 
@@ -15,11 +19,17 @@ export function setClusterData(payload) {
     }
 }
 
+function convertCluster(cluster) {
+    cluster = cluster.set('SiteName', cluster.getIn(['Site', 'Name'], ''))
+    return cluster
+}
+
 export const addClusters = (url, params) => (dispatch, getState) => {
     return postRequest(url, params).then(function (json) {
         if (json.StatusCode == 200) {
             let storedClusters = getState().clusterReducer.getIn(['clusters'], I.List())
-            storedClusters = storedClusters.push(I.fromJS(json.Data))
+            let data = convertCluster(I.fromJS(json.Data))
+            storedClusters = storedClusters.push(data)
             return dispatch(setClusterData(storedClusters))
         }
         throw new Error(json.Message)
@@ -33,7 +43,7 @@ export const updateCluster = (url, params) => (dispatch, getState) => {
             let storedClusters = getState().clusterReducer.get('clusters')
             storedClusters = storedClusters.map(function (cluster) {
                 if (cluster.get('Id') === clusterData.Id) {
-                    cluster = I.fromJS(clusterData)
+                    cluster = convertCluster(I.fromJS(clusterData))
                 }
                 return cluster
             })

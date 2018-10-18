@@ -5,10 +5,12 @@ import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import { clusterHead } from '../../../consts';
 import { trimString, getNameById } from '../../../components/Utility/Utility';
 import I from 'immutable'
-import { FETCH_ALL_CLUSTERS, ADD_CLUSTER, UPDATE_CLUSTER, DELETE_CLUSTERS } from '../../../apis/RestConfig';
+import { FETCH_ALL_CLUSTERS, ADD_CLUSTER, UPDATE_CLUSTER, DELETE_CLUSTERS, FETCH_ALL_SITES } from '../../../apis/RestConfig';
 import { NotificationManager } from 'react-notifications';
 import { connect } from 'react-redux';
 import { getClusters, addClusters, updateCluster, deleteCluster, setClusterHeadings } from '../../../actions/clusterAction';
+import DropDown from '../../../components/dropdown/DropDown';
+import { getSites } from '../../../actions/siteAction';
 
 class Cluster extends Component {
 
@@ -28,12 +30,14 @@ class Cluster extends Component {
     }
 
     componentDidMount() {
+        this.props.getSites(FETCH_ALL_SITES)
         this.props.getClusters(FETCH_ALL_CLUSTERS)
     }
 
     static getDerivedStateFromProps(props) {
         return {
             data: props.data ? props.data.toJS() : [],
+            siteData: props.siteData ? props.siteData.toJS() : [],
             clusterHead: props.clusterHead ? props.clusterHead.toJS() : clusterHead
         }
     }
@@ -97,7 +101,7 @@ class Cluster extends Component {
     }
 
     onDismiss() {
-        this.setState({ visible: false });
+        this.setState({ visible: false, errorMsg: "" });
     }
 
     addClusterModal() {
@@ -106,8 +110,9 @@ class Cluster extends Component {
                 <Modal isOpen={this.state.displayModel} toggle={() => this.cancel()} size="sm" centered="true" >
                     <ModalHeader toggle={() => this.cancel()}>Add Cluster</ModalHeader>
                     <ModalBody>
-                        <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Name cannot be empty</Alert>
+                        <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >{this.state.errorMsg}</Alert>
                         Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='clusterName' /><br />
+                        Site <DropDown className="marTop10" options={this.state.siteData} getSelectedData={this.getSelectedData} identity={"Site"} /><br />
                         Description <Input className="marTop10" id='clusterDesc' /><br />
                     </ModalBody>
                     <ModalFooter>
@@ -120,19 +125,42 @@ class Cluster extends Component {
     }
 
     cancel() {
-        this.setState({ displayModel: !this.state.displayModel, visible: false })
+        this.setState({ displayModel: !this.state.displayModel, visible: false, errorMsg: "" })
     }
+
+    getSelectedData = (data, identity) => {
+        if (identity == 'Site') {
+            this.setState({ selectedSite: data })
+        }
+    }
+
 
     addCluster() {
         let self = this;
         let cluster = document.getElementById('clusterName').value
         let validCluster = trimString(cluster)
         if (!validCluster) {
-            this.setState({ visible: true });
+            this.setState({ visible: true, errorMsg: "Name can not be empty" });
+            return;
+        }
+        let { siteData, selectedSite } = this.state
+        let site = {}
+        if (siteData && siteData.length) {
+            for (let i in siteData) {
+                let item = siteData[i]
+                if (item.Id == selectedSite) {
+                    site = item
+                    break
+                }
+            }
+        }
+        if (!Object.keys(site).length) {
+            this.setState({ visible: true, errorMsg: "Site can not be empty" });
             return;
         }
         let params = {
             'Name': validCluster,
+            "Site": site,
             'Description': document.getElementById('clusterDesc').value
         }
         let clusterPromise = self.props.addClusters(ADD_CLUSTER, params)
@@ -142,7 +170,7 @@ class Cluster extends Component {
             console.warn(e)
             NotificationManager.error("Something went wrong", "Cluster") // "error!"
         })
-        self.setState({ displayModel: false, visible: false })
+        self.setState({ displayModel: false, visible: false, errorMsg: "" })
     }
 
     showEditDialogBox() {
@@ -150,7 +178,7 @@ class Cluster extends Component {
             alert("Please select one Cluster to edit")
             return
         }
-        this.setState({ displayEditModel: true })
+        this.setState({ displayEditModel: true, selectedSite: this.state.data[this.state.selectedRowIndexes[0]].Site.Id })
     }
 
     toggleEditModal() {
@@ -165,6 +193,7 @@ class Cluster extends Component {
                     <ModalHeader toggle={() => this.toggleEditModal()}>Edit Cluster</ModalHeader>
                     <ModalBody>
                         Name<font color="red"><sup>*</sup></font> <Input autoFocus disabled className="marTop10" id='clusterNameEdit' value={edittedData.Name} /><br />
+                        Site <DropDown className="marTop10" options={this.state.siteData} getSelectedData={this.getSelectedData} identity={"Site"} default={this.state.selectedSite} /><br />
                         Description <Input className="marTop10" id='clusterDescEdit' defaultValue={edittedData.Description} /><br />
                     </ModalBody>
                     <ModalFooter>
@@ -228,12 +257,14 @@ class Cluster extends Component {
 function mapStateToProps(state) {
     return {
         data: state.clusterReducer.get('clusters'),
+        siteData: state.siteReducer.get('sites'),
         clusterHead: state.clusterReducer.get('clusterHeadings')
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return {
+        getSites: (url) => dispatch(getSites(url)),
         getClusters: (url) => dispatch(getClusters(url)),
         addClusters: (url, params) => dispatch(addClusters(url, params)),
         updateCluster: (url, params) => dispatch(updateCluster(url, params)),

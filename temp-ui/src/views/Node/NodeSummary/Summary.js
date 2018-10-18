@@ -14,6 +14,7 @@ import { FETCH_ALL_NODES, ADD_NODE, DELETE_NODES } from '../../../apis/RestConfi
 import { fetchNodes, addNode, deleteNodes, setSelectedNodeIds, setNodeHeadings } from '../../../actions/nodeAction';
 import { connect } from 'react-redux'
 import I from 'immutable'
+import cluster from '../Cluster/cluster';
 
 class NodeSummary extends Component {
     constructor(props) {
@@ -42,7 +43,7 @@ class NodeSummary extends Component {
     }
 
     static getDerivedStateFromProps(props) {
-        let { roleData, kernelData, typeData, siteData, goesData, lldpData, ethToolData, speedData, fecData, mediaData, isoData, headings } = props
+        let { roleData, kernelData, typeData, siteData, goesData, lldpData, ethToolData, speedData, fecData, mediaData, isoData, clusterData, headings } = props
         return {
             nodes: props.nodes ? props.nodes.toJS() : [],
             constNodes: props.nodes ? props.nodes.toJS() : [],
@@ -51,6 +52,7 @@ class NodeSummary extends Component {
             kernelData: kernelData ? kernelData.toJS() : [],
             typeData: typeData ? typeData.toJS() : [],
             siteData: siteData ? siteData.toJS() : [],
+            clusterData: clusterData ? clusterData.toJS() : [],
             goesData: goesData ? goesData.toJS() : [],
             lldpData: lldpData ? lldpData.toJS() : [],
             ethToolData: ethToolData ? ethToolData.toJS() : [],
@@ -76,6 +78,10 @@ class NodeSummary extends Component {
         }
         if (identity == 'Site') {
             this.setState({ selectedSiteId: data })
+            return
+        }
+        if (identity == 'Cluster') {
+            this.setState({ selectedClusterId: data })
             return
         }
     }
@@ -178,8 +184,8 @@ class NodeSummary extends Component {
                             </Col>
                         </Row>
                         <Row>
-                            <Col sm="6" className="marTop10">Type
-                                <DropDown options={this.state.typeData} getSelectedData={this.getSelectedData} identity={"Type"} default={this.state.selectedTypeId} />
+                            <Col sm="6" className="marTop10"> Cluster
+                                <DropDown options={this.state.clusterData} getSelectedData={this.getSelectedData} identity={"Cluster"} default={this.state.selectedClusterId} />
                             </Col>
                             <Col sm="6" className="marTop10"> Site
                                 <DropDown options={this.state.siteData} getSelectedData={this.getSelectedData} identity={"Site"} default={this.state.selectedSiteId} />
@@ -199,6 +205,11 @@ class NodeSummary extends Component {
                             </Col>
                             <Col sm="6" className="marTop10">Base Linux ISO
                                 <DropDown options={this.state.isoData} getSelectedData={this.getSelectedData} identity={"ISO"} default={this.state.selectedIsoId} />
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col sm="6" className="marTop10">Type
+                                <DropDown options={this.state.typeData} getSelectedData={this.getSelectedData} identity={"Type"} default={this.state.selectedTypeId} />
                             </Col>
                         </Row>
                     </ModalBody>
@@ -260,6 +271,7 @@ class NodeSummary extends Component {
             this.setState({ visible: true, errMsg: "Role is mandatory" })
             return;
         }
+
         let roles = [];
         this.state.selectedRoles.map((data) => roles.push(data.Id));
         let params = {
@@ -268,9 +280,13 @@ class NodeSummary extends Component {
             'Iso_Id': parseInt(self.state.selectedIsoId),
             'Site_Id': parseInt(self.state.selectedSiteId),
             'roles': roles,
+            "ClusterId": parseInt(this.state.selectedClusterId),
             'Type_Id': parseInt(self.state.selectedTypeId),
             'SN': document.getElementById('nodeSerialNumber').value,
             'Kernel_Id': parseInt(self.state.selectedLinuxId),
+        }
+        if (Object.keys(cluster).length) {
+            params.Cluster = cluster
         }
         self.toggleLoading()
         this.props.addNode(ADD_NODE, params).then(function () {
@@ -358,6 +374,7 @@ function mapStateToProps(state) {
         kernelData: state.kernelReducer.getIn(['kernels']),
         typeData: state.systemTypeReducer.getIn(['types']),
         siteData: state.siteReducer.getIn(['sites']),
+        clusterData: state.clusterReducer.getIn(['clusters']),
         goesData: state.goesReducer.getIn(['goes']),
         lldpData: state.lldpReducer.getIn(['lldps']),
         ethToolData: state.ethToolReducer.getIn(['ethTools']),

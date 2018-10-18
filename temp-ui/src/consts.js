@@ -20,7 +20,7 @@ export let nodeHead = [
         showDefault: true
     },
     {
-        id: 'cluster',
+        id: 'clusterName',
         displayName: 'Cluster',
         colSize: 1,
         showDefault: true
@@ -415,7 +415,7 @@ export let clusterHead = [
         displayName: 'Name'
     },
     {
-        id: 'Site',
+        id: 'SiteName',
         displayName: 'Site',
     },
     {

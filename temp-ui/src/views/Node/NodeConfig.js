@@ -50,7 +50,8 @@ class NodeConfig extends Component {
   }
 
   static getDerivedStateFromProps(props) {
-    let { selectedNodes, roleData, kernelData, typeData, siteData, goesData, ipRouteData, frrData, lldpData, ethToolData, speedData, fecData, mediaData, isoData, actualNode } = props
+    let { selectedNodes, roleData, kernelData, typeData, siteData, goesData, ipRouteData, frrData, lldpData, ethToolData, speedData,
+      fecData, mediaData, isoData, actualNode, clusterData } = props
     return {
       nodes: selectedNodes ? selectedNodes.toJS() : [],
       actualNode: actualNode ? actualNode.toJS() : {},
@@ -60,6 +61,7 @@ class NodeConfig extends Component {
       selectedLinuxId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'Kernel_Id']) : '',
       selectedIsoId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'Iso_Id']) : '',
       selectedSiteId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'Site_Id']) : '',
+      selectedClusterId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'ClusterId']) : '',
       selectedGoesId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'Goes_Id']) : '',
       selectedIpRouteId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'Iproute_Id']) : '',
       selectedFrrId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'Frr_Id']) : '',
@@ -70,6 +72,7 @@ class NodeConfig extends Component {
       kernelData: kernelData ? kernelData.toJS() : [],
       typeData: typeData ? typeData.toJS() : [],
       siteData: siteData ? siteData.toJS() : [],
+      clusterData: clusterData ? clusterData.toJS() : [],
       goesData: goesData ? goesData.toJS() : [],
       ipRouteData: ipRouteData ? ipRouteData.toJS() : [],
       frrData: frrData ? frrData.toJS() : [],
@@ -179,6 +182,9 @@ class NodeConfig extends Component {
             </Col>
           </Row>
           <Row className="pad">
+            <Col xs='3' ><Label>Cluster</Label><br />
+              <DropDown options={this.state.clusterData} getSelectedData={this.getSelectedData} identity={"Cluster"} default={this.state.selectedClusterId} />
+            </Col>
             <Col xs='3'><Label>Goes</Label><br />
               <DropDown options={this.state.goesData} getSelectedData={this.getSelectedData} identity={"Goes"} default={this.state.selectedGoesId} />
             </Col>
@@ -188,15 +194,16 @@ class NodeConfig extends Component {
             <Col xs='3'><Label>Ethtool</Label><br />
               <DropDown options={this.state.ethToolData} getSelectedData={this.getSelectedData} identity={"EthTool"} default={this.state.selectedEthToolId} />
             </Col>
+
+          </Row>
+          <Row className="pad">
             <Col xs='3'><Label>IpRoute2</Label><br />
               <DropDown options={this.state.ipRouteData} getSelectedData={this.getSelectedData} identity={'IpRoute'} default={this.state.selectedIpRouteId} />
             </Col>
-          </Row>
-          <Row className="pad">
             <Col xs='3'><Label>FRR</Label><br />
               <DropDown options={this.state.frrData} getSelectedData={this.getSelectedData} identity={'Frr'} default={this.state.selectedFrrId} />
             </Col>
-            <Col xs='9'><Label>Provision :</Label><br />
+            <Col xs='6'><Label>Provision :</Label><br />
               <div className="equiSpace">
                 <div><input type="checkbox" id="provisionGoes" defaultChecked={false} /> Goes </div>
                 <div><input type="checkbox" id="provisionLldp" defaultChecked={false} /> LLDP </div>
@@ -255,6 +262,7 @@ class NodeConfig extends Component {
         datum.Iso_Id = parseInt(self.state.selectedIsoId),
         datum.Kernel_Id = parseInt(self.state.selectedLinuxId),
         datum.Site_Id = parseInt(self.state.selectedSiteId),
+        datum.ClusterId = parseInt(self.state.selectedClusterId),
         datum.Goes_Id = parseInt(self.state.selectedGoesId),
         datum.Frr_Id = parseInt(self.state.selectedFrrId),
         datum.Iproute_Id = parseInt(self.state.selectedIpRouteId),
@@ -466,12 +474,12 @@ class NodeConfig extends Component {
   }
 
   showProvisionRollback = () => {
-    if(this.state.nodes[0].executionStatusObj){
+    if (this.state.nodes[0].executionStatusObj) {
       return (<Button className="custBtn" outline color="secondary" onClick={() => (this.rollbackProvion())} > Rollback Provision </Button >)
-    }else{
+    } else {
       return (<Button className="custBtn" outline color="secondary" disabled > Rollback Provision </Button >)
     }
-   
+
   }
 
   discoverModal = () => {
@@ -554,6 +562,10 @@ class NodeConfig extends Component {
     }
     if (identity == 'EthTool') {
       this.setState({ selectedEthToolId: data, saveBtn: false })
+      return
+    }
+    if (identity == 'Cluster') {
+      this.setState({ selectedClusterId: data, saveBtn: false })
       return
     }
   }
@@ -840,6 +852,7 @@ function mapStateToProps(state) {
     kernelData: state.kernelReducer.getIn(['kernels']),
     typeData: state.systemTypeReducer.getIn(['types']),
     siteData: state.siteReducer.getIn(['sites']),
+    clusterData: state.clusterReducer.getIn(['clusters']),
     goesData: state.goesReducer.getIn(['goes']),
     ipRouteData: state.ipRouteReducer.getIn(['ipRoutes']),
     frrData: state.frrReducer.getIn(['frr']),
