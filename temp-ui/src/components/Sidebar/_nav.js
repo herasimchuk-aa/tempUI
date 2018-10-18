@@ -68,7 +68,7 @@ export default {
         {
           name: 'Cluster',
           url: '/pcc/node/Cluster',
-          icon: 'icon-map',
+          icon: 'icon-drawer',
         },
         /*{
           name: 'Base Linux ISO',
@@ -130,48 +130,33 @@ export default {
       name: 'Management',
     },
     {
-      name: 'User',
-      url: '/pcc/management/user',
-      icon: 'icon-vector',
-    },
-    {
-      name: 'Role',
-      url: '/pcc/management/role',
-      icon: 'icon-vector',
-    },
-    {
-      name: 'Permission',
-      url: '/pcc/management/permission',
-      icon: 'icon-vector',
-    },
+      name: 'User Management',
+      url: '/pcc/userManagement',
+      icon: 'icon-user-follow',
+
+      children: [
+        {
+          name: 'User',
+          url: '/pcc/userManagement/user',
+          icon: 'icon-user',
+        },
+        {
+          name: 'Role',
+          url: '/pcc/userManagement/role',
+          icon: 'icon-people',
+        },
+        {
+          name: 'Permission',
+          url: '/pcc/userManagement/permission',
+          icon: 'icon-key',
+        }
+      ]
+    }
+    /* ,
     {
       name: 'Entity',
       url: '/pcc/management/entity',
       icon: 'icon-vector',
-    }
-    // {
-    //   title: true,
-    //   name: 'Operations',
-    //   wrapper: {            
-    //     element: '',        
-    //     attributes: {}      
-    //   },
-    //   class: ''             
-    // },
-    // {
-    //   name: 'Inventory',
-    //   url: '/operation/inventory',
-    //   icon: 'icon-layers',
-    // },
-    // {
-    //   name: 'Actions',
-    //   url: '/operation/playbook',
-    //   icon: 'icon-control-play',
-    // },
-    // {
-    //   name: 'Monitor',
-    //   url: '/operation/monitor',
-    //   icon: 'icon-graph',
-    // },
+    } */
   ]
 };

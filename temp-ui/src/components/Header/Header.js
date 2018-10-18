@@ -67,7 +67,6 @@ class Header extends Component {
           </DropdownToggle>
           <DropdownMenu>
             <DropdownItem > Profile</DropdownItem>
-            <DropdownItem > Settings</DropdownItem>
             <DropdownItem onClick={() => (this.logOut())}> Log Out</DropdownItem>
           </DropdownMenu>
         </UncontrolledDropdown>
