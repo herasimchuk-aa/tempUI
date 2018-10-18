@@ -39,6 +39,7 @@ class NodeConfig extends Component {
       nodeHead: nodeHead,
       displayProvisionModel: false,
       displayConfirmationModel: false,
+      displayRollbackProvisionModel: false,
       wipeBtn: true,
       rebootBtn: true,
       saveBtn: true,
@@ -225,6 +226,7 @@ class NodeConfig extends Component {
         {this.confirmationModal()}
         {this.openDiscoverModal()}
         {this.confirmationModalWipe()}
+        {this.rollbackProvisionModel()}
         {this.rollbackConfirmationModal()}
       </div>
 
@@ -326,41 +328,17 @@ class NodeConfig extends Component {
       alert("Please select an App to provision")
       return
     }
-    let self = this
-    let provisiondata = Object.assign({}, {
-      'NodeId': self.state.nodes[0].Id,
-      'role': 'cloud-node',
-      'items': {
-        'goes': document.getElementById('provisionGoes').checked,
-        'lldp': document.getElementById('provisionLldp').checked,
-        'ethtool': document.getElementById('provisionEthtool').checked,
-        'interfaces': document.getElementById('provisionInterfaces').checked,
-        'iproute': document.getElementById('provisionIpRoute').checked,
-        'frr': document.getElementById('provisionFrr').checked
-      }
-    })
-
-    self.props.provisionNode(PROVISION, provisiondata).then(function (data) {
-      self.setState({ displayConfirmationModel: true })
-    }).catch(function (e) {
-      console.log(e)
-      NotificationManager.error("Something went wrong", "Provision")
-    })
+    this.setState({ displayConfirmationModel: true })
   }
 
   rollbackProvion() {
-    let self = this
-    self.setState({ displayRollbackConfirmationModel: true })
+    this.setState({ displayRollbackConfirmationModel: true })
   }
 
   rollbackConfirmationModal() {
     if (this.state.displayRollbackConfirmationModel) {
       return <ConfirmationModal open={true} actionName={'Rollback'} cancel={() => this.closeRollbackConfirmationModel()} action={() => this.rollbackProvisionCall()} />
     }
-  }
-
-  closeRollbackConfirmationModel() {
-    this.setState({ displayRollbackConfirmationModel: false })
   }
 
   rollbackProvisionCall() {
@@ -372,12 +350,27 @@ class NodeConfig extends Component {
 
     self.props.rollbackProvision(ROLLBACK_PROVISION, provisiondata).then(function (data) {
       console.log(data)
-      self.setState({ displayRollbackConfirmationModel: false })
-      NotificationManager.success("Provision Reverted successfully", "Provision Rollback")
+      self.setState({ displayRollbackConfirmationModel: false, displayRollbackProvisionModel: true })
+      // NotificationManager.success("Provision Reverted successfully", "Provision Rollback")
     }).catch(function (e) {
       console.log(e)
       NotificationManager.error("Something went wrong", "Provision Rollback")
     })
+    this.setState({ displayRollbackConfirmationModel: false })
+  }
+
+  rollbackProvisionModel() {
+    if (this.state.displayRollbackProvisionModel) {
+      return <ProvisionProgress cancelPro={() => this.closeRollbackProvisionModal()} node={this.state.nodes[0]} />
+    }
+  }
+
+  closeRollbackConfirmationModel() {
+    this.setState({ displayRollbackConfirmationModel: false })
+  }
+
+  closeRollbackProvisionModal() {
+    this.setState({ displayRollbackProvisionModel: false })
   }
 
   onRebootClick() {
@@ -444,7 +437,28 @@ class NodeConfig extends Component {
   }
 
   startProvision() {
-    this.setState({ displayConfirmationModel: false, displayConfirmationModelForWipe: false, displayProvisionModel: true })
+
+    let self = this
+    let provisiondata = Object.assign({}, {
+      'NodeId': self.state.nodes[0].Id,
+      'role': 'cloud-node',
+      'items': {
+        'goes': document.getElementById('provisionGoes').checked,
+        'lldp': document.getElementById('provisionLldp').checked,
+        'ethtool': document.getElementById('provisionEthtool').checked,
+        'interfaces': document.getElementById('provisionInterfaces').checked,
+        'iproute': document.getElementById('provisionIpRoute').checked,
+        'frr': document.getElementById('provisionFrr').checked
+      }
+    })
+
+    self.props.provisionNode(PROVISION, provisiondata).then(function (data) {
+      self.setState({ displayConfirmationModel: false, displayConfirmationModelForWipe: false, displayProvisionModel: true })
+    }).catch(function (e) {
+      console.log(e)
+      NotificationManager.error("Something went wrong", "Provision")
+    })
+    this.setState({ displayConfirmationModel: false, displayConfirmationModelForWipe: false })
   }
 
   closeConfirmationModal = () => {

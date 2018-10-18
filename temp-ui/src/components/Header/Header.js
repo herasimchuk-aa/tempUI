@@ -10,6 +10,7 @@ import {
 
 } from 'reactstrap';
 import '../../views/views.css';
+import 'font-awesome/css/font-awesome.min.css';
 import { Redirect } from 'react-router-dom';
 
 class Header extends Component {
@@ -64,7 +65,7 @@ class Header extends Component {
         {/* <Button className="custBtn" onClick={() => (this.logOut())}><span>Log Out</span></Button> */}
         <UncontrolledDropdown setActiveFromChild>
           <DropdownToggle tag="a" className="nav-link cursor-pointer " caret>
-            Account
+            <i className=" fa fa-user-circle fa-lg"></i>
           </DropdownToggle>
           <DropdownMenu>
             <DropdownItem > Profile</DropdownItem>

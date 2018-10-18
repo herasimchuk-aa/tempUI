@@ -141,7 +141,7 @@ export const rollbackProvision = (url, params) => (dispatch, getState) => {
         let storedNodes = store.nodeReducer.get('nodes')
         storedNodes = storedNodes.map(function (node) {
             if (node.get('Id') === provisionData.Data.NodeId) {
-                // node = node.set('executionStatusObj', I.fromJS(provisionData.Data))
+                node = node.set('executionStatusObj', I.fromJS(provisionData.Data))
             }
             return node
         })
