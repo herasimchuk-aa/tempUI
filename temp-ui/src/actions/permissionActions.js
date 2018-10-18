@@ -13,6 +13,10 @@ export const getPermissions = (url) => (dispatch) => {
 function convertData(permissions) {
     permissions = permissions.map(function (item) {
         item = item.set('EntityName', item.getIn(['Entity', 'Name'], ''))
+        item = item.set('create', item.getIn(['Operation', 'Create'], ''))
+        item = item.set('read', item.getIn(['Operation', 'Read'], ''))
+        item = item.set('update', item.getIn(['Operation', 'Update'], ''))
+        item = item.set('delete', item.getIn(['Operation', 'Delete'], ''))
         return item
     })
     return permissions

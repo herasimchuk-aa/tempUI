@@ -176,7 +176,6 @@ class NodeSummary extends Component {
                                 Host<font color="red"><sup>*</sup></font>
                                 <Input id='hostInterface' className="marTop10" />
                             </Col>
-                            {/* <Input id='site' className="marTop10" /> */}
                         </Row>
                         <Row>
                             <Col sm="6" className="marTop10">Type

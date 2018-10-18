@@ -235,6 +235,10 @@
 	cursor: pointer;
 }
 
+.opacity {
+	opacity: 2 !important;
+}
+
 
 /* margin classes start*/
 

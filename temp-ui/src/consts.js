@@ -422,6 +422,26 @@ export let permissionHead = [
     {
         id: 'EntityName',
         displayName: 'Entity'
+    },
+    {
+        id: 'create',
+        displayName: 'Create',
+        operation: 'boolean'
+    },
+    {
+        id: 'read',
+        displayName: 'Read',
+        operation: 'boolean'
+    },
+    {
+        id: 'update',
+        displayName: 'Update',
+        operation: 'boolean'
+    },
+    {
+        id: 'delete',
+        displayName: 'Delete',
+        operation: 'boolean'
     }
 
 ];

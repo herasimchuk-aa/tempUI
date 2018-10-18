@@ -110,7 +110,7 @@ class UserRole extends Component {
     }
 
     cancel() {
-        this.setState({ displayModel: !this.state.displayModel, visible: false })
+        this.setState({ displayModel: !this.state.displayModel, visible: false, selectedPermissions: '' })
     }
 
     addUserRole() {
@@ -134,12 +134,11 @@ class UserRole extends Component {
 
         userRolePromise.then(function (value) {
             NotificationManager.success("User Role updated successfully", "User Role") // "Success!"
-            self.setState({ displayModel: false, selectedRowIndexes: [] })
         }).catch(function (e) {
             console.warn(e)
-            self.setState({ displayModel: false })
             NotificationManager.error("Something went wrong", "User Role") // "error!"
         })
+        this.setState({ displayModel: false, selectedRowIndexes: [], selectedPermissions: '' })
     }
 
     showEditDialogBox() {
@@ -147,11 +146,12 @@ class UserRole extends Component {
             alert("Please select one User Role to edit")
             return
         }
-        this.setState({ displayEditModel: true })
+        let edittedData = this.state.data[this.state.selectedRowIndexes[0]]
+        this.setState({ displayEditModel: true, selectedPermissions: edittedData.Permissions })
     }
 
     toggleEditModal() {
-        this.setState({ displayEditModel: !this.state.displayEditModel })
+        this.setState({ displayEditModel: !this.state.displayEditModel, selectedPermissions: '' })
     }
 
     editUserRoleModal() {
@@ -193,7 +193,7 @@ class UserRole extends Component {
             console.warn(e)
             NotificationManager.error("Something went wrong", "UserRole") // "error!"
         })
-        this.setState({ displayEditModel: false, selectedRowIndexes: [], showDelete: false })
+        this.setState({ displayEditModel: false, selectedRowIndexes: [], showDelete: false, selectedPermissions: '' })
     }
 
     setUserRoleHeadings = (headings) => {

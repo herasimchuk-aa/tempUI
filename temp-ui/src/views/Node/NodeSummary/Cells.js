@@ -1,8 +1,6 @@
 import { Cell } from 'fixed-data-table-2';
 import React from 'react';
-import { UncontrolledTooltip, Badge, Row, Col, ListGroup, ListGroupItem, Progress, Label } from 'reactstrap';
-import { GET_PROVISION } from '../../../apis/RestConfig';
-import { getRequest } from '../../../apis/RestApi';
+import { UncontrolledTooltip, Badge, Progress } from 'reactstrap';
 import '../../views.css'
 
 
@@ -431,3 +429,19 @@ class List extends React.PureComponent {
     }
 };
 module.exports.List = List;
+
+class BooleanCell extends React.PureComponent {
+    constructor(props) {
+        super(props)
+        this.counter = 0
+    }
+    render() {
+        const { data, rowIndex, columnKey, ...props } = this.props;
+        return (
+            <Cell {...props}>
+                <input key={this.counter++} disabled className='opacity' type="checkbox" defaultChecked={data[rowIndex][columnKey]} />
+            </Cell>
+        );
+    }
+};
+module.exports.BooleanCell = BooleanCell;
