@@ -65,6 +65,11 @@ export default {
           url: '/pcc/node/Site',
           icon: 'icon-map',
         },
+        {
+          name: 'Cluster',
+          url: '/pcc/node/Cluster',
+          icon: 'icon-map',
+        },
         /*{
           name: 'Base Linux ISO',
           url: '/pcc/node/BaseLinuxIso',

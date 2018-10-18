@@ -16,6 +16,7 @@ const routes = {
   '/pcc/node/Linuxkernel': 'Linux Kernel',
   '/pcc/node/BaseLinuxIso': 'Base Linux ISO',
   '/pcc/node/Site': 'Site',
+  '/pcc/node/Cluster': 'Cluster',
   '/pcc/connectivity': 'Connectivity',
   '/pcc/connectivity/Summary': 'Summary',
   '/pcc/monitoring': 'Monitoring',

@@ -20,6 +20,12 @@ export let nodeHead = [
         showDefault: true
     },
     {
+        id: 'cluster',
+        displayName: 'Cluster',
+        colSize: 1,
+        showDefault: true
+    },
+    {
         id: 'Status',
         displayName: 'Status',
         operation: 'badge',
@@ -402,6 +408,23 @@ export let siteHead = [
         colSize: 6
     }
 ];
+
+export let clusterHead = [
+    {
+        id: 'Name',
+        displayName: 'Name'
+    },
+    {
+        id: 'Site',
+        displayName: 'Site',
+    },
+    {
+        id: 'Description',
+        displayName: 'Description'
+    }
+];
+
+
 
 export let entityHead = [
     {

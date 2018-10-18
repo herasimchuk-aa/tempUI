@@ -18,6 +18,7 @@ import entityReducer from './entityReducer'
 import permissionReducer from './permissionReducer'
 import userRoleReducer from './userRoleReducer'
 import userReducer from './userReducer'
+import clusterReducer from './clusterReducer'
 
 export default combineReducers({
     nodeReducer,
@@ -38,5 +39,6 @@ export default combineReducers({
     entityReducer,
     permissionReducer,
     userRoleReducer,
-    userReducer
+    userReducer,
+    clusterReducer
 })

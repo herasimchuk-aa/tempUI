@@ -4,6 +4,12 @@ export const ADD_SITE = "/site/add"
 export const UPDATE_SITE = "/site/update"
 export const DELETE_SITES = "/site/delete"
 
+// apis for cluster
+export const FETCH_ALL_CLUSTERS = "/cluster/"
+export const ADD_CLUSTER = "/cluster/add"
+export const UPDATE_CLUSTER = "/cluster/update"
+export const DELETE_CLUSTERS = "/cluster/delete"
+
 // apis for role
 export const FETCH_ALL_ROLES = "/role/"
 export const ADD_ROLE = "/role/add"
