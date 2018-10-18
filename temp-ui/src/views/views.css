@@ -90,12 +90,12 @@
 
 
 .custBtn{
-	background-color: white  !important;
-	border-radius: 6px  !important;
-	border: 1px solid #4f908e  !important;
+	background-color: #4f908e  !important;
+ /* border-radius: 6px  !important; */
+	border: none  !important;
 	margin-bottom: 10px !important;
 	margin-right: 10px  !important;
-	color: #4f908e !important;
+	color: white !important;
 	
 }
 
@@ -119,10 +119,10 @@
 	display: none;
 }
 
-.custBtn:hover{
-	background-color: #4f908e  !important;
-	color: white !important;
-}
+/* .custBtn:hover{
+	color: #4f908e  !important;
+	background-color: white !important;
+} */
 
 .modal-content{
 	top:10rem !important;
@@ -394,5 +394,140 @@ to {opacity: 0;}
 }
 
 .modal-content {
-    top: 5rem !important;
+    top: 10rem !important;
+}
+
+
+
+.close {
+    float: right;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+    color: #000;
+    text-shadow: 0 1px 0 #fff;
+	opacity: .5;
+}
+
+/* MODAL CSS CHANGES */
+.modal{
+	background-color: rgba(255, 255,255, 0.95) !important;
+}
+
+.modal-content{
+	background-color:transparent  !important;
+    background-clip: padding-box  !important;
+    border: none !important;
+}
+.modal-header,.modal-footer {
+	border: none !important;
+	display: initial !important;
+	margin: auto;
+}
+
+.group 			  { 
+	position:relative; 
+	margin-bottom:45px; 
+  }
+  input 				{
+	font-size:18px;
+	padding:10px 10px 10px 5px;
+	display:block;
+	width:300px;
+	display: initial;
+	border:none;
+	border-bottom:1px solid #ccc;
+	background-color: transparent;
+  }
+  input:focus 		{ outline:none; }
+  
+  /* LABEL ======================================= */
+  label 				 {
+	color:#999; 
+	font-size:18px;
+	font-weight:normal;
+	position:absolute;
+	pointer-events:none;
+	left:5px;
+	top:10px;
+	transition:0.2s ease all; 
+	-moz-transition:0.2s ease all; 
+	-webkit-transition:0.2s ease all;
+  }
+  
+  /* active state */
+  input:focus ~ label, input:valid ~ label 		{
+	top:-20px;
+	font-size:14px;
+	color:#4f908e;
+  }
+  
+  /* BOTTOM BARS ================================= */
+  .bar 	{ position:relative; display:block; width:300px; }
+  .bar:before, .bar:after 	{
+	content:'';
+	height:2px; 
+	width:0;
+	bottom:1px; 
+	position:absolute;
+	background:#4f908e; 
+	transition:0.2s ease all; 
+	-moz-transition:0.2s ease all; 
+	-webkit-transition:0.2s ease all;
+  }
+  .bar:before {
+	left:50%;
+  }
+  .bar:after {
+	right:50%; 
+  }
+  
+  /* active state */
+  input:focus ~ .bar:before, input:focus ~ .bar:after {
+	width:50%;
+  }
+  
+  /* HIGHLIGHTER ================================== */
+  .highlight {
+	position:absolute;
+	height:60%; 
+	width:100px; 
+	top:25%; 
+	left:0;
+	pointer-events:none;
+	opacity:0.5;
+  }
+  
+  /* active state */
+  input:focus ~ .highlight {
+	-webkit-animation:inputHighlighter 0.3s ease;
+	-moz-animation:inputHighlighter 0.3s ease;
+	animation:inputHighlighter 0.3s ease;
+  }
+  
+  /* ANIMATIONS ================ */
+  @-webkit-keyframes inputHighlighter {
+	  from { background:#4f908e; }
+	to 	{ width:0; background:transparent; }
+  }
+  @-moz-keyframes inputHighlighter {
+	  from { background:#4f908e; }
+	to 	{ width:0; background:transparent; }
+  }
+  @keyframes inputHighlighter {
+	  from { background:#4f908e; }
+	to 	{ width:0; background:transparent; }
+  }
+
+  .Select-control {
+	background-color:transparent !important; 
+	border: 1px solid transparent !important; 
+    border-bottom:1px solid #ccc !important; 
+	border-radius: 0px !important;
+	width: 300px !important;
+}
+
+.modal-title .h5{
+	font-size: 20px !important;
+	font-weight: normal !important;
 }
