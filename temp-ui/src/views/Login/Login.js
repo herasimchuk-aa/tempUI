@@ -47,7 +47,7 @@ class Login extends Component {
             console.error(e)
             let error = []
             error.push('Incorrect Credentials')
-            self.setState({ error: error })
+            self.setState({ error: error, showAlert: true })
         }
         )
     }
