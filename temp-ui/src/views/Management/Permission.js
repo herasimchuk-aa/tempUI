@@ -142,8 +142,8 @@ class Permission extends Component {
             },
             'Operation': {
                 'Create': document.getElementById('_C').checked,
-                'Update': document.getElementById('_R').checked,
-                'Read': document.getElementById('_U').checked,
+                'Read': document.getElementById('_R').checked,
+                'Update': document.getElementById('_U').checked,
                 'Delete': document.getElementById('_D').checked
             }
         }
