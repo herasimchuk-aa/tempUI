@@ -11,9 +11,13 @@ class App extends Component {
     return (
       <div>
         <Goes />
+        <br />
         <LLDP />
+        <br />
         <EthTool />
+        <br />
         <Frr />
+        <br />
         <IpRoute />
       </div>
     );

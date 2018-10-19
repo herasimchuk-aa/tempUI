@@ -17,6 +17,7 @@ function convertData(permissions) {
         item = item.set('read', item.getIn(['Operation', 'Read'], ''))
         item = item.set('update', item.getIn(['Operation', 'Update'], ''))
         item = item.set('delete', item.getIn(['Operation', 'Delete'], ''))
+        item = item.set('execute', item.getIn(['Operation', 'Execute'], ''))
         return item
     })
     return permissions

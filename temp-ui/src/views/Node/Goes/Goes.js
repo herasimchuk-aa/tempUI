@@ -223,8 +223,9 @@ class Goes extends Component {
                     </div>
                 </Media>
             </Media>
-            <div style={{ height: '200px', overflowY: 'scroll', overflowX: 'hidden' }}>
+            <div style={{ height: '200px' }}>
                 <SummaryDataTable
+                    maxContainerHeight={200}
                     heading={this.state.goesHead}
                     data={this.state.data}
                     checkBoxClick={this.checkBoxClick}

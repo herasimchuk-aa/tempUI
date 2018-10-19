@@ -103,7 +103,8 @@ class Permission extends Component {
                         <input type="checkbox" className="marTop10" id={"_C"} defaultChecked={false} />Create<br />
                         <input type="checkbox" className="marTop10" id={"_R"} defaultChecked={false} />Read<br />
                         <input type="checkbox" className="marTop10" id={"_U"} defaultChecked={false} />Update<br />
-                        <input type="checkbox" className="marTop10" id={"_D"} defaultChecked={false} />Delete
+                        <input type="checkbox" className="marTop10" id={"_D"} defaultChecked={false} />Delete<br />
+                        <input type="checkbox" className="marTop10" id={"_E"} defaultChecked={false} />Execute
                     </ModalBody>
                     <ModalFooter>
                         <Button className="custBtn" outline color="primary" onClick={() => (this.addPermission())}>Add</Button>{'  '}
@@ -144,7 +145,8 @@ class Permission extends Component {
                 'Create': document.getElementById('_C').checked,
                 'Read': document.getElementById('_R').checked,
                 'Update': document.getElementById('_U').checked,
-                'Delete': document.getElementById('_D').checked
+                'Delete': document.getElementById('_D').checked,
+                'Execute': document.getElementById('_E').checked
             }
         }
 
@@ -172,7 +174,8 @@ class Permission extends Component {
                         <input type="checkbox" className="marTop10" id={"_CE"} defaultChecked={edittedData.Operation.Create} />Create<br />
                         <input type="checkbox" className="marTop10" id={"_RE"} defaultChecked={edittedData.Operation.Read} />Read<br />
                         <input type="checkbox" className="marTop10" id={"_UE"} defaultChecked={edittedData.Operation.Update} />Update<br />
-                        <input type="checkbox" className="marTop10" id={"_DE"} defaultChecked={edittedData.Operation.Delete} />Delete
+                        <input type="checkbox" className="marTop10" id={"_DE"} defaultChecked={edittedData.Operation.Delete} />Delete<br />
+                        <input type="checkbox" className="marTop10" id={"_EE"} defaultChecked={edittedData.Operation.Execute} />Execute
                     </ModalBody>
                     <ModalFooter>
                         <Button className="custBtn" outline color="primary" onClick={() => (this.editPermission())}>Save</Button>{'  '}
@@ -202,7 +205,8 @@ class Permission extends Component {
                 'Create': document.getElementById('_CE').checked,
                 'Read': document.getElementById('_RE').checked,
                 'Update': document.getElementById('_UE').checked,
-                'Delete': document.getElementById('_DE').checked
+                'Delete': document.getElementById('_DE').checked,
+                'Execute': document.getElementById('_EE').checked
             }
         }
 

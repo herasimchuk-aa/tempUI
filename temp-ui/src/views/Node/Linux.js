@@ -4,13 +4,14 @@ import BaseLinuxIso from './BaseLinuxIso/BaseLinuxIso'
 import '../views.css';
 
 class Linux extends Component {
-    
+
   render() {
     return (
-        <div>
-            <LinuxKernel />
-            <BaseLinuxIso />
-        </div>
+      <div>
+        <LinuxKernel />
+        <br />
+        <BaseLinuxIso />
+      </div>
     );
   }
 }

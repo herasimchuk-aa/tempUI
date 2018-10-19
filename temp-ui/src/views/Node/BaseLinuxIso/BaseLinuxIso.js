@@ -215,8 +215,9 @@ class BaseLinuxIso extends Component {
                         </div>
                     </Media>
                 </Media>
-                <div style={{ height: '250px', overflowY: 'scroll' }}>
+                <div style={{ height: '250px' }}>
                     <SummaryDataTable
+                        maxContainerHeight={250}
                         heading={this.state.isoHead}
                         setHeadings={(headings) => this.props.setISOHeadings(I.fromJS(headings))}
                         constHeading={isoHead}

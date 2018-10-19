@@ -204,8 +204,9 @@ class LinuxKernel extends Component {
                     </div>
                 </Media>
             </Media>
-            <div style={{ height: '250px', overflowY: 'scroll', marginBottom: '20px' }}>
+            <div style={{ height: '250px' }}>
                 <SummaryDataTable
+                    maxContainerHeight={250}
                     heading={this.state.kernelHead}
                     constHeading={kernelHead}
                     setHeadings={this.setKernelHeadings}

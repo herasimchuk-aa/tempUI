@@ -465,6 +465,11 @@ export let permissionHead = [
         id: 'delete',
         displayName: 'Delete',
         operation: 'boolean'
+    },
+    {
+        id: 'execute',
+        displayName: 'Execute',
+        operation: 'boolean'
     }
 
 ];

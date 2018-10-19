@@ -63,7 +63,7 @@ class Header extends Component {
           <span className="navbar-toggler-icon"></span>
         </NavbarToggler>
         {/* <Button className="custBtn" onClick={() => (this.logOut())}><span>Log Out</span></Button> */}
-        <UncontrolledDropdown setActiveFromChild>
+        <UncontrolledDropdown>
           <DropdownToggle tag="a" className="nav-link cursor-pointer " caret>
             <i className=" fa fa-user-circle fa-lg"></i>
           </DropdownToggle>

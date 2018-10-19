@@ -8,7 +8,6 @@ import '../../views.css'
 
 var widthOffset = window.innerWidth < 680 ? 0 : 290;
 const containerWidth = window.innerWidth - widthOffset;
-const containerHeight = window.innerHeight - 300;
 const rowHeight = 50
 const headerHeight = 50
 const POPOVER_PLACEMENT = "bottom-end"
@@ -37,7 +36,9 @@ class SummaryDataTable extends Component {
     }
 
     static defaultProps = {
+        maxContainerHeight: (window.innerHeight - 300),
         showCheckBox: true
+
     }
 
     static getDerivedStateFromProps(props, state) {
@@ -47,7 +48,8 @@ class SummaryDataTable extends Component {
             selectedRowIndexes: props.selectedRowIndexes,
             selectEntireRow: props.selectEntireRow,
             showCollapse: props.showCollapse,
-            tableName: props.tableName
+            tableName: props.tableName,
+            maxContainerHeight: props.maxContainerHeight
         }
     }
 
@@ -191,7 +193,7 @@ class SummaryDataTable extends Component {
     }
 
     drawtable = (props = this.props) => {
-        let { data, scrollToRow } = this.state
+        let { data, scrollToRow, maxContainerHeight } = this.state
         let columns = this.drawColumns()
         let dataLen = 0
         if (data && data.length) {
@@ -199,7 +201,7 @@ class SummaryDataTable extends Component {
         }
         let tableHeight = rowHeight * (dataLen) + headerHeight + 2
         let tableWidth = this.props.containerWidth
-        let totalheight = Math.min(containerHeight, tableHeight)
+        let totalheight = Math.min(maxContainerHeight, tableHeight)
         return (
             <div>
                 <div style={{ float: "right" }} id={props.tableName}></div>
