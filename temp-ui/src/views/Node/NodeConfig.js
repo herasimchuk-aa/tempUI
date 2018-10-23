@@ -10,8 +10,9 @@ import 'react-notifications/lib/notifications.css';
 import MultiselectDropDown from '../../components/MultiselectDropdown/MultiselectDropDown';
 import ProvisionProgress from '../../components/ProvisionProgress/ProvisionProgress';
 import DiscoverModal from '../../components/DiscoverModal/DiscoverModal';
+import RedirectModal from '../../components/RedirectModal/RedirectModal';
 import ConfirmationModal from '../../components/ConfirmationModal/ConfirmationModal';
-import { ROLLBACK_PROVISION, UPDATE_NODES, DISCOVER, ADD_KERNEL, ADD_SYSTEM_TYPE, ADD_ISO, ADD_GOES, ADD_IPROUTE, ADD_LLDP, ADD_ETHTOOL, FETCH_ALL_GOES, FETCH_ALL_FRR, FETCH_ALL_IPROUTE, FETCH_ALL_LLDP, FETCH_ALL_ETHTOOL, PROVISION } from '../../apis/RestConfig';
+import { ROLLBACK_PROVISION, UPDATE_NODES, DISCOVER, ADD_KERNEL, ADD_SYSTEM_TYPE, ADD_ISO, ADD_GOES, ADD_IPROUTE, ADD_FRR, ADD_LLDP, ADD_ETHTOOL, FETCH_ALL_GOES, FETCH_ALL_FRR, FETCH_ALL_IPROUTE, FETCH_ALL_LLDP, FETCH_ALL_ETHTOOL, PROVISION } from '../../apis/RestConfig';
 import Interfaces from './interfaces';
 import { connect } from 'react-redux';
 import I from 'immutable'
@@ -26,7 +27,7 @@ import { updateNode, provisionNode, fetchActualNode, rollbackProvision } from '.
 import { addKernels } from '../../actions/kernelAction';
 import { addTypes } from '../../actions/systemTypeAction';
 import { addISOs } from '../../actions/baseIsoActions';
-import { getFrr } from '../../actions/frrAction';
+import { getFrr, addFrr } from '../../actions/frrAction';
 
 class NodeConfig extends Component {
 
@@ -88,6 +89,25 @@ class NodeConfig extends Component {
 
   componentDidMount() {
     this.initRequests()
+  }
+
+  chkLocation = (e, inventory) => {
+    if (inventory.Location == '-' || inventory.Location == '') {
+      e.preventDefault();
+      this.setState({ displayRedirectModal: true })
+    } else {
+      console.log(inventory)
+    }
+  }
+
+  openRedirectModal = () => {
+    if (this.state.displayRedirectModal) {
+      return <RedirectModal open={true} cancel={() => this.closeRedirectModal()}></RedirectModal>
+    }
+  }
+
+  closeRedirectModal = () => {
+    this.setState({ displayRedirectModal: false })
   }
 
   render() {
@@ -207,11 +227,11 @@ class NodeConfig extends Component {
             </Col>
             <Col xs='6'><Label>Provision :</Label><br />
               <div className="equiSpace">
-                <div><input type="checkbox" id="provisionGoes" defaultChecked={false} /> Goes </div>
-                <div><input type="checkbox" id="provisionLldp" defaultChecked={false} /> LLDP </div>
-                <div><input type="checkbox" id="provisionEthtool" defaultChecked={false} /> Ethtool </div>
-                <div><input type="checkbox" id="provisionFrr" defaultChecked={false} /> FRR </div>
-                <div><input type="checkbox" id="provisionIpRoute" defaultChecked={false} /> Iproute2 </div>
+                <div><input type="checkbox" id="provisionGoes" defaultChecked={false} onClick={(e) => { this.chkLocation(e, this.state.nodes[0].goes) }} /> Goes </div>
+                <div><input type="checkbox" id="provisionLldp" defaultChecked={false} onClick={(e) => { this.chkLocation(e, this.state.nodes[0].lldp) }} /> LLDP </div>
+                <div><input type="checkbox" id="provisionEthtool" defaultChecked={false} onClick={(e) => { this.chkLocation(e, this.state.nodes[0].ethTool) }} /> Ethtool </div>
+                <div><input type="checkbox" id="provisionFrr" defaultChecked={false} onClick={(e) => { this.chkLocation(e, this.state.nodes[0].frr) }} /> FRR </div>
+                <div><input type="checkbox" id="provisionIpRoute" defaultChecked={false} onClick={(e) => { this.chkLocation(e, this.state.nodes[0].ipRoute) }} /> Iproute2 </div>
                 <div><input type="checkbox" id="provisionInterfaces" defaultChecked={false} /> Interfaces </div>
               </ div>
             </Col>
@@ -229,6 +249,7 @@ class NodeConfig extends Component {
         {this.confirmationModalWipe()}
         {this.rollbackProvisionModel()}
         {this.rollbackConfirmationModal()}
+        {this.openRedirectModal()}
       </div>
 
     )
@@ -611,6 +632,7 @@ class NodeConfig extends Component {
     let lldpId = 0
     let iprouteId = 0
     let ethtoolId = 0
+    let frrId = 0
 
     let kernels = self.state.kernelData
     let kernelExist = false
@@ -820,6 +842,36 @@ class NodeConfig extends Component {
       watingPromise.push(iproutePro)
     }
 
+    let frrs = self.state.frrData
+    let frrExist = false
+    for (let frr of frrs) {
+      if (frr.Version == params.FrrVersion) {
+        frrId = frr.Id
+        frrExist = true
+        break
+      }
+    }
+    if (!frrExist && params.FrrVersion) {
+      let dataparams = {
+        'Name': params.FrrVersion,
+        'Version': params.FrrVersion
+      }
+      let frrPro = this.props.addFrr(ADD_FRR, dataparams).then(function (data) {
+        let payload = data.payload
+        if (payload && payload.size) {
+          for (let frr of payload) {
+            if (frr.get('Version') === params.FrrVersion) {
+              frrId = frr.get('Id')
+            }
+          }
+        }
+      }).catch(function (e) {
+        console.log(e)
+        NotificationManager.error("Something went wrong", "FRR")
+      })
+      watingPromise.push(frrPro)
+    }
+
     Promise.all(watingPromise).then(function () {
       params.interfaces.map((item) => {
         item.Node_Id = self.state.nodes[0].Id
@@ -841,6 +893,7 @@ class NodeConfig extends Component {
           datum.Lldp_Id = parseInt(lldpId),
           datum.Ethtool_Id = parseInt(ethtoolId),
           datum.Iproute_Id = parseInt(iprouteId),
+          datum.Frr_Id = parseInt(frrId),
           datum.SN = params.SerialNumber ? params.SerialNumber : params.SN ? params.SN : '',
 
           self.props.updateNode(UPDATE_NODES, datum).then(function () {
@@ -910,6 +963,7 @@ function mapDispatchToProps(dispatch) {
     addLLDP: (url, params) => dispatch(addLLDP(url, params)),
     addEthTool: (url, params) => dispatch(addEthTool(url, params)),
     addIpRoutes: (url, params) => dispatch(addIpRoutes(url, params)),
+    addFrr: (url, params) => dispatch(addFrr(url, params))
   }
 }
 

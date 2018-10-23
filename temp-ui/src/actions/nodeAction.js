@@ -279,7 +279,7 @@ function convertNode(node, types, kernels, isos, sites, roles, goes, lldps, ethT
     })
     frr.map((item) => {
         if (item.get('Id') == node.Frr_Id) {
-            node.frrVersion = item.get('Version')
+            node.frr = Object.assign({}, item.toJS())
         }
     })
     clusters.map((item) => {
