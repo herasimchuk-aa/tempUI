@@ -47,7 +47,7 @@ class NodeConfig extends Component {
       openDiscoverModal: false,
       cancelNodeConfig: false,
       isLoading: false,
-      siteSelection: false,
+      siteSelection: true,
     }
     this.counter = 0
   }
@@ -111,6 +111,7 @@ class NodeConfig extends Component {
   }
 
   render() {
+    console.log(this.state.nodes)
     let { nodes } = this.state
     if (!nodes || !nodes.length) {
       return <div></div>

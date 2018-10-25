@@ -444,6 +444,22 @@ class SummaryDataTable extends Component {
             case 'validateISO':
                 value = <ValidationCell data={data} match={'IsBaseISOMatched'} field={'BaseISO'} />
                 break
+
+
+            case 'validateLLDP':
+                value = <ValidationCell data={data} match={'IsLldpMatched'} field={'LldpVersion'} />
+                break
+            case 'validateEthtool':
+                value = <ValidationCell data={data} match={'IsEthtoolMatched'} field={'EthtoolVersion'} />
+                break
+            case 'validateFRR':
+                value = <ValidationCell data={data} match={'IsFrrMatched'} field={'FrrVersion'} />
+                break
+            case 'validateIpRoute2':
+                value = <ValidationCell data={data} match={'IsIprouteMatched'} field={'IprouteVersion'} />
+                break
+
+
             case 'validateType':
                 value = <ValidationCell data={data} match={'IsTypeMatched'} field={'Type'} />
                 break

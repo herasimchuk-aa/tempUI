@@ -88,26 +88,30 @@ export let nodeHead = [
         showDefault: false
     },
     {
-        id: 'lldpVersion',
+        id: 'lldp',
         displayName: 'LLDP',
+        operation: 'validateLLDP',
         colSize: 1,
         showDefault: false
     },
     {
-        id: 'ethToolVersion',
+        id: 'ethTool',
         displayName: 'Ethtool',
+        operation: 'validateEthtool',
         colSize: 1,
         showDefault: false
     },
     {
-        id: 'frrVersion',
+        id: 'frr',
         displayName: 'FRR',
+        operation: 'validateFRR',
         colSize: 1,
         showDefault: false
     },
     {
-        id: 'ipRouteVersion',
+        id: 'ipRoute',
         displayName: 'IpRoute2',
+        operation: 'validateIpRoute2',
         colSize: 1,
         showDefault: false
     }

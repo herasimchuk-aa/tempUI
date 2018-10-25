@@ -1,6 +1,6 @@
 import { Cell } from 'fixed-data-table-2';
 import React from 'react';
-import { UncontrolledTooltip, Badge, Progress } from 'reactstrap';
+import { UncontrolledTooltip, Badge, Progress, ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText } from 'reactstrap';
 import '../../views.css'
 
 
@@ -379,18 +379,31 @@ class ValidationCell extends React.PureComponent {
         const value = data[rowIndex][columnKey];
         let tooltip = null;
         if (value && data[rowIndex].ValidationStatus) {
-            if (data[rowIndex].ValidationStatus[match]) {
-                return (<Cell {...props}>  <span style={{ color: 'black' }}>{value}</span> </Cell>)
+            if (typeof value === 'object') {
+                if (data[rowIndex].ValidationStatus[match]) {
+                    return (<Cell {...props}>  <span style={{ color: 'black' }}>{value.Version}</span> </Cell>)
+                }
+                else {
+                    if (data[rowIndex].ValidationStatus[field])
+                        tooltip = (<UncontrolledTooltip placement="top" target={columnKey + rowIndex}>{data[rowIndex].ValidationStatus[field]}</UncontrolledTooltip>)
+                    return (<Cell id={columnKey + rowIndex} {...props}>
+                        <span style={{ color: 'red' }} key={columnKey + rowIndex}>{value.Version}</span>
+                        {tooltip}
+                    </Cell>);
+                }
+            } else {
+                if (data[rowIndex].ValidationStatus[match]) {
+                    return (<Cell {...props}>  <span style={{ color: 'black' }}>{value.Version}</span> </Cell>)
+                }
+                else {
+                    if (data[rowIndex].ValidationStatus[field])
+                        tooltip = (<UncontrolledTooltip placement="top" target={columnKey + rowIndex}>{data[rowIndex].ValidationStatus[field]}</UncontrolledTooltip>)
+                    return (<Cell id={columnKey + rowIndex} {...props}>
+                        <span style={{ color: 'red' }} key={columnKey + rowIndex}>{value.Version}</span>
+                        {tooltip}
+                    </Cell>);
+                }
             }
-            else {
-                if (data[rowIndex].ValidationStatus[field])
-                    tooltip = (<UncontrolledTooltip placement="top" target={columnKey + rowIndex}>{data[rowIndex].ValidationStatus[field]}</UncontrolledTooltip>)
-                return (<Cell id={columnKey + rowIndex} {...props}>
-                    <span style={{ color: 'red' }} key={columnKey + rowIndex}>{value}</span>
-                    {tooltip}
-                </Cell>);
-            }
-
         }
         else {
             // value to be set -
@@ -420,12 +433,41 @@ module.exports.ValidationCell = ValidationCell;
 class List extends React.PureComponent {
     render() {
         const { data, rowIndex, columnKey, ...props } = this.props;
-        if (!data[rowIndex][columnKey])
-            return (<Cell />)
-        let tooltip = (<UncontrolledTooltip placement="top" target={columnKey + rowIndex} style={{ textAlign: 'left' }}>VersionFe1 : {data[rowIndex][columnKey].VersionFe1} <br /> VersionFe1a : {data[rowIndex][columnKey].VersionFe1a}</UncontrolledTooltip>)
-        return (
-            <Cell {...props} id={columnKey + rowIndex} > <span key={columnKey + rowIndex}> {data[rowIndex][columnKey].Version} </span> {tooltip} </Cell>
-        );
+
+        if (!data[rowIndex][columnKey]) { return (<Cell />) }
+        else {
+            let tooltip = (<UncontrolledTooltip placement="top" target={columnKey + rowIndex} style={{ textAlign: 'left' }}>
+                <ListGroup>
+                    <ListGroupItem active action>
+                        <ListGroupItemHeading>Existing Values</ListGroupItemHeading>
+                        <ListGroupItemText>
+                            VersionFe1 : {data[rowIndex][columnKey].VersionFe1 ? data[rowIndex][columnKey].VersionFe1 : '-'}<br />
+                            VersionFe1a : {data[rowIndex][columnKey].VersionFe1a ? data[rowIndex][columnKey].VersionFe1a : '-'}<br />
+                            VersionGo : {data[rowIndex][columnKey].VersionGo ? data[rowIndex][columnKey].VersionGo : '-'}<br />
+                        </ListGroupItemText>
+                    </ListGroupItem>
+                    <ListGroupItem active action>
+                        <ListGroupItemHeading>Validated Values</ListGroupItemHeading>
+                        <ListGroupItemText>
+                            Version : {data[rowIndex].ValidationStatus['GoesVersion'] ? data[rowIndex].ValidationStatus['GoesVersion'] : '-'}
+                        </ListGroupItemText>
+                    </ListGroupItem>
+                </ListGroup>
+            </UncontrolledTooltip>)
+            if (data[rowIndex].ValidationStatus && data[rowIndex].ValidationStatus['IsGoesMatched']) {
+                return (
+                    <Cell {...props} id={columnKey + rowIndex} > <span key={columnKey + rowIndex}>{data[rowIndex][columnKey].Version ? data[rowIndex][columnKey].Version : '-'} </span> {tooltip} </Cell>
+                );
+            } else {
+                return (
+                    <Cell {...props} id={columnKey + rowIndex} >
+                        <span style={{ color: 'red' }} key={columnKey + rowIndex}>{data[rowIndex][columnKey].Version ? data[rowIndex][columnKey].Version : '-'}
+                        </span> {tooltip} </Cell>
+                );
+            }
+        }
+
+
     }
 };
 module.exports.List = List;
