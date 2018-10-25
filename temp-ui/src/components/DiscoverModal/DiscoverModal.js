@@ -490,12 +490,12 @@ class DiscoverModal extends Component {
                     <Col sm="2" className='pad'>{item.name ? item.name : '-'}</Col>
                     <Col sm="5" className='pad'>{item.existingInterface.Name} < br />
                         <small>{item.existingInterface.Ip_address ? item.existingInterface.Ip_address : ''}
-                            {item.existingInterface.Subnet ? ' / ' + item.existingInterface.Subnet : ''}
+                            {item.existingInterface.Subnet ? '/' + item.existingInterface.Subnet : ''}
                         </small>
                     </Col>
                     <Col sm="5" className='pad'>{item.actualInterface.Name} < br />
                         <small>{item.actualInterface.Ip_address ? item.actualInterface.Ip_address : ''}
-                            {item.actualInterface.Subnet ? ' / ' + item.actualInterface.Subnet : ''}
+                            {item.actualInterface.Subnet ? '/' + item.actualInterface.Subnet : ''}
                         </small>
                     </Col>
                 </Row>)
