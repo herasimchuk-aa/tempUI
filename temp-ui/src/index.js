@@ -11,7 +11,6 @@ import { Provider } from 'react-redux'
 import { createStore, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
 import appReducer from './reducers/appReducer'
-import I from 'immutable'
 
 // Styles
 // Import Flag Icons Set
@@ -28,7 +27,6 @@ import '../scss/core/_dropdown-menu-right.scss';
 // Containers
 import Full from './containers/Full/';
 import Login from './views/Login/Login';
-import Dashboard from './views/Dashboard/Dashboard';
 import Socket from './apis/Socket'
 import Password from "./views/Login/Password"
 
@@ -45,8 +43,8 @@ ReactDOM.render((
     <HashRouter>
       <Switch>
         <Route path="/pcc" name="Home" component={Full} />
+        <Route exact path="/setPass/token=:token" name="Password" component={Password} />
         <Route exact path="/" name="login" component={Login} />
-        <Route exact path="/setPass" name="Password" component={Password} />
       </Switch>
     </HashRouter>
   </Provider>

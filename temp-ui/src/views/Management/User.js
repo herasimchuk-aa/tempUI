@@ -165,6 +165,8 @@ class User extends Component {
                     <ModalHeader toggle={() => this.toggleEditModal()}>Edit User</ModalHeader>
                     <ModalBody>
                         Name<font color="red"><sup>*</sup></font> <Input autoFocus disabled className="marTop10" id='userEdit' value={edittedData.Name} /><br />
+                        User Name<font color="red"><sup>*</sup></font> <Input className="marTop10" id='rbacUserNameEdit' defaultValue={edittedData.Username} /><br />
+                        Email ID<font color="red"><sup>*</sup></font> <Input className="marTop10" id='userEmailIdEdit' defaultValue={edittedData.Email} /><br />
                         User Roles<MultiselectDropDown value={this.state.selectedUserRoles} getSelectedData={this.handleChanges} options={this.state.userRoleData}></MultiselectDropDown>
                     </ModalBody>
                     <ModalFooter>
@@ -180,11 +182,14 @@ class User extends Component {
         let self = this
 
         let userRoles = [];
-        this.state.selectedUserRoles.map((data) => userRoles.push(data));
+        if (this.state.selectedUserRoles && this.state.selectedUserRoles.length)
+            this.state.selectedUserRoles.map((data) => userRoles.push(data));
 
         let params = {
             'Id': userId,
             'Name': document.getElementById('userEdit').value ? document.getElementById('userEdit').value : "-",
+            'Email': document.getElementById('userEmailIdEdit').value,
+            'Username': document.getElementById('rbacUserNameEdit').value,
             'UserRoles': userRoles
         }
 

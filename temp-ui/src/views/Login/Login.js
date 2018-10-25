@@ -13,12 +13,17 @@ class Login extends Component {
         super(props)
         this.state = {
             signUp: false,
-            // setPassword: false,
             error: [],
             success: '',
-            showAlert: true,
-            showSuccess: true,
-            showFirstLoginPwd: true
+            showAlert: false,
+            showSuccess: false,
+        }
+    }
+
+    static getDerivedStateFromProps(props, state) {
+        return {
+            showSuccess: props.showSuccess,
+            success: props.success
         }
     }
 
@@ -45,17 +50,7 @@ class Login extends Component {
             "Password": psw
         }
         this.props.login(params).then(function (json) {
-            if (json.payload.User.FirstLogin) {
-                // self.setState({ setPassword: true})
-                document.getElementById('logIn').style.display = 'none'
-                document.getElementById('logInBtn').style.display = 'none'
-                document.getElementById('forgotpasswordBtn').style.display = 'none'
-            }
-            else
-                self.setState({ signUp: true })
-            // if (json.payload) {
-            //     self.setState({ signUp: true })
-            // }
+            self.setState({ signUp: true })
         }).catch(function (e) {
             console.error(e)
             let error = []
@@ -73,12 +68,14 @@ class Login extends Component {
         }
         else
             error.push("Please enter a valid E-mail ID")
-        if (error.length)
+        if (error.length) {
             this.setState({ error: error, showAlert: true })
+            return
+        }
         let params = {
             "Email": email
         }
-        // postRequest("/rbac/forgotPassword", params)
+        postRequest("/rbac/user/forgotpasswd", params)
     }
 
     setNewPassword() {
@@ -165,7 +162,7 @@ class Login extends Component {
                                     <CardBody className="p-4">
                                         {errorAlert}
                                         {success}
-                                        <form id="logIn" onSubmit={(e) => (this.logIn(e))}>
+                                        <div id="logIn" >
                                             <h3>Log In</h3>
                                             <p className="text-muted"></p>
                                             <InputGroup className="mb-3">
@@ -184,8 +181,8 @@ class Login extends Component {
                                                 </InputGroupAddon>
                                                 <Input type="password" placeholder="Password" autoComplete="new-password" id="psw" />
                                             </InputGroup>
-                                            <Button block className="custBtn" type="submit" >Login</Button>
-                                        </form>
+                                            <Button block className="custBtn" onClick={(e) => (this.logIn(e))}>Login</Button>
+                                        </div>
                                         <Form id="forgotpassword">
                                             <h3>Forgot Password</h3>
                                             <p className="text-muted"></p>

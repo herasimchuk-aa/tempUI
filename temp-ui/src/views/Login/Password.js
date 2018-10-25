@@ -5,6 +5,8 @@ import { validateName, validateEmail } from '../../components/Utility/Utility';
 import { login } from '../../actions/loginAction';
 import { connect } from 'react-redux'
 import { postRequest, putRequest } from '../../apis/RestApi';
+import { NotificationManager } from 'react-notifications';
+import Login from './Login';
 
 
 class Password extends Component {
@@ -14,14 +16,21 @@ class Password extends Component {
         this.state = {
             error: [],
             success: '',
-            showAlert: true,
-            showSuccess: true,
-            setPassword: false
+            showAlert: false,
+            showSuccess: false,
+            setPassword: false,
+            resetPassword: {
+                success: '',
+                showSuccess: false
+            }
         }
+        console.log(props)
+        window.sessionStorage.accessToken = props.match.params.token
     }
 
     setNewPassword() {
         let error = []
+        let self = this
         // let psw = document.getElementById('opsw').value
         let psw1 = document.getElementById('npsw').value
         let psw2 = document.getElementById('cpsw').value
@@ -40,9 +49,20 @@ class Password extends Component {
             return
         }
         //call set new pwd api
-        let params = {}
-        putRequest("/rbac/setPassword", params)
-        this.setState({ setPassword: true })
+        let params = {
+            'Password': psw1
+        }
+        putRequest("/rbac/user/changepasswd", params).then(() => {
+            self.setState({
+                setPassword: true,
+                resetPassword: {
+                    success: 'Password changed successfully',
+                    showSuccess: true
+                }
+            })
+        }
+        )
+
     }
 
     cancelAlert = () => {
@@ -51,7 +71,9 @@ class Password extends Component {
 
     render() {
         if (this.state.setPassword) {
-            return <Redirect to={{ pathname: '/' }} />
+            // return <Redirect to={{ pathname: '/' }} state={this.state.resetPassword} />
+            return <Login showSuccess={true} success='Password Changed Successfully' />
+
         }
         let errorAlert = null
         let success = null
