@@ -30,6 +30,7 @@ import Full from './containers/Full/';
 import Login from './views/Login/Login';
 import Dashboard from './views/Dashboard/Dashboard';
 import Socket from './apis/Socket'
+import Password from "./views/Login/Password"
 
 
 
@@ -45,6 +46,7 @@ ReactDOM.render((
       <Switch>
         <Route path="/pcc" name="Home" component={Full} />
         <Route exact path="/" name="login" component={Login} />
+        <Route exact path="/setPass" name="Password" component={Password} />
       </Switch>
     </HashRouter>
   </Provider>

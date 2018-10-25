@@ -5,7 +5,7 @@ export const login = (params) => function (dispatch) {
     return postRequest(FETCH_LOGIN_DATA, params).then(function (json) {
         if (json.Data) {
             window.sessionStorage.accessToken = json.Data.token
-            return dispatch(setAuthToken(json.Data.token))
+            return dispatch(setAuthToken(json.Data))
         }
         throw new Error('Incorrect Credentials')
     })

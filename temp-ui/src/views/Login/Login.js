@@ -4,6 +4,7 @@ import { Redirect } from 'react-router-dom';
 import { validateName, validateEmail } from '../../components/Utility/Utility';
 import { login } from '../../actions/loginAction';
 import { connect } from 'react-redux'
+import { postRequest } from '../../apis/RestApi';
 
 
 class Login extends Component {
@@ -12,8 +13,12 @@ class Login extends Component {
         super(props)
         this.state = {
             signUp: false,
+            // setPassword: false,
             error: [],
-            showAlert: true
+            success: '',
+            showAlert: true,
+            showSuccess: true,
+            showFirstLoginPwd: true
         }
     }
 
@@ -40,9 +45,17 @@ class Login extends Component {
             "Password": psw
         }
         this.props.login(params).then(function (json) {
-            if (json.payload) {
-                self.setState({ signUp: true })
+            if (json.payload.User.FirstLogin) {
+                // self.setState({ setPassword: true})
+                document.getElementById('logIn').style.display = 'none'
+                document.getElementById('logInBtn').style.display = 'none'
+                document.getElementById('forgotpasswordBtn').style.display = 'none'
             }
+            else
+                self.setState({ signUp: true })
+            // if (json.payload) {
+            //     self.setState({ signUp: true })
+            // }
         }).catch(function (e) {
             console.error(e)
             let error = []
@@ -53,9 +66,26 @@ class Login extends Component {
     }
 
     forgotPsw = () => {
+        let email = document.getElementById("emailForgotPassword").value
         let error = []
-        let psw1 = document.getElementById('password').value
-        let psw2 = document.getElementById('confirmPassword').value
+        if (validateEmail(email)) {
+            this.setState({ showAlert: false, showSuccess: true, success: "An E-mail has been sent to " + email })
+        }
+        else
+            error.push("Please enter a valid E-mail ID")
+        if (error.length)
+            this.setState({ error: error, showAlert: true })
+        let params = {
+            "Email": email
+        }
+        // postRequest("/rbac/forgotPassword", params)
+    }
+
+    setNewPassword() {
+        let error = []
+        let pwd = document.getElementById('opsw').value
+        let psw1 = document.getElementById('npsw').value
+        let psw2 = document.getElementById('cpsw').value
         if (!psw1) {
             error.push('Password is mandatory')
         }
@@ -70,6 +100,7 @@ class Login extends Component {
             this.setState({ error: error, showAlert: true })
             return
         }
+        //call set new pwd api
         this.setState({ signUp: true })
     }
 
@@ -78,19 +109,19 @@ class Login extends Component {
         document.getElementById('forgotpassword').style.display = 'none'
         document.getElementById('logInBtn').style.display = 'none'
         document.getElementById('forgotpasswordBtn').style.display = 'block'
-
+        this.setState({ showAlert: false, showSuccess: false })
     }
     showForgotPsw = () => {
         document.getElementById('logIn').style.display = 'none'
         document.getElementById('forgotpassword').style.display = 'block'
         document.getElementById('logInBtn').style.display = 'block'
         document.getElementById('forgotpasswordBtn').style.display = 'none'
-
+        this.setState({ showAlert: false, showSuccess: false })
     }
 
 
     cancelAlert = () => {
-        this.setState({ showAlert: false });
+        this.setState({ showAlert: false, showSuccess: false });
     }
 
     render() {
@@ -98,13 +129,22 @@ class Login extends Component {
         if (this.state.signUp) {
             return <Redirect to={{ pathname: '/pcc' }} />
         }
+        // if (this.state.setPassword) {
+
+        // }
         let errorAlert = null
+        let success = null
         if (this.state.error.length) {
             errorAlert = <Alert color="danger" isOpen={this.state.showAlert} toggle={this.cancelAlert}>
                 {this.state.error.map((err) => {
                     return <ListGroup><ListGroupItem>{err}</ListGroupItem> </ListGroup>
                 })}
             </Alert>
+        }
+        if (this.state.success) {
+            success = (<Alert color="success" isOpen={this.state.showSuccess} toggle={this.cancelAlert}>
+                {this.state.success}
+            </Alert>)
         }
 
         return (
@@ -124,9 +164,9 @@ class Login extends Component {
                                 <Card className="mx-4" style={{ boxShadow: '0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23)' }}>
                                     <CardBody className="p-4">
                                         {errorAlert}
-
+                                        {success}
                                         <form id="logIn" onSubmit={(e) => (this.logIn(e))}>
-                                            <h3>LogIn</h3>
+                                            <h3>Log In</h3>
                                             <p className="text-muted"></p>
                                             <InputGroup className="mb-3">
                                                 <InputGroupAddon addonType="prepend">
@@ -149,24 +189,17 @@ class Login extends Component {
                                         <Form id="forgotpassword">
                                             <h3>Forgot Password</h3>
                                             <p className="text-muted"></p>
-                                            <InputGroup className="mb-3">
-                                                <InputGroupAddon addonType="prepend">
-                                                    <InputGroupText>
-                                                        <i className="icon-lock"></i>
-                                                    </InputGroupText>
-                                                </InputGroupAddon>
-                                                <Input type="password" placeholder="Password" autoComplete="new-password" id="npsw" />
-                                            </InputGroup>
                                             <InputGroup className="mb-4">
                                                 <InputGroupAddon addonType="prepend">
                                                     <InputGroupText>
-                                                        <i className="icon-lock"></i>
+                                                        <i className="icon-user"></i>
                                                     </InputGroupText>
                                                 </InputGroupAddon>
-                                                <Input type="password" placeholder="Repeat password" autoComplete="new-password" id="cpsw" />
+                                                <Input type="text" placeholder="Email ID" id="emailForgotPassword" />
                                             </InputGroup>
                                             <Button block className="custBtn" onClick={() => (this.forgotPsw())}>Submit</Button>
                                         </Form>
+
                                     </CardBody>
                                     <CardFooter className="p-4">
 

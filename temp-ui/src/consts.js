@@ -482,13 +482,19 @@ export let userHead = [
     {
         id: 'Name',
         displayName: 'Name',
-        colSize: 6
+    },
+    {
+        id: 'Username',
+        displayName: 'User Name',
+    },
+    {
+        id: 'Email',
+        displayName: 'Email ID',
     },
     {
         id: 'UserRoles',
         displayName: 'Roles',
         operation: 'array',
-        colSize: 6,
         showDefault: true
     }
 ];

@@ -96,6 +96,8 @@ class User extends Component {
                     <ModalBody>
                         <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Name cannot be empty</Alert>
                         Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='userName' /><br />
+                        User Name<font color="red"><sup>*</sup></font> <Input className="marTop10" id='rbacUserName' /><br />
+                        Email ID<font color="red"><sup>*</sup></font> <Input className="marTop10" id='userEmailId' /><br />
                         User Roles<MultiselectDropDown value={this.state.selectedUserRoles} getSelectedData={this.handleChanges} options={this.state.userRoleData}></MultiselectDropDown>
                     </ModalBody>
                     <ModalFooter>
@@ -121,10 +123,13 @@ class User extends Component {
         }
 
         let userRoles = [];
-        this.state.selectedUserRoles.map((data) => userRoles.push(data));
+        if (this.state.selectedUserRoles)
+            this.state.selectedUserRoles.map((data) => userRoles.push(data));
 
         let params = {
             'Name': validuserName,
+            'Username': document.getElementById('rbacUserName').value,
+            'Email': document.getElementById('userEmailId').value,
             'UserRoles': userRoles
         }
 
