@@ -112,7 +112,7 @@ class Interfaces extends Component {
                     <Col sm="1" className="pad" ><Input key={self.counter++} style={{ cursor: 'pointer', marginLeft: '0px' }}
                         type="checkbox" onChange={() => (self.checkBoxClickInterface(rowIndex))} defaultChecked={false} /></Col>
                     <Col sm="2" className="pad">{item.Name ? item.Name : '-'}</Col>
-                    <Col sm="2" className="pad">{item.Ip_address ? item.Ip_address : '-'}{item.Subnet ? ' / ' + item.Subnet : ''}</Col>
+                    <Col sm="2" className="pad">{item.Ip_address ? item.Ip_address : '-'}{item.Subnet ? '/' + item.Subnet : ''}</Col>
                     <Col sm="2" className="pad">{item.Remote_node_name ? item.Remote_node_name : '-'}</Col>
                     <Col sm="1" className="pad">{item.Remote_interface ? item.Remote_interface : "-"}</Col>
                     <Col sm="1" className="pad">{item.Speed ? item.Speed : "-"}</Col>
