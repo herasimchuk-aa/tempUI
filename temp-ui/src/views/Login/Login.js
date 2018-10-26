@@ -41,7 +41,7 @@ class Login extends Component {
             error.push('Password is mandatory')
         }
         if (error.length) {
-            this.setState({ error: error, showAlert: true })
+            this.setState({ error: error, showAlert: true, showSuccess: false })
             return
         }
 
@@ -55,7 +55,7 @@ class Login extends Component {
             console.error(e)
             let error = []
             error.push('Incorrect Credentials')
-            self.setState({ error: error, showAlert: true })
+            self.setState({ error: error, showAlert: true, showSuccess: false })
         }
         )
     }
