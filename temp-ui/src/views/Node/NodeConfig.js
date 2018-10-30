@@ -54,7 +54,7 @@ class NodeConfig extends Component {
 
   static getDerivedStateFromProps(props) {
     let { selectedNodes, roleData, kernelData, typeData, siteData, goesData, ipRouteData, frrData, lldpData, ethToolData, speedData,
-      fecData, mediaData, isoData, actualNode, clusterData } = props
+      fecData, mediaData, isoData, actualNode, clusterData, modulesLoadData, modProbeData } = props
     return {
       nodes: selectedNodes ? selectedNodes.toJS() : [],
       actualNode: actualNode ? actualNode.toJS() : {},
@@ -66,6 +66,8 @@ class NodeConfig extends Component {
       selectedSiteId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'Site_Id']) : '',
       selectedClusterId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'ClusterId']) : '',
       selectedGoesId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'Goes_Id']) : '',
+      selectedModulesLoadId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'ModulesLoadId']) : '',
+      selectedModProbeId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'ModprobeId']) : '',
       selectedIpRouteId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'Iproute_Id']) : '',
       selectedFrrId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'Frr_Id']) : '',
       selectedLldpId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'Lldp_Id']) : '',
@@ -80,6 +82,8 @@ class NodeConfig extends Component {
       ipRouteData: ipRouteData ? ipRouteData.toJS() : [],
       frrData: frrData ? frrData.toJS() : [],
       lldpData: lldpData ? lldpData.toJS() : [],
+      modProbeData: modProbeData ? modProbeData.toJS() : [],
+      modulesLoadData: modulesLoadData ? modulesLoadData.toJS() : [],
       ethToolData: ethToolData ? ethToolData.toJS() : [],
       speedData: speedData ? speedData.toJS() : [],
       fecData: fecData ? fecData.toJS() : [],
@@ -226,13 +230,23 @@ class NodeConfig extends Component {
             <Col xs='3'><Label>FRR</Label><br />
               <DropDown options={this.state.frrData} getSelectedData={this.getSelectedData} identity={'Frr'} default={this.state.selectedFrrId} />
             </Col>
-            <Col xs='6'><Label>Provision :</Label><br />
+            <Col xs='3'><Label>ModProbe</Label><br />
+              <DropDown options={this.state.modProbeData} getSelectedData={this.getSelectedData} identity={'ModProbe'} default={this.state.selectedModProbeId} />
+            </Col>
+            <Col xs='3'><Label>Modules-Load</Label><br />
+              <DropDown options={this.state.modulesLoadData} getSelectedData={this.getSelectedData} identity={'MdoulesLoad'} default={this.state.selectedModulesLoadId} />
+            </Col>
+          </Row>
+          <Row className="pad">
+            <Col xs='9'><Label>Provision :</Label><br />
               <div className="equiSpace">
                 <div><input type="checkbox" id="provisionGoes" defaultChecked={false} onClick={(e) => { this.chkLocation(e, this.state.nodes[0].goes) }} /> Goes </div>
                 <div><input type="checkbox" id="provisionLldp" defaultChecked={false} onClick={(e) => { this.chkLocation(e, this.state.nodes[0].lldp) }} /> LLDP </div>
                 <div><input type="checkbox" id="provisionEthtool" defaultChecked={false} onClick={(e) => { this.chkLocation(e, this.state.nodes[0].ethTool) }} /> Ethtool </div>
                 <div><input type="checkbox" id="provisionFrr" defaultChecked={false} onClick={(e) => { this.chkLocation(e, this.state.nodes[0].frr) }} /> FRR </div>
                 <div><input type="checkbox" id="provisionIpRoute" defaultChecked={false} onClick={(e) => { this.chkLocation(e, this.state.nodes[0].ipRoute) }} /> Iproute2 </div>
+                <div><input type="checkbox" id="provisionModProbe" defaultChecked={false} /> ModProbe </div>
+                <div><input type="checkbox" id="provisionModulesLoad" defaultChecked={false} /> Modules-Load </div>
                 <div><input type="checkbox" id="provisionInterfaces" defaultChecked={false} /> Interfaces </div>
               </ div>
             </Col>
@@ -347,7 +361,8 @@ class NodeConfig extends Component {
   onProvisionClick() {
     if (!document.getElementById('provisionGoes').checked && !document.getElementById('provisionLldp').checked &&
       !document.getElementById('provisionEthtool').checked && !document.getElementById('provisionInterfaces').checked
-      && !document.getElementById('provisionFrr').checked) {
+      && !document.getElementById('provisionFrr').checked && !document.getElementById('provisionModProbe').checked &&
+      !document.getElementById('provisionModulesLoad').checked) {
       alert("Please select an App to provision")
       return
     }
@@ -471,7 +486,9 @@ class NodeConfig extends Component {
         'ethtool': document.getElementById('provisionEthtool').checked,
         'interfaces': document.getElementById('provisionInterfaces').checked,
         'iproute': document.getElementById('provisionIpRoute').checked,
-        'frr': document.getElementById('provisionFrr').checked
+        'frr': document.getElementById('provisionFrr').checked,
+        'modprobe': document.getElementById('provisionModProbe').checked,
+        'modulesload': document.getElementById('provisionModulesLoad').checked
       }
     })
 
@@ -599,6 +616,14 @@ class NodeConfig extends Component {
     }
     if (identity == 'EthTool') {
       this.setState({ selectedEthToolId: data, saveBtn: false })
+      return
+    }
+    if (identity == 'ModProbe') {
+      this.setState({ selecteModProbeId: data, saveBtn: false })
+      return
+    }
+    if (identity == 'ModulesLoad') {
+      this.setState({ selectedModulesLoadId: data, saveBtn: false })
       return
     }
     if (identity == 'Cluster') {
@@ -936,6 +961,8 @@ function mapStateToProps(state) {
     ipRouteData: state.ipRouteReducer.getIn(['ipRoutes']),
     frrData: state.frrReducer.getIn(['frr']),
     lldpData: state.lldpReducer.getIn(['lldps']),
+    modProbeData: state.modProbeReducer.getIn(['modProbe']),
+    modulesLoadData: state.modulesLoadReducer.getIn(['modulesLoad']),
     ethToolData: state.ethToolReducer.getIn(['ethTools']),
     speedData: state.speedReducer.getIn(['speeds']),
     fecData: state.fecReducer.getIn(['fecs']),

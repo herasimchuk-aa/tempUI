@@ -336,6 +336,43 @@ export let goesHead = [
     }
 ];
 
+
+export let modProbeHead = [
+    {
+        id: 'Name',
+        displayName: 'Name',
+        colSize: 3
+    },
+    {
+        id: 'Location',
+        displayName: 'Location',
+        colSize: 3
+    },
+    {
+        id: 'Description',
+        displayName: 'Description',
+        colSize: 3
+    }
+];
+
+export let modulesLoadHead = [
+    {
+        id: 'Name',
+        displayName: 'Name',
+        colSize: 3
+    },
+    {
+        id: 'Location',
+        displayName: 'Location',
+        colSize: 3
+    },
+    {
+        id: 'Description',
+        displayName: 'Description',
+        colSize: 3
+    }
+];
+
 export let lldpHead = [
     {
         id: 'Name',

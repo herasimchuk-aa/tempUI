@@ -40,6 +40,20 @@ export const ADD_GOES = "/goes/add"
 export const UPDATE_GOES = "/goes/update"
 export const DELETE_GOES = "/goes/delete"
 
+
+
+// apis for modProbe
+export const FETCH_ALL_MODPROBE = "/modprobe/"
+export const ADD_MODPROBE = "/modprobe/add"
+export const UPDATE_MODPROBE = "/modprobe/update"
+export const DELETE_MODPROBE = "/modprobe/delete"
+
+// apis for modulesLoad
+export const FETCH_ALL_MODULES_LOAD = "/modulesload/"
+export const ADD_MODULES_LOAD = "/modulesload/add"
+export const UPDATE_MODULES_LOAD = "/modulesload/update"
+export const DELETE_MODULES_LOAD = "/modulesload/delete"
+
 // apis for lldp
 export const FETCH_ALL_LLDP = "/lldp/"
 export const ADD_LLDP = "/lldp/add"

@@ -2,7 +2,7 @@ import I from 'immutable'
 import { getRequest, putRequest, postRequest } from '../apis/RestApi';
 import {
     FETCH_ALL_SYSTEM_TYPES, FETCH_ALL_ROLES, FETCH_ALL_KERNELS, FETCH_ALL_ISOS, FETCH_ALL_SITES,
-    GET_PROVISION, FETCH_ALL_GOES, FETCH_ALL_LLDP, FETCH_ALL_ETHTOOL, FETCH_ALL_IPROUTE, FETCH_ALL_FRR, FETCH_ALL_CLUSTERS
+    GET_PROVISION, FETCH_ALL_GOES, FETCH_ALL_LLDP, FETCH_ALL_ETHTOOL, FETCH_ALL_IPROUTE, FETCH_ALL_FRR, FETCH_ALL_CLUSTERS, FETCH_ALL_MODPROBE, FETCH_ALL_MODULES_LOAD
 } from '../apis/RestConfig';
 import { fetchTypes } from './systemTypeAction';
 import { fetchRoles } from './roleAction';
@@ -15,6 +15,8 @@ import { getEthTool } from './ethToolAction';
 import { getIpRoute } from './ipRouteAction';
 import { getFrr } from './frrAction';
 import { getClusters } from './clusterAction';
+import { getModulesLoad } from './modulesLoadAction';
+import { getModProbe } from './modProbeAction';
 export const fetchNodes = (url) => (dispatch, getState) => {
     return getRequest(url).then(function (nodeData) {
         let typePromise = dispatch(fetchTypes(FETCH_ALL_SYSTEM_TYPES))
@@ -28,26 +30,29 @@ export const fetchNodes = (url) => (dispatch, getState) => {
         let ethToolPromise = dispatch(getEthTool(FETCH_ALL_ETHTOOL))
         let ipRoutePromise = dispatch(getIpRoute(FETCH_ALL_IPROUTE))
         let frrPromise = dispatch(getFrr(FETCH_ALL_FRR))
-        return Promise.all([typePromise, rolePromise, kernelPromise, isoPromise, sitePromise, goesPromise, lldpPromise, ethToolPromise, ipRoutePromise, frrPromise, clusterPromise]).then(function () {
-            let store = getState()
-            let nodes = convertData(nodeData.Data, store)
-            //temp code . remove it 
-            let provisionPromises = []
-            if (nodes && nodes.length) {
-                nodes.map(function (node) {
-                    let executionId = node.ExecId
-                    if (executionId) {
-                        let provisionUrl = GET_PROVISION + executionId
-                        provisionPromises.push(getRequest(provisionUrl).then(function (json) {
-                            node.executionStatusObj = json
-                        }))
-                    }
+        let modProbePromise = dispatch(getModProbe(FETCH_ALL_MODPROBE))
+        let modulesLoadPromise = dispatch(getModulesLoad(FETCH_ALL_MODULES_LOAD))
+        return Promise.all([typePromise, rolePromise, kernelPromise, isoPromise, sitePromise, goesPromise, lldpPromise, ethToolPromise, ipRoutePromise, frrPromise,
+            clusterPromise, modProbePromise, modulesLoadPromise]).then(function () {
+                let store = getState()
+                let nodes = convertData(nodeData.Data, store)
+                //temp code . remove it 
+                let provisionPromises = []
+                if (nodes && nodes.length) {
+                    nodes.map(function (node) {
+                        let executionId = node.ExecId
+                        if (executionId) {
+                            let provisionUrl = GET_PROVISION + executionId
+                            provisionPromises.push(getRequest(provisionUrl).then(function (json) {
+                                node.executionStatusObj = json
+                            }))
+                        }
+                    })
+                }
+                return Promise.all(provisionPromises).then(function () {
+                    return dispatch(setNodes(I.fromJS(nodes)))
                 })
-            }
-            return Promise.all(provisionPromises).then(function () {
-                return dispatch(setNodes(I.fromJS(nodes)))
             })
-        })
     })
 }
 

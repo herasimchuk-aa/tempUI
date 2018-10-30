@@ -1,13 +1,16 @@
-import { SET_AUTH_TOKEN } from "../actions/loginAction";
+import { SET_ACCESS_PERMISSIONS, SET_USER_INFO } from "../actions/loginAction";
 import I from 'immutable'
 const initialState = I.fromJS({
-    "authToken": ""
+    "accessPermissions": I.Map(),
+    "userInfo": I.Map()
 })
 
 export default function loginReducer(state = initialState, action) {
     switch (action.type) {
-        case SET_AUTH_TOKEN:
-            return state = state.set("authToken", action.payload)
+        case SET_ACCESS_PERMISSIONS:
+            return state = state.set("accessPermissions", action.payload)
+        case SET_USER_INFO:
+            return state = state.set("userInfo", action.payload)
         default:
             return state
     }

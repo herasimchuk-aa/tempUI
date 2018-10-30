@@ -19,6 +19,9 @@ import permissionReducer from './permissionReducer'
 import userRoleReducer from './userRoleReducer'
 import userReducer from './userReducer'
 import clusterReducer from './clusterReducer'
+import authReducer from './loginReducer'
+import modProbeReducer from './modProbeReducer'
+import modulesLoadReducer from './modulesLoadReducer'
 
 export default combineReducers({
     nodeReducer,
@@ -40,5 +43,8 @@ export default combineReducers({
     permissionReducer,
     userRoleReducer,
     userReducer,
-    clusterReducer
+    clusterReducer,
+    authReducer,
+    modProbeReducer,
+    modulesLoadReducer
 })
