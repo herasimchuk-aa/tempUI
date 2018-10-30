@@ -393,13 +393,13 @@ class ValidationCell extends React.PureComponent {
                 }
             } else {
                 if (data[rowIndex].ValidationStatus[match]) {
-                    return (<Cell {...props}>  <span style={{ color: 'black' }}>{value.Version}</span> </Cell>)
+                    return (<Cell {...props}>  <span style={{ color: 'black' }}>{value}</span> </Cell>)
                 }
                 else {
                     if (data[rowIndex].ValidationStatus[field])
                         tooltip = (<UncontrolledTooltip placement="top" target={columnKey + rowIndex}>{data[rowIndex].ValidationStatus[field]}</UncontrolledTooltip>)
                     return (<Cell id={columnKey + rowIndex} {...props}>
-                        <span style={{ color: 'red' }} key={columnKey + rowIndex}>{value.Version}</span>
+                        <span style={{ color: 'red' }} key={columnKey + rowIndex}>{value}</span>
                         {tooltip}
                     </Cell>);
                 }
