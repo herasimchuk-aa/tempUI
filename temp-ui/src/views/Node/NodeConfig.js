@@ -234,7 +234,7 @@ class NodeConfig extends Component {
               <DropDown options={this.state.modProbeData} getSelectedData={this.getSelectedData} identity={'ModProbe'} default={this.state.selectedModProbeId} />
             </Col>
             <Col xs='3'><Label>Modules-Load</Label><br />
-              <DropDown options={this.state.modulesLoadData} getSelectedData={this.getSelectedData} identity={'MdoulesLoad'} default={this.state.selectedModulesLoadId} />
+              <DropDown options={this.state.modulesLoadData} getSelectedData={this.getSelectedData} identity={'ModulesLoad'} default={this.state.selectedModulesLoadId} />
             </Col>
           </Row>
           <Row className="pad">
@@ -307,6 +307,8 @@ class NodeConfig extends Component {
         datum.Iproute_Id = parseInt(self.state.selectedIpRouteId),
         datum.Lldp_Id = parseInt(self.state.selectedLldpId),
         datum.Ethtool_Id = parseInt(self.state.selectedEthToolId),
+        datum.ModprobeId = parseInt(self.state.selectedModProbeId),
+        datum.ModulesLoadId = parseInt(self.state.selectedModulesLoadId),
         datum.interfaces = self.state.nodes[0].interfaces,
         datum.SN = self.state.selectedSerialNo
 
@@ -619,7 +621,7 @@ class NodeConfig extends Component {
       return
     }
     if (identity == 'ModProbe') {
-      this.setState({ selecteModProbeId: data, saveBtn: false })
+      this.setState({ selectedModProbeId: data, saveBtn: false })
       return
     }
     if (identity == 'ModulesLoad') {
