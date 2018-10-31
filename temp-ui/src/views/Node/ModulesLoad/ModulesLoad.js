@@ -108,7 +108,7 @@ class ModulesLoad extends Component {
                         <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Name cannot be empty</Alert>
                         Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='modulesLoadName' /><br />
                         Location <Input className="marTop10" id='modulesLoadLoc' /><br />
-                        Content <Input type="textarea" className="marTop10" id='modulesLoadContent' /><br />
+                        Configuration <Input type="textarea" className="marTop10" id='modulesLoadContent' /><br />
                         Description <Input className="marTop10" id='modulesLoadDesc' /><br />
                     </ModalBody>
                     <ModalFooter>
@@ -172,7 +172,7 @@ class ModulesLoad extends Component {
                     <ModalBody>
                         Name<font color="red"><sup>*</sup></font> <Input autoFocus disabled className="marTop10" id='modulesLoadNameEdit' value={edittedData.Name} /><br />
                         Location <Input className="marTop10" id='modulesLoadLocEdit' defaultValue={edittedData.Location} /><br />
-                        Content <Input type="textarea" className="marTop10" id='modulesLoadContentEdit' defaultValue={edittedData.Content} /><br />
+                        Configuration <Input type="textarea" className="marTop10" id='modulesLoadContentEdit' defaultValue={edittedData.Content} /><br />
                         Description <Input className="marTop10" id='modulesLoadDescEdit' defaultValue={edittedData.Description} /><br />
                     </ModalBody>
                     <ModalFooter>

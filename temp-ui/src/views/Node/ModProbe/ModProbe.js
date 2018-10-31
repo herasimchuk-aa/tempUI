@@ -108,7 +108,7 @@ class ModProbe extends Component {
                         <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Name cannot be empty</Alert>
                         Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='modProbeName' /><br />
                         Location <Input className="marTop10" id='modProbeLoc' /><br />
-                        Content <Input type="textarea" className="marTop10" id='modProbeContent' /><br />
+                        Configuration <Input type="textarea" className="marTop10" id='modProbeContent' /><br />
                         Description <Input className="marTop10" id='modProbeDesc' /><br />
                     </ModalBody>
                     <ModalFooter>
@@ -172,7 +172,7 @@ class ModProbe extends Component {
                     <ModalBody>
                         Name<font color="red"><sup>*</sup></font> <Input autoFocus disabled className="marTop10" id='modProbeNameEdit' value={edittedData.Name} /><br />
                         Location <Input className="marTop10" id='modProbeLocEdit' defaultValue={edittedData.Location} /><br />
-                        Content <Input type="textarea" className="marTop10" id='modProbeContentEdit' defaultValue={edittedData.Content} /><br />
+                        Configuration <Input type="textarea" className="marTop10" id='modProbeContentEdit' defaultValue={edittedData.Content} /><br />
                         Description <Input className="marTop10" id='modProbeDescEdit' defaultValue={edittedData.Description} /><br />
                     </ModalBody>
                     <ModalFooter>
