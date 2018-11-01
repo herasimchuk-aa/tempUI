@@ -2,16 +2,16 @@ import React, { Component } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert, Media } from 'reactstrap';
 import '../../views.css';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
-import { modulesLoadHead } from '../../../consts';
+import { preScriptHead } from '../../../consts';
 import { trimString, getNameById } from '../../../components/Utility/Utility';
-import { FETCH_ALL_MODULES_LOAD, ADD_MODULES_LOAD, UPDATE_MODULES_LOAD, DELETE_MODULES_LOAD } from '../../../apis/RestConfig'
+import { FETCH_ALL_PRESCRIPTS, ADD_PRESCRIPT, UPDATE_PRESCRIPT, DELETE_PRESCRIPTS } from '../../../apis/RestConfig'
 import { NotificationManager } from 'react-notifications';
 import { connect } from 'react-redux';
-import { getModulesLoad, addModulesLoad, updateModulesLoad, deleteModulesLoad, setModulesLoadHeadings } from '../../../actions/modulesLoadAction';
+import { getPreScript, addPreScript, updatePreScript, deletePreScript, setPreScripiHeadings } from '../../../actions/preScriptAction';
 import I from 'immutable'
 import AceEditor from 'react-ace';
 
-class ModulesLoad extends Component {
+class PreScript extends Component {
 
 
     constructor(props) {
@@ -24,18 +24,18 @@ class ModulesLoad extends Component {
             displayEditModel: false,
             visible: false
         }
-        this.configurations = ""
+        this.commandList = ""
         this.counter = 0;
     }
 
     componentDidMount() {
-        this.props.getModulesLoad(FETCH_ALL_MODULES_LOAD)
+        this.props.getPreScript(FETCH_ALL_PRESCRIPTS)
     }
 
     static getDerivedStateFromProps(props) {
         return {
             data: props.data ? props.data.toJS() : [],
-            modulesLoadHead: props.modulesLoadHeadings ? props.modulesLoadHeadings.toJS() : modulesLoadHead
+            preScriptHead: props.preScriptHeadings ? props.preScriptHeadings.toJS() : preScriptHead
         }
     }
 
@@ -59,21 +59,21 @@ class ModulesLoad extends Component {
     showDeleteButton() {
         let a = [];
         if (this.state.showDelete == true) {
-            a.push(<Button className="custBtn animated fadeIn" outline color="secondary" onClick={() => (this.deleteModulesLoad())}>Delete</Button>);
+            a.push(<Button className="custBtn animated fadeIn" outline color="secondary" onClick={() => (this.deletePreScript())}>Delete</Button>);
             return a;
         }
         else
             return null;
     }
 
-    deleteModulesLoad() {
+    deletePreScript() {
         let self = this;
         let deleteIds = [];
         this.state.selectedRowIndexes.map(function (item) {
             deleteIds.push(self.state.data[item].Id)
         })
 
-        this.props.deleteModulesLoad(DELETE_MODULES_LOAD, deleteIds).then(function (data) {
+        this.props.deletePreScript(DELETE_PRESCRIPTS, deleteIds).then(function (data) {
             if (data.Failure && data.Failure.length) {
                 let nameArr = getNameById(data.Failure, self.state.data)
                 let str = ""
@@ -87,11 +87,11 @@ class ModulesLoad extends Component {
                 }
                 NotificationManager.error(str)
             } else {
-                NotificationManager.success("ModulesLoad deleted successfully", "ModulesLoad") // "Success!"
+                NotificationManager.success("Pre-Script deleted successfully", "Pre-Script") // "Success!"
             }
         }).catch(function (e) {
             console.log(E)
-            NotificationManager.error("Something went wrong", "ModulesLoad") // "error!"
+            NotificationManager.error("Something went wrong", "Pre-Script") // "error!"
         })
         self.setState({ showDelete: false, selectedRowIndexes: [] });
     }
@@ -102,21 +102,20 @@ class ModulesLoad extends Component {
     }
 
     getValue(e) {
-        this.configurations = e
+        this.commandList = e
     }
 
-    addModulesLoadModal() {
+    addPreScriptModal() {
         if (this.state.displayModel) {
             return (
                 <Modal isOpen={this.state.displayModel} toggle={() => this.cancel()} size="sm" centered="true" >
-                    <ModalHeader toggle={() => this.cancel()}>Add ModulesLoad</ModalHeader>
+                    <ModalHeader toggle={() => this.cancel()}>Add Pre-Script</ModalHeader>
                     <ModalBody>
                         <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Name cannot be empty</Alert>
-                        Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='modulesLoadName' /><br />
-                        Location <Input className="marTop10" id='modulesLoadLoc' /><br />
-                        Configuration {/* <Input type="textarea" className="marTop10" id='modulesLoadContent' /> */}<br />
+                        Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='preScriptName' /><br />
+                        Command List {/* <Input type="textarea" className="marTop10" id='preScriptContent' /> */}<br />
                         <AceEditor
-                            id='modulesLoadContent'
+                            id='preScriptContent'
                             height={200}
                             width={265}
                             onLoad={this.onLoad}
@@ -125,7 +124,7 @@ class ModulesLoad extends Component {
                             showGutter={true}
                             highlightActiveLine={true}
                             onChange={(e) => { this.getValue(e) }}
-                            value={this.configurations}
+                            value={this.commandList}
                             setOptions={{
                                 enableBasicAutocompletion: false,
                                 enableLiveAutocompletion: false,
@@ -133,10 +132,10 @@ class ModulesLoad extends Component {
                                 showLineNumbers: true,
                                 tabSize: 2,
                             }} /> <br />
-                        Description <Input className="marTop10" id='modulesLoadDesc' /><br />
+                        Description <Input className="marTop10" id='preScriptDesc' /><br />
                     </ModalBody>
                     <ModalFooter>
-                        <Button className="custBtn" outline color="primary" onClick={() => (this.addModulesLoad())}>Add</Button>{'  '}
+                        <Button className="custBtn" outline color="primary" onClick={() => (this.addPreScript())}>Add</Button>{'  '}
                         <Button className="custBtn" outline color="primary" onClick={() => (this.cancel())}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
@@ -148,37 +147,36 @@ class ModulesLoad extends Component {
         this.setState({ displayModel: !this.state.displayModel, visible: false })
     }
 
-    addModulesLoad() {
+    addPreScript() {
         let self = this;
-        let modulesLoad = document.getElementById('modulesLoadName').value
-        let validModulesLoad = trimString(modulesLoad)
-        if (!validModulesLoad) {
+        let preScript = document.getElementById('preScriptName').value
+        let validPreScript = trimString(preScript)
+        if (!validPreScript) {
             this.setState({ visible: true })
             return;
         }
         let params = {
-            'Name': validModulesLoad,
-            'Location': document.getElementById('modulesLoadLoc').value,
-            'Content': this.configurations,
-            'Description': document.getElementById('modulesLoadDesc').value
+            'Name': validPreScript,
+            'Commands': this.commandList,
+            'Description': document.getElementById('preScriptDesc').value
         }
 
-        let modulesLoadPromise = self.props.addModulesLoad(ADD_MODULES_LOAD, params)
+        let preScriptPromise = self.props.addPreScript(ADD_PRESCRIPT, params)
 
-        modulesLoadPromise.then(function (value) {
-            NotificationManager.success("ModulesLoad added successfully", "ModulesLoad") // "Success!"
+        preScriptPromise.then(function (value) {
+            NotificationManager.success("Pre-Script added successfully", "Pre-Script") // "Success!"
         }).catch(function (e) {
             console.warn(e)
-            NotificationManager.error("Something went wrong", "ModulesLoad") // "error!"
+            NotificationManager.error("Something went wrong", "Pre-Script") // "error!"
         })
         console.log(self.state.selectedRowIndexes)
         self.setState({ displayModel: false, visible: false, selectedRowIndexes: [] })
-        this.configurations = ''
+        this.commandList = ''
     }
 
     showEditDialogBox() {
         if (!this.state.selectedRowIndexes.length || this.state.selectedRowIndexes.length > 1) {
-            alert("Please select one ModulesLoad to edit")
+            alert("Please select one Pre-Script to edit")
             return
         }
         this.setState({ displayEditModel: true })
@@ -188,18 +186,17 @@ class ModulesLoad extends Component {
         this.setState({ displayEditModel: !this.state.displayEditModel })
     }
 
-    editModulesLoadModal() {
+    editPreScriptModal() {
         if (this.state.displayEditModel) {
             let edittedData = this.state.data[this.state.selectedRowIndexes[0]]
             return (
                 <Modal isOpen={this.state.displayEditModel} toggle={() => this.toggleEditModal()} size="sm" centered="true" >
-                    <ModalHeader toggle={() => this.toggleEditModal()}>Edit Modules-Load</ModalHeader>
+                    <ModalHeader toggle={() => this.toggleEditModal()}>Edit Pre-Script</ModalHeader>
                     <ModalBody>
-                        Name<font color="red"><sup>*</sup></font> <Input autoFocus disabled className="marTop10" id='modulesLoadNameEdit' value={edittedData.Name} /><br />
-                        Location <Input className="marTop10" id='modulesLoadLocEdit' defaultValue={edittedData.Location} /><br />
-                        Configuration {/* <Input type="textarea" className="marTop10" id='modulesLoadContentEdit' defaultValue={edittedData.Content} /> */}<br />
+                        Name<font color="red"><sup>*</sup></font> <Input autoFocus disabled className="marTop10" id='preScriptNameEdit' value={edittedData.Name} /><br />
+                        Command List {/* <Input type="textarea" className="marTop10" id='preScriptContentEdit' defaultValue={edittedData.Content} /> */}<br />
                         <AceEditor
-                            id='modulesLoadContentEdit'
+                            id='preScriptContentEdit'
                             height={200}
                             width={265}
                             onLoad={this.onLoad}
@@ -208,7 +205,7 @@ class ModulesLoad extends Component {
                             showGutter={true}
                             highlightActiveLine={true}
                             onChange={(e) => { this.getValue(e) }}
-                            value={edittedData.Content}
+                            value={edittedData.Commands}
                             setOptions={{
                                 enableBasicAutocompletion: false,
                                 enableLiveAutocompletion: false,
@@ -216,10 +213,10 @@ class ModulesLoad extends Component {
                                 showLineNumbers: true,
                                 tabSize: 2,
                             }} /><br />
-                        Description <Input className="marTop10" id='modulesLoadDescEdit' defaultValue={edittedData.Description} /><br />
+                        Description <Input className="marTop10" id='preScriptDescEdit' defaultValue={edittedData.Description} /><br />
                     </ModalBody>
                     <ModalFooter>
-                        <Button className="custBtn" outline color="primary" onClick={() => (this.editModulesLoad(edittedData.Id))}>Save</Button>{'  '}
+                        <Button className="custBtn" outline color="primary" onClick={() => (this.editPreScript(edittedData.Id))}>Save</Button>{'  '}
                         <Button className="custBtn" outline color="primary" onClick={() => (this.toggleEditModal())}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
@@ -227,29 +224,26 @@ class ModulesLoad extends Component {
         }
     }
 
-    editModulesLoad = (modulesLoadId) => {
+    editPreScript = (preScriptId) => {
         let self = this
         let params = {
-            'Id': modulesLoadId,
-            'Location': document.getElementById('modulesLoadLocEdit').value ? document.getElementById('modulesLoadLocEdit').value : "-",
-            'Content': this.configurations,
-            'Description': document.getElementById('modulesLoadDescEdit').value ? document.getElementById('modulesLoadDescEdit').value : "-"
+            'Id': preScriptId,
+            'Commands': this.commandList,
+            'Description': document.getElementById('preScriptDescEdit').value ? document.getElementById('preScriptDescEdit').value : "-"
         }
 
-        let modulesLoadPromise = self.props.updateModulesLoad(UPDATE_MODULES_LOAD, params)
-
-        modulesLoadPromise.then(function (value) {
-            NotificationManager.success("ModulesLoad updated successfully", "ModulesLoad") // "Success!"
+        this.props.updatePreScript(UPDATE_PRESCRIPT, params).then(function () {
+            NotificationManager.success("Pre-Script updated successfully", "Pre-Script") // "Success!"
         }).catch(function (e) {
             console.warn(e)
-            NotificationManager.error("Something went wrong", "ModulesLoad") // "error!"
+            NotificationManager.error("Something went wrong", "Pre-Script") // "error!"
         })
         this.setState({ displayEditModel: false, selectedRowIndexes: [], showDelete: false })
-        this.configurations = ''
+        this.commandList = ''
     }
 
-    setModulesLoadHeadings = (headings) => {
-        this.props.setModulesLoadHeadings(I.fromJS(headings))
+    setPreScriptHeadings = (headings) => {
+        this.props.setPreScriptHeadings(I.fromJS(headings))
     }
 
 
@@ -257,7 +251,7 @@ class ModulesLoad extends Component {
         return (<div>
             <Media className="tableTitle">
                 <Media body>
-                    <div className="padTop5">ModulesLoad</div>
+                    <div className="padTop5">Pre-Script</div>
                 </Media>
                 <Media right>
                     <div className='marginLeft10'>
@@ -267,19 +261,19 @@ class ModulesLoad extends Component {
                     </div>
                 </Media>
             </Media>
-            <div style={{ height: '200px' }}>
+            <div style={{ height: '250px' }}>
                 <SummaryDataTable
-                    maxContainerHeight={200}
-                    heading={this.state.modulesLoadHead}
+                    maxContainerHeight={250}
+                    heading={this.state.preScriptHead}
                     data={this.state.data}
                     checkBoxClick={this.checkBoxClick}
-                    constHeading={modulesLoadHead}
-                    setHeadings={this.setModulesLoadHeadings}
+                    constHeading={preScriptHead}
+                    setHeadings={this.setPreScriptHeadings}
                     selectedRowIndexes={this.state.selectedRowIndexes}
-                    tableName={"modulesLoadTable"} />
+                    tableName={"preScriptTable"} />
             </div>
-            {this.addModulesLoadModal()}
-            {this.editModulesLoadModal()}
+            {this.addPreScriptModal()}
+            {this.editPreScriptModal()}
         </div>
         );
     }
@@ -290,19 +284,19 @@ class ModulesLoad extends Component {
 
 function mapStateToProps(state) {
     return {
-        data: state.modulesLoadReducer.get('modulesLoad'),
-        modulesLoadHeadings: state.modulesLoadReducer.getIn(['modulesLoadHeadings'])
+        data: state.preScriptReducer.get('preScript'),
+        preScriptHeadings: state.preScriptReducer.getIn(['preScriptHeadings'])
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-        getModulesLoad: (url) => dispatch(getModulesLoad(url)),
-        addModulesLoad: (url, params) => dispatch(addModulesLoad(url, params)),
-        updateModulesLoad: (url, params) => dispatch(updateModulesLoad(url, params)),
-        deleteModulesLoad: (url, params) => dispatch(deleteModulesLoad(url, params)),
-        setModulesLoadHeadings: (params) => dispatch(setModulesLoadHeadings(params))
+        getPreScript: (url) => dispatch(getPreScript(url)),
+        addPreScript: (url, params) => dispatch(addPreScript(url, params)),
+        updatePreScript: (url, params) => dispatch(updatePreScript(url, params)),
+        deletePreScript: (url, params) => dispatch(deletePreScript(url, params)),
+        setPreScripiHeadings: (params) => dispatch(setPreScripiHeadings(params))
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ModulesLoad);
+export default connect(mapStateToProps, mapDispatchToProps)(PreScript);

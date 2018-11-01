@@ -316,6 +316,28 @@ export let kernelHead = [
     }
 ];
 
+export let preScriptHead = [
+    {
+        id: 'Name',
+        displayName: 'Name',
+    },
+    {
+        id: 'Description',
+        displayName: 'Description',
+    }
+];
+
+export let postScriptHead = [
+    {
+        id: 'Name',
+        displayName: 'Name',
+    },
+    {
+        id: 'Description',
+        displayName: 'Description',
+    }
+];
+
 export let ipRouteHead = [
     {
         id: 'Name',

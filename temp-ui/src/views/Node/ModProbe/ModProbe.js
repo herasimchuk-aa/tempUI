@@ -9,6 +9,7 @@ import { NotificationManager } from 'react-notifications';
 import { connect } from 'react-redux';
 import { getModProbe, addModProbe, updateModProbe, deleteModProbe, setModProbeHeadings } from '../../../actions/modProbeAction';
 import I from 'immutable'
+import AceEditor from 'react-ace';
 
 class ModProbe extends Component {
 
@@ -23,6 +24,7 @@ class ModProbe extends Component {
             displayEditModel: false,
             visible: false
         }
+        this.configurations = ""
         this.counter = 0;
     }
 
@@ -99,6 +101,10 @@ class ModProbe extends Component {
         this.setState({ visible: false });
     }
 
+    getValue(e) {
+        this.configurations = e
+    }
+
     addModProbeModal() {
         if (this.state.displayModel) {
             return (
@@ -108,7 +114,25 @@ class ModProbe extends Component {
                         <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Name cannot be empty</Alert>
                         Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='modProbeName' /><br />
                         Location <Input className="marTop10" id='modProbeLoc' /><br />
-                        Configuration <Input type="textarea" className="marTop10" id='modProbeContent' /><br />
+                        Configuration {/* <Input type="textarea" className="marTop10" id='modProbeContent' /> */}<br />
+                        <AceEditor
+                            id='modProbeContent'
+                            height={200}
+                            width={265}
+                            onLoad={this.onLoad}
+                            fontSize={14}
+                            showPrintMargin={true}
+                            showGutter={true}
+                            highlightActiveLine={true}
+                            onChange={(e) => { this.getValue(e) }}
+                            value={this.configurations}
+                            setOptions={{
+                                enableBasicAutocompletion: false,
+                                enableLiveAutocompletion: false,
+                                enableSnippets: false,
+                                showLineNumbers: true,
+                                tabSize: 2,
+                            }} /> <br />
                         Description <Input className="marTop10" id='modProbeDesc' /><br />
                     </ModalBody>
                     <ModalFooter>
@@ -135,7 +159,7 @@ class ModProbe extends Component {
         let params = {
             'Name': validModProbe,
             'Location': document.getElementById('modProbeLoc').value,
-            'Content': document.getElementById('modProbeContent').value,
+            'Content': this.configurations,
             'Description': document.getElementById('modProbeDesc').value
         }
 
@@ -149,6 +173,7 @@ class ModProbe extends Component {
         })
         console.log(self.state.selectedRowIndexes)
         self.setState({ displayModel: false, visible: false, selectedRowIndexes: [] })
+        this.configurations = ''
     }
 
     showEditDialogBox() {
@@ -172,7 +197,25 @@ class ModProbe extends Component {
                     <ModalBody>
                         Name<font color="red"><sup>*</sup></font> <Input autoFocus disabled className="marTop10" id='modProbeNameEdit' value={edittedData.Name} /><br />
                         Location <Input className="marTop10" id='modProbeLocEdit' defaultValue={edittedData.Location} /><br />
-                        Configuration <Input type="textarea" className="marTop10" id='modProbeContentEdit' defaultValue={edittedData.Content} /><br />
+                        Configuration {/* <Input type="textarea" className="marTop10" id='modProbeContentEdit' defaultValue={edittedData.Content} /> */}<br />
+                        <AceEditor
+                            id='modProbeContentEdit'
+                            height={200}
+                            width={265}
+                            onLoad={this.onLoad}
+                            fontSize={14}
+                            showPrintMargin={true}
+                            showGutter={true}
+                            highlightActiveLine={true}
+                            onChange={(e) => { this.getValue(e) }}
+                            value={edittedData.Content}
+                            setOptions={{
+                                enableBasicAutocompletion: false,
+                                enableLiveAutocompletion: false,
+                                enableSnippets: false,
+                                showLineNumbers: true,
+                                tabSize: 2,
+                            }} /><br />
                         Description <Input className="marTop10" id='modProbeDescEdit' defaultValue={edittedData.Description} /><br />
                     </ModalBody>
                     <ModalFooter>
@@ -189,7 +232,7 @@ class ModProbe extends Component {
         let params = {
             'Id': modProbeId,
             'Location': document.getElementById('modProbeLocEdit').value ? document.getElementById('modProbeLocEdit').value : "-",
-            'Content': document.getElementById('modProbeContentEdit').value ? document.getElementById('modProbeContentEdit').value : "-",
+            'Content': this.configurations,
             'Description': document.getElementById('modProbeDescEdit').value ? document.getElementById('modProbeDescEdit').value : "-"
         }
 
@@ -202,6 +245,7 @@ class ModProbe extends Component {
             NotificationManager.error("Something went wrong", "ModProbe") // "error!"
         })
         this.setState({ displayEditModel: false, selectedRowIndexes: [], showDelete: false })
+        this.configurations = ''
     }
 
     setModProbeHeadings = (headings) => {

@@ -28,6 +28,18 @@ export const ADD_KERNEL = "/kernel/add"
 export const UPDATE_KERNEL = "/kernel/update"
 export const DELETE_KERNELS = "/kernel/delete"
 
+// apis for preScript
+export const FETCH_ALL_PRESCRIPTS = "/prescript/"
+export const ADD_PRESCRIPT = "/prescript/add"
+export const UPDATE_PRESCRIPT = "/prescript/update"
+export const DELETE_PRESCRIPTS = "/prescript/delete"
+
+// apis for postScript
+export const FETCH_ALL_POSTSCRIPTS = "/postscript/"
+export const ADD_POSTSCRIPT = "/postscript/add"
+export const UPDATE_POSTSCRIPT = "/postscript/update"
+export const DELETE_POSTSCRIPTS = "/postscript/delete"
+
 // apis for systemType
 export const FETCH_ALL_SYSTEM_TYPES = "/type"
 export const ADD_SYSTEM_TYPE = "/type/add"

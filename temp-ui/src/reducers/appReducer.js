@@ -22,6 +22,8 @@ import clusterReducer from './clusterReducer'
 import authReducer from './loginReducer'
 import modProbeReducer from './modProbeReducer'
 import modulesLoadReducer from './modulesLoadReducer'
+import preScriptReducer from './preScriptReducer'
+import postScriptReducer from './postScriptReducer'
 
 export default combineReducers({
     nodeReducer,
@@ -46,5 +48,7 @@ export default combineReducers({
     clusterReducer,
     authReducer,
     modProbeReducer,
-    modulesLoadReducer
+    modulesLoadReducer,
+    preScriptReducer,
+    postScriptReducer
 })

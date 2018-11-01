@@ -54,7 +54,7 @@ class NodeConfig extends Component {
 
   static getDerivedStateFromProps(props) {
     let { selectedNodes, roleData, kernelData, typeData, siteData, goesData, ipRouteData, frrData, lldpData, ethToolData, speedData,
-      fecData, mediaData, isoData, actualNode, clusterData, modulesLoadData, modProbeData } = props
+      fecData, mediaData, isoData, actualNode, clusterData, modulesLoadData, modProbeData, preScriptData, postScriptData } = props
     return {
       nodes: selectedNodes ? selectedNodes.toJS() : [],
       actualNode: actualNode ? actualNode.toJS() : {},
@@ -68,6 +68,8 @@ class NodeConfig extends Component {
       selectedGoesId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'Goes_Id']) : '',
       selectedModulesLoadId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'ModulesLoadId']) : '',
       selectedModProbeId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'ModprobeId']) : '',
+      selectedPreScriptId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'PreScriptId']) : '',
+      selectedPostScriptId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'PostScriptId']) : '',
       selectedIpRouteId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'Iproute_Id']) : '',
       selectedFrrId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'Frr_Id']) : '',
       selectedLldpId: selectedNodes.size == 1 ? selectedNodes.getIn(['0', 'Lldp_Id']) : '',
@@ -84,6 +86,8 @@ class NodeConfig extends Component {
       lldpData: lldpData ? lldpData.toJS() : [],
       modProbeData: modProbeData ? modProbeData.toJS() : [],
       modulesLoadData: modulesLoadData ? modulesLoadData.toJS() : [],
+      preScriptData: preScriptData ? preScriptData.toJS() : [],
+      postScriptData: postScriptData ? postScriptData.toJS() : [],
       ethToolData: ethToolData ? ethToolData.toJS() : [],
       speedData: speedData ? speedData.toJS() : [],
       fecData: fecData ? fecData.toJS() : [],
@@ -244,6 +248,14 @@ class NodeConfig extends Component {
             </Col>
           </Row>
           <Row className="pad">
+            <Col xs='3'><Label>Pre-Script</Label><br />
+              <DropDown options={this.state.preScriptData} getSelectedData={this.getSelectedData} identity={'PreScript'} default={this.state.selectedPreScriptId} />
+            </Col>
+            <Col xs='3'><Label>Post-Script</Label><br />
+              <DropDown options={this.state.postScriptData} getSelectedData={this.getSelectedData} identity={'PostScript'} default={this.state.selectedPostScriptId} />
+            </Col>
+          </Row>
+          <Row className="pad">
             <Col xs='9'><Label>Provision :</Label><br />
               <div className="equiSpace">
                 <div><input type="checkbox" id="provisionGoes" defaultChecked={false} onClick={(e) => { this.chkLocation(e, this.state.nodes[0].goes) }} /> Goes </div>
@@ -254,6 +266,8 @@ class NodeConfig extends Component {
                 <div><input type="checkbox" id="provisionModProbe" defaultChecked={false} /> ModProbe </div>
                 <div><input type="checkbox" id="provisionModulesLoad" defaultChecked={false} /> Modules-Load </div>
                 <div><input type="checkbox" id="provisionInterfaces" defaultChecked={false} /> Interfaces </div>
+                <div><input type="checkbox" id="preScriptProvision" defaultChecked={false} /> Pre-Script </div>
+                <div><input type="checkbox" id="postScriptProvision" defaultChecked={false} /> Post-Script </div>
               </ div>
             </Col>
           </Row>
@@ -315,6 +329,8 @@ class NodeConfig extends Component {
         datum.Ethtool_Id = parseInt(self.state.selectedEthToolId),
         datum.ModprobeId = parseInt(self.state.selectedModProbeId),
         datum.ModulesLoadId = parseInt(self.state.selectedModulesLoadId),
+        datum.PreScriptId = parseInt(self.state.selectedPreScriptId),
+        datum.PostScriptId = parseInt(self.state.selectedPostScriptId),
         datum.interfaces = self.state.nodes[0].interfaces,
         datum.SN = self.state.selectedSerialNo
 
@@ -496,7 +512,9 @@ class NodeConfig extends Component {
         'iproute': document.getElementById('provisionIpRoute').checked,
         'frr': document.getElementById('provisionFrr').checked,
         'modprobe': document.getElementById('provisionModProbe').checked,
-        'modulesload': document.getElementById('provisionModulesLoad').checked
+        'modulesload': document.getElementById('provisionModulesLoad').checked,
+        'prescript': document.getElementById('preScriptProvision').checked,
+        'postscript': document.getElementById('postScriptProvision').checked
       }
     })
 
@@ -632,6 +650,14 @@ class NodeConfig extends Component {
     }
     if (identity == 'ModulesLoad') {
       this.setState({ selectedModulesLoadId: data, saveBtn: false })
+      return
+    }
+    if (identity == 'PreScript') {
+      this.setState({ selectedPreScriptId: data, saveBtn: false })
+      return
+    }
+    if (identity == 'PostScript') {
+      this.setState({ selectedPostScriptId: data, saveBtn: false })
       return
     }
     if (identity == 'Cluster') {
@@ -972,6 +998,8 @@ function mapStateToProps(state) {
     modProbeData: state.modProbeReducer.getIn(['modProbe']),
     modulesLoadData: state.modulesLoadReducer.getIn(['modulesLoad']),
     ethToolData: state.ethToolReducer.getIn(['ethTools']),
+    preScriptData: state.preScriptReducer.getIn(['preScript']),
+    postScriptData: state.postScriptReducer.getIn(['postScript']),
     speedData: state.speedReducer.getIn(['speeds']),
     fecData: state.fecReducer.getIn(['fecs']),
     mediaData: state.mediaReducer.getIn(['medias']),

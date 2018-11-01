@@ -2,16 +2,16 @@ import React, { Component } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert, Media } from 'reactstrap';
 import '../../views.css';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
-import { modulesLoadHead } from '../../../consts';
+import { postScriptHead } from '../../../consts';
 import { trimString, getNameById } from '../../../components/Utility/Utility';
-import { FETCH_ALL_MODULES_LOAD, ADD_MODULES_LOAD, UPDATE_MODULES_LOAD, DELETE_MODULES_LOAD } from '../../../apis/RestConfig'
+import { FETCH_ALL_POSTSCRIPTS, ADD_POSTSCRIPT, UPDATE_POSTSCRIPT, DELETE_POSTSCRIPTS } from '../../../apis/RestConfig'
 import { NotificationManager } from 'react-notifications';
 import { connect } from 'react-redux';
-import { getModulesLoad, addModulesLoad, updateModulesLoad, deleteModulesLoad, setModulesLoadHeadings } from '../../../actions/modulesLoadAction';
+import { getPostScript, addPostScript, updatePostScript, deletePostScript, setPostScripiHeadings } from '../../../actions/postScriptAction';
 import I from 'immutable'
 import AceEditor from 'react-ace';
 
-class ModulesLoad extends Component {
+class PostScript extends Component {
 
 
     constructor(props) {
@@ -22,20 +22,20 @@ class ModulesLoad extends Component {
             selectedRowIndexes: [],
             displayModel: false,
             displayEditModel: false,
-            visible: false
+            visible: false,
         }
-        this.configurations = ""
+        this.commandList = ""
         this.counter = 0;
     }
 
     componentDidMount() {
-        this.props.getModulesLoad(FETCH_ALL_MODULES_LOAD)
+        this.props.getPostScript(FETCH_ALL_POSTSCRIPTS)
     }
 
     static getDerivedStateFromProps(props) {
         return {
             data: props.data ? props.data.toJS() : [],
-            modulesLoadHead: props.modulesLoadHeadings ? props.modulesLoadHeadings.toJS() : modulesLoadHead
+            postScriptHead: props.postScriptHeadings ? props.postScriptHeadings.toJS() : postScriptHead
         }
     }
 
@@ -59,21 +59,21 @@ class ModulesLoad extends Component {
     showDeleteButton() {
         let a = [];
         if (this.state.showDelete == true) {
-            a.push(<Button className="custBtn animated fadeIn" outline color="secondary" onClick={() => (this.deleteModulesLoad())}>Delete</Button>);
+            a.push(<Button className="custBtn animated fadeIn" outline color="secondary" onClick={() => (this.deletePostScript())}>Delete</Button>);
             return a;
         }
         else
             return null;
     }
 
-    deleteModulesLoad() {
+    deletePostScript() {
         let self = this;
         let deleteIds = [];
         this.state.selectedRowIndexes.map(function (item) {
             deleteIds.push(self.state.data[item].Id)
         })
 
-        this.props.deleteModulesLoad(DELETE_MODULES_LOAD, deleteIds).then(function (data) {
+        this.props.deletePostScript(DELETE_POSTSCRIPTS, deleteIds).then(function (data) {
             if (data.Failure && data.Failure.length) {
                 let nameArr = getNameById(data.Failure, self.state.data)
                 let str = ""
@@ -87,11 +87,11 @@ class ModulesLoad extends Component {
                 }
                 NotificationManager.error(str)
             } else {
-                NotificationManager.success("ModulesLoad deleted successfully", "ModulesLoad") // "Success!"
+                NotificationManager.success("Post-Script deleted successfully", "Post-Script") // "Success!"
             }
         }).catch(function (e) {
             console.log(E)
-            NotificationManager.error("Something went wrong", "ModulesLoad") // "error!"
+            NotificationManager.error("Something went wrong", "Post-Script") // "error!"
         })
         self.setState({ showDelete: false, selectedRowIndexes: [] });
     }
@@ -102,21 +102,20 @@ class ModulesLoad extends Component {
     }
 
     getValue(e) {
-        this.configurations = e
+        this.commandList = e
     }
 
-    addModulesLoadModal() {
+    addPostScriptModal() {
         if (this.state.displayModel) {
             return (
                 <Modal isOpen={this.state.displayModel} toggle={() => this.cancel()} size="sm" centered="true" >
-                    <ModalHeader toggle={() => this.cancel()}>Add ModulesLoad</ModalHeader>
+                    <ModalHeader toggle={() => this.cancel()}>Add Post-Script</ModalHeader>
                     <ModalBody>
                         <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Name cannot be empty</Alert>
-                        Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='modulesLoadName' /><br />
-                        Location <Input className="marTop10" id='modulesLoadLoc' /><br />
-                        Configuration {/* <Input type="textarea" className="marTop10" id='modulesLoadContent' /> */}<br />
+                        Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='postScriptName' /><br />
+                        Command List {/* <Input type="textarea" className="marTop10" id='postScriptContent' /> */}<br />
                         <AceEditor
-                            id='modulesLoadContent'
+                            id='postScriptContent'
                             height={200}
                             width={265}
                             onLoad={this.onLoad}
@@ -125,7 +124,7 @@ class ModulesLoad extends Component {
                             showGutter={true}
                             highlightActiveLine={true}
                             onChange={(e) => { this.getValue(e) }}
-                            value={this.configurations}
+                            value={this.commandList}
                             setOptions={{
                                 enableBasicAutocompletion: false,
                                 enableLiveAutocompletion: false,
@@ -133,10 +132,11 @@ class ModulesLoad extends Component {
                                 showLineNumbers: true,
                                 tabSize: 2,
                             }} /> <br />
-                        Description <Input className="marTop10" id='modulesLoadDesc' /><br />
+                        Description <Input className="marTop10" id='postScriptDesc' /><br />
+
                     </ModalBody>
                     <ModalFooter>
-                        <Button className="custBtn" outline color="primary" onClick={() => (this.addModulesLoad())}>Add</Button>{'  '}
+                        <Button className="custBtn" outline color="primary" onClick={() => (this.addPostScript())}>Add</Button>{'  '}
                         <Button className="custBtn" outline color="primary" onClick={() => (this.cancel())}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
@@ -148,37 +148,36 @@ class ModulesLoad extends Component {
         this.setState({ displayModel: !this.state.displayModel, visible: false })
     }
 
-    addModulesLoad() {
+    addPostScript() {
         let self = this;
-        let modulesLoad = document.getElementById('modulesLoadName').value
-        let validModulesLoad = trimString(modulesLoad)
-        if (!validModulesLoad) {
+        let postScript = document.getElementById('postScriptName').value
+        let validPostScript = trimString(postScript)
+        if (!validPostScript) {
             this.setState({ visible: true })
             return;
         }
         let params = {
-            'Name': validModulesLoad,
-            'Location': document.getElementById('modulesLoadLoc').value,
-            'Content': this.configurations,
-            'Description': document.getElementById('modulesLoadDesc').value
+            'Name': validPostScript,
+            'Commands': this.commandList,
+            'Description': document.getElementById('postScriptDesc').value
         }
 
-        let modulesLoadPromise = self.props.addModulesLoad(ADD_MODULES_LOAD, params)
+        let postScriptPromise = self.props.addPostScript(ADD_POSTSCRIPT, params)
 
-        modulesLoadPromise.then(function (value) {
-            NotificationManager.success("ModulesLoad added successfully", "ModulesLoad") // "Success!"
+        postScriptPromise.then(function (value) {
+            NotificationManager.success("Post-Script added successfully", "Post-Script") // "Success!"
         }).catch(function (e) {
             console.warn(e)
-            NotificationManager.error("Something went wrong", "ModulesLoad") // "error!"
+            NotificationManager.error("Something went wrong", "Post-Script") // "error!"
         })
         console.log(self.state.selectedRowIndexes)
         self.setState({ displayModel: false, visible: false, selectedRowIndexes: [] })
-        this.configurations = ''
+        this.commandList = ''
     }
 
     showEditDialogBox() {
         if (!this.state.selectedRowIndexes.length || this.state.selectedRowIndexes.length > 1) {
-            alert("Please select one ModulesLoad to edit")
+            alert("Please select one Post-Script to edit")
             return
         }
         this.setState({ displayEditModel: true })
@@ -188,18 +187,17 @@ class ModulesLoad extends Component {
         this.setState({ displayEditModel: !this.state.displayEditModel })
     }
 
-    editModulesLoadModal() {
+    editPostScriptModal() {
         if (this.state.displayEditModel) {
             let edittedData = this.state.data[this.state.selectedRowIndexes[0]]
             return (
                 <Modal isOpen={this.state.displayEditModel} toggle={() => this.toggleEditModal()} size="sm" centered="true" >
-                    <ModalHeader toggle={() => this.toggleEditModal()}>Edit Modules-Load</ModalHeader>
+                    <ModalHeader toggle={() => this.toggleEditModal()}>Edit Post-Script</ModalHeader>
                     <ModalBody>
-                        Name<font color="red"><sup>*</sup></font> <Input autoFocus disabled className="marTop10" id='modulesLoadNameEdit' value={edittedData.Name} /><br />
-                        Location <Input className="marTop10" id='modulesLoadLocEdit' defaultValue={edittedData.Location} /><br />
-                        Configuration {/* <Input type="textarea" className="marTop10" id='modulesLoadContentEdit' defaultValue={edittedData.Content} /> */}<br />
+                        Name<font color="red"><sup>*</sup></font> <Input autoFocus disabled className="marTop10" id='postScriptNameEdit' value={edittedData.Name} /><br />
+                        Command List {/* <Input type="textarea" className="marTop10" id='postScriptContentEdit' defaultValue={edittedData.Content} /><br /> */}
                         <AceEditor
-                            id='modulesLoadContentEdit'
+                            id='postScriptContentEdit'
                             height={200}
                             width={265}
                             onLoad={this.onLoad}
@@ -208,18 +206,18 @@ class ModulesLoad extends Component {
                             showGutter={true}
                             highlightActiveLine={true}
                             onChange={(e) => { this.getValue(e) }}
-                            value={edittedData.Content}
+                            value={edittedData.Commands}
                             setOptions={{
                                 enableBasicAutocompletion: false,
                                 enableLiveAutocompletion: false,
                                 enableSnippets: false,
                                 showLineNumbers: true,
                                 tabSize: 2,
-                            }} /><br />
-                        Description <Input className="marTop10" id='modulesLoadDescEdit' defaultValue={edittedData.Description} /><br />
+                            }} />
+                        Description <Input className="marTop10" id='postScriptDescEdit' defaultValue={edittedData.Description} /><br />
                     </ModalBody>
                     <ModalFooter>
-                        <Button className="custBtn" outline color="primary" onClick={() => (this.editModulesLoad(edittedData.Id))}>Save</Button>{'  '}
+                        <Button className="custBtn" outline color="primary" onClick={() => (this.editPostScript(edittedData.Id))}>Save</Button>{'  '}
                         <Button className="custBtn" outline color="primary" onClick={() => (this.toggleEditModal())}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
@@ -227,29 +225,26 @@ class ModulesLoad extends Component {
         }
     }
 
-    editModulesLoad = (modulesLoadId) => {
+    editPostScript = (postScriptId) => {
         let self = this
         let params = {
-            'Id': modulesLoadId,
-            'Location': document.getElementById('modulesLoadLocEdit').value ? document.getElementById('modulesLoadLocEdit').value : "-",
-            'Content': this.configurations,
-            'Description': document.getElementById('modulesLoadDescEdit').value ? document.getElementById('modulesLoadDescEdit').value : "-"
+            'Id': postScriptId,
+            'Commands': this.commandList,
+            'Description': document.getElementById('postScriptDescEdit').value ? document.getElementById('postScriptDescEdit').value : "-"
         }
 
-        let modulesLoadPromise = self.props.updateModulesLoad(UPDATE_MODULES_LOAD, params)
-
-        modulesLoadPromise.then(function (value) {
-            NotificationManager.success("ModulesLoad updated successfully", "ModulesLoad") // "Success!"
+        this.props.updatePostScript(UPDATE_POSTSCRIPT, params).then(function () {
+            NotificationManager.success("Post-Script updated successfully", "Post-Script") // "Success!"
         }).catch(function (e) {
             console.warn(e)
-            NotificationManager.error("Something went wrong", "ModulesLoad") // "error!"
+            NotificationManager.error("Something went wrong", "Post-Script") // "error!"
         })
         this.setState({ displayEditModel: false, selectedRowIndexes: [], showDelete: false })
-        this.configurations = ''
+        this.commandList = ''
     }
 
-    setModulesLoadHeadings = (headings) => {
-        this.props.setModulesLoadHeadings(I.fromJS(headings))
+    setPostScriptHeadings = (headings) => {
+        this.props.setPostScriptHeadings(I.fromJS(headings))
     }
 
 
@@ -257,7 +252,7 @@ class ModulesLoad extends Component {
         return (<div>
             <Media className="tableTitle">
                 <Media body>
-                    <div className="padTop5">ModulesLoad</div>
+                    <div className="padTop5">Post-Script</div>
                 </Media>
                 <Media right>
                     <div className='marginLeft10'>
@@ -267,19 +262,19 @@ class ModulesLoad extends Component {
                     </div>
                 </Media>
             </Media>
-            <div style={{ height: '200px' }}>
+            <div style={{ height: '250px' }}>
                 <SummaryDataTable
-                    maxContainerHeight={200}
-                    heading={this.state.modulesLoadHead}
+                    maxContainerHeight={250}
+                    heading={this.state.postScriptHead}
                     data={this.state.data}
                     checkBoxClick={this.checkBoxClick}
-                    constHeading={modulesLoadHead}
-                    setHeadings={this.setModulesLoadHeadings}
+                    constHeading={postScriptHead}
+                    setHeadings={this.setPostScriptHeadings}
                     selectedRowIndexes={this.state.selectedRowIndexes}
-                    tableName={"modulesLoadTable"} />
+                    tableName={"postScriptTable"} />
             </div>
-            {this.addModulesLoadModal()}
-            {this.editModulesLoadModal()}
+            {this.addPostScriptModal()}
+            {this.editPostScriptModal()}
         </div>
         );
     }
@@ -290,19 +285,19 @@ class ModulesLoad extends Component {
 
 function mapStateToProps(state) {
     return {
-        data: state.modulesLoadReducer.get('modulesLoad'),
-        modulesLoadHeadings: state.modulesLoadReducer.getIn(['modulesLoadHeadings'])
+        data: state.postScriptReducer.get('postScript'),
+        postScriptHeadings: state.postScriptReducer.getIn(['postScriptHeadings'])
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-        getModulesLoad: (url) => dispatch(getModulesLoad(url)),
-        addModulesLoad: (url, params) => dispatch(addModulesLoad(url, params)),
-        updateModulesLoad: (url, params) => dispatch(updateModulesLoad(url, params)),
-        deleteModulesLoad: (url, params) => dispatch(deleteModulesLoad(url, params)),
-        setModulesLoadHeadings: (params) => dispatch(setModulesLoadHeadings(params))
+        getPostScript: (url) => dispatch(getPostScript(url)),
+        addPostScript: (url, params) => dispatch(addPostScript(url, params)),
+        updatePostScript: (url, params) => dispatch(updatePostScript(url, params)),
+        deletePostScript: (url, params) => dispatch(deletePostScript(url, params)),
+        setPostScripiHeadings: (params) => dispatch(setPostScripiHeadings(params))
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ModulesLoad);
+export default connect(mapStateToProps, mapDispatchToProps)(PostScript);

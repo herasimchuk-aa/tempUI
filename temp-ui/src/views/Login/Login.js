@@ -126,9 +126,6 @@ class Login extends Component {
         if (this.state.signUp) {
             return <Redirect to={{ pathname: '/pcc' }} />
         }
-        // if (this.state.setPassword) {
-
-        // }
         let errorAlert = null
         let success = null
         if (this.state.error.length) {
