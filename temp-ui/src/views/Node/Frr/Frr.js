@@ -124,51 +124,51 @@ class Frr extends Component {
     tabHeading = () => {
         const configs = [
             {
-                Name: 'Demons',
+                Name: 'daemons',
                 Content: ''
             },
             {
-                Name: 'Zebra',
+                Name: 'zebra.conf',
                 Content: ''
             },
             {
-                Name: 'Vtysh',
+                Name: 'vtysh.conf',
                 Content: ''
             },
             {
-                Name: 'Ripngd',
+                Name: 'ripgnd.conf',
                 Content: ''
             },
             {
-                Name: 'Ripd',
+                Name: 'ripd.conf',
                 Content: ''
             },
             {
-                Name: 'Pimd',
+                Name: 'pmid.conf',
                 Content: ''
             },
             {
-                Name: 'Ospfd',
+                Name: 'ospfd.conf',
                 Content: ''
             },
             {
-                Name: 'Ospf6d',
+                Name: 'ospf6d.conf',
                 Content: ''
             },
             {
-                Name: 'Ldpd',
+                Name: 'ldpd.conf',
                 Content: ''
             },
             {
-                Name: 'Bgpd',
+                Name: 'bgpd.conf',
                 Content: ''
             },
             {
-                Name: 'Isisd',
+                Name: 'isisd.conf',
                 Content: ''
             },
             {
-                Name: 'DemonsConf',
+                Name: 'daemons.conf',
                 Content: ''
             },
         ]
@@ -349,51 +349,51 @@ class Frr extends Component {
     addFrr() {
         let configs = [
             {
-                Name: 'Demons',
+                Name: 'daemons',
                 Content: document.getElementById('tab0').value
             },
             {
-                Name: 'Zebra',
+                Name: 'zebra.conf',
                 Content: document.getElementById('tab1').value
             },
             {
-                Name: 'Vtysh',
+                Name: 'vtysh.conf',
                 Content: document.getElementById('tab2').value
             },
             {
-                Name: 'Ripngd',
+                Name: 'ripgnd.conf',
                 Content: document.getElementById('tab3').value
             },
             {
-                Name: 'Ripd',
+                Name: 'ripd.conf',
                 Content: document.getElementById('tab4').value
             },
             {
-                Name: 'Pimd',
+                Name: 'pimd.conf',
                 Content: document.getElementById('tab5').value
             },
             {
-                Name: 'Ospfd',
+                Name: 'ospfd.conf',
                 Content: document.getElementById('tab6').value
             },
             {
-                Name: 'Ospf6d',
+                Name: 'ospf6d.conf',
                 Content: document.getElementById('tab7').value
             },
             {
-                Name: 'Ldpd',
+                Name: 'ldpd.conf',
                 Content: document.getElementById('tab8').value
             },
             {
-                Name: 'Bgpd',
+                Name: 'bgpd.conf',
                 Content: document.getElementById('tab9').value
             },
             {
-                Name: 'Isisd',
+                Name: 'isisd.conf',
                 Content: document.getElementById('tab10').value
             },
             {
-                Name: 'DemonsConf',
+                Name: 'daemons.conf',
                 Content: document.getElementById('tab11').value
             },
         ]

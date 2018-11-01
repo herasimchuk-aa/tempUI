@@ -1,50 +1,50 @@
 export let configs = [
     {
-        Name: 'Demons',
+        Name: 'daemons',
         Content: ''
     },
     {
-        Name: 'Zebra',
+        Name: 'zebra.conf',
         Content: ''
     },
     {
-        Name: 'Vtysh',
+        Name: 'vtysh.conf',
         Content: ''
     },
     {
-        Name: 'Ripngd',
+        Name: 'rpingd.conf',
         Content: ''
     },
     {
-        Name: 'Ripd',
+        Name: 'ripd.conf',
         Content: ''
     },
     {
-        Name: 'Pimd',
+        Name: 'pimd.conf',
         Content: ''
     },
     {
-        Name: 'Ospfd',
+        Name: 'ospfd.conf',
         Content: ''
     },
     {
-        Name: 'Ospf6d',
+        Name: 'ospf6d.conf',
         Content: ''
     },
     {
-        Name: 'Ldpd',
+        Name: 'ldpd.conf',
         Content: ''
     },
     {
-        Name: 'Bgpd',
+        Name: 'bgpd.conf',
         Content: ''
     },
     {
-        Name: 'Isisd',
+        Name: 'isisd.conf',
         Content: ''
     },
     {
-        Name: 'FRR',
+        Name: 'frr.conf',
         Content: ''
     }
 ];
