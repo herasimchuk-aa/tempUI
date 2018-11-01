@@ -1,4 +1,53 @@
-
+export let configs = [
+    {
+        Name: 'Demons',
+        Content: ''
+    },
+    {
+        Name: 'Zebra',
+        Content: ''
+    },
+    {
+        Name: 'Vtysh',
+        Content: ''
+    },
+    {
+        Name: 'Ripngd',
+        Content: ''
+    },
+    {
+        Name: 'Ripd',
+        Content: ''
+    },
+    {
+        Name: 'Pimd',
+        Content: ''
+    },
+    {
+        Name: 'Ospfd',
+        Content: ''
+    },
+    {
+        Name: 'Ospf6d',
+        Content: ''
+    },
+    {
+        Name: 'Ldpd',
+        Content: ''
+    },
+    {
+        Name: 'Bgpd',
+        Content: ''
+    },
+    {
+        Name: 'Isisd',
+        Content: ''
+    },
+    {
+        Name: 'FRR',
+        Content: ''
+    }
+];
 
 export let nodeHead = [
     {

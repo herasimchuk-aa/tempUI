@@ -134,3 +134,4 @@ export const DELETE_PERMISSIONS = "/rbac/permission/delete"
 
 //apis for login
 export const FETCH_LOGIN_DATA = "/rbac/login"
+export const UPDATE_PASSWORD = "/rbac/password"

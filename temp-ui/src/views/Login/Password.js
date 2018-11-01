@@ -2,11 +2,17 @@ import React, { Component } from 'react';
 import { Button, Card, CardBody, CardFooter, Col, Container, Form, Input, FormGroup, Label, InputGroup, InputGroupAddon, InputGroupText, Row, Alert, ListGroup, ListGroupItem } from 'reactstrap';
 import { Redirect } from 'react-router-dom';
 import { validateName, validateEmail } from '../../components/Utility/Utility';
-import { login } from '../../actions/loginAction';
-import { connect } from 'react-redux'
-import { postRequest, putRequest } from '../../apis/RestApi';
-import { NotificationManager } from 'react-notifications';
-import Login from './Login';
+
+// import { login } from '../../actions/loginAction';
+// import { connect } from 'react-redux'
+// import { postRequest, putRequest } from '../../apis/RestApi';
+// import { NotificationManager } from 'react-notifications';
+// import Login from './Login';
+
+import { login, updatePassword } from '../../actions/loginAction';
+import { UPDATE_PASSWORD } from '../../apis/RestConfig';
+import { connect } from 'react-redux';
+
 
 
 class Password extends Component {
@@ -50,18 +56,30 @@ class Password extends Component {
         }
         //call set new pwd api
         let params = {
+
             'Password': psw1
         }
-        putRequest("/rbac/user/changepasswd", params).then(() => {
-            self.setState({
-                setPassword: true,
-                resetPassword: {
-                    success: 'Password changed successfully',
-                    showSuccess: true
-                }
-            })
-        }
-        )
+        // putRequest("/rbac/user/changepasswd", params).then(() => {
+        //     self.setState({
+        //         setPassword: true,
+        //         resetPassword: {
+        //             success: 'Password changed successfully',
+        //             showSuccess: true
+        //         }
+        //     })
+        // }
+        // )
+
+
+        let updateUserPasswordPromise = self.props.updatePassword(UPDATE_PASSWORD, params)
+
+        updateUserPasswordPromise.then(function (value) {
+            this.setState({ setPassword: true })
+            NotificationManager.success("User updated successfully", "User") // "Success!"
+        }).catch(function (e) {
+            console.warn(e)
+            NotificationManager.error("Something went wrong", "User") // "error!"
+        })
 
     }
 
@@ -158,7 +176,9 @@ function mapDispatchToProps(dispatch) {
     return { login: (params) => dispatch(login(params)) }
 }
 function mapStateToProps(state) {
-    return {}
+    return {
+        updatePassword: (url, params) => dispatch(updatePassword(url, params)),
+    }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Password)

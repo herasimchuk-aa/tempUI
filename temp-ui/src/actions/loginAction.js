@@ -1,4 +1,4 @@
-import { postRequest } from "../apis/RestApi";
+import { postRequest, putRequest } from "../apis/RestApi";
 import { FETCH_LOGIN_DATA } from "../apis/RestConfig";
 import I from 'immutable'
 
@@ -26,4 +26,21 @@ export const setAccessPermissions = function (payload) {
         type: SET_ACCESS_PERMISSIONS,
         payload: payload
     }
+}
+
+export const updatePassword = (url, params) => (dispatch, getState) => {
+    return putRequest(url, params).then(function (json) {
+        if (json.StatusCode == 200) {
+            // let LLDPData = json.Data
+            // let storedLLDP = getState().lldpReducer.get('lldps')
+            // storedLLDP = storedLLDP.map(function (LLDP) {
+            //     if (LLDP.get('Id') === LLDPData.Id) {
+            //         LLDP = I.fromJS(LLDPData)
+            //     }
+            //     return LLDP
+            // })
+            // return dispatch(setLLDPData(I.fromJS(storedLLDP)))
+        }
+        throw new Error(json.Message)
+    })
 }

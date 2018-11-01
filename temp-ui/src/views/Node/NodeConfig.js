@@ -96,12 +96,19 @@ class NodeConfig extends Component {
   }
 
   chkLocation = (e, inventory) => {
-    if (inventory.Location == '-' || inventory.Location == '') {
-      e.preventDefault();
-      this.setState({ displayRedirectModal: true })
+    console.log(inventory)
+    if (inventory) {
+      if (inventory.Location == '-' || inventory.Location == '') {
+        e.preventDefault();
+        this.setState({ displayRedirectModal: true })
+      } else {
+        console.log(inventory)
+      }
     } else {
-      console.log(inventory)
+      e.preventDefault();
+      alert('please select goes first')
     }
+
   }
 
   openRedirectModal = () => {
@@ -115,7 +122,6 @@ class NodeConfig extends Component {
   }
 
   render() {
-    console.log(this.state.nodes)
     let { nodes } = this.state
     if (!nodes || !nodes.length) {
       return <div></div>
@@ -746,7 +752,7 @@ class NodeConfig extends Component {
         }
       }).catch(function (e) {
         console.log(e)
-        NotificationManager.error("Something went wrong", "Type")
+        NotificationManager.error("Something went wrong", "ISO")
       })
       watingPromise.push(isoPro)
     }
@@ -821,7 +827,7 @@ class NodeConfig extends Component {
     }
     if (!ethtoolExist && params.EthtoolVersion) {
       let dataparams = {
-        'Name': 'lldp-' + params.EthtoolVersion,
+        'Name': 'ethtool-' + params.EthtoolVersion,
         'Version': params.EthtoolVersion
       }
       let ethtoolPro = this.props.addEthTool(ADD_ETHTOOL, dataparams).then(function (data) {

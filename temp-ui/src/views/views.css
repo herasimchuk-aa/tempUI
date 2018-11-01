@@ -408,3 +408,8 @@ to {opacity: 0;}
 .modal-content {
     top: 5rem !important;
 }
+
+
+.modal-lg {
+    max-width: 940px !important;
+}

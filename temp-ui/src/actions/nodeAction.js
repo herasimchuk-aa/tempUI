@@ -120,6 +120,7 @@ export const deleteNodes = (url, params) => (dispatch, getState) => {
                     break
                 }
             }
+            console.log(params)
             return dispatch(setNodes(storedNodes))
         }
         throw new Error(json.Message)

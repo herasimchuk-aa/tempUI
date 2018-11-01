@@ -438,19 +438,19 @@ class List extends React.PureComponent {
         else {
             let tooltip = (<UncontrolledTooltip placement="top" target={columnKey + rowIndex} style={{ textAlign: 'left' }}>
                 <ListGroup>
-                    <ListGroupItem active action>
-                        <ListGroupItemHeading>Existing Values</ListGroupItemHeading>
-                        <ListGroupItemText>
-                            VersionFe1 : {data[rowIndex][columnKey].VersionFe1 ? data[rowIndex][columnKey].VersionFe1 : '-'}<br />
-                            VersionFe1a : {data[rowIndex][columnKey].VersionFe1a ? data[rowIndex][columnKey].VersionFe1a : '-'}<br />
-                            VersionGo : {data[rowIndex][columnKey].VersionGo ? data[rowIndex][columnKey].VersionGo : '-'}<br />
-                        </ListGroupItemText>
+                    <ListGroupItemHeading>Existing Values</ListGroupItemHeading>
+                    <ListGroupItem>
+                        VersionFe1 : {data[rowIndex][columnKey].VersionFe1 ? data[rowIndex][columnKey].VersionFe1 : '-'}
                     </ListGroupItem>
-                    <ListGroupItem active action>
-                        <ListGroupItemHeading>Validated Values</ListGroupItemHeading>
-                        <ListGroupItemText>
-                            Version : {data[rowIndex].ValidationStatus['GoesVersion'] ? data[rowIndex].ValidationStatus['GoesVersion'] : '-'}
-                        </ListGroupItemText>
+                    <ListGroupItem>
+                        VersionFe1a : {data[rowIndex][columnKey].VersionFe1a ? data[rowIndex][columnKey].VersionFe1a : '-'}
+                    </ListGroupItem>
+                    <ListGroupItem>
+                        VersionGo : {data[rowIndex][columnKey].VersionGo ? data[rowIndex][columnKey].VersionGo : '-'}
+                    </ListGroupItem>
+                    <ListGroupItemHeading>Validated Values</ListGroupItemHeading>
+                    <ListGroupItem >
+                        Version : {data[rowIndex].ValidationStatus['GoesVersion'] ? data[rowIndex].ValidationStatus['GoesVersion'] : '-'}
                     </ListGroupItem>
                 </ListGroup>
             </UncontrolledTooltip>)
@@ -466,8 +466,6 @@ class List extends React.PureComponent {
                 );
             }
         }
-
-
     }
 };
 module.exports.List = List;
