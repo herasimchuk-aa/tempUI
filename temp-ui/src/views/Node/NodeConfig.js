@@ -247,16 +247,16 @@ class NodeConfig extends Component {
               <DropDown options={this.state.modulesLoadData} getSelectedData={this.getSelectedData} identity={'ModulesLoad'} default={this.state.selectedModulesLoadId} />
             </Col>
           </Row>
-          <Row className="pad">
+          {/* <Row className="pad">
             <Col xs='3'><Label>Pre-Script</Label><br />
               <DropDown options={this.state.preScriptData} getSelectedData={this.getSelectedData} identity={'PreScript'} default={this.state.selectedPreScriptId} />
             </Col>
             <Col xs='3'><Label>Post-Script</Label><br />
               <DropDown options={this.state.postScriptData} getSelectedData={this.getSelectedData} identity={'PostScript'} default={this.state.selectedPostScriptId} />
             </Col>
-          </Row>
+          </Row> */}
           <Row className="pad">
-            <Col xs='9'><Label>Provision :</Label><br />
+            <Col xs='12'><Label>Provision :</Label><br />
               <div className="equiSpace">
                 <div><input type="checkbox" id="provisionGoes" defaultChecked={false} onClick={(e) => { this.chkLocation(e, this.state.nodes[0].goes) }} /> Goes </div>
                 <div><input type="checkbox" id="provisionLldp" defaultChecked={false} onClick={(e) => { this.chkLocation(e, this.state.nodes[0].lldp) }} /> LLDP </div>
@@ -266,8 +266,8 @@ class NodeConfig extends Component {
                 <div><input type="checkbox" id="provisionModProbe" defaultChecked={false} /> ModProbe </div>
                 <div><input type="checkbox" id="provisionModulesLoad" defaultChecked={false} /> Modules-Load </div>
                 <div><input type="checkbox" id="provisionInterfaces" defaultChecked={false} /> Interfaces </div>
-                <div><input type="checkbox" id="preScriptProvision" defaultChecked={false} /> Pre-Script </div>
-                <div><input type="checkbox" id="postScriptProvision" defaultChecked={false} /> Post-Script </div>
+                {/* <div><input type="checkbox" id="preScriptProvision" defaultChecked={false} /> Pre-Script </div> */}
+                {/* <div><input type="checkbox" id="postScriptProvision" defaultChecked={false} /> Post-Script </div> */}
               </ div>
             </Col>
           </Row>
@@ -513,8 +513,8 @@ class NodeConfig extends Component {
         'frr': document.getElementById('provisionFrr').checked,
         'modprobe': document.getElementById('provisionModProbe').checked,
         'modulesload': document.getElementById('provisionModulesLoad').checked,
-        'prescript': document.getElementById('preScriptProvision').checked,
-        'postscript': document.getElementById('postScriptProvision').checked
+        // 'prescript': document.getElementById('preScriptProvision').checked,
+        // 'postscript': document.getElementById('postScriptProvision').checked
       }
     })
 

@@ -13,10 +13,10 @@ class Linux extends Component {
         <LinuxKernel />
         <br />
         <BaseLinuxIso />
-        <br />
+        {/*  <br />
         <PreScript />
         <br />
-        <PostScript />
+        <PostScript /> */}
       </div>
     );
   }
