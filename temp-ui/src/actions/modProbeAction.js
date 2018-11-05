@@ -3,7 +3,8 @@ import { getRequest, postRequest, putRequest } from '../apis/RestApi';
 
 export const getModProbe = (url) => (dispatch) => {
     return getRequest(url).then(function (json) {
-        return dispatch(setModProbeData(I.fromJS(json.Data)))
+        if (json.Data)
+            return dispatch(setModProbeData(I.fromJS(json.Data)))
     })
 }
 

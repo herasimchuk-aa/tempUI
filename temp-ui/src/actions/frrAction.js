@@ -3,7 +3,8 @@ import { getRequest, postRequest, putRequest } from '../apis/RestApi';
 
 export const getFrr = (url) => (dispatch) => {
     return getRequest(url).then(function (json) {
-        return dispatch(setFrrData(I.fromJS(json.Data)))
+        if (json.Data)
+            return dispatch(setFrrData(I.fromJS(json.Data)))
     })
 }
 

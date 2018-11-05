@@ -3,7 +3,8 @@ import { getRequest, putRequest, postRequest } from '../apis/RestApi';
 
 export const getLLDP = (url) => (dispatch) => {
     return getRequest(url).then(function (json) {
-        return dispatch(setLLDPData(I.fromJS(json.Data)))
+        if (json.Data)
+            return dispatch(setLLDPData(I.fromJS(json.Data)))
     })
 }
 

@@ -3,18 +3,20 @@ import { getRequest, postRequest, putRequest } from '../apis/RestApi';
 
 export const fetchRoles = (url) => (dispatch) => {
     return getRequest(url).then(function (json) {
-        json.Data.map(function (item, index) {
-            let parentId = json.Data[index].ParentId
-            json.Data[index].ParentName = '-'
-            if (parentId) {
-                json.Data.find(function (element) {
-                    if (parentId == element.Id) {
-                        json.Data[index].ParentName = element.Name
-                    }
-                })
-            }
-        })
-        return dispatch(setRoleData(I.fromJS(json.Data)))
+        if (json.Data) {
+            json.Data.map(function (item, index) {
+                let parentId = json.Data[index].ParentId
+                json.Data[index].ParentName = '-'
+                if (parentId) {
+                    json.Data.find(function (element) {
+                        if (parentId == element.Id) {
+                            json.Data[index].ParentName = element.Name
+                        }
+                    })
+                }
+            })
+            return dispatch(setRoleData(I.fromJS(json.Data)))
+        }
     })
 }
 

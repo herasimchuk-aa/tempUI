@@ -4,7 +4,8 @@ import { FETCH_ALL_FECS } from '../apis/RestConfig';
 
 export const fetchFecs = () => (dispatch) => {
     return getRequest(FETCH_ALL_FECS).then(function (json) {
-        return dispatch(setFecData(I.fromJS(json.Data)))
+        if (json.Data)
+            return dispatch(setFecData(I.fromJS(json.Data)))
     })
 }
 

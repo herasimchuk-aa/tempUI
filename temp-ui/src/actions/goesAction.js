@@ -3,7 +3,8 @@ import { getRequest, postRequest, putRequest } from '../apis/RestApi';
 
 export const getGoes = (url) => (dispatch) => {
     return getRequest(url).then(function (json) {
-        return dispatch(setGoesData(I.fromJS(json.Data)))
+        if (json.Data)
+            return dispatch(setGoesData(I.fromJS(json.Data)))
     })
 }
 

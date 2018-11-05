@@ -3,7 +3,8 @@ import I from 'immutable'
 
 export const getISOs = (url) => (dispatch) => {
     return getRequest(url).then(function (json) {
-        return dispatch(setISOs(I.fromJS(json.Data)))
+        if (json.Data)
+            return dispatch(setISOs(I.fromJS(json.Data)))
     })
 }
 

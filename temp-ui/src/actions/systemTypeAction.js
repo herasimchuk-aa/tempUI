@@ -11,7 +11,8 @@ export function setSystemTypeData(payload) {
 
 export const fetchTypes = (url) => (dispatch) => {
     return getRequest(url).then(function (json) {
-        return dispatch(setSystemTypeData(I.fromJS(json.Data)))
+        if (json.Data)
+            return dispatch(setSystemTypeData(I.fromJS(json.Data)))
     })
 }
 

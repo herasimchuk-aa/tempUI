@@ -3,7 +3,8 @@ import { getRequest, putRequest, postRequest } from '../apis/RestApi';
 
 export const getEthTool = (url) => (dispatch) => {
     return getRequest(url).then(function (json) {
-        return dispatch(setEthToolData(I.fromJS(json.Data)))
+        if (json.Data)
+            return dispatch(setEthToolData(I.fromJS(json.Data)))
     })
 }
 

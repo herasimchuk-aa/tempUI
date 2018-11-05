@@ -10,6 +10,7 @@ import { connect } from 'react-redux'
 import { fetchUsers, addUsers, updateUsers, deleteUser, setUserHeadings } from '../../actions/userAction';
 import I from 'immutable'
 import MultiselectDropDown from '../../components/MultiselectDropdown/MultiselectDropDown';
+import { putRequest } from '../../apis/RestApi';
 
 
 class User extends Component {
@@ -121,7 +122,14 @@ class User extends Component {
             this.setState({ visible: true })
             return;
         }
-
+        if (!document.getElementById('rbacUserName').value) {
+            alert("Username is mandatory")
+            return
+        }
+        if (!document.getElementById('userEmailId').value) {
+            alert("Email ID is mandatory")
+            return
+        }
         let userRoles = [];
         if (this.state.selectedUserRoles)
             this.state.selectedUserRoles.map((data) => userRoles.push(data));
@@ -170,12 +178,20 @@ class User extends Component {
                         User Roles<MultiselectDropDown value={this.state.selectedUserRoles} getSelectedData={this.handleChanges} options={this.state.userRoleData}></MultiselectDropDown>
                     </ModalBody>
                     <ModalFooter>
+                        {/* <Button className="custBtn" outline color="primary" onClick={() => (this.sendPasswordResetLink(edittedData.Email))}>Resend Link</Button>{'  '} */}
                         <Button className="custBtn" outline color="primary" onClick={() => (this.editUser(edittedData.Id))}>Save</Button>{'  '}
                         <Button className="custBtn" outline color="primary" onClick={() => (this.toggleEditModal())}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
             );
         }
+    }
+
+    sendPasswordResetLink(email) {
+        let params = {
+            'Email': email
+        }
+        putRequest("/rbac/user/forgotpasswd", params).then(NotificationManager.success("Password reset link sent", "User"))
     }
 
     editUser = (userId) => {

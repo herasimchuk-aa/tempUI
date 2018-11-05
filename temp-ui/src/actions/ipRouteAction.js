@@ -3,7 +3,8 @@ import { getRequest, postRequest, putRequest } from '../apis/RestApi';
 
 export const getIpRoute = (url) => (dispatch) => {
     return getRequest(url).then(function (json) {
-        return dispatch(setIpRoutedata(I.fromJS(json.Data)))
+        if (json.Data)
+            return dispatch(setIpRoutedata(I.fromJS(json.Data)))
     })
 }
 

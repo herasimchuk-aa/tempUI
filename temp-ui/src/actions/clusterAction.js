@@ -3,11 +3,13 @@ import { getRequest, postRequest, putRequest } from '../apis/RestApi';
 
 export const getClusters = (url) => (dispatch) => {
     return getRequest(url).then(function (json) {
-        let data = I.fromJS(json.Data)
-        data = data.map(function (item) {
-            return convertCluster(item)
-        })
-        return dispatch(setClusterData(data))
+        if (json.Data) {
+            let data = I.fromJS(json.Data)
+            data = data.map(function (item) {
+                return convertCluster(item)
+            })
+            return dispatch(setClusterData(data))
+        }
     })
 }
 

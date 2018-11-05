@@ -3,7 +3,8 @@ import { getRequest, postRequest, putRequest } from '../apis/RestApi';
 
 export const getModulesLoad = (url) => (dispatch) => {
     return getRequest(url).then(function (json) {
-        return dispatch(setModulesLoadData(I.fromJS(json.Data)))
+        if (json.Data)
+            return dispatch(setModulesLoadData(I.fromJS(json.Data)))
     })
 }
 
