@@ -36,7 +36,7 @@ Window.invaderServerAddress = "http://" + invaderServerAddressIP
 
 const store = createStore(appReducer, applyMiddleware(thunk))
 var socket = new Socket(store)
-socket.initWebSocket()
+socket.initWebSocket("inventoryUpdate")
 
 ReactDOM.render((
   <Provider store={store}>

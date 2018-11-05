@@ -8,8 +8,7 @@ export default class Socket {
         this.store = store
     }
 
-    initWebSocket() {
-        let channelName = "inventoryUpdate"
+    initWebSocket(channelName) {
         let wsuri = 'ws://' + invaderServerAddressIP + '/ws/join?uname=' + channelName;
         let socket = new WebSocket(wsuri);
         let self = this

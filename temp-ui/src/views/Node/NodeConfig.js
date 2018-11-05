@@ -28,6 +28,7 @@ import { addKernels } from '../../actions/kernelAction';
 import { addTypes } from '../../actions/systemTypeAction';
 import { addISOs } from '../../actions/baseIsoActions';
 import { getFrr, addFrr } from '../../actions/frrAction';
+import Socket from '../../apis/Socket'
 
 class NodeConfig extends Component {
 
@@ -234,7 +235,7 @@ class NodeConfig extends Component {
 
           </Row>
           <Row className="pad">
-            <Col xs='3'><Label>IpRoute2</Label><br />
+            <Col xs='3'><Label>Iproute2</Label><br />
               <DropDown options={this.state.ipRouteData} getSelectedData={this.getSelectedData} identity={'IpRoute'} default={this.state.selectedIpRouteId} />
             </Col>
             <Col xs='3'><Label>FRR</Label><br />
@@ -499,7 +500,8 @@ class NodeConfig extends Component {
   }
 
   startProvision() {
-
+    // var socket = new Socket()
+    // socket.initWebSocket("provision")
     let self = this
     let provisiondata = Object.assign({}, {
       'NodeId': self.state.nodes[0].Id,
