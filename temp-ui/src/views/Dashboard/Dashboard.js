@@ -51,9 +51,11 @@ class Dashboard extends Component {
 
     render() {
         return (
-            <div className="animated fadeIn">
-                {this.renderInvaderIP()}
-            </div>
+            <iframe
+                src="http://localhost:8080/dashboard"
+                style={{ height: '100%', width: '100%'}}
+                frameBorder="0"
+            />
         )
     }
 }

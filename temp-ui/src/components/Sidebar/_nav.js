@@ -10,6 +10,15 @@ export default {
       }
     },
     {
+      name: 'Flow Logs',
+      url: '/pcc/flow-logs',
+      icon: 'icon-speedometer',
+      badge: {
+        variant: 'info',
+        text: ''
+      }
+    },
+    {
       title: true,
       name: 'Infrastructure',
     },

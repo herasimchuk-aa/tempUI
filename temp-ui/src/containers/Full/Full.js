@@ -32,57 +32,70 @@ import User from '../../views/Management/User';
 import UserRole from '../../views/Management/UserRole';
 import Permission from '../../views/Management/Permission';
 import Entity from '../../views/Management/Entity';
-
+import FlowLogs from '../../views/FlowLogs/FlowLogs';
 
 class Full extends Component {
     constructor(props) {
         super(props)
     }
-    render() {
 
-        return (
+    render() {
+         return (
             <div className="app">
                 <Header />
                 <div className="app-body">
                     <Sidebar {...this.props} />
-                    <main className="main">
-                        <Breadcrumb />
-                        <NotificationContainer />
-                        <Container fluid>
-                            <Switch>
-                                <Route path="/pcc/dashboard" name="Dashboard" component={Dashboard} />
-                                <Route path="/pcc/node/NodeConfigSummary" name="Node-Config" component={NodeSummary} />
-                                <Route path="/pcc/node/Summary" name="Summary" component={NodeOpSummary} />
-                                <Route path="/pcc/node/Roles" name="Roles" component={Roles} />
-                                <Route path="/pcc/node/Types" name="Types" component={Types} />
-                                <Route path="/pcc/node/Cluster" name="Site" component={Cluster} />
-                                <Route path="/pcc/node/Site" name="Cluster" component={Site} />
-                                <Route path="/pcc/node/Linuxkernel" name="Linux Kernel" component={LinuxKernel} />
-                                <Route path="/pcc/node/Goes" name="Goes" component={Goes} />
-                                <Route path="/pcc/node/Lldp" name="Lldp" component={LLDP} />
-                                <Route path="/pcc/node/EthTool" name="ethTool" component={EthTool} />
-                                <Route path="/pcc/node/BaseLinuxIso" name="Base Linux ISO" component={BaseLinuxIso} />
-                                <Route path="/pcc/node/linux" name="Linux" component={Linux} />
-                                <Route path="/pcc/node/apps" name="Apps" component={App} />
-                                <Route path="/pcc/monitoring/BmcMonitor" name="Summary" component={BmcMonitor} />
-                                <Route path="/pcc/connectivity/Summary" name="Summary" component={ConnectivitySummary} />
-                                <Route path="/pcc/monitoring/TilesApp" name="Tiles-App" component={TileApp} />
-                                <Route path="/pcc/operation/inventory" name="Inventory" component={Inventory} />
-                                <Route path="/pcc/node/config" name="Monitor" component={NodeConfig} />
-                                <Route path="/pcc/kubernetes" name="Kubernetes" component={Kubernetes} />
-                                <Route path="/pcc/node" name="Node" component={NodeSummary} />
-                                <Route path="/pcc/userManagement/user" name="User" component={User} />
-                                <Route path="/pcc/userManagement/role" name="UserRole" component={UserRole} />
-                                <Route path="/pcc/userManagement/permission" name="Permission" component={Permission} />
-                                <Route path="/pcc/userManagement/entity" name="Entity" component={Entity} />
-                                <Route path="/pcc/userManagement" name="UserManagement" component={User} />
-                                <Redirect from="/pcc" to="/pcc/dashboard"></Redirect>
-                            </Switch>
-                        </Container>
-                    </main>
+                    {this.props.location.pathname === '/pcc/dashboard' || this.props.location.pathname === '/pcc/flow-logs' ? (
+                        <main className="main" style={{overflow: 'hidden'}}>
+                            {this.routes()}
+                        </main>
+                    ): (
+                        <main className="main">
+                            <Breadcrumb />
+                            <NotificationContainer />
+                            <Container fluid>
+                                {this.routes()}
+                            </Container>
+                        </main>
+                    )}
                 </div>
                 <Footer />
             </div>
+        );
+    }
+
+    routes() {
+        return (
+            <Switch>
+                <Route path="/pcc/flow-logs" name="FlowLogs" component={FlowLogs} />
+                <Route path="/pcc/dashboard" name="Dashboard" component={Dashboard} />
+                <Route path="/pcc/node/NodeConfigSummary" name="Node-Config" component={NodeSummary} />
+                <Route path="/pcc/node/Summary" name="Summary" component={NodeOpSummary} />
+                <Route path="/pcc/node/Roles" name="Roles" component={Roles} />
+                <Route path="/pcc/node/Types" name="Types" component={Types} />
+                <Route path="/pcc/node/Cluster" name="Site" component={Cluster} />
+                <Route path="/pcc/node/Site" name="Cluster" component={Site} />
+                <Route path="/pcc/node/Linuxkernel" name="Linux Kernel" component={LinuxKernel} />
+                <Route path="/pcc/node/Goes" name="Goes" component={Goes} />
+                <Route path="/pcc/node/Lldp" name="Lldp" component={LLDP} />
+                <Route path="/pcc/node/EthTool" name="ethTool" component={EthTool} />
+                <Route path="/pcc/node/BaseLinuxIso" name="Base Linux ISO" component={BaseLinuxIso} />
+                <Route path="/pcc/node/linux" name="Linux" component={Linux} />
+                <Route path="/pcc/node/apps" name="Apps" component={App} />
+                <Route path="/pcc/monitoring/BmcMonitor" name="Summary" component={BmcMonitor} />
+                <Route path="/pcc/connectivity/Summary" name="Summary" component={ConnectivitySummary} />
+                <Route path="/pcc/monitoring/TilesApp" name="Tiles-App" component={TileApp} />
+                <Route path="/pcc/operation/inventory" name="Inventory" component={Inventory} />
+                <Route path="/pcc/node/config" name="Monitor" component={NodeConfig} />
+                <Route path="/pcc/kubernetes" name="Kubernetes" component={Kubernetes} />
+                <Route path="/pcc/node" name="Node" component={NodeSummary} />
+                <Route path="/pcc/userManagement/user" name="User" component={User} />
+                <Route path="/pcc/userManagement/role" name="UserRole" component={UserRole} />
+                <Route path="/pcc/userManagement/permission" name="Permission" component={Permission} />
+                <Route path="/pcc/userManagement/entity" name="Entity" component={Entity} />
+                <Route path="/pcc/userManagement" name="UserManagement" component={User} />
+                <Redirect from="/pcc" to="/pcc/dashboard"></Redirect>
+            </Switch>
         );
     }
 }
