@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { Button, Card, CardBody, CardFooter, Col, Container, Form, Input, FormGroup, Label, InputGroup, InputGroupAddon, InputGroupText, Row, Alert, ListGroup, ListGroupItem } from 'reactstrap';
 import { login } from '../../actions/loginAction';
+import {Redirect} from 'react-router-dom';
 import { connect } from 'react-redux'
-import { putRequest } from '../../apis/RestApi';
-import Login from './Login';
+import { postRequest } from '../../apis/RestApi';
+import { UPDATE_PASSWORD } from "../../apis/RestConfig";
 
 
 class Password extends Component {
@@ -23,6 +24,13 @@ class Password extends Component {
         }
         console.log(props)
         window.sessionStorage.accessToken = props.match.params.token
+    }
+
+    showConfirmation = () => {
+        document.getElementById('setpassword').style.display = 'none'
+        document.getElementById('confirmResetPassword').style.display = 'none'
+        document.getElementById('resetPasswordConfirmation').style.display = 'block'
+        document.getElementById('resetPasswordCompleted').style.display = 'block'
     }
 
     setNewPassword() {
@@ -47,17 +55,19 @@ class Password extends Component {
         }
         //call set new pwd api
         let params = {
-            'Password': psw1
+            'password': psw1
         }
-        putRequest("/rbac/user/changepasswd", params).then(() => {
-            self.setState({
-                setPassword: true,
-                resetPassword: {
-                    success: 'Password changed successfully',
-                    showSuccess: true
-                }
-            })
-        }
+        //TODO[greg] Fix response handler
+        postRequest(UPDATE_PASSWORD, params).then((json) => {
+                this.showConfirmation();
+                //if (json==undefined || json.StatusCode != 200) {
+                //    let error = []
+                //    error.push('Unable to restore password')
+                //    self.setState({error: error, showAlert: true, showSuccess: false})
+                //}else {
+                //    this.showConfirmation();
+                //}
+            }
         )
 
     }
@@ -68,9 +78,8 @@ class Password extends Component {
 
     render() {
         if (this.state.setPassword) {
-            // return <Redirect to={{ pathname: '/' }} state={this.state.resetPassword} />
-            return <Login showSuccess={true} success='Password Changed Successfully' />
-
+            return <Redirect to={{ pathname: '/' }} state={this.state.resetPassword} />
+            //return <Login showSuccess={true} success='Password Changed Successfully' />
         }
         let errorAlert = null
         let success = null
@@ -105,17 +114,17 @@ class Password extends Component {
                                     <CardBody className="p-4">
                                         {errorAlert}
                                         {success}
-                                        <Form id="firstLogin">
+                                        <Form id="setpassword">
                                             <h3>Set New Password</h3>
                                             <p className="text-muted"></p>
                                             {/* <InputGroup className="mb-3">
-                                                <InputGroupAddon addonType="prepend">
-                                                    <InputGroupText>
-                                                        <i className="icon-lock"></i>
-                                                    </InputGroupText>
-                                                </InputGroupAddon>
-                                                <Input type="password" placeholder="Old Password" id="opsw" />
-                                            </InputGroup> */}
+                                             <InputGroupAddon addonType="prepend">
+                                             <InputGroupText>
+                                             <i className="icon-lock"></i>
+                                             </InputGroupText>
+                                             </InputGroupAddon>
+                                             <Input type="password" placeholder="Old Password" id="opsw" />
+                                             </InputGroup> */}
                                             <InputGroup className="mb-3">
                                                 <InputGroupAddon addonType="prepend">
                                                     <InputGroupText>
@@ -134,10 +143,17 @@ class Password extends Component {
                                             </InputGroup>
                                             {/* <Button block className="custBtn" onClick={() => (this.setNewPassword())}>Confirm</Button> */}
                                         </Form>
+                                        <Form id="resetPasswordConfirmation">
+                                            <h3>Password has been updated successfully!</h3>
+                                        </Form>
                                     </CardBody>
                                     <CardFooter className="p-4">
                                         <Col xs="12">
-                                            <Button block className="custFillBtn" onClick={() => (this.setNewPassword())}>Confirm</Button>
+                                            <Button block className="custFillBtn" id="confirmResetPassword" onClick={() => (this.setNewPassword())}>Confirm</Button>
+                                        </Col>
+                                        <Col xs="12">
+                                            <Button className="custFillBtn" id="resetPasswordCompleted" block
+                                                    onClick={() => (this.setState({setPassword: true}) )}><span>Go to login</span></Button>
                                         </Col>
                                     </CardFooter>
                                 </Card>
