@@ -38,7 +38,7 @@ export function getHeader(){
     let header = {
         "Content-Type": "application/json; charset=utf-8"
     };
-    if(window.sessionStorage.accessToken!=undefined || window.sessionStorage.accessToken!=""){
+    if(window.sessionStorage.accessToken!=undefined && window.sessionStorage.accessToken!=""){
         header["Authorization"]="Bearer " + window.sessionStorage.accessToken
     }
     return header
