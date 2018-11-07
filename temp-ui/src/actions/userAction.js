@@ -30,12 +30,13 @@ export function setUserHeadings(payload) {
 
 export const addUsers = (url, params) => (dispatch, getState) => {
     return postRequest(url, params).then(function (json) {
-        if (json.StatusCode == 200) {
-            let storedUsers = getState().userReducer.getIn(['users'], I.List())
-            storedUsers = storedUsers.push(I.fromJS(json.Data))
-            return dispatch(setUserSData(storedUsers))
-        }
-        throw new Error(json.Message)
+        //TODO[greg] Handler status
+        //if (json.StatusCode == 200) {
+            //let storedUsers = getState().userReducer.getIn(['users'], I.List())
+            //storedUsers = storedUsers.push(I.fromJS(json.Data))
+            //return dispatch(setUserSData(storedUsers))
+        //}
+        //throw new Error(json.Message)
     })
 }
 

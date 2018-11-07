@@ -3,15 +3,19 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert, Media
 import '../views.css';
 import SummaryDataTable from '../Node/NodeSummary/SummaryDataTable';
 import { userHead } from '../../consts';
-import { trimString } from '../../components/Utility/Utility';
+import { trimString,getUrlBase } from '../../components/Utility/Utility';
 import { FETCH_ALL_USERS, ADD_USER, UPDATE_USER, DELETE_USERS } from '../../apis/RestConfig'
 import { NotificationManager } from 'react-notifications';
 import { connect } from 'react-redux'
 import { fetchUsers, addUsers, updateUsers, deleteUser, setUserHeadings } from '../../actions/userAction';
 import I from 'immutable'
-import MultiselectDropDown from '../../components/MultiselectDropdown/MultiselectDropDown';
+import ReactSingleDropdown from 'react-single-dropdown'
 import { putRequest } from '../../apis/RestApi';
 
+const usernameParam =  "rbacUserName";
+const firstNameParam =  "firstName";
+const lastNameParam =  "lastName";
+const emailParam =  "userMail";
 
 class User extends Component {
 
@@ -96,10 +100,14 @@ class User extends Component {
                     <ModalHeader toggle={() => this.cancel()}>Add User </ModalHeader>
                     <ModalBody>
                         <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Name cannot be empty</Alert>
-                        Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id='userName' /><br />
-                        User Name<font color="red"><sup>*</sup></font> <Input className="marTop10" id='rbacUserName' /><br />
-                        Email ID<font color="red"><sup>*</sup></font> <Input className="marTop10" id='userEmailId' /><br />
-                        User Roles<MultiselectDropDown value={this.state.selectedUserRoles} getSelectedData={this.handleChanges} options={this.state.userRoleData}></MultiselectDropDown>
+                        First Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id={firstNameParam} /><br />
+                        Last Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id={lastNameParam} /><br />
+                        User Name<font color="red"><sup>*</sup></font> <Input className="marTop10" id={usernameParam} /><br />
+                        Email<font color="red"><sup>*</sup></font> <Input className="marTop10" id={emailParam} /><br />
+                        Role<ReactSingleDropdown
+                        defaultSelected={"ADMIN"}
+                        onSelect={this.state.selectedUserRoles}
+                        options={['ADMIN']}/>
                     </ModalBody>
                     <ModalFooter>
                         <Button className="custBtn" outline color="primary" onClick={() => (this.addUser())}>Add</Button>{'  '}
@@ -116,17 +124,25 @@ class User extends Component {
 
     addUser() {
         let self = this;
-        let userName = document.getElementById('userName').value
-        let validuserName = trimString(userName)
-        if (!validuserName) {
+        let firstName = document.getElementById(firstNameParam).value
+        let lastName = document.getElementById(lastNameParam).value
+        let validFirstName = trimString(firstName)
+        if (!validFirstName) {
             this.setState({ visible: true })
             return;
         }
-        if (!document.getElementById('rbacUserName').value) {
+        let validLastName = trimString(lastName)
+        if (!validLastName) {
+            this.setState({ visible: true })
+            return;
+        }
+        let username = document.getElementById(usernameParam).value;
+        if (!username) {
             alert("Username is mandatory")
             return
         }
-        if (!document.getElementById('userEmailId').value) {
+        let email = document.getElementById(emailParam).value;
+        if (!email) {
             alert("Email ID is mandatory")
             return
         }
@@ -134,20 +150,24 @@ class User extends Component {
         if (this.state.selectedUserRoles)
             this.state.selectedUserRoles.map((data) => userRoles.push(data));
 
+        let usedUrl = getUrlBase(window.location.href)
+
         let params = {
-            'Name': validuserName,
-            'Username': document.getElementById('rbacUserName').value,
-            'Email': document.getElementById('userEmailId').value,
-            'UserRoles': userRoles
+            'firstname': firstName,
+            'lastname': lastName,
+            'username': username,
+            'email': email,
+            'role': "ADMIN", //TODO[greg] get roles from select
+            "source": usedUrl+"/setPass",
         }
 
         let userPromise = self.props.addUsers(ADD_USER, params)
 
         userPromise.then(function (value) {
-            NotificationManager.success("User added successfully", "User") // "Success!"
+            NotificationManager.success("User added successfully", "User")
         }).catch(function (e) {
             console.warn(e)
-            NotificationManager.error("Something went wrong", "User") // "error!"
+            NotificationManager.error("Something went wrong", "User")
         })
         this.setState({ displayModel: false, selectedRowIndexes: [], selectedUserRoles: '' })
     }

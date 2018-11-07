@@ -123,7 +123,7 @@
 }
 
 
-#register,#forgotpassword,#logInBtn{
+#register,#forgotpassword,#logInBtn,#resetPasswordCompleted,#resetPasswordConfirmation,#logInServerIP{
 	display: none;
 }
 

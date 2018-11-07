@@ -128,7 +128,8 @@ export const DELETE_ENTITIES = "/rbac/entity/delete"
 
 //apis for user
 export const FETCH_ALL_USERS = "/rbac/user"
-export const ADD_USER = "/rbac/user/add"
+//export const ADD_USER = "/rbac/user/add"
+export const ADD_USER = "/user-management/user/register"
 export const UPDATE_USER = "/rbac/user/update"
 export const DELETE_USERS = "/rbac/user/delete"
 
@@ -145,5 +146,9 @@ export const UPDATE_PERMISSION = "/rbac/permission/update"
 export const DELETE_PERMISSIONS = "/rbac/permission/delete"
 
 //apis for login
-export const FETCH_LOGIN_DATA = "/rbac/login"
-export const UPDATE_PASSWORD = "/rbac/password"
+//export const FETCH_LOGIN_DATA = "/rbac/login"
+//export const FORGOT_PASSWORD = ""/rbac/user/forgotpasswd""
+//export const UPDATE_PASSWORD = "/rbac/user/changepasswd"
+export const FETCH_LOGIN_DATA = "/security/auth"
+export const FORGOT_PASSWORD = "/user-management/user/recovery"
+export const UPDATE_PASSWORD = "/user-management/user/set-password"

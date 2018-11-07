@@ -4,8 +4,8 @@ import I from 'immutable'
 
 export const login = (params) => function (dispatch) {
     return postRequest(FETCH_LOGIN_DATA, params).then(function (json) {
-        if (json.Data) {
-            window.sessionStorage.accessToken = json.Data.token
+        if (json.token) {
+            window.sessionStorage.accessToken = json.token
             return
         }
         throw new Error('Incorrect Credentials')
