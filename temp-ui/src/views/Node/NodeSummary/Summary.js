@@ -15,6 +15,7 @@ import { fetchNodes, addNode, deleteNodes, setSelectedNodeIds, setNodeHeadings }
 import { connect } from 'react-redux'
 import I from 'immutable'
 import cluster from '../Cluster/cluster';
+import _ from 'lodash';
 
 class NodeSummary extends Component {
     constructor(props) {
@@ -339,6 +340,14 @@ class NodeSummary extends Component {
         if (this.state.redirect) {
             return <Redirect push to={{ pathname: '/pcc/node/config' }} />
         }
+
+        const sortedNodes = _.sortBy(this.state.nodes, [
+            'site',
+            'clusterName',
+            n => n.roleDetails && n.roleDetails[0] ? n.roleDetails[0].Name : '',
+            'Name',
+        ]);
+
         return (
             <Container-fluid >
                 <Row>
@@ -359,7 +368,7 @@ class NodeSummary extends Component {
                             <Row className="tableTitle">Node Config Summary</Row>
                             <SummaryDataTable
                                 heading={this.state.nodeHead}
-                                data={this.state.nodes}
+                                data={sortedNodes}
                                 setHeadings={this.setNodeHeadings}
                                 constHeading={nodeHead}
                                 checkBoxClick={this.checkBoxClick}

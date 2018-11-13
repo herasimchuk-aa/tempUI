@@ -8,6 +8,7 @@ import { FETCH_ALL_NODES } from '../../../apis/RestConfig';
 import { fetchNodes, setNodeHeadings } from '../../../actions/nodeAction';
 import { connect } from 'react-redux'
 import I from 'immutable'
+import _ from 'lodash';
 
 class NodeOpSummary extends React.Component {
 
@@ -37,6 +38,13 @@ class NodeOpSummary extends React.Component {
     }
 
     render() {
+        const sortedNodes = _.sortBy(this.state.nodes, [
+            'site',
+            'clusterName',
+            n => n.roleDetails && n.roleDetails[0] ? n.roleDetails[0].Name : '',
+            'Name',
+        ]);
+
         return (
             <div>
                 <div style={{ float: 'right', marginBottom: '10px' }}>
@@ -46,7 +54,7 @@ class NodeOpSummary extends React.Component {
                 <Row className="tableTitle">Node Summary</Row>
                 <SummaryDataTable
                     heading={this.state.nodeSummaryHead}
-                    data={this.state.nodes}
+                    data={sortedNodes}
                     showCheckBox={false}
                     setHeadings={(headings) => this.props.setNodeHeadings(I.fromJS(headings))}
                     constHeading={nodeHead}
