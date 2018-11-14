@@ -588,34 +588,45 @@ export let permissionHead = [
 
 export let userHead = [
     {
-        id: 'Name',
-        displayName: 'Name',
+        id: 'username',
+        displayName: 'Username',
     },
     {
-        id: 'Username',
-        displayName: 'User Name',
+        id: 'profile.firstname',
+        displayName: 'First Name',
+        operation: 'nested'
     },
     {
-        id: 'Email',
-        displayName: 'Email ID',
+        id: 'profile.lastname',
+        displayName: 'Second Name',
+        operation: 'nested',
     },
     {
-        id: 'UserRoles',
-        displayName: 'Roles',
-        operation: 'array',
-        showDefault: true
+        id: 'profile.email',
+        displayName: 'Email',
+        operation: 'nested'
+    },
+    {
+        id: 'role.name',
+        displayName: 'Role',
+        operation: 'nested'
+    },
+    {
+        id: 'active',
+        displayName: 'Active',
+        operation: 'boolean'
     }
 ];
 
 export let userRoleHead = [
     {
-        id: 'Name',
+        id: 'name',
         displayName: 'Name',
         colSize: 6
     },
     {
-        id: 'Permissions',
-        displayName: 'Permission',
+        id: 'operations',
+        displayName: 'Operations',
         operation: 'array',
         colSize: 6,
         showDefault: true

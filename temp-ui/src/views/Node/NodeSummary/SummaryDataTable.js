@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
 import { Table, Column, Cell } from 'fixed-data-table-2'
-import { TextCell, TextCellForArray, BadgeCell, ValidationCell, CollapseCell, GetFirstValueCell, ProvisionCell, List, BooleanCell } from './Cells';
+import { SortTypes,SortHeaderCell, NestedCell, TextCell, TextCellForArray, BadgeCell, ValidationCell, CollapseCell, GetFirstValueCell, ProvisionCell, List, BooleanCell } from './Cells';
 import 'fixed-data-table-2/dist/fixed-data-table.css';
 import { Input, Popover, PopoverBody } from 'reactstrap';
+import { sortByMultipleKey } from '../../../components/Utility/Utility'
 import Dimensions from 'react-dimensions'
 import '../../views.css'
 
 var widthOffset = window.innerWidth < 680 ? 0 : 290;
 const containerWidth = window.innerWidth - widthOffset;
-const rowHeight = 50
+const defaultRowHeight = 50
 const headerHeight = 50
 const POPOVER_PLACEMENT = "bottom-end"
 
@@ -22,29 +23,78 @@ class SummaryDataTable extends Component {
             data: [],
             heading: [],
             selectedRowIndexes: [],
+            enableColumnOrder: false,
+            colSortDirections: {},
             selectEntireRow: false,
             popoverOpen: false,
             columnWidths: {},
             scrollToRow: null,
+            rowHeight: defaultRowHeight,
             // collapsedRows: new Set(),
             showCollapse: false,
             height: 0
         };
         this.counter = 0;
         this.constHeading = props.constHeading
+        this._onSortChange = this._onSortChange.bind(this);
+    }
 
+    _onSortChange(header,columnKey, sortDir) {
+        if(this.state.enableColumnOrder) {
+            var data = this.state.data.slice()
+            data.map((val, index) => {
+                val["_index"] = index
+            })
+            let operation = header.operation
+
+            data.sort((a, b) => {
+                //TODO[Aucta] Use value calculated on getCellValue when cell is rendered instead of a[columnkey]
+                //var cellValues = this.getCellValue(operation, undefined)
+                let valueA = a[columnKey]
+                let valueB = b[columnKey]
+                var sortVal = 0;
+                if (valueA > valueB) {
+                    sortVal = 1;
+                }
+                if (valueA < valueB) {
+                    sortVal = -1;
+                }
+                if (sortVal !== 0 && sortDir === SortTypes.ASC) {
+                    sortVal = sortVal * -1;
+                }
+
+                return sortVal;
+            });
+
+            this.setState({
+                data: data,
+                colSortDirections: {
+                    [columnKey]: sortDir,
+                },
+            });
+        }
     }
 
     static defaultProps = {
         maxContainerHeight: (window.innerHeight - 300),
         showCheckBox: true
-
     }
 
     static getDerivedStateFromProps(props, state) {
+
+        var _orderedData = []
+        if(props.orderedColumnsMap!=undefined){
+            _orderedData = props.data.slice()
+            _orderedData.sort(sortByMultipleKey(props.orderedColumnsMap));
+        }else{
+            _orderedData = props.data
+        }
+
         return {
-            data: props.data,
+            data: _orderedData,
             heading: props.heading,
+            enableColumnOrder: props.enableColumnOrder,
+            rowHeight: props.rowHeight || defaultRowHeight,
             selectedRowIndexes: props.selectedRowIndexes,
             selectEntireRow: props.selectEntireRow,
             showCollapse: props.showCollapse,
@@ -77,7 +127,7 @@ class SummaryDataTable extends Component {
         // } else {
         //     shallowCopyOfCollapsedRows.add(rowIndex);
         // }
-        //height of the table 
+        //height of the table
         if (this.state.collapsedRows == rowIndex) {
             sameExpandRowClick = true
         }
@@ -85,18 +135,18 @@ class SummaryDataTable extends Component {
         if (data && data.length) {
             dataLen = data.length
         }
-        let tableHeight = rowHeight * (dataLen) + headerHeight + 2
+        let tableHeight = this.state.rowHeight * (dataLen) + headerHeight + 2
 
         //height of the expanded row
         let ExpanDataLen = 0
         if (data[rowIndex] && data[rowIndex].interfaces && data[rowIndex].interfaces.length) {
             ExpanDataLen = data[rowIndex].interfaces.length
         }
-        let expandedRowHeight = rowHeight * (ExpanDataLen - 1)
+        let expandedRowHeight = this.state.rowHeight * (ExpanDataLen - 1)
 
         // if (this.state.collapsedRows == rowIndex) {
         //     sameExpandRowClick = true
-        //     expandedRowHeight = rowHeight
+        //     expandedRowHeight = this.state.rowHeight
         // }
 
         //total height of the table
@@ -118,7 +168,7 @@ class SummaryDataTable extends Component {
             if (expandedRow && expandedRow.interfaces && expandedRow.interfaces.length) {
                 dataLen = expandedRow.interfaces.length
             }
-            return (dataLen - 1) * rowHeight
+            return (dataLen - 1) * this.state.rowHeight
         }
         return 0
     }
@@ -139,9 +189,9 @@ class SummaryDataTable extends Component {
             if (expandedRow && expandedRow.interfaces && expandedRow.interfaces.length) {
                 dataLen = expandedRow.interfaces.length
             }
-            this.totalheight = this.totalheight + rowHeight * (dataLen)
+            this.totalheight = this.totalheight + this.state.rowHeight * (dataLen)
 
-            let tableHeight = rowHeight * (dataLen)
+            let tableHeight = this.state.rowHeight * (dataLen)
             let tableWidth = this.props.containerWidth
             if (!heading || !heading.length)
                 return []
@@ -176,7 +226,7 @@ class SummaryDataTable extends Component {
                     }}>
                         <Table
                             className="tableBorderNone"
-                            rowHeight={rowHeight}
+                            rowHeight={this.state.rowHeight}
                             headerHeight={0}
 
                             rowsCount={dataLen - 1}
@@ -199,7 +249,7 @@ class SummaryDataTable extends Component {
         if (data && data.length) {
             dataLen = data.length
         }
-        let tableHeight = rowHeight * (dataLen) + headerHeight + 2
+        let tableHeight = this.state.rowHeight * (dataLen) + headerHeight + 2
         let tableWidth = this.props.containerWidth
         let totalheight = Math.min(maxContainerHeight, tableHeight)
         return (
@@ -208,7 +258,7 @@ class SummaryDataTable extends Component {
                 <Table
                     className="tableOutlineNone"
                     scrollToRow={scrollToRow}
-                    rowHeight={rowHeight}
+                    rowHeight={this.state.rowHeight}
                     headerHeight={headerHeight}
                     rowsCount={dataLen}
                     subRowHeightGetter={this._subRowHeightGetter}
@@ -242,7 +292,7 @@ class SummaryDataTable extends Component {
             return []
         let columns = []
         let self = this
-        let { selectedRowIndexes, columnWidths } = this.state
+        let { selectedRowIndexes, columnWidths, colSortDirections } = this.state
         if (props.showCheckBox) {
             columns.push(
                 <Column
@@ -275,7 +325,7 @@ class SummaryDataTable extends Component {
                 columns.push(
                     <Column
                         columnKey={id}
-                        header={<Cell style={{ cursor: 'pointer' }} key={headName} id={id} onContextMenu={self.contextMenu} onClick={self.closePopover}>{headName}</Cell>}
+                        header={<SortHeaderCell onSortChange={self._onSortChange} header={header} sortDir={colSortDirections[id]} style={{ cursor: 'pointer' }} key={headName} id={id} onContextMenu={self.contextMenu} onClick={self.closePopover}>{headName}</SortHeaderCell>}
                         cell={cellValue}
                         flexGrow={1}
                         width={columnWidths[id] ? columnWidths[id] : 50}
@@ -351,6 +401,7 @@ class SummaryDataTable extends Component {
     }
 
     checkBoxClick = (rowIndex, singleRowClick) => {
+        //TODO[Aucta] Pass element directly on check box cause elements order can change on table and caller can't work on indexes passed on rendering table
         this.props.checkBoxClick(rowIndex, singleRowClick)
     }
 
@@ -420,6 +471,9 @@ class SummaryDataTable extends Component {
         let value = null
 
         switch (operation) {
+            case "nested":
+                value = <NestedCell data={data}/>
+                break;
             case "array":
                 value = <TextCellForArray data={data} identity={'roles'} />
                 break

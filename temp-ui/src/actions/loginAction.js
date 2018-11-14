@@ -1,14 +1,14 @@
-import { postRequest, putRequest } from "../apis/RestApi";
-import { FETCH_LOGIN_DATA } from "../apis/RestConfig";
+import {getRequest, postRequest, putRequest} from "../apis/RestApiV2";
+import {FETCH_LOGIN_DATA, FETCH_ALL_USERS} from "../apis/RestConfig";
 import I from 'immutable'
 
 export const login = (params) => function (dispatch) {
-    return postRequest(FETCH_LOGIN_DATA, params).then(function (json) {
-        if (json.token) {
-            window.sessionStorage.accessToken = json.token
+    return postRequest(FETCH_LOGIN_DATA, params).then(response => {
+        if(response.statusCode==200){
+            window.sessionStorage.accessToken = JSON.parse(response.data).token
             return
         }
-        throw new Error('Incorrect Credentials')
+            throw new Error('Incorrect Credentials')
     })
 }
 
@@ -28,19 +28,19 @@ export const setAccessPermissions = function (payload) {
     }
 }
 
-export const updatePassword = (url, params) => (dispatch, getState) => {
-    return putRequest(url, params).then(function (json) {
-        if (json.StatusCode == 200) {
-            // let LLDPData = json.Data
-            // let storedLLDP = getState().lldpReducer.get('lldps')
-            // storedLLDP = storedLLDP.map(function (LLDP) {
-            //     if (LLDP.get('Id') === LLDPData.Id) {
-            //         LLDP = I.fromJS(LLDPData)
-            //     }
-            //     return LLDP
-            // })
-            // return dispatch(setLLDPData(I.fromJS(storedLLDP)))
+export function fetchUserProfile(username) {
+    return getRequest(FETCH_ALL_USERS).then(response => {
+        if(response.statusCode==200){
+            var users = JSON.parse(response.data)
+            var totalUsers = users.length
+            for (var i = 0; i < totalUsers; i++) {
+                var user = users[i]
+                if (user.username == username) {
+                    window.sessionStorage.userProfile=JSON.stringify((user))
+                    return
+                }
+            }
         }
-        throw new Error(json.Message)
+        throw new Error('Unable to get user profile')
     })
 }

@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { Badge, Nav, NavItem, NavLink as RsNavLink } from 'reactstrap';
 import classNames from 'classnames';
 import nav from './_nav';
+import navRolesMapping from './_navRoleMapping';
 import SidebarMinimizer from '../SidebarMinimizer/SidebarMinimizer';
 
 class Sidebar extends Component {
@@ -127,9 +128,28 @@ class Sidebar extends Component {
             item.children ? navDropdown(item, idx)
               : navItem(item, idx);
 
-    // nav list
     const navList = (items) => {
-      return items.map((item, index) => navType(item, index));
+        var profile
+        if(window.sessionStorage.userProfile!=undefined){
+            profile = JSON.parse(window.sessionStorage.userProfile)
+        }
+        var userRole = profile["role"].name
+        var roleMap = navRolesMapping.mapping[userRole]
+        return items.map((item, index) => {
+            var includeElem = false
+            if (roleMap == undefined) {
+                includeElem=true
+            } else {
+            if (item.title == true) {
+                if (roleMap.titles.includes(item.name)) includeElem = true
+            } else {
+                if (roleMap.urls.includes(item.url)) includeElem = true
+            }
+        }
+        if(includeElem){
+            return navType(item, index);
+        }
+      });
     };
 
     const isExternal = (url) => {

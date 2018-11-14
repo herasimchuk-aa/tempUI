@@ -19,6 +19,11 @@ export default {
       }
     },
     {
+      name: 'Summary',
+      url: '/pcc/node/Summary',
+      icon: 'icon-book-open',
+    },
+    {
       title: true,
       name: 'Infrastructure',
     },
@@ -28,11 +33,6 @@ export default {
       icon: 'icon-puzzle',
 
       children: [
-        {
-          name: 'Summary',
-          url: '/pcc/node/Summary',
-          icon: 'icon-book-open',
-        },
         {
           name: 'Node Config',
           url: '/pcc/node/NodeConfigSummary',
@@ -155,7 +155,7 @@ export default {
           icon: 'icon-people',
         },
         {
-          name: 'Permission',
+          name: 'Entity',
           url: '/pcc/userManagement/permission',
           icon: 'icon-key',
         }

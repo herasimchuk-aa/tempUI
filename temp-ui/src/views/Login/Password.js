@@ -3,7 +3,7 @@ import { Button, Card, CardBody, CardFooter, Col, Container, Form, Input, FormGr
 import { login } from '../../actions/loginAction';
 import {Redirect} from 'react-router-dom';
 import { connect } from 'react-redux'
-import { postRequest } from '../../apis/RestApi';
+import { postRequest } from '../../apis/RestApiV2';
 import { UPDATE_PASSWORD } from "../../apis/RestConfig";
 
 
@@ -57,16 +57,14 @@ class Password extends Component {
         let params = {
             'password': psw1
         }
-        //TODO[greg] Fix response handler
-        postRequest(UPDATE_PASSWORD, params).then((json) => {
-                this.showConfirmation();
-                //if (json==undefined || json.StatusCode != 200) {
-                //    let error = []
-                //    error.push('Unable to restore password')
-                //    self.setState({error: error, showAlert: true, showSuccess: false})
-                //}else {
-                //    this.showConfirmation();
-                //}
+        postRequest(UPDATE_PASSWORD, params).then((response) => {
+                if(response.statusCode != 200) {
+                    let error = []
+                    error.push('Unable to restore password')
+                    self.setState({error: error, showAlert: true, showSuccess: false})
+                }else {
+                    this.showConfirmation();
+                }
             }
         )
 

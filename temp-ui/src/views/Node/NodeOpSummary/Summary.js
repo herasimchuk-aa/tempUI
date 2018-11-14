@@ -50,7 +50,9 @@ class NodeOpSummary extends React.Component {
                     showCheckBox={false}
                     setHeadings={(headings) => this.props.setNodeHeadings(I.fromJS(headings))}
                     constHeading={nodeHead}
-                    tableName={"nodeSummaryTable"} />
+                    tableName={"nodeSummaryTable"}
+                    enableColumnOrder={true}
+                    orderedColumnsMap={["Site_Id","ClusterId","roles"]}/>
             </div>
         );
     }

@@ -6,6 +6,7 @@ import { HashRouter, Route, Switch } from 'react-router-dom';
 
 
 import { invaderServerAddressIP } from "./config";
+import { graphGuiIP } from "./config";
 
 import { Provider } from 'react-redux'
 import { createStore, applyMiddleware } from 'redux'
@@ -31,6 +32,8 @@ import Socket from './apis/Socket'
 import Password from "./views/Login/Password"
 
 
+Window.invaderServerAddress = "http://" + invaderServerAddressIP;
+Window.graphGuiIP = "http://" + graphGuiIP;
 
 Window.invaderServerAddress = "http://" + invaderServerAddressIP
 

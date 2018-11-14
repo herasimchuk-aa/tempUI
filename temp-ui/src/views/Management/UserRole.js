@@ -188,7 +188,7 @@ class UserRole extends Component {
         let userRolePromise = self.props.updateUserRoles(UPDATE_RBAC_ROLE, params)
 
         userRolePromise.then(function (value) {
-            NotificationManager.success("UserRole updated successfully", "UserRole") // "Success!"
+            NotificationManager.success("Role updated successfully", "UserRole") // "Success!"
         }).catch(function (e) {
             console.warn(e)
             NotificationManager.error("Something went wrong", "UserRole") // "error!"
@@ -223,7 +223,8 @@ class UserRole extends Component {
                         data={this.state.data}
                         checkBoxClick={this.checkBoxClick}
                         selectedRowIndexes={this.state.selectedRowIndexes}
-                        tableName={"User Roles Table"} />
+                        tableName={"User Roles Table"}
+                        rowHeight={150}/>
                 </div>
                 {this.addUserRoleModal()}
                 {this.editUserRoleModal()}

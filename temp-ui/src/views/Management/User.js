@@ -8,9 +8,9 @@ import { FETCH_ALL_USERS, ADD_USER, UPDATE_USER, DELETE_USERS } from '../../apis
 import { NotificationManager } from 'react-notifications';
 import { connect } from 'react-redux'
 import { fetchUsers, addUsers, updateUsers, deleteUser, setUserHeadings } from '../../actions/userAction';
+import { putRequest } from '../../apis/RestApiV2';
 import I from 'immutable'
-import ReactSingleDropdown from 'react-single-dropdown'
-import { putRequest } from '../../apis/RestApi';
+import Select from 'react-select';
 
 const usernameParam =  "rbacUserName";
 const firstNameParam =  "firstName";
@@ -60,6 +60,20 @@ class User extends Component {
         }
     }
 
+    getRoles = () => {
+        var roles = []
+        var rolesLength = this.state.userRoleData.length;
+        for (var i = 0; i < rolesLength; i++) {
+            var role = this.state.userRoleData[i]
+            roles.push({ value: role.name, label: role.name })
+        }
+        return roles;
+    }
+
+    handleChange = (selectedOption) => {
+        this.setState({ selectedUserRole: selectedOption });
+    }
+
     showDeleteButton() {
         let a = [];
         if (this.state.showDelete == true) {
@@ -72,25 +86,31 @@ class User extends Component {
 
     deleteUser() {
         let self = this;
-        let deleteIds = [];
+        let deleteUsernames = [];
         this.state.selectedRowIndexes.map(function (item) {
-            deleteIds.push(self.state.data[item].Id)
-        })
+            deleteUsernames.push(self.state.data[item].username)
+        });
 
-        this.props.deleteUser(DELETE_USERS, deleteIds).then(function (data) {
-            NotificationManager.success("User deleted successfully", "User") // "Success!"
-        }).catch(function (e) {
-            console.log(e)
-        })
+        var deleteUsernamesLength = deleteUsernames.length;
+        for (var i = 0; i < deleteUsernamesLength; i++) {
+            var username = deleteUsernames[i];
+
+            var delRequest = {
+                "username": username
+            };
+
+            this.props.deleteUser(DELETE_USERS, delRequest).then(function (data) {
+                NotificationManager.success("User "+username+" deleted successfully", "User");
+            }).catch(function (e) {
+                NotificationManager.error("Something went wrong on deleting "+username+" user", "User");
+            })
+        }
+
         self.setState({ showDelete: false, selectedRowIndexes: [] });
     }
 
     onDismiss() {
         this.setState({ visible: false });
-    }
-
-    handleChanges = (selectedOption) => {
-        this.setState({ selectedUserRoles: selectedOption });
     }
 
     addUserModal() {
@@ -104,10 +124,13 @@ class User extends Component {
                         Last Name<font color="red"><sup>*</sup></font> <Input autoFocus className="marTop10" id={lastNameParam} /><br />
                         User Name<font color="red"><sup>*</sup></font> <Input className="marTop10" id={usernameParam} /><br />
                         Email<font color="red"><sup>*</sup></font> <Input className="marTop10" id={emailParam} /><br />
-                        Role<ReactSingleDropdown
-                        defaultSelected={"ADMIN"}
-                        onSelect={this.state.selectedUserRoles}
-                        options={['ADMIN']}/>
+                        Role<Select
+                        value={this.state.selectedUserRole}
+                        onChange={this.handleChange}
+                        options={this.getRoles()}
+                        placeholder="Specify a role"
+                        isSearchable="true"
+                    />
                     </ModalBody>
                     <ModalFooter>
                         <Button className="custBtn" outline color="primary" onClick={() => (this.addUser())}>Add</Button>{'  '}
@@ -119,7 +142,7 @@ class User extends Component {
     }
 
     cancel() {
-        this.setState({ displayModel: !this.state.displayModel, visible: false, selectedUserRoles: '' })
+        this.setState({ displayModel: !this.state.displayModel, visible: false, selectedUserRole: '' })
     }
 
     addUser() {
@@ -146,9 +169,12 @@ class User extends Component {
             alert("Email ID is mandatory")
             return
         }
-        let userRoles = [];
-        if (this.state.selectedUserRoles)
-            this.state.selectedUserRoles.map((data) => userRoles.push(data));
+
+        let role = this.state.selectedUserRole
+        if (!role) {
+            alert("Role is required")
+            return
+        }
 
         let usedUrl = getUrlBase(window.location.href)
 
@@ -157,11 +183,15 @@ class User extends Component {
             'lastname': lastName,
             'username': username,
             'email': email,
-            'role': "ADMIN", //TODO[greg] get roles from select
+            'role': role.value,
             "source": usedUrl+"/setPass",
         }
 
         let userPromise = self.props.addUsers(ADD_USER, params)
+
+        userPromise.then(function (value) {
+            self.props.fetchUsers(FETCH_ALL_USERS)
+        })
 
         userPromise.then(function (value) {
             NotificationManager.success("User added successfully", "User")
@@ -169,7 +199,7 @@ class User extends Component {
             console.warn(e)
             NotificationManager.error("Something went wrong", "User")
         })
-        this.setState({ displayModel: false, selectedRowIndexes: [], selectedUserRoles: '' })
+        this.setState({ displayModel: false, selectedRowIndexes: [], selectedUserRole: '' })
     }
 
     showEditDialogBox() {
@@ -178,11 +208,11 @@ class User extends Component {
             return
         }
         let edittedData = this.state.data[this.state.selectedRowIndexes[0]]
-        this.setState({ displayEditModel: true, selectedUserRoles: edittedData.UserRoles })
+        this.setState({ displayEditModel: true, selectedUserRole: edittedData.UserRoles })
     }
 
     toggleEditModal() {
-        this.setState({ displayEditModel: !this.state.displayEditModel, selectedUserRoles: '' })
+        this.setState({ displayEditModel: !this.state.displayEditModel, selectedUserRole: '' })
     }
 
     editUserModal() {
@@ -195,7 +225,7 @@ class User extends Component {
                         Name<font color="red"><sup>*</sup></font> <Input autoFocus disabled className="marTop10" id='userEdit' value={edittedData.Name} /><br />
                         User Name<font color="red"><sup>*</sup></font> <Input className="marTop10" id='rbacUserNameEdit' defaultValue={edittedData.Username} /><br />
                         Email ID<font color="red"><sup>*</sup></font> <Input className="marTop10" id='userEmailIdEdit' defaultValue={edittedData.Email} /><br />
-                        User Roles<MultiselectDropDown value={this.state.selectedUserRoles} getSelectedData={this.handleChanges} options={this.state.userRoleData}></MultiselectDropDown>
+                        User Roles<MultiselectDropDown value={this.state.selectedUserRole} getSelectedData={this.handleChanges} options={this.state.userRoleData}></MultiselectDropDown>
                     </ModalBody>
                     <ModalFooter>
                         {/* <Button className="custBtn" outline color="primary" onClick={() => (this.sendPasswordResetLink(edittedData.Email))}>Resend Link</Button>{'  '} */}
@@ -211,15 +241,21 @@ class User extends Component {
         let params = {
             'Email': email
         }
-        putRequest("/rbac/user/forgotpasswd", params).then(NotificationManager.success("Password reset link sent", "User"))
+        putRequest("/rbac/user/forgotpasswd", params).then(response => {
+          if(response.statusCode==200){
+              NotificationManager.success("Password reset link sent", "User")
+          }else{
+              NotificationManager.error("Something went wrong on reset password procedure", "User")
+          }
+        })
     }
 
     editUser = (userId) => {
         let self = this
 
         let userRoles = [];
-        if (this.state.selectedUserRoles && this.state.selectedUserRoles.length)
-            this.state.selectedUserRoles.map((data) => userRoles.push(data));
+        if (this.state.selectedUserRole && this.state.selectedUserRole.length)
+            this.state.selectedUserRole.map((data) => userRoles.push(data));
 
         let params = {
             'Id': userId,
@@ -237,7 +273,7 @@ class User extends Component {
             console.warn(e)
             NotificationManager.error("Something went wrong", "User") // "error!"
         })
-        this.setState({ displayEditModel: false, selectedRowIndexes: [], showDelete: false, selectedUserRoles: '' })
+        this.setState({ displayEditModel: false, selectedRowIndexes: [], showDelete: false, selectedUserRole: '' })
     }
 
     setUserRoleHeadings = (headings) => {
@@ -267,7 +303,7 @@ class User extends Component {
                         data={this.state.data}
                         checkBoxClick={this.checkBoxClick}
                         selectedRowIndexes={this.state.selectedRowIndexes}
-                        tableName={"Users"} />
+                        tableName={"Users"}/>
                 </div>
                 {this.addUserModal()}
                 {this.editUserModal()}

@@ -100,3 +100,18 @@ export function updateServerURL(url){
 export function getUrlBase(url){
     return url.split("/#")[0]+"/#"
 }
+
+/**
+ * Return function to sort array according to multiple keys
+ * @param keys The keys to use to sort the array
+ * @returns {Function} The sort function
+ */
+export function sortByMultipleKey(keys) {
+    return function(a, b) {
+        if (keys.length == 0) return 0; // force to equal if values run out
+        var key = keys[0]; // take out the first key
+        if (a[key] < b[key]) return -1; // will be 1 if DESC
+        else if (a[key] > b[key]) return 1; // will be -1 if DESC
+        else return sortByMultipleKey(keys.slice(1))(a, b);
+    }
+}
