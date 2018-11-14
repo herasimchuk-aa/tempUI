@@ -1,12 +1,13 @@
 import I from 'immutable'
-import { getRequest, postRequest, putRequest } from '../apis/RestApi';
+import { getRequest} from '../apis/RestApiV2';
+import { postRequest, putRequest } from '../apis/RestApi';
 import { getPermissions } from './permissionActions';
 import { FETCH_ALL_PERMISSIONS } from '../apis/RestConfig';
 
 export const fetchUserRoles = (url) => (dispatch) => {
-    return getRequest(url).then(function (json) {
+    return getRequest(url).then(function (response) {
         return dispatch(getPermissions(FETCH_ALL_PERMISSIONS)).then(function () {
-            return dispatch(setUserRolesData(I.fromJS(json.Data)))
+            return dispatch(setUserRolesData(I.fromJS(JSON.parse(response.data))))
         })
 
     })

@@ -1,6 +1,7 @@
 import { Cell } from 'fixed-data-table-2';
 import React from 'react';
 import { UncontrolledTooltip, Badge, Progress, ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText } from 'reactstrap';
+import { Accordion, AccordionItem } from 'react-sanfona';
 import '../../views.css'
 
 
@@ -303,8 +304,34 @@ class TextCellForArray extends React.PureComponent {
         } else {
             if (columnKey == 'roleDetails') {
                 arr = data[rowIndex][columnKey]
-            } else if (columnKey == 'Permissions') {
+            } else if (columnKey == 'operations') {
                 arr = data[rowIndex][columnKey]
+
+                //Create map from entities
+                var onMaps = {}
+                arr.map((val, index) => {
+                    var entity = val["entity"].name;
+                    if(onMaps[entity]==undefined){
+                        onMaps[entity]=[]
+                    }
+                    onMaps[entity].push(val.name)
+                })
+                return (
+                    <Accordion className='scrollable-vertical'>
+                        {Object.keys(onMaps).map((entity) => {
+                            var operations = onMaps[entity]
+                            var namesList = operations.map(function(name){
+                                return <div style={{"font-weight": "normal"}}>{name}</div>
+                            })
+
+                            return (
+                                <AccordionItem title={`${entity}`} titleTag="div" style={{"font-weight": "bold"}}>
+                                    {namesList}
+                                </AccordionItem>
+                            );
+                        })}
+                    </Accordion>
+                );
             } else if (columnKey == 'UserRoles') {
                 arr = data[rowIndex][columnKey]
             } else {
@@ -359,17 +386,21 @@ module.exports.TooltipCell = TooltipCell;
 class BadgeCell extends React.PureComponent {
     render() {
         const { data, rowIndex, columnKey, ...props } = this.props;
-        let value = '-'
+        props.value = '-'
         if (!data[rowIndex]['ValidationStatus']['OverallStatus']) {
-            value = 'Mismatch'
-            return (<Cell {...props}> <Badge color="danger">{value}</Badge> </Cell>)
+            props.value = 'Mismatch'
+            return (<Cell {...props}> <Badge color="danger">{props.value}</Badge> </Cell>)
         }
         else {
-            value = 'Registered'
-            return (<Cell {...props}>{value} </Cell>)
+            props.value = 'Registered'
+            return (<Cell {...props}>{props.value} </Cell>)
         }
-
     }
+
+    getValue(data,rowIndex) {
+        return "value";
+    }
+
 };
 module.exports.BadgeCell = BadgeCell;
 
@@ -485,3 +516,66 @@ class BooleanCell extends React.PureComponent {
     }
 };
 module.exports.BooleanCell = BooleanCell;
+
+class NestedCell extends React.PureComponent {
+    constructor(props) {
+        super(props)
+    }
+    render() {
+        const { data, rowIndex, columnKey, ...props } = this.props;
+        var elements = columnKey.split(".");
+        var elementsLength = elements.length;
+        var dataObj = data[rowIndex]
+        for (var i = 0; i < elementsLength; i++) {
+            dataObj = dataObj[elements[i]]
+            if(dataObj==undefined) break;
+        }
+        return (
+            <Cell {...props}>
+                {dataObj}
+            </Cell>
+        );
+    }
+};
+module.exports.NestedCell = NestedCell;
+
+export const SortTypes = {
+    ASC: 'ASC',
+    DESC: 'DESC',
+};
+
+class SortHeaderCell extends React.Component {
+    constructor(props) {
+        super(props);
+        this._onSortChange = this._onSortChange.bind(this);
+    }
+
+    render() {
+        var {onSortChange,header,sortDir, children, ...props} = this.props;
+        return (
+            <Cell {...props}>
+                <a onClick={this._onSortChange}>
+                    {children} {sortDir ? (sortDir === SortTypes.DESC ? '↑' : '↓') : ''}
+                </a>
+            </Cell>
+        );
+    }
+
+
+    reverseSortDirection(sortDir) {
+        return sortDir === SortTypes.DESC ? SortTypes.ASC : SortTypes.DESC;
+    }
+
+    _onSortChange(e) {
+        e.preventDefault();
+
+        if (this.props.onSortChange) {
+            this.props.onSortChange(
+                this.props.header,
+                this.props.columnKey,
+                this.props.sortDir ? this.reverseSortDirection(this.props.sortDir) : SortTypes.DESC
+            );
+        }
+    }
+}
+module.exports.SortHeaderCell = SortHeaderCell;

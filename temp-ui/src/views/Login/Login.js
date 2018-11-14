@@ -20,7 +20,7 @@ import {
 } from 'reactstrap';
 import {Redirect} from 'react-router-dom';
 import {validateName, validateEmail, validateUrl,updateServerURL, trimUrlProtocol,getUrlBase } from '../../components/Utility/Utility';
-import {login} from '../../actions/loginAction';
+import {login,fetchUserProfile} from '../../actions/loginAction';
 import {connect} from 'react-redux'
 import {postRequest} from '../../apis/RestApi';
 import { FORGOT_PASSWORD } from "../../apis/RestConfig";
@@ -80,8 +80,16 @@ class Login extends Component {
             "username": username,
             "password": psw
         }
-        this.props.login(params).then(function (json) {
-            self.setState({signUp: true})
+        this.props.login(params).then(function () {
+            fetchUserProfile(username).then(function(){
+                self.setState({signUp: true})
+            }).catch(function (e) {
+                    console.error(e)
+                    let error = []
+                    error.push('Unable to get user profile')
+                    self.setState({error: error, showAlert: true, showSuccess: false})
+                }
+            )
         }).catch(function (e) {
                 console.error(e)
                 let error = []
@@ -107,7 +115,6 @@ class Login extends Component {
             "username": username,
             "source": usedUrl+"/setPass",
         }
-        //TODO[greg] Handle response
         postRequest(FORGOT_PASSWORD, params).then(function (json) {
             self.setState({showAlert: false, showSuccess: true, success: "An E-mail has been sent"})
             //if (json==undefined || json.StatusCode != 200) {
@@ -260,7 +267,7 @@ class Login extends Component {
                                         </Col>
                                         <Col xs="12">
                                             <Button className="custFillBtn" id="forgotpasswordBtn" block
-                                                    onClick={() => (this.showForgotPsw())}><span>Forgot password??</span></Button>
+                                                    onClick={() => (this.showForgotPsw())}><span>Forgot password?</span></Button>
                                         </Col>
                                     </CardFooter>
                                 </Card>

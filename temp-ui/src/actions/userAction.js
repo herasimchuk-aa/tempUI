@@ -1,13 +1,17 @@
 import I from 'immutable'
-import { getRequest, postRequest, putRequest } from '../apis/RestApi';
-import { FETCH_ALL_RBAC_ROLES } from '../apis/RestConfig';
+import { getRequest, postRequest, putRequest } from '../apis/RestApiV2';
+import { FETCH_ALL_USERS,FETCH_ALL_RBAC_ROLES } from '../apis/RestConfig';
+
 import { fetchUserRoles } from './userRoleAction';
 
 export const fetchUsers = (url) => (dispatch) => {
-    return getRequest(url).then(function (json) {
-        return dispatch(fetchUserRoles(FETCH_ALL_RBAC_ROLES)).then(function () {
-            return dispatch(setUserSData(I.fromJS(json.Data)))
-        })
+    return getRequest(url).then(response => {
+        if(response.statusCode==200){
+            return dispatch(fetchUserRoles(FETCH_ALL_RBAC_ROLES)).then(function () {
+                return dispatch(setUserSData(I.fromJS(JSON.parse(response.data))))
+            })
+        }
+        throw new Error(response.data)
     })
 }
 
@@ -27,19 +31,13 @@ export function setUserHeadings(payload) {
     }
 }
 
-
 export const addUsers = (url, params) => (dispatch, getState) => {
-    return postRequest(url, params).then(function (json) {
-        //TODO[greg] Handler status
-        //if (json.StatusCode == 200) {
-            //let storedUsers = getState().userReducer.getIn(['users'], I.List())
-            //storedUsers = storedUsers.push(I.fromJS(json.Data))
-            //return dispatch(setUserSData(storedUsers))
-        //}
-        //throw new Error(json.Message)
+    return postRequest(url, params).then(response => {
+        if (response.statusCode != 200) throw new Error(response.data)
     })
 }
 
+//TODO[Aucta] Bind aucta aaa function
 export const updateUsers = (url, params) => (dispatch, getState) => {
     return putRequest(url, params).then(function (json) {
         if (json.StatusCode == 200) {
@@ -59,14 +57,13 @@ export const updateUsers = (url, params) => (dispatch, getState) => {
 
 
 export const deleteUser = (url, params) => (dispatch, getState) => {
-    return postRequest(url, params).then(function (json) {
-        if (json.StatusCode == 200) {
+    return postRequest(url, params).then(response => {
+        if (response.statusCode == 200) {
             let store = getState()
             let storedUsers = store.userReducer.get('users')
-            let failure = json.Data.Failure ? json.Data.Failure : []
             let changesMade = false
             for (let user of storedUsers) {
-                if (params.indexOf(user.get('Id')) > -1 && failure.indexOf(user.get('Id')) < 0) {
+                if (params.username == user.get("username")) {
                     storedUsers = storedUsers.deleteIn([storedUsers.indexOf(user)])
                     changesMade = true
                 }
@@ -74,9 +71,9 @@ export const deleteUser = (url, params) => (dispatch, getState) => {
             if (changesMade) {
                 dispatch(setUserSData(storedUsers))
             }
-            return json.Data
+            return response.data
         }
-        throw new Error(json.Message)
+        throw new Error(response.data)
     })
 }
 

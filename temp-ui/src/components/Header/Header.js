@@ -45,6 +45,7 @@ class Header extends Component {
   logOut = () => {
     this.setState({ logout: true })
     window.sessionStorage.accessToken = ''
+    window.sessionStorage.userProfile = ''
   }
 
   render() {

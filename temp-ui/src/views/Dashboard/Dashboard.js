@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Button, CardHeader, CardBody, Input } from 'reactstrap';
+import { GRAPH_DASHBOARD } from "../../apis/RestConfig";
 import '../../views/views.css'
 
 
@@ -50,9 +51,10 @@ class Dashboard extends Component {
     }
 
     render() {
+        let dashboardUrl = Window.graphGuiIP+GRAPH_DASHBOARD
         return (
             <iframe
-                src="http://localhost:8080/dashboard"
+                src={dashboardUrl}
                 style={{ height: '100%', width: '100%'}}
                 frameBorder="0"
             />
